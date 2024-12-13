@@ -1,26 +1,23 @@
+import Categories from "@/components/views/home/Categories";
+import TypeOfOrder from "@/components/views/home/TypeOfOrder";
+
 export default function HomePage() {
   return (
     <>
       {/* Content area */}
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1">
         {/* Main content */}
-        <div className="flex flex-1 items-stretch overflow-hidden">
-          <main className="flex-1 overflow-y-auto">
+        <div className="w-full flex">
+          <main className="flex-1 w-8/12">
             {/* Primary column */}
-            <section
-              aria-labelledby="primary-heading"
-              className="flex h-full min-w-0 bg-red-600 flex-1 flex-col lg:order-last"
-            >
-              <h1 id="primary-heading" className="sr-only">
-                Photos
-              </h1>
-              {/* Your content */}
+            <section className="flex h-full min-w-0 flex-1 flex-col lg:order-last px-4 sm:px-6">
+              <Categories />
             </section>
           </main>
 
           {/* Secondary column (hidden on smaller screens) */}
-          <aside className="hidden w-96 overflow-y-auto border-l border-gray-200 bg-white lg:block">
-            {/* Your content */}
+          <aside className="hidden w-4/12 overflow-hidden lg:block">
+            <TypeOfOrder />
           </aside>
         </div>
       </div>

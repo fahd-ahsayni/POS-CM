@@ -7,7 +7,7 @@ import { Outlet } from "react-router-dom";
 export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   return (
-    <div className="flex min-h-screen">
+    <div className="flex relative w-screen h-screen overflow-hidden">
       {/* Mobile menu */}
       <SidebarMobile
         mobileMenuOpen={mobileMenuOpen}
@@ -15,11 +15,11 @@ export default function Layout() {
       />
 
       {/* Content area */}
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col">
         <Navbar setMobileMenuOpen={setMobileMenuOpen} />
 
         {/* Main content */}
-        <div className="flex flex-1 items-stretch overflow-hidden">
+        <div className="flex flex-1 items-stretch overflow-y-auto">
           <Outlet />
         </div>
       </div>

@@ -5,6 +5,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useState } from "react";
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
+import UserCard from './UserCard';
 
 interface SelectUserSlideProps {
   userType: string;
@@ -22,10 +23,10 @@ function SelectUserSlide({ userType }: SelectUserSlideProps) {
   );
 
   const settings = {
-    className: "center",
+    className: 'center',
     centerMode: true,
     infinite: true,
-    centerPadding: "2px",
+    centerPadding: '0px',
     slidesToShow: 3,
     speed: 500,
     focusOnSelect: true,
@@ -42,26 +43,11 @@ function SelectUserSlide({ userType }: SelectUserSlideProps) {
       <div className="h-full absolute left-0 top-0 bg-gradient-to-r from-gray-100 to-transparent w-[200px] z-10"></div>
       <Slider {...settings} className="py-8">
         {filteredUsers.map((user, index) => (
-          <div key={user.id} className="h-[250px] slide-item w-full !flex !flex-col items-center justify-center">
-            <div className={`relative ${
-              index === activeSlide 
-                ? 'ring-4 ring-red-500 ring-offset-4 rounded-full transition-all duration-300' 
-                : ''
-            }`}>
-              <img
-                src={user.imageUrl}
-                alt={user.name}
-                className="w-32 h-32 object-cover rounded-full"
-              />
-            </div>
-            <p className={`text-zinc-900 font-medium mt-4 ${
-              index === activeSlide 
-                ? 'text-red-500' 
-                : ''
-            }`}>
-              {user.name}
-            </p>
-          </div>
+          <UserCard 
+            key={user.id} 
+            user={user} 
+            isActive={index === activeSlide}
+          />
         ))}
       </Slider>
     </div>

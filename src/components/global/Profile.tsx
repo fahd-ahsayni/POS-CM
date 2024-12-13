@@ -20,15 +20,31 @@ import {
   UserPen,
 } from "lucide-react";
 
-export default function DropdownDemo() {
+const menuItems = [
+  { icon: Bolt, label: "Option 1" },
+  { icon: Layers2, label: "Option 2" },
+  { icon: BookOpen, label: "Option 3" },
+  { icon: Pin, label: "Option 4" },
+  { icon: UserPen, label: "Option 5" },
+  { icon: LogOut, label: "Logout" },
+];
+
+export default function Profile() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-auto p-0 hover:bg-transparent">
-          <Avatar>
-            <AvatarImage src="./avatar.jpg" alt="Profile image" />
-            <AvatarFallback>KK</AvatarFallback>
-          </Avatar>
+          <div>
+            <img
+              className="inline-block h-9 w-9 rounded-lg"
+              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+              alt=""
+            />
+          </div>
+          <div className="ml-3 flex flex-col justify-center h-10">
+            <p className="text-sm/4 font-medium">Tom Cook</p>
+            <p className="text-xs font-medium text-zinc-300">View profile</p>
+          </div>
           <ChevronDown
             size={16}
             strokeWidth={2}
@@ -48,54 +64,31 @@ export default function DropdownDemo() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <Bolt
-              size={16}
-              strokeWidth={2}
-              className="opacity-60"
-              aria-hidden="true"
-            />
-            <span>Option 1</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Layers2
-              size={16}
-              strokeWidth={2}
-              className="opacity-60"
-              aria-hidden="true"
-            />
-            <span>Option 2</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <BookOpen
-              size={16}
-              strokeWidth={2}
-              className="opacity-60"
-              aria-hidden="true"
-            />
-            <span>Option 3</span>
-          </DropdownMenuItem>
+          {menuItems.slice(0, 3).map((item, index) => (
+            <DropdownMenuItem key={index}>
+              <item.icon
+                size={16}
+                strokeWidth={2}
+                className="opacity-60"
+                aria-hidden="true"
+              />
+              <span>{item.label}</span>
+            </DropdownMenuItem>
+          ))}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <Pin
-              size={16}
-              strokeWidth={2}
-              className="opacity-60"
-              aria-hidden="true"
-            />
-            <span>Option 4</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <UserPen
-              size={16}
-              strokeWidth={2}
-              className="opacity-60"
-              aria-hidden="true"
-            />
-            <span>Option 5</span>
-          </DropdownMenuItem>
+          {menuItems.slice(3, 5).map((item, index) => (
+            <DropdownMenuItem key={index}>
+              <item.icon
+                size={16}
+                strokeWidth={2}
+                className="opacity-60"
+                aria-hidden="true"
+              />
+              <span>{item.label}</span>
+            </DropdownMenuItem>
+          ))}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem>

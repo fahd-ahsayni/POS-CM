@@ -1,7 +1,25 @@
-import { Fragment } from "react";
-import { Menu, Transition } from "@headlessui/react";
-import { Bars3BottomLeftIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { Fragment, useState } from "react";
+import {
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+  Transition,
+} from "@headlessui/react";
 import { cn } from "@/lib/utils";
+import { logoDarkMode, logoLightMode, sunset } from "@/assets";
+import { TypographyP, TypographySmall } from "@/components/ui/typography";
+import { ModeToggleWithDropdown } from "@/components/global/mode-toggle";
+import { Button } from "@/components/ui/button";
+import {
+  Menu as MenuIcon,
+  ChevronDown,
+  LucideMaximize,
+  Bell,
+} from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { useTheme } from "@/providers/themeProvider";
+import Profile from "@/components/global/Profile";
 
 const userNavigation = [
   { name: "Your Profile", href: "#" },
@@ -13,6 +31,16 @@ export default function Navbar({
 }: {
   setMobileMenuOpen: (open: boolean) => void;
 }) {
+  const theme = useTheme();
+
+  const handleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  };
+
   return (
     <header className="w-full">
       <div className="relative z-10 flex h-16 flex-shrink-0">
@@ -22,59 +50,36 @@ export default function Navbar({
           onClick={() => setMobileMenuOpen(true)}
         >
           <span className="sr-only">Open sidebar</span>
-          <Bars3BottomLeftIcon className="h-6 w-6" aria-hidden="true" />
+          <MenuIcon className="h-6 w-6" />
         </button>
         <div className="flex flex-1 justify-between px-4 sm:px-6">
-          <div className="flex flex-1"></div>
-          <div className="ml-2 flex items-center space-x-4 sm:ml-6 sm:space-x-6">
-            {/* Profile dropdown */}
-            <Menu as="div" className="relative flex-shrink-0">
-              <div>
-                <Menu.Button className="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                  <span className="sr-only">Open user menu</span>
-                  <img
-                    className="h-8 w-8 rounded-full"
-                    src="https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80"
-                    alt=""
-                  />
-                </Menu.Button>
-              </div>
-              <Transition
-                as={Fragment}
-                enter="transition ease-out duration-100"
-                enterFrom="transform opacity-0 scale-95"
-                enterTo="transform opacity-100 scale-100"
-                leave="transition ease-in duration-75"
-                leaveFrom="transform opacity-100 scale-100"
-                leaveTo="transform opacity-0 scale-95"
-              >
-                <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  {userNavigation.map((item) => (
-                    <Menu.Item key={item.name}>
-                      {({ active }) => (
-                        <a
-                          href={item.href}
-                          className={cn(
-                            active ? "bg-gray-100" : "",
-                            "block px-4 py-2 text-sm text-gray-700"
-                          )}
-                        >
-                          {item.name}
-                        </a>
-                      )}
-                    </Menu.Item>
-                  ))}
-                </Menu.Items>
-              </Transition>
-            </Menu>
+          <img src={theme.theme === "dark" ? logoDarkMode : logoLightMode} alt="logo" className="w-24 h-auto" />
+          <div className="flex flex-col justify-center flex-1 ml-12">
+            <TypographyP className="flex items-center gap-1 text-sm font-medium">
+              <span>
+                <img src={sunset} alt="sunset" className="w-5 h-auto" />
+              </span>
+              <span>Good Morning! Let's make today productive.</span>
+            </TypographyP>
+            <TypographySmall className="text-xs text-zinc-100 dark:text-zinc-300 pl-6 mt-1">
+              Last updated on July 10, 2024, at 10:00 AM
+            </TypographySmall>
+          </div>
+          <div className="ml-2 flex items-center space-x-2 sm:ml-6 sm:space-x-2">
+            <Button size="icon" className="relative">
+              <Bell size={16} />
+              <span className="absolute h-2 w-2 -top-0.5 ring-1 ring-background left-full -translate-x-1/2 bg-red-500 rounded-full" />
+              <span className="sr-only">Notification</span>
+            </Button>
 
-            <button
-              type="button"
-              className="flex items-center justify-center rounded-md bg-indigo-600 p-1 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            >
-              <PlusIcon className="h-6 w-6" aria-hidden="true" />
-              <span className="sr-only">Add file</span>
-            </button>
+            <ModeToggleWithDropdown />
+
+            <Button size="icon" onClick={handleFullScreen}>
+              <LucideMaximize size={16} />
+              <span className="sr-only">Full screen</span>
+            </Button>
+            <Separator orientation="vertical" className="h-6" />
+            <Profile />
           </div>
         </div>
       </div>

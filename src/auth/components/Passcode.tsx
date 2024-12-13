@@ -27,7 +27,7 @@ export default function Passcode() {
       <div className="absolute rounded-full -top-52 -right-52 w-[400px] h-[400px] bg-red-600 blur-3xl opacity-30" />
       <div className="mx-auto w-full max-w-sm lg:w-96">
         <div>
-          <h2 className="mt-8 tracking-tight scroll-m-20 text-3xl font-semibold text-white">
+          <h2 className="tracking-tight scroll-m-20 text-3xl font-semibold text-white">
             Entre Passcode
           </h2>
           <p className="mt-1 text-sm text-zinc-300">
@@ -53,7 +53,7 @@ export default function Passcode() {
           </NumberButton>
         </div>
         <div className="mt-10">
-          <Button to='/' className="w-full">Log In</Button>
+          <Button to='/select-pos' className="w-full">Log In</Button>
         </div>
       </div>
     </div>

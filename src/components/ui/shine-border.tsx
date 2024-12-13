@@ -26,7 +26,7 @@ interface ShineBorderProps {
 export default function ShineBorder({
   borderRadius = 8,
   borderWidth = 1,
-  duration = 14,
+  duration = 7,
   color = "#000000",
   className,
   children,
@@ -39,7 +39,7 @@ export default function ShineBorder({
         } as React.CSSProperties
       }
       className={cn(
-        "relative w-fit min-w-[200px] place-items-center rounded-[--border-radius]",
+        "relative w-fit min-w-[200px] !bg-red-600 place-items-center rounded-[--border-radius]",
         className,
       )}
     >
@@ -49,7 +49,7 @@ export default function ShineBorder({
             "--border-width": `${borderWidth}px`,
             "--border-radius": `${borderRadius}px`,
             "--duration": `${duration}s`,
-            "--mask-linear-gradient": `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
+            "--mask-linear-gradient": `linear-gradient(#fb0000 0 0) content-box, linear-gradient(#fb0000 0 0)`,
             "--background-radial-gradient": `radial-gradient(transparent,transparent, ${color instanceof Array ? color.join(",") : color},transparent,transparent)`,
           } as React.CSSProperties
         }

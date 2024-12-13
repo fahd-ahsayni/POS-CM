@@ -5,7 +5,7 @@ export default function LogInPage() {
   
   return (
     <>
-      <div className="flex min-h-screen overflow-hidden" dir="ltr">
+      <div className="flex min-h-screen overflow-hidden">
         <SelectUser />
         <Passcode />
       </div>
