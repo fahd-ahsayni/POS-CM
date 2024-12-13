@@ -29,6 +29,11 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    --color-1: 0 100% 63%;
+    --color-2: 270 100% 63%;
+    --color-3: 210 100% 63%;
+    --color-4: 195 100% 63%;
+    --color-5: 90 100% 63%;
   }
 
   .dark {
@@ -56,6 +61,11 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    --color-1: 0 100% 63%;
+    --color-2: 270 100% 63%;
+    --color-3: 210 100% 63%;
+    --color-4: 195 100% 63%;
+    --color-5: 90 100% 63%;
   }
 }
 
@@ -66,4 +76,44 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Add this to your CSS file */
+.custom-slider .slick-slide {
+  transition: transform 300ms ease;
+}
+
+.custom-slider .slick-center {
+  transform: scale(1.15);
+  z-index: 1;
+}
+
+/* Optional: add hover effect */
+.custom-slider .slick-slide:hover {
+  cursor: pointer;
+}
+
+/* Custom dots styling */
+.custom-dots {
+  bottom: -30px;
+}
+
+.custom-dots li {
+  margin: 0 4px;
+}
+
+.custom-dots li button {
+  width: 10px;
+  height: 10px;
+}
+
+.custom-dots li button:before {
+  color: #d1d5db; /* inactive dot color */
+  opacity: 1;
+  font-size: 10px;
+}
+
+.custom-dots li.slick-active button:before {
+  color: #6366f1; /* active dot color - change to match your theme */
+  opacity: 1;
 }

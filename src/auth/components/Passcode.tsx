@@ -53,7 +53,7 @@ export default function Passcode() {
           </NumberButton>
         </div>
         <div className="mt-10">
-          <Button className="w-full">Log In</Button>
+          <Button to='/' className="w-full">Log In</Button>
         </div>
       </div>
     </div>
