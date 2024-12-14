@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { TypographyH2 } from "@/components/ui/typography";
 import {
   Table,
@@ -10,6 +11,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import SelectNumberOfOrderPerPage from "@/components/views/orders/components/SelectNumberOfOrderPerPage";
+import { TablePagination } from "@/components/views/orders/components/TablePagination";
+import {
+  ArrowDown01,
+  ArrowUp01,
+  ArrowDownZA,
+  ArrowUpZA,
+  ArrowUpDown,
+} from "lucide-react";
 
 const invoices = [
   {
@@ -56,7 +65,60 @@ const invoices = [
   },
 ];
 
-export default function () {
+export default function OrdersPage() {
+  const [sortConfig, setSortConfig] = useState<{
+    key: string;
+    direction: string;
+  } | null>(null);
+
+  const sortedInvoices = [...invoices].sort((a, b) => {
+    if (sortConfig !== null) {
+      const key = sortConfig.key as keyof (typeof invoices)[0];
+      if (a[key] < b[key]) {
+        return sortConfig.direction === "ascending" ? -1 : 1;
+      }
+      if (a[key] > b[key]) {
+        return sortConfig.direction === "ascending" ? 1 : -1;
+      }
+    }
+    return 0;
+  });
+
+  const requestSort = (key: string) => {
+    let direction = "ascending";
+    if (
+      sortConfig &&
+      sortConfig.key === key &&
+      sortConfig.direction === "ascending"
+    ) {
+      direction = "descending";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const getSortIcon = (key: string, className: string) => {
+    if (!sortConfig || sortConfig.key !== key)
+      return <ArrowUpDown className={className} />; // Default icon for unsorted
+
+    const isNumeric = (value: string) =>
+      !isNaN(parseFloat(value)) && isFinite(Number(value));
+    const sampleValue = invoices[0][key as keyof (typeof invoices)[0]];
+
+    if (isNumeric(sampleValue)) {
+      return sortConfig.direction === "ascending" ? (
+        <ArrowUp01 className={className} />
+      ) : (
+        <ArrowDown01 className={className} />
+      ); // Numeric icons
+    } else {
+      return sortConfig.direction === "ascending" ? (
+        <ArrowUpZA className={className} />
+      ) : (
+        <ArrowDownZA className={className} />
+      ); // Character icons
+    }
+  };
+
   return (
     <div className="px-4 sm:px-6 pt-8 w-full">
       <TypographyH2>Orders</TypographyH2>
@@ -66,29 +128,49 @@ export default function () {
           <TableCaption>A list of your recent invoices.</TableCaption>
           <TableHeader className="bg-muted !rounded-lg">
             <TableRow>
-              <TableHead className="w-[100px]">Invoice</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Method</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
+              <TableHead onClick={() => requestSort("invoice")}>
+                <span className="flex items-center gap-x-1">
+                  <span>Invoice</span>
+                  {getSortIcon("invoice", "w-3.5 h-3.5")}
+                </span>
+              </TableHead>
+              <TableHead onClick={() => requestSort("paymentStatus")}>
+                <span className="flex items-center gap-x-1">
+                  <span>Status</span>{" "}
+                  {getSortIcon("paymentStatus", "w-3.5 h-3.5")}
+                </span>
+              </TableHead>
+              <TableHead onClick={() => requestSort("paymentMethod")}>
+                <span className="flex items-center gap-x-1">
+                  <span>Method</span>{" "}
+                  {getSortIcon("paymentMethod", "w-3.5 h-3.5")}
+                </span>
+              </TableHead>
+              <TableHead onClick={() => requestSort("totalAmount")}>
+                <span className="flex items-center gap-x-1">
+                  <span>Total</span> {getSortIcon("totalAmount", "w-3.5 h-3.5")}
+                </span>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {invoices.map((invoice) => (
+            {sortedInvoices.map((invoice) => (
               <TableRow key={invoice.invoice}>
                 <TableCell className="font-medium">{invoice.invoice}</TableCell>
                 <TableCell>{invoice.paymentStatus}</TableCell>
                 <TableCell>{invoice.paymentMethod}</TableCell>
-                <TableCell className="text-right">
-                  {invoice.totalAmount}
-                </TableCell>
+                <TableCell>{invoice.totalAmount}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
 
-      <div className="w-full h-14 absolute bottom-0 left-0 bg-background flex justify-end items-center px-4">
+      <div className="w-full h-14 absolute bottom-0 left-0 bg-background flex justify-between items-center px-4 sm:px-6">
         <SelectNumberOfOrderPerPage />
+        <div>
+          <TablePagination />
+        </div>
       </div>
     </div>
   );
