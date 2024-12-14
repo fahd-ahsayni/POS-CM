@@ -1,7 +1,6 @@
 import { logoLightMode } from "@/assets";
 import { motion } from "framer-motion";
 import UserCard from "./components/UserCard";
-import { ArrowLeftIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";

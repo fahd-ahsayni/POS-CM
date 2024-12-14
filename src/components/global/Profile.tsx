@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,22 +9,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import {
-  Bolt,
-  BookOpen,
-  ChevronDown,
-  Layers2,
-  LogOut,
-  Pin,
-  UserPen,
-} from "lucide-react";
+import { ChevronDown, HelpCircle, LogOut, Power, User } from "lucide-react";
 
 const menuItems = [
-  { icon: Bolt, label: "Option 1" },
-  { icon: Layers2, label: "Option 2" },
-  { icon: BookOpen, label: "Option 3" },
-  { icon: Pin, label: "Option 4" },
-  { icon: UserPen, label: "Option 5" },
+  { icon: User, label: "My Profile" },
+  { icon: HelpCircle, label: "Help" },
+  { icon: Power, label: "End Shift" },
   { icon: LogOut, label: "Logout" },
 ];
 
@@ -41,8 +30,8 @@ export default function Profile() {
               alt=""
             />
           </div>
-          <div className="ml-3 flex flex-col justify-center h-10">
-            <p className="text-sm/4 font-medium">Tom Cook</p>
+          <div className="ml-3 flex flex-col justify-center items-start h-10">
+            <p className="text-sm/4 font-medium">Fahd AHSAYNI</p>
             <p className="text-xs font-medium text-zinc-300">View profile</p>
           </div>
           <ChevronDown
@@ -56,15 +45,15 @@ export default function Profile() {
       <DropdownMenuContent className="max-w-64">
         <DropdownMenuLabel className="flex min-w-0 flex-col">
           <span className="truncate text-sm font-medium text-foreground">
-            Keith Kennedy
+            Terrace POS 1
           </span>
           <span className="truncate text-xs font-normal text-muted-foreground">
-            k.kennedy@originui.com
+            Shift: 3h ago
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {menuItems.slice(0, 3).map((item, index) => (
+          {menuItems.slice(0, 2).map((item, index) => (
             <DropdownMenuItem key={index}>
               <item.icon
                 size={16}
@@ -78,7 +67,7 @@ export default function Profile() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {menuItems.slice(3, 5).map((item, index) => (
+          {menuItems.slice(2, 3).map((item, index) => (
             <DropdownMenuItem key={index}>
               <item.icon
                 size={16}
@@ -91,7 +80,7 @@ export default function Profile() {
           ))}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem className="!text-red-600">
           <LogOut
             size={16}
             strokeWidth={2}

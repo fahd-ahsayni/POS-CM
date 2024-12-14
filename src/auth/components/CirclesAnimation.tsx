@@ -7,7 +7,7 @@ interface Props {
 export default function CirclesAnimation({ currentLength }: Props) {
   return (
     <div className="flex justify-center gap-3">
-      {Array.from({ length: 7 }).map((_, index) => (
+      {Array.from({ length: 6 }).map((_, index) => (
         <motion.div
           key={index}
           animate={{

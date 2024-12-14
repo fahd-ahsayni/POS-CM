@@ -9,8 +9,9 @@ import { useDispatch, useSelector } from "react-redux";
 import NumberOfTable from "./type-of-order/NumberOfTabel";
 import NumberOfPeer from "./type-of-order/NumberOfPeeper";
 import SelectDeliveryType from "./type-of-order/SelectDeliveryType";
-import { setOrderType } from "@/store/slices/orderSlice";
+import { setOrderType } from "@/store/slices/pages/orderSlice";
 import { RootState } from "@/store";
+import OwnDeliveryForm from "./type-of-order/OwnDeliveryForm";
 
 const orderTypes = [
   {
@@ -51,13 +52,15 @@ export default function TypeOfOrder() {
         return <NumberOfPeer />;
       case "delivery":
         return <SelectDeliveryType />;
+      case "own-delivery":
+        return <OwnDeliveryForm />;
       default:
         return (
           <div className="h-full flex flex-col justify-evenly">
             <TypographyH3 className="font-medium max-w-xs">
               What type of order would you like to process?
             </TypographyH3>
-            <div className="flex flex-col gap-4 mt-10">
+            <div className="flex flex-col gap-4">
               {orderTypes.map((type) => (
                 <Card
                   key={type.id}

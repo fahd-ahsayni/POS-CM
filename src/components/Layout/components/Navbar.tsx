@@ -1,30 +1,12 @@
-import { Fragment, useState } from "react";
-import {
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-  Transition,
-} from "@headlessui/react";
-import { cn } from "@/lib/utils";
 import { logoDarkMode, logoLightMode, sunset } from "@/assets";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { ModeToggleWithDropdown } from "@/components/global/mode-toggle";
 import { Button } from "@/components/ui/button";
-import {
-  Menu as MenuIcon,
-  ChevronDown,
-  LucideMaximize,
-  Bell,
-} from "lucide-react";
+import { Menu as MenuIcon, LucideMaximize, Bell } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useTheme } from "@/providers/themeProvider";
 import Profile from "@/components/global/Profile";
 
-const userNavigation = [
-  { name: "Your Profile", href: "#" },
-  { name: "Sign out", href: "#" },
-];
 
 export default function Navbar({
   setMobileMenuOpen,
@@ -53,7 +35,11 @@ export default function Navbar({
           <MenuIcon className="h-6 w-6" />
         </button>
         <div className="flex flex-1 justify-between px-4 sm:px-6">
-          <img src={theme.theme === "dark" ? logoDarkMode : logoLightMode} alt="logo" className="w-24 h-auto" />
+          <img
+            src={theme.theme === "dark" ? logoDarkMode : logoLightMode}
+            alt="logo"
+            className="w-24 h-auto"
+          />
           <div className="flex flex-col justify-center flex-1 ml-12">
             <TypographyP className="flex items-center gap-1 text-sm font-medium">
               <span>

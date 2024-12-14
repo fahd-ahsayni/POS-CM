@@ -16,7 +16,7 @@ export default function HomePage() {
           </main>
 
           {/* Secondary column (hidden on smaller screens) */}
-          <aside className="hidden w-4/12 overflow-hidden lg:block">
+          <aside className="hidden w-4/12 overflow-y-hidden lg:block">
             <TypeOfOrder />
           </aside>
         </div>

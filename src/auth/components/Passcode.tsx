@@ -1,8 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { Delete } from "lucide-react";
-import NumberButton from "./NumberButton";
 import CirclesAnimation from "./CirclesAnimation";
 import { useState, useMemo } from "react";
+import NumberPad from "@/components/global/NumberPad";
 
 export default function Passcode() {
   const [passcode, setPasscode] = useState<string>("");
@@ -37,20 +36,8 @@ export default function Passcode() {
         <div className="mt-10">
           <CirclesAnimation currentLength={passcode.length} />
         </div>
-        <div className="mt-10 min-w-full px-20 grid grid-cols-3 grid-rows-4 gap-6">
-          {shuffledNumbers.map((number) => (
-            <NumberButton 
-              key={number} 
-              onClick={() => handleNumberClick(number.toString())}
-            >
-              {number}
-            </NumberButton>
-          ))}
-          <NumberButton onClick={() => handleNumberClick("C")}>C</NumberButton>
-          <NumberButton onClick={() => handleNumberClick("0")}>0</NumberButton>
-          <NumberButton onClick={() => handleNumberClick("delete")}>
-            <Delete className="w-5 h-5" />
-          </NumberButton>
+        <div className="mt-10 min-w-full px-20">
+          <NumberPad onNumberClick={handleNumberClick} numbers={shuffledNumbers} />
         </div>
         <div className="mt-10">
           <Button to='/select-pos' className="w-full">Log In</Button>

@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type OrderState = {
-  selectedOrderType: 'dine-in' | 'take-away' | 'delivery' | null;
+  selectedOrderType: 'dine-in' | 'take-away' | 'delivery' | 'own-delivery' | null;
 };
 
 const initialState: OrderState = {

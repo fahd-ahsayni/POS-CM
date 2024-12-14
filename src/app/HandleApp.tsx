@@ -3,6 +3,7 @@ import LogInPage from "../auth/LogInPage";
 import HomePage from "./HomePage";
 import Layout from "@/components/Layout/Layout";
 import SelectPosPage from "@/auth/SelectPosPage";
+import OrdersPage from "./OrdersPage";
 
 export default function HandleApp() {
   return (
@@ -12,6 +13,7 @@ export default function HandleApp() {
         <Route path="/select-pos" element={<SelectPosPage />} />
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/orders" element={<OrdersPage />} />
         </Route>
       </Routes>
     </>

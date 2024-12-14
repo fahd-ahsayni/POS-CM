@@ -12,8 +12,8 @@ export default function Categories() {
         </TypographyP>
         <Separator className="dark:bg-zinc-800/60 bg-zinc-50/70" />
       </div>
-      <div className="scrollbar-hide grid grid-cols-3 gap-2 mt-8 overflow-y-auto flex-1 pb-16 snap-y snap-mandatory">
-        <Card className="flex bg-zinc-900 cursor-pointer relative flex-col items-center h-24 !rounded-lg overflow-hidden justify-center snap-start">
+      <div className="scrollbar-hide grid grid-cols-3 gap-2 mt-8 overflow-y-auto flex-1 pb-16">
+        <Card className="flex bg-zinc-900 cursor-pointer relative flex-col items-center h-24 !rounded-lg overflow-hidden justify-center">
           <TypographyP className="text-center text-xl font-medium absolute text-white">
             All Products
           </TypographyP>
@@ -21,7 +21,7 @@ export default function Categories() {
         {categories.map((category) => (
           <Card
             key={category.id}
-            className="flex cursor-pointer relative flex-col items-center h-24 !rounded-lg overflow-hidden justify-center snap-start"
+            className="flex cursor-pointer relative flex-col items-center h-24 !rounded-lg overflow-hidden justify-center"
           >
             <img
               src={category.image}

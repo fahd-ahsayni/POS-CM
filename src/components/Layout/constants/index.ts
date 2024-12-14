@@ -1,19 +1,21 @@
 import {
-  CogIcon,
-  HomeIcon,
-  PhotoIcon,
-  RectangleStackIcon,
-  Squares2X2Icon,
-  UserGroupIcon,
-} from "@heroicons/react/24/outline";
+  addClient,
+  preferences,
+  home,
+  orders,
+  waitingOrders,
+  openDrawer,
+  waiters,
+  drop,
+} from "@/assets";
 
 export const sidebarNavigation = [
-  { name: "Home", href: "#", icon: HomeIcon, current: false },
-  { name: "Orders", href: "#", icon: Squares2X2Icon, current: false },
-  { name: "Waiting orders", href: "#", icon: PhotoIcon, current: true },
-  { name: "Open Drawer  ", href: "#", icon: UserGroupIcon, current: false },
-  { name: "Add client", href: "#", icon: RectangleStackIcon, current: false },
-  { name: "Waiters", href: "#", icon: CogIcon, current: false },
-  { name: "Drop", href: "#", icon: CogIcon, current: false },
-  { name: "Prefers", href: "#", icon: CogIcon, current: false },
+  { name: "Home", href: "/", icon: home, current: false },
+  { name: "Orders", href: "/orders", icon: orders, current: false },
+  { name: "Waiting orders", href: "#", icon: waitingOrders, current: true },
+  { name: "Open Drawer  ", href: "#", icon: openDrawer, current: false },
+  { name: "Add client", href: "#", icon: addClient, current: false },
+  { name: "Waiters", href: "#", icon: waiters, current: false },
+  { name: "Drop", href: "#", icon: drop, current: false },
+  { name: "Prefers", href: "#", icon: preferences, current: false },
 ];

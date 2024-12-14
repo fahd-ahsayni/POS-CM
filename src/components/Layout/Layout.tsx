@@ -3,11 +3,14 @@ import Sidebar from "./components/Sidebar";
 import SidebarMobile from "./components/SidebarMobile";
 import Navbar from "./components/Navbar";
 import { Outlet } from "react-router-dom";
+import { Separator } from "../ui/separator";
 
 export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   return (
     <div className="flex relative w-screen h-screen overflow-hidden">
+      <div className="absolute rounded-full -top-52 -right-52 w-[400px] h-[400px] bg-red-600 blur-3xl opacity-30" />
+
       {/* Mobile menu */}
       <SidebarMobile
         mobileMenuOpen={mobileMenuOpen}
@@ -15,7 +18,7 @@ export default function Layout() {
       />
 
       {/* Content area */}
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col relative z-10">
         <Navbar setMobileMenuOpen={setMobileMenuOpen} />
 
         {/* Main content */}
@@ -23,7 +26,7 @@ export default function Layout() {
           <Outlet />
         </div>
       </div>
-
+      
       {/* Narrow sidebar */}
       <Sidebar />
     </div>
