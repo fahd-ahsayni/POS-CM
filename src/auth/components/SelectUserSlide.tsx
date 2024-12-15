@@ -22,16 +22,21 @@ function SelectUserSlide({ userType }: SelectUserSlideProps) {
     user.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Duplicate the array if it has only two items
+  const duplicatedUsers = filteredUsers.length === 2 ? [...filteredUsers, ...filteredUsers] : filteredUsers;
+
   const settings = {
     className: 'center',
     centerMode: true,
-    infinite: true,
+    infinite: duplicatedUsers.length > 1,
     centerPadding: '0px',
     slidesToShow: 3,
     speed: 500,
     focusOnSelect: true,
     beforeChange: (current: number, next: number) => {
-      setActiveSlide(next);
+      if (duplicatedUsers.length > 1) {
+        setActiveSlide(next);
+      }
     },
     arrows: true,
     nextArrow: <NextButton />,
@@ -42,11 +47,11 @@ function SelectUserSlide({ userType }: SelectUserSlideProps) {
       <div className="h-full absolute right-0 top-0 bg-gradient-to-l from-gray-100 to-transparent w-[200px] z-10"></div>
       <div className="h-full absolute left-0 top-0 bg-gradient-to-r from-gray-100 to-transparent w-[200px] z-10"></div>
       <Slider {...settings} className="py-8">
-        {filteredUsers.map((user, index) => (
+        {duplicatedUsers.map((user, index) => (
           <UserCard 
             key={user.id} 
             user={user} 
-            isActive={index === activeSlide}
+            isActive={duplicatedUsers.length === 1 || index === activeSlide}
           />
         ))}
       </Slider>

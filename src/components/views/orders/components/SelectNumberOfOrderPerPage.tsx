@@ -6,20 +6,33 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TypographySmall } from "@/components/ui/typography";
-import { useOrdersContext } from "@/components/views/orders/context/orderContext"; // Import the context
+import { useSelector, useDispatch } from "react-redux";
+import { AppDispatch } from "@/store";
+import { setPageSize, setCurrentPage } from "@/store/slices/data/ordersSlice";
 
-export default function SelectNumberOfOrderPerPage({ itemsLength }: { itemsLength: number }) {
-  const { pageSize, currentPage, setPageSize } = useOrdersContext();
-  const totalEntries = itemsLength; // Assuming `orders` is imported and contains all entries
+export default function SelectNumberOfOrderPerPage({
+  itemsLength,
+}: {
+  itemsLength: number;
+}) {
+  const dispatch = useDispatch<AppDispatch>();
+  const pageSize = useSelector((state: any) => state.orders.pageSize);
+  const currentPage = useSelector((state: any) => state.orders.currentPage);
+  const totalEntries = itemsLength;
 
   const startEntry = currentPage * pageSize + 1;
   const endEntry = Math.min((currentPage + 1) * pageSize, totalEntries);
 
+  const handlePageSizeChange = (value: string) => {
+    dispatch(setPageSize(Number(value)));
+    dispatch(setCurrentPage(0)); // Reset to first page when page size changes
+  };
+
   return (
     <>
       <Select
-        defaultValue="10"
-        onValueChange={(value) => setPageSize(Number(value))}
+        defaultValue={pageSize.toString()}
+        onValueChange={handlePageSizeChange}
       >
         <SelectTrigger>
           <SelectValue placeholder="Select number of orders per page" />
@@ -29,7 +42,6 @@ export default function SelectNumberOfOrderPerPage({ itemsLength }: { itemsLengt
           <SelectItem value="50">50</SelectItem>
           <SelectItem value="100">100</SelectItem>
           <SelectItem value="200">200</SelectItem>
-          <SelectItem value="500">500</SelectItem>
         </SelectContent>
       </Select>
       <TypographySmall className="text-xs">

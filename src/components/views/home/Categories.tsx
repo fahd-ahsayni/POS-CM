@@ -2,8 +2,13 @@ import { TypographyP } from "@/components/ui/typography";
 import { Separator } from "@/components/ui/separator";
 import { categories } from "@/data";
 import { Card } from "@/components/ui/card";
+import { useSelector } from "react-redux";
+import { cn } from "@/lib/utils";
+import { RootState } from "@/store";
 
 export default function Categories() {
+  const selectedOrderType = useSelector((state: RootState) => state.orderSelection.selectedOrderType);
+
   return (
     <div className="flex flex-col min-h-0 flex-1 mt-4">
       <div className="flex items-center justify-between relative flex-shrink-0">
@@ -26,7 +31,7 @@ export default function Categories() {
             <img
               src={category.image}
               alt={category.name}
-              className="w-full h-full object-cover dark:brightness-[0.3] brightness-[0.4]"
+              className={cn("w-full h-full object-cover  transition-all duration-500", selectedOrderType !== "tableConfirmation" ? "grayscale brightness-[0.18]" : "dark:brightness-[0.3] brightness-[0.4]")}
             />
             <TypographyP className="text-center text-xl font-medium absolute text-white">
               {category.name}

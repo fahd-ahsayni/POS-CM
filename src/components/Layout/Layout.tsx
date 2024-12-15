@@ -21,7 +21,7 @@ export default function Layout() {
         <Navbar setMobileMenuOpen={setMobileMenuOpen} />
 
         {/* Main content */}
-        <div className="flex flex-1 items-stretch overflow-y-auto">
+        <div className="flex flex-1 items-stretch overflow-y-hidden">
           <Outlet />
         </div>
       </div>

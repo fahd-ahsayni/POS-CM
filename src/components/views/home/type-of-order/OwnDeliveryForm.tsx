@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useDispatch } from "react-redux";
-import { setOrderType } from "@/store/slices/pages/orderSlice";
+import { setSelectedOrderType } from "@/store/slices/pages/SelectOrderSlice";
 import { TypographyH3 } from "@/components/ui/typography";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -75,7 +75,7 @@ export default function NumberOfTabel() {
         <Button
           variant="outline"
           className="flex-1 bg-gray-200 hover:bg-gray-300/70 dark:bg-muted"
-          onClick={() => dispatch(setOrderType(null))}
+          onClick={() => dispatch(setSelectedOrderType(null))}
         >
           Cancel
         </Button>

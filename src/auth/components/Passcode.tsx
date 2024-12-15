@@ -5,19 +5,22 @@ import NumberPad from "@/components/global/NumberPad";
 
 export default function Passcode() {
   const [passcode, setPasscode] = useState<string>("");
-  
-  const shuffledNumbers = useMemo(() => 
-    Array.from({ length: 9 }, (_, i) => i + 1).sort(() => Math.random() - 0.5),
-    [] // Empty dependency array means this only runs once on mount
+
+  const shuffledNumbers = useMemo(
+    () =>
+      Array.from({ length: 9 }, (_, i) => i + 1).sort(
+        () => Math.random() - 0.5
+      ),
+    []
   );
 
   const handleNumberClick = (value: string) => {
     if (value === "C") {
       setPasscode("");
     } else if (value === "delete") {
-      setPasscode(prev => prev.slice(0, -1));
-    } else if (passcode.length < 7) {
-      setPasscode(prev => prev + value);
+      setPasscode((prev) => prev.slice(0, -1));
+    } else if (passcode.length < 6) {
+      setPasscode((prev) => prev + value);
     }
   };
 
@@ -37,10 +40,15 @@ export default function Passcode() {
           <CirclesAnimation currentLength={passcode.length} />
         </div>
         <div className="mt-10 min-w-full px-20">
-          <NumberPad onNumberClick={handleNumberClick} numbers={shuffledNumbers} />
+          <NumberPad
+            onNumberClick={handleNumberClick}
+            numbers={shuffledNumbers}
+          />
         </div>
         <div className="mt-10">
-          <Button to='/select-pos' className="w-full">Log In</Button>
+          <Button to="/select-pos" className="w-full">
+            Log In
+          </Button>
         </div>
       </div>
     </div>

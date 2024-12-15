@@ -9,19 +9,21 @@ import { useDispatch, useSelector } from "react-redux";
 import NumberOfTable from "./type-of-order/NumberOfTabel";
 import NumberOfPeer from "./type-of-order/NumberOfPeeper";
 import SelectDeliveryType from "./type-of-order/SelectDeliveryType";
-import { setOrderType } from "@/store/slices/pages/orderSlice";
+import { setSelectedOrderType } from "@/store/slices/pages/SelectOrderSlice";
 import { RootState } from "@/store";
 import OwnDeliveryForm from "./type-of-order/OwnDeliveryForm";
+import ProceedOrder from "./type-of-order/ProceedOrder";
+import { motion } from "framer-motion";
 
 const orderTypes = [
   {
-    id: "dine-in",
+    id: "dineIn",
     title: "Dine-In",
     description: "5 out of 20 tables are available.",
     icon: Users,
   },
   {
-    id: "take-away",
+    id: "takeAway",
     title: "Take Away",
     description: "10-15 minutes preparation time",
     icon: UtensilsCrossed,
@@ -37,23 +39,25 @@ const orderTypes = [
 export default function TypeOfOrder() {
   const dispatch = useDispatch();
   const selectedOrderType = useSelector(
-    (state: RootState) => state.order.selectedOrderType
+    (state: RootState) => state.orderSelection.selectedOrderType
   );
 
   const handleOrderTypeSelect = (type: string) => {
-    dispatch(setOrderType(type as "dine-in" | "take-away" | "delivery" | null));
+    dispatch(setSelectedOrderType(type as "dineIn" | "takeAway" | "delivery" | "ownDelivery" | "tableConfirmation" | null));
   };
 
   const renderComponent = () => {
     switch (selectedOrderType) {
-      case "dine-in":
+      case "dineIn":
         return <NumberOfTable />;
-      case "take-away":
+      case "takeAway":
         return <NumberOfPeer />;
       case "delivery":
         return <SelectDeliveryType />;
-      case "own-delivery":
+      case "ownDelivery":
         return <OwnDeliveryForm />;
+      case "tableConfirmation":
+        return <ProceedOrder />;
       default:
         return (
           <div className="h-full flex flex-col justify-evenly">
@@ -61,22 +65,28 @@ export default function TypeOfOrder() {
               What type of order would you like to process?
             </TypographyH3>
             <div className="flex flex-col gap-4">
-              {orderTypes.map((type) => (
-                <Card
+              {orderTypes.map((type, index) => (
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.25, delay: index * 0.1 }}
                   key={type.id}
-                  className="w-full rounded-md px-8 py-4 flex space-x-4 items-center cursor-pointer hover:bg-accent"
-                  onClick={() => handleOrderTypeSelect(type.id)}
                 >
-                  <type.icon className="w-6 h-auto text-primary" />
-                  <div>
-                    <TypographyH4 className="font-medium">
-                      {type.title}
-                    </TypographyH4>
-                    <TypographyP className="text-xs dark:text-zinc-300 text-zinc-400">
-                      {type.description}
-                    </TypographyP>
-                  </div>
-                </Card>
+                  <Card
+                    className="w-full rounded-md px-8 py-4 flex space-x-4 items-center cursor-pointer hover:bg-accent"
+                    onClick={() => handleOrderTypeSelect(type.id)}
+                  >
+                    <type.icon className="w-6 h-auto text-primary" />
+                    <div>
+                      <TypographyH4 className="font-medium">
+                        {type.title}
+                      </TypographyH4>
+                      <TypographyP className="text-xs dark:text-zinc-300 text-zinc-400">
+                        {type.description}
+                      </TypographyP>
+                    </div>
+                  </Card>
+                </motion.div>
               ))}
             </div>
           </div>
@@ -86,9 +96,7 @@ export default function TypeOfOrder() {
 
   return (
     <div className="px-4 sm:px-6 h-full flex flex-col">
-      <div className="overflow-y-auto h-full">
-        {renderComponent()}
-      </div>
+      <div className="overflow-y-auto h-full">{renderComponent()}</div>
     </div>
   );
 }

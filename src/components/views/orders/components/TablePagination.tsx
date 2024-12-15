@@ -6,27 +6,30 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { TypographySmall } from "@/components/ui/typography";
-import { useOrdersContext } from "@/components/views/orders/context/orderContext"; // Import the context
+import { useSelector, useDispatch } from "react-redux";
+import { AppDispatch } from "@/store";
+import { setCurrentPage } from "@/store/slices/data/ordersSlice";
 
 export function TablePagination({ itemsLength }: { itemsLength: number }) {
-  const { currentPage, setCurrentPage, pageSize } = useOrdersContext();
-  const totalPages = Math.ceil(itemsLength / pageSize); // Calculate total pages
+  const dispatch = useDispatch<AppDispatch>();
+  const currentPage = useSelector((state: any) => state.orders.currentPage);
+  const pageSize = useSelector((state: any) => state.orders.pageSize);
+  const totalPages = Math.ceil(itemsLength / pageSize);
 
   const handlePrevious = () => {
     if (currentPage > 0) {
-      setCurrentPage(currentPage - 1);
+      dispatch(setCurrentPage(currentPage - 1));
     }
   };
 
   const handleNext = () => {
     if (currentPage < totalPages - 1) {
-      setCurrentPage(currentPage + 1);
+      dispatch(setCurrentPage(currentPage + 1));
     }
   };
 
   const handlePageClick = (page: number) => {
-    setCurrentPage(page);
+    dispatch(setCurrentPage(page));
   };
 
   return (
@@ -35,7 +38,6 @@ export function TablePagination({ itemsLength }: { itemsLength: number }) {
         <PaginationItem>
           <PaginationPrevious onClick={handlePrevious} />
         </PaginationItem>
-        {/* Render page numbers */}
         {Array.from({ length: totalPages }, (_, index) => (
           <PaginationItem key={index}>
             <PaginationLink

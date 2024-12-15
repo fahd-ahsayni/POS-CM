@@ -1,23 +1,15 @@
 import { logoLightMode } from "@/assets";
-import { Input } from "@/components/ui/input";
 import { ArrowRight, Search } from "lucide-react";
 import { RiRfidFill } from "react-icons/ri";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { setSearchQuery } from "@/store/slices/userSlice";
-
 import SegmentedControl from "./SegmentedControl";
 import SelectUserSlide from "./SelectUserSlide";
 import ShineBorder from "@/components/ui/shine-border";
 import { Separator } from "@/components/ui/separator";
+import SelectUserCombobox from "./SelectUserCombobox";
 
 export default function SelectUser() {
   const [activeTab, setActiveTab] = useState("cashiers");
-  const dispatch = useDispatch();
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setSearchQuery(e.target.value));
-  };
 
   return (
     <div className="relative w-1/2 bg-gray-100 hidden flex-1 lg:flex flex-col">
@@ -36,25 +28,8 @@ export default function SelectUser() {
           </p>
         </div>
         <div className="mt-10 flex justify-between items-center">
-          <div className="relative">
-            <Input
-              id="input-26"
-              className="peer pe-9 ps-9 bg-zinc-300/10 border-zinc-300/10 text-zinc-950"
-              placeholder="Search by name"
-              type="search"
-              onChange={handleSearch}
-            />
-            <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-zinc-950 peer-disabled:opacity-50">
-              <Search size={16} strokeWidth={2} />
-            </div>
-            <button
-              className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-zinc-950 outline-offset-2 transition-colors hover:text-zinc-950 focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-              aria-label="Submit search"
-              type="submit"
-            >
-              <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
-            </button>
-          </div>
+          <SelectUserCombobox />
+
           <SegmentedControl activeTab={activeTab} onChange={setActiveTab} />
         </div>
         <div>

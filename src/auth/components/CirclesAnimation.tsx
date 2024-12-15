@@ -13,7 +13,9 @@ export default function CirclesAnimation({ currentLength }: Props) {
           animate={{
             backgroundColor: index < currentLength ? "#f9fafb" : "#262626",
           }}
-          transition={{ duration: 0.2 }}
+          transition={{
+            duration: 0.2,
+          }}
           className="w-3 h-3 rounded-full bg-zinc-800"
         />
       ))}

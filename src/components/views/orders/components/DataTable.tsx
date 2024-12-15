@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useMemo, useCallback } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchOrders } from "@/store/slices/data/ordersSlice";
+import { AppDispatch } from "@/store";
 import { ArrowDownAZ, ArrowUpAZ, SortDesc } from "lucide-react";
-import { useOrdersContext } from "@/components/views/orders/context/orderContext"; // Import the context
 
 interface Header {
   key: string;
@@ -16,58 +18,61 @@ interface DataTableProps {
   caption: string;
 }
 
-const DataTable: React.FC<DataTableProps> = ({ headers, data }) => {
-  const [sortConfig, setSortConfig] = useState<{
-    key: string;
-    direction: string;
-  } | null>(null);
+const DataTable: React.FC<DataTableProps> = ({ headers }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const orders = useSelector((state: any) => state.orders.orders);
+  const pageSize = useSelector((state: any) => state.orders.pageSize);
+  const currentPage = useSelector((state: any) => state.orders.currentPage);
+  const [sortConfig, setSortConfig] = React.useState<{ key: string; direction: string } | null>(null);
 
-  const { pageSize, currentPage } = useOrdersContext();
+  React.useEffect(() => {
+    dispatch(fetchOrders());
+  }, [dispatch]);
 
-  const sortedData = [...data].sort((a, b) => {
-    if (sortConfig !== null) {
-      const key = sortConfig.key;
-      if (a[key] < b[key]) {
-        return sortConfig.direction === "ascending" ? -1 : 1;
+  const sortedData = useMemo(() => {
+    return [...orders].sort((a, b) => {
+      if (sortConfig !== null) {
+        const key = sortConfig.key;
+        if (a[key] < b[key]) {
+          return sortConfig.direction === "ascending" ? -1 : 1;
+        }
+        if (a[key] > b[key]) {
+          return sortConfig.direction === "ascending" ? 1 : -1;
+        }
       }
-      if (a[key] > b[key]) {
-        return sortConfig.direction === "ascending" ? 1 : -1;
-      }
-    }
-    return 0;
-  });
+      return 0;
+    });
+  }, [orders, sortConfig]);
 
-  const paginatedData = sortedData.slice(
-    currentPage * pageSize,
-    (currentPage + 1) * pageSize
-  );
+  const paginatedData = useMemo(() => {
+    return sortedData.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
+  }, [sortedData, currentPage, pageSize]);
 
-  console.log("Current Page:", currentPage);
-  console.log("Page Size:", pageSize);
-  console.log("Paginated Data:", paginatedData);
-
-  const requestSort = (key: string) => {
-    let direction = "ascending";
-    if (
-      sortConfig &&
-      sortConfig.key === key &&
-      sortConfig.direction === "ascending"
-    ) {
-      direction = "descending";
-    }
-    setSortConfig({ key, direction });
-  };
-
-  const getStatusTextColor = (status: string) => {
+  const getStatusTextColor = useCallback((status: string | undefined) => {
+    if (!status) return ""; // Return an empty string if status is undefined
     switch (status.toLowerCase()) {
       case "paid":
-        return "text-green-500";
+        return "!text-green-500";
       case "canceled":
         return "text-red-500 dark:text-red-600";
       default:
         return "";
     }
-  };
+  }, []);
+
+  const requestSort = useCallback((key: string) => {
+    setSortConfig((prevSortConfig) => {
+      let direction = "ascending";
+      if (prevSortConfig && prevSortConfig.key === key && prevSortConfig.direction === "ascending") {
+        direction = "descending";
+      }
+      return { key, direction };
+    });
+  }, [sortConfig]);
+
+  if (orders.length === 0) {
+    return <div className="text-center py-4">Data not found</div>;
+  }
 
   return (
     <div className="h-full overflow-y-auto scrollbar-hide">
@@ -120,6 +125,4 @@ const DataTable: React.FC<DataTableProps> = ({ headers, data }) => {
   );
 };
 
-
-
-export default DataTable;
+export default React.memo(DataTable);

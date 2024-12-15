@@ -1,12 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { setOrderType } from "@/store/slices/pages/orderSlice";
-import {
-  TypographyH1,
-  TypographyH3,
-} from "@/components/ui/typography";
+import { setSelectedOrderType } from "@/store/slices/pages/SelectOrderSlice";
+import { TypographyH1, TypographyH3 } from "@/components/ui/typography";
 import NumberPad from "@/components/global/NumberPad";
+import { motion } from "framer-motion";
 
 export default function NumberOfTabel() {
   const [tableCount, setTableCount] = useState("");
@@ -29,28 +27,40 @@ export default function NumberOfTabel() {
   };
 
   return (
-    <div className="flex flex-col justify-evenly h-full">
-      <TypographyH3 className="font-medium max-w-xs">
-        Enter the table number to start the order:
-      </TypographyH3>
-      <div className="flex flex-col justify-center items-center gap-4">
-        <div className="flex justify-center items-center">
-          <TypographyH1 className="text-center font-medium tracking-wider">
-            {tableCount || "0"}
-          </TypographyH1>
+    <div className="h-full overflow-hidden">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, delay: 0.1 }}
+        className="flex flex-col justify-evenly h-full"
+      >
+        <TypographyH3 className="font-medium max-w-xs">
+          Enter the table number to start the order:
+        </TypographyH3>
+        <div className="flex flex-col justify-center items-center gap-4">
+          <div className="flex justify-center items-center">
+            <TypographyH1 className="text-center font-medium tracking-wider">
+              {tableCount || "0"}
+            </TypographyH1>
+          </div>
+          <NumberPad onNumberClick={handleNumberClick} />
         </div>
-        <NumberPad onNumberClick={handleNumberClick} />
-      </div>
-      <div className="flex gap-2">
-        <Button
-          variant="outline"
-          className="flex-1 bg-gray-200 hover:bg-gray-300/70 dark:bg-zinc-800"
-          onClick={() => dispatch(setOrderType(null))}
-        >
-          Cancel
-        </Button>
-        <Button className="flex-1">Confirm</Button>
-      </div>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            className="flex-1 bg-gray-200 hover:bg-gray-300/70 dark:bg-zinc-800"
+            onClick={() => dispatch(setSelectedOrderType(null))}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => dispatch(setSelectedOrderType("tableConfirmation"))}
+            className="flex-1"
+          >
+            Confirm
+          </Button>
+        </div>
+      </motion.div>
     </div>
   );
 }

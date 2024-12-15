@@ -7,7 +7,7 @@ export default function Sidebar() {
 
   const navigate = useNavigate();
   return (
-    <div className="hidden w-24 h-screen overflow-y-auto md:block z-10">
+    <div className="hidden w-20 h-screen overflow-y-auto md:block z-10">
       <div className="flex w-full flex-col h-full items-center">
         <div className="w-full flex-1 flex flex-col justify-evenly px-2">
           {sidebarNavigation.map((item) => (

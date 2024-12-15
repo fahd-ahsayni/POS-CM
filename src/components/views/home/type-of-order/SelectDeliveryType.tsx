@@ -1,10 +1,11 @@
-import { setOrderType } from "@/store/slices/pages/orderSlice";
+import { setSelectedOrderType } from "@/store/slices/pages/SelectOrderSlice";
 import { useDispatch } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { TypographyH3, TypographyH4 } from "@/components/ui/typography";
 import { Card } from "@/components/ui/card";
 
 import { glovo, kaalix, yassir, ownDelivery } from "@/assets";
+import { motion } from "framer-motion";
 
 const deliveryApps = [
   {
@@ -29,9 +30,9 @@ export default function SelectDeliveryType() {
   const dispatch = useDispatch();
 
   const handleSelect = (
-    orderType: "dine-in" | "take-away" | "delivery" | "own-delivery" | null
+    orderType: "dineIn" | "takeAway" | "delivery" | "ownDelivery" | "tableConfirmation" | null
   ) => {
-    dispatch(setOrderType(orderType));
+    dispatch(setSelectedOrderType(orderType));
   };
 
   return (
@@ -40,25 +41,31 @@ export default function SelectDeliveryType() {
         Enter the table number to start the order:
       </TypographyH3>
       <div className="space-y-3 px-4 sm:px-6">
-        {deliveryApps.map((app) => (
-          <Card
-            key={app.name}
-            className="flex justify-start items-center px-6 py-3 transition-all hover:ring-2 hover:ring-primary cursor-pointer"
-            onClick={() => {
-              if (app.name === "Own Delivery") {
-                handleSelect("own-delivery");
-              }
-            }}
+        {deliveryApps.map((app, index) => (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.05 }}
           >
-            <img
-              src={app.image}
-              alt={app.name}
-              className="h-14 w-14 rounded-lg mr-4"
-            />
-            <TypographyH4 className="font-medium max-w-xs">
-              {app.name}
-            </TypographyH4>
-          </Card>
+            <Card
+              key={app.name}
+              className="flex justify-start items-center px-6 py-3 transition-all hover:ring-2 hover:ring-primary cursor-pointer"
+              onClick={() => {
+                if (app.name === "Own Delivery") {
+                  handleSelect("ownDelivery");
+                }
+              }}
+            >
+              <img
+                src={app.image}
+                alt={app.name}
+                className="h-14 w-16 rounded-lg mr-4 object-cover"
+              />
+              <TypographyH4 className="font-medium max-w-xs">
+                {app.name}
+              </TypographyH4>
+            </Card>
+          </motion.div>
         ))}
       </div>
       <div className="flex flex-col justify-center items-center gap-4">
@@ -66,7 +73,7 @@ export default function SelectDeliveryType() {
           <Button
             variant="outline"
             className="flex-1 bg-gray-200 hover:bg-gray-300/70 dark:bg-zinc-800"
-            onClick={() => dispatch(setOrderType(null))}
+            onClick={() => dispatch(setSelectedOrderType(null))}
           >
             Cancel
           </Button>
