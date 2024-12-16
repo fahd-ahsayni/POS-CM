@@ -75,11 +75,7 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
       <div className="h-full absolute left-0 top-0 bg-gradient-to-r from-gray-100 to-transparent w-[200px] z-10"></div>
       <Slider {...settings} ref={sliderRef} className="py-8">
         {duplicatedUsers.map((user, index) => (
-          <UserCard
-            key={user.id || index}
-            user={user}
-            isActive={index === activeSlide}
-          />
+          <UserCard key={index} user={user} isActive={index === activeSlide} />
         ))}
       </Slider>
     </div>

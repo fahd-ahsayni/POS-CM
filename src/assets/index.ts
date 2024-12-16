@@ -18,6 +18,8 @@ import preferences from "./sidebar/preferences.svg";
 import waiters from "./sidebar/waiters.svg";
 import waitingOrders from "./sidebar/waiting-orders.svg";
 
+import unknownUser from "./unknown-user.png";
+
 export {
   logoDarkMode,
   logoLightMode,
@@ -35,4 +37,5 @@ export {
   preferences,
   waiters,
   waitingOrders,
+  unknownUser,
 };

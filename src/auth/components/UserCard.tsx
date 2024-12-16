@@ -1,11 +1,13 @@
+import { unknownUser } from "@/assets";
 import { cn } from "@/lib/utils";
+import { useEffect } from "react";
 
 interface UserCardProps {
   user: {
     id?: number;
     name: string;
-    imageUrl: string;
-    role?: string;
+    image?: string;
+    position?: string;
   };
   isActive: boolean;
   withRole?: boolean;
@@ -18,6 +20,10 @@ export default function UserCard({
   className,
   withRole = false,
 }: UserCardProps) {
+  useEffect(() => {
+    console.log("User Card Rendered:", user);
+  }, [user]);
+
   return (
     <div
       className={cn(
@@ -33,7 +39,7 @@ export default function UserCard({
         }`}
       >
         <img
-          src={user.imageUrl}
+          src={user.image ? user.image : unknownUser}
           alt={user.name}
           className="w-32 h-32 object-cover rounded-full"
         />
@@ -47,7 +53,7 @@ export default function UserCard({
       </p>
       {withRole && (
         <p className="text-zinc-600 font-medium text-sm first-letter:uppercase">
-          {user.role}
+          {user.position}
         </p>
       )}
     </div>
