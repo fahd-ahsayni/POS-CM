@@ -1,7 +1,6 @@
 // src/store/slices/auth/authSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import { toast } from "react-toastify";
 
 const VITE_LOGIN_URL = import.meta.env.VITE_LOGIN_URL;
 
