@@ -44,9 +44,9 @@ export interface ButtonProps
 const Button = React.forwardRef<
   HTMLButtonElement | HTMLAnchorElement,
   ButtonProps
->(({ className, variant, size, asChild = false, to, ...props }, ref) => {
+>(({ className, variant, size, asChild = false, to, disabled, ...props }, ref) => {
   const Comp = asChild ? Slot : to ? Link : "button";
-  const componentProps = to ? { to, ...props } : props;
+  const componentProps = to ? { to, ...props } : { ...props, disabled };
   
   return (
     <Comp

@@ -1,11 +1,24 @@
 // src/store/slices/data/userSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createApiInstance } from "@/api/axiosInstance";
 import axios from "axios";
 
+const VITE_API_KEY = import.meta.env.VITE_API_KEY;
+const VITE_API_USERS_CASHIERS = import.meta.env.VITE_API_USERS_CASHIERS;
+const VITE_API_USERS_MANAGERS = import.meta.env.VITE_API_USERS_MANAGERS;
+
 interface User {
-  id: number;
+  id: string;
   name: string;
-  imageUrl: string;
+  position: string;
+  image: string | null;
+  phone: string;
+  sex: string;
+  has_pos: boolean;
+  email: string;
+  admin_password: string | null;
+  rfid: string | null;
+  admin_rfid: string | null;
 }
 
 interface UserState {
@@ -30,54 +43,29 @@ const initialState: UserState = {
   error: null,
 };
 
-// Updated endpoint to fetch users
 export const fetchUsers = createAsyncThunk(
   "users/fetchUsers",
   async (_, { rejectWithValue }) => {
+    const apiInstance = createApiInstance("", true);
     try {
-      const headers = {
-        Authorization: `Api-Key ${import.meta.env.VITE_API_KEY}`,
-        "Content-Type": "application/json",
-      };
-
       const [cashiersResponse, managersResponse] = await Promise.all([
-        axios.get<User[]>(import.meta.env.VITE_API_USERS_CASHIERS, {
-          headers,
-          timeout: 5000, // 5 second timeout
-        }),
-        axios.get<User[]>(import.meta.env.VITE_API_USERS_MANAGERS, {
-          headers,
-          timeout: 5000,
-        }),
+        apiInstance.get<User[]>(`${import.meta.env.VITE_BASE_URL}/users?position=Cashier`, { timeout: 5000 }),
+        apiInstance.get<User[]>(`${import.meta.env.VITE_BASE_URL}/users?position=Manager`, { timeout: 5000 }),
       ]);
 
-      // Validate responses
       if (!cashiersResponse.data || !managersResponse.data) {
         throw new Error("Invalid response data received");
       }
 
-      const result = {
+      return {
         cashiers: cashiersResponse.data,
         managers: managersResponse.data,
       };
-
-      // Development only logging
-      if (import.meta.env.DEV) {
-        console.log("Cashiers Response:", cashiersResponse.data);
-        console.log("Managers Response:", managersResponse.data);
-        console.log("Combined Users Result:", result);
-      }
-
-      return result;
     } catch (error) {
-      // Proper error handling with type checking
       if (axios.isAxiosError(error)) {
         const message = error.response?.data?.message || error.message;
-        console.error("API Error:", message);
         return rejectWithValue(message);
       }
-      // Handle non-Axios errors
-      console.error("Unexpected Error:", error);
       return rejectWithValue("An unexpected error occurred");
     }
   }

@@ -1,43 +1,60 @@
+import { useState, useEffect } from "react";
 import { logoLightMode } from "@/assets";
 import { motion } from "framer-motion";
 import UserCard from "./components/UserCard";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store";
-
-const posData = [
-  {
-    id: 1,
-    name: "Terrace POS 1",
-    manager: "John Doe",
-    shiftOpened: "July 24, 2024 - 10:00 AM",
-    printerStatus: "connected",
-  },
-  {
-    id: 2,
-    name: "Indoor POS 2",
-    manager: "Jane Smith",
-    shiftOpened: "July 24, 2024 - 09:30 AM",
-    printerStatus: "disconnected",
-  },
-  {
-    id: 3,
-    name: "Bar POS 3",
-    manager: "Mike Johnson",
-    shiftOpened: "July 24, 2024 - 11:00 AM",
-    printerStatus: "disconnected",
-  },
-];
+import { useSelector, useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
+import { User } from "@/types";
+import {
+  checkOpenDay,
+  openDay,
+} from "@/store/slices/authentication/openDaySlice";
+import { fetchPosData } from "@/store/slices/data/posSlice";
+import { ChevronRight } from "lucide-react";
+import { fetchGeneralData } from "@/store/slices/data/generalDataSlice";
 
 export default function SelectPosPage() {
   const navigate = useNavigate();
-  const userAuthenticated = useSelector((state: RootState) => state.auth.user);
+  const dispatch = useDispatch<AppDispatch>();
+  const isDayOpen = useSelector((state: RootState) => state.dayStatus.isOpen);
+  /* loading, error, data */
+  const { data, loading, error } = useSelector((state: RootState) => state.pos);
+
+  // Retrieve user from localStorage
+  const userAuthenticated: User | null = JSON.parse(
+    localStorage.getItem("user") || "null"
+  );
+
+  console.log(userAuthenticated);
+
+  // State for button disabled status
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+
+  const handleOpenDay = () => {
+    setButtonDisabled(true); // Disable button immediately
+    dispatch(openDay());
+  };
+
+  useEffect(() => {
+    dispatch(checkOpenDay());
+    setButtonDisabled(isDayOpen ?? false);
+  }, [dispatch, isDayOpen]);
+
+  useEffect(() => {
+    dispatch(fetchPosData());
+  }, [dispatch]);
+
+  const handleChoisePos = (id: string) => {
+    localStorage.setItem("posId", id);
+    navigate("/");
+  };
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <div className="w-1/5 h-full bg-gray-100">
+      <div className="w-3/12 h-full bg-gray-100">
         <div className="relative z-10 flex h-16 flex-shrink-0">
           <div className="flex flex-1 justify-between px-4 sm:px-6">
             <img src={logoLightMode} alt="logo" className="w-24 h-auto" />
@@ -52,7 +69,7 @@ export default function SelectPosPage() {
             {userAuthenticated && (
               <UserCard
                 withRole={true}
-                user={userAuthenticated}
+                user={userAuthenticated as User}
                 isActive={true}
                 className="scale-105"
               />
@@ -63,67 +80,40 @@ export default function SelectPosPage() {
           </div>
         </div>
       </div>
-      <motion.div className="w-4/5 h-full bg-gray-100">
+      <motion.div className="w-9/12 h-full bg-gray-100">
         <motion.div
           initial={{ x: 200 }}
           animate={{ x: 0 }}
           transition={{ duration: 0.25 }}
           className="bg-zinc-950 flex flex-col items-start justify-center h-full w-full py-6 px-10"
         >
-          <div>
-            <h2 className="tracking-tight scroll-m-20 text-3xl font-semibold text-white">
-              Select your POS station
-            </h2>
-            <p className="mt-1 text-sm text-zinc-300">
-              Choose your active POS to continue selling.
-            </p>
+          <div className="flex justify-between items-start w-full">
+            <div>
+              <h2 className="tracking-tight scroll-m-20 text-3xl font-semibold text-white">
+                Select your POS station
+              </h2>
+              <p className="mt-1 text-sm text-zinc-300">
+                Choose your active POS to continue selling.
+              </p>
+            </div>
+            <Button onClick={handleOpenDay} disabled={buttonDisabled}>
+              Open new Day
+            </Button>
           </div>
           <div className="grid grid-cols-2 gap-4 mt-10 w-11/12">
-            {posData.map((pos) => (
+            {data.map((pos) => (
               <motion.div
                 whileHover={{ scale: 0.98 }}
                 transition={{ duration: 0.25 }}
-                key={pos.id}
-                onClick={() => navigate("/")}
+                key={pos._id}
+                onClick={() => handleChoisePos(pos._id)}
               >
-                <Card
-                  className={`w-full cursor-pointer bg-zinc-800/60 rounded-lg py-4 px-6 ${
-                    pos.printerStatus === "connected"
-                      ? "shadow-xl shadow-red-600/20 z-10 relative"
-                      : ""
-                  }`}
-                >
-                  <h2 className="tracking-tight scroll-m-20 text-2xl font-medium text-white">
-                    {pos.name}
-                  </h2>
-                  <p className="mt-2 text-sm text-zinc-100">
-                    <span className="pr-2">Manager:</span>
-                    <span className="font-semibold">{pos.manager}</span>
-                  </p>
-                  <p className="mt-1 text-sm text-zinc-100">
-                    <span className="pr-2">Shift opened:</span>
-                    <span className="font-semibold">{pos.shiftOpened}</span>
-                  </p>
-                  <div className="flex items-center gap-2 mt-6">
-                    <span className="relative flex h-2 w-2">
-                      <span
-                        className={`animate-ping absolute inline-flex h-full w-full rounded-full ${
-                          pos.printerStatus === "connected"
-                            ? "bg-green-500"
-                            : "bg-red-600"
-                        } opacity-75`}
-                      ></span>
-                      <span
-                        className={`relative inline-flex rounded-full h-2 w-2 ${
-                          pos.printerStatus === "connected"
-                            ? "bg-green-500"
-                            : "bg-red-600"
-                        }`}
-                      ></span>
-                    </span>
-                    <p className="text-sm text-white/80">
-                      Printer: {pos.printerStatus}
-                    </p>
+                <Card className="w-full cursor-pointer bg-zinc-800/60 rounded-lg py-4 px-6">
+                  <div className="flex justify-between items-center">
+                    <h2 className="tracking-tight scroll-m-20 text-2xl font-medium text-white">
+                      {pos.name}
+                    </h2>
+                    <ChevronRight className="w-7 h-7 text-white" />
                   </div>
                 </Card>
               </motion.div>

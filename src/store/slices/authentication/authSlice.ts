@@ -1,14 +1,10 @@
 // src/store/slices/auth/authSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import { User } from "@/types";
 
 const VITE_LOGIN_URL = import.meta.env.VITE_LOGIN_URL;
-
-interface User {
-  name: string;
-  role: string;
-  imageUrl: string;
-}
+const VITE_API_KEY = import.meta.env.VITE_API_KEY;
 
 interface AuthState {
   user: User | null;
@@ -19,8 +15,8 @@ interface AuthState {
 }
 
 interface LoginCredentials {
-  id: string;
-  passcode: string;
+  _id: string;
+  password: string;
 }
 
 interface LoginResponse {
@@ -40,16 +36,28 @@ export const login = createAsyncThunk<LoginResponse, LoginCredentials>(
   "auth/login",
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await axios.post<LoginResponse>(VITE_LOGIN_URL, {
-        id: Number(credentials.id),
-        passcode: Number(credentials.passcode),
-      });
-
-      // toast.success("Login successful!");
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/auth/login`,
+        {
+          id: credentials._id,
+          password: credentials.password,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Api-Key ${VITE_API_KEY}`,
+          },
+        }
+      );
+      console.log("Login API Response:", response.data);
       return response.data;
     } catch (error: any) {
-      // toast.error("Invalid passcode. Please try again.");
-      return rejectWithValue(error.response?.data?.message);
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || error.message;
+        console.error("Login API Error:", message);
+        return rejectWithValue(message);
+      }
+      return rejectWithValue("An unexpected error occurred");
     }
   }
 );
@@ -87,7 +95,7 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.token = action.payload.token;
         localStorage.setItem("token", action.payload.token);
-        console.log("Token stored during login:", action.payload.token);
+        localStorage.setItem("user", JSON.stringify(action.payload.user));
         state.isAuthenticated = true;
         state.error = null;
       })

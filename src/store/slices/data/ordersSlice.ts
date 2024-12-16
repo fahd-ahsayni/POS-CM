@@ -1,8 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const ORDERS_API_URL = import.meta.env.VITE_API_ORDERS;
-
 interface Order {
   id: number;
   orderId: string;
@@ -34,23 +32,19 @@ export const fetchOrders = createAsyncThunk(
   "orders/fetchOrders",
   async (_, { getState }) => {
     const token = localStorage.getItem("token");
+    console.log("Token:", token);
     if (!token) {
       throw new Error("No token found - please log in first");
     }
-    console.log("Token when fetching orders:", token); // Debug log
-    console.log("Full Authorization header:", `Bearer ${token}`); // Debug log
 
     try {
-      const response = await axios.get(ORDERS_API_URL, {
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/orders`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Orders API response:", response.data);
       return response.data;
     } catch (error: any) {
-      console.log("Error fetching orders:", error);
-      console.log("Error response data:", error.response?.data); // Add this to see server error message
       throw error;
     }
   }

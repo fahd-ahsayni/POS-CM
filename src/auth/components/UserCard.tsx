@@ -1,14 +1,10 @@
 import { unknownUser } from "@/assets";
 import { cn } from "@/lib/utils";
+import { User } from "@/types";
 import { useEffect } from "react";
 
 interface UserCardProps {
-  user: {
-    id?: number;
-    name: string;
-    image?: string;
-    position?: string;
-  };
+  user: User;
   isActive: boolean;
   withRole?: boolean;
   className?: string;
@@ -20,10 +16,6 @@ export default function UserCard({
   className,
   withRole = false,
 }: UserCardProps) {
-  useEffect(() => {
-    console.log("User Card Rendered:", user);
-  }, [user]);
-
   return (
     <div
       className={cn(

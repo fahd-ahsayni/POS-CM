@@ -1,5 +1,10 @@
 import Categories from "@/components/views/home/Categories";
 import TypeOfOrder from "@/components/views/home/TypeOfOrder";
+import { RootState } from "@/store";
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchGeneralData } from "@/store/slices/data/generalDataSlice";
+import type { AppDispatch } from "@/store";
 
 export default function HomePage() {
   return (

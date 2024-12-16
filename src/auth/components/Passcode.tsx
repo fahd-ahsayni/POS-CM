@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { login } from "@/store/slices/authentication/authSlice";
 import { RootState, AppDispatch } from "@/store";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
 import { setSelectedUser } from "@/store/slices/data/usersSlice";
 
 export default function Passcode() {
@@ -22,6 +21,7 @@ export default function Passcode() {
   const loading = useSelector((state: RootState) => state.auth.loading);
   const users = useSelector((state: RootState) => state.users.users);
 
+  // Shuffle numbers for the number pad
   const shuffledNumbers = useMemo(
     () =>
       Array.from({ length: 9 }, (_, i) => i + 1).sort(
@@ -46,16 +46,21 @@ export default function Passcode() {
       return;
     }
 
-    if (!selectedUser.id) {
+    if (!selectedUser._id) {
       console.log("User ID is undefined");
       return;
     }
 
+    console.log("Attempting login with:", {
+      _id: selectedUser._id.toString(),
+      password: passcode,
+    });
+
     try {
       const result = await dispatch(
         login({
-          id: selectedUser.id.toString(),
-          passcode: passcode,
+          _id: selectedUser._id.toString(),
+          password: passcode,
         })
       ).unwrap();
 
