@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import NumberOfTable from "./type-of-order/NumberOfTabel";
 import NumberOfPeer from "./type-of-order/NumberOfPeeper";
 import SelectDeliveryType from "./type-of-order/SelectDeliveryType";
-import { setSelectedOrderType } from "@/store/slices/pages/SelectOrderSlice";
+import { setSelectedOrderType } from "@/store/slices/views/typeOfOrderViewsSlice";
 import { RootState } from "@/store";
 import OwnDeliveryForm from "./type-of-order/OwnDeliveryForm";
 import ProceedOrder from "./type-of-order/ProceedOrder";

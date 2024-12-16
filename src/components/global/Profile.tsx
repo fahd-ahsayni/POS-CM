@@ -10,6 +10,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { ChevronDown, HelpCircle, LogOut, Power, User } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store";
+import { logout } from "@/store/slices/authentication/authSlice";
 
 const menuItems = [
   { icon: User, label: "My Profile" },
@@ -19,6 +22,12 @@ const menuItems = [
 ];
 
 export default function Profile() {
+  const dispatch = useDispatch<AppDispatch>();
+
+  const handleLogout = () => {
+    dispatch(logout());
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -80,7 +89,7 @@ export default function Profile() {
           ))}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="!text-red-600">
+        <DropdownMenuItem className="!text-red-600" onClick={handleLogout}>
           <LogOut
             size={16}
             strokeWidth={2}

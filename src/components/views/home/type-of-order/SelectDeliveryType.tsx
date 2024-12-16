@@ -1,4 +1,4 @@
-import { setSelectedOrderType } from "@/store/slices/pages/SelectOrderSlice";
+import { setSelectedOrderType } from "@/store/slices/views/typeOfOrderViewsSlice";
 import { useDispatch } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { TypographyH3, TypographyH4 } from "@/components/ui/typography";

@@ -136,3 +136,11 @@ export const orders = Array.from({ length: 50 }, (_, index) => ({
   paymentStatus: ["New", "Paid", "Canceled"][index % 3],
   orderTotal: (Math.random() * 2000 + 200).toFixed(2),
 }));
+
+
+export const products = Array.from({ length: 50 }, (_, index) => ({
+  id: index + 1,
+  name: `Product ${index + 1}`,
+  price: (Math.random() * 100 + 10).toFixed(2),
+  image: `https://picsum.photos/200/300?random=${index}`,
+}));

@@ -1,12 +1,9 @@
 import { logoLightMode } from "@/assets";
-import { ArrowRight, Search } from "lucide-react";
 import { RiRfidFill } from "react-icons/ri";
 import { useState } from "react";
 import SegmentedControl from "./SegmentedControl";
 import SelectUserSlide from "./SelectUserSlide";
 import ShineBorder from "@/components/ui/shine-border";
-import { Separator } from "@/components/ui/separator";
-import SelectUserCombobox from "./SelectUserCombobox";
 
 export default function SelectUser() {
   const [activeTab, setActiveTab] = useState("cashiers");
@@ -28,16 +25,15 @@ export default function SelectUser() {
           </p>
         </div>
         <div className="mt-10 flex justify-between items-center">
-          <SelectUserCombobox />
+          {/* <SelectUserCombobox /> */}
 
           <SegmentedControl activeTab={activeTab} onChange={setActiveTab} />
         </div>
         <div>
           <SelectUserSlide userType={activeTab} />
-          <Separator className="mb-2 max-w-xs mx-auto bg-zinc-100" />
-          <div className="flex justify-center items-center mt-8">
+          <div className="flex justify-center items-center mt-2">
             <ShineBorder
-              className="flex justify-center items-center gap-4 text-white bg-zinc-900 py-2 px-8"
+              className="flex justify-center items-center gap-4 text-white bg-zinc-900 py-3 px-8"
               color="#fff"
               borderWidth={2}
             >

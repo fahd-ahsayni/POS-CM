@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { setSelectedOrderType } from "@/store/slices/pages/SelectOrderSlice";
+import { setSelectedOrderType } from "@/store/slices/views/typeOfOrderViewsSlice";
 import { TypographyH1, TypographyH3 } from "@/components/ui/typography";
 import NumberPad from "@/components/global/NumberPad";
 import { motion } from "framer-motion";

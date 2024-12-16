@@ -4,6 +4,8 @@ import UserCard from "./components/UserCard";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 
 const posData = [
   {
@@ -29,14 +31,9 @@ const posData = [
   },
 ];
 
-const user = {
-  id: 1,
-  name: "John Doe",
-  imageUrl: "https://via.placeholder.com/150",
-};
-
 export default function SelectPosPage() {
   const navigate = useNavigate();
+  const userAuthenticated = useSelector((state: RootState) => state.auth.user);
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -47,19 +44,32 @@ export default function SelectPosPage() {
           </div>
         </div>
         <div className="h-full flex items-center justify-center flex-col">
-          <UserCard
-            role="manager"
-            user={user}
-            isActive={true}
-            className="scale-105"
-          />
+          <motion.div
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.25 }}
+          >
+            {userAuthenticated && (
+              <UserCard
+                withRole={true}
+                user={userAuthenticated}
+                isActive={true}
+                className="scale-105"
+              />
+            )}
+          </motion.div>
           <div className="mt-10">
             <Button to="/login">Change Account</Button>
           </div>
         </div>
       </div>
-      <div className="w-4/5  h-full bg-zinc-950">
-        <div className="flex flex-col items-start justify-center h-full w-full py-6 px-10">
+      <motion.div className="w-4/5 h-full bg-gray-100">
+        <motion.div
+          initial={{ x: 200 }}
+          animate={{ x: 0 }}
+          transition={{ duration: 0.25 }}
+          className="bg-zinc-950 flex flex-col items-start justify-center h-full w-full py-6 px-10"
+        >
           <div>
             <h2 className="tracking-tight scroll-m-20 text-3xl font-semibold text-white">
               Select your POS station
@@ -99,15 +109,15 @@ export default function SelectPosPage() {
                       <span
                         className={`animate-ping absolute inline-flex h-full w-full rounded-full ${
                           pos.printerStatus === "connected"
-                            ? "bg-green-400"
-                            : "bg-red-400"
+                            ? "bg-green-500"
+                            : "bg-red-600"
                         } opacity-75`}
                       ></span>
                       <span
                         className={`relative inline-flex rounded-full h-2 w-2 ${
                           pos.printerStatus === "connected"
                             ? "bg-green-500"
-                            : "bg-red-500"
+                            : "bg-red-600"
                         }`}
                       ></span>
                     </span>
@@ -119,8 +129,8 @@ export default function SelectPosPage() {
               </motion.div>
             ))}
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

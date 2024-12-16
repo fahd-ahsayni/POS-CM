@@ -2,20 +2,21 @@ import { cn } from "@/lib/utils";
 
 interface UserCardProps {
   user: {
-    id: number;
+    id?: number;
     name: string;
     imageUrl: string;
+    role?: string;
   };
   isActive: boolean;
-  role?: string;
+  withRole?: boolean;
   className?: string;
 }
 
 export default function UserCard({
-  role,
   user,
   isActive,
   className,
+  withRole = false,
 }: UserCardProps) {
   return (
     <div
@@ -27,7 +28,7 @@ export default function UserCard({
       <div
         className={`relative ${
           isActive
-            ? "ring-4 ring-red-500 ring-offset-4 rounded-full transition-all duration-300"
+            ? "ring-4 ring-red-500 ring-offset-4 ring-offset-gray-100 rounded-full transition-all duration-300"
             : ""
         }`}
       >
@@ -44,7 +45,11 @@ export default function UserCard({
       >
         {user.name}
       </p>
-      {role && <p className="text-zinc-500 text-sm font-medium">{role}</p>}
+      {withRole && (
+        <p className="text-zinc-600 font-medium text-sm first-letter:uppercase">
+          {user.role}
+        </p>
+      )}
     </div>
   );
 }

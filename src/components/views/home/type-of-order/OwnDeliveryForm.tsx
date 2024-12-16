@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useDispatch } from "react-redux";
-import { setSelectedOrderType } from "@/store/slices/pages/SelectOrderSlice";
+import { setSelectedOrderType } from "@/store/slices/views/typeOfOrderViewsSlice";
 import { TypographyH3 } from "@/components/ui/typography";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,7 @@ export default function NumberOfTabel() {
         Enter the table number to start the order:
       </TypographyH3>
       <div className="flex flex-col justify-center items-center gap-y-4 px-1">
-        <div className="space-y-1 w-full">
+        <div className="w-full">
           <Label htmlFor="input-07">Phone Number</Label>
           <Input
             id="input-07"
@@ -24,7 +24,7 @@ export default function NumberOfTabel() {
             type="tel"
           />
         </div>
-        <div className="space-y-1 w-full">
+        <div className="w-full">
           <Label htmlFor="input-07">Full Name / Organization Name</Label>
           <Input
             id="input-07"
@@ -33,7 +33,7 @@ export default function NumberOfTabel() {
             type="text"
           />
         </div>
-        <div className="space-y-1 w-full">
+        <div className="w-full">
           <Label htmlFor="input-07">Address</Label>
           <Textarea
             id="textarea-08"
@@ -42,8 +42,8 @@ export default function NumberOfTabel() {
             rows={2}
           />
         </div>
-        <div className="space-y-1 w-full">
-          <div className="mb-2 flex items-center justify-between gap-1">
+        <div className="w-full">
+          <div className="flex items-center justify-between gap-1">
             <Label htmlFor="input-07" className="leading-6">
               Email
             </Label>
@@ -56,8 +56,8 @@ export default function NumberOfTabel() {
             type="email"
           />
         </div>
-        <div className="space-y-1 w-full">
-          <div className="mb-2 flex items-center justify-between gap-1">
+        <div className="w-full">
+          <div className="flex items-center justify-between gap-1">
             <Label htmlFor="input-07" className="leading-6">
               Company Identification Number
             </Label>

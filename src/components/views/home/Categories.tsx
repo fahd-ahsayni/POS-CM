@@ -1,13 +1,24 @@
 import { TypographyP } from "@/components/ui/typography";
 import { Separator } from "@/components/ui/separator";
-import { categories } from "@/data";
-import { Card } from "@/components/ui/card";
-import { useSelector } from "react-redux";
-import { cn } from "@/lib/utils";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store";
+import { setCurrentView } from "@/store/slices/views/categoriesViewSlice";
+import AllProducts from '@/components/views/home/categories/AllProducts';
+import AllCategories from '@/components/views/home/categories/AllCategories';
 
 export default function Categories() {
-  const selectedOrderType = useSelector((state: RootState) => state.orderSelection.selectedOrderType);
+  const dispatch = useDispatch();
+  const currentView = useSelector((state: RootState) => state.categoriesView.currentView);
+
+
+  const renderView = () => {
+    switch (currentView) {
+      case 'AllProducts':
+        return <AllProducts onBack={() => dispatch(setCurrentView('AllCategories'))} />;
+      default:
+        return <AllCategories />
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-0 flex-1 mt-4">
@@ -17,28 +28,7 @@ export default function Categories() {
         </TypographyP>
         <Separator className="dark:bg-zinc-800/60 bg-zinc-50/70" />
       </div>
-      <div className="scrollbar-hide grid grid-cols-3 gap-2 mt-8 overflow-y-auto flex-1 pb-16">
-        <Card className="flex bg-zinc-900 cursor-pointer relative flex-col items-center h-24 !rounded-lg overflow-hidden justify-center">
-          <TypographyP className="text-center text-xl font-medium absolute text-white">
-            All Products
-          </TypographyP>
-        </Card>
-        {categories.map((category) => (
-          <Card
-            key={category.id}
-            className="flex cursor-pointer relative flex-col items-center h-24 !rounded-lg overflow-hidden justify-center"
-          >
-            <img
-              src={category.image}
-              alt={category.name}
-              className={cn("w-full h-full object-cover  transition-all duration-500", selectedOrderType !== "tableConfirmation" ? "grayscale brightness-[0.18]" : "dark:brightness-[0.3] brightness-[0.4]")}
-            />
-            <TypographyP className="text-center text-xl font-medium absolute text-white">
-              {category.name}
-            </TypographyP>
-          </Card>
-        ))}
-      </div>
+      {renderView()}
     </div>
   );
 }
