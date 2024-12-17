@@ -1,3 +1,4 @@
+import { logoWithoutText } from "@/assets";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -51,12 +52,16 @@ export default function ProceedOrder() {
       <div className="pt-2">
         <Card className="py-2 rounded-md flex items-center gap-2 justify-center">
           <User size={16} />
-          <TypographyP className="text-sm font-medium">
-            Customer
-          </TypographyP>
+          <TypographyP className="text-sm font-medium">Customer</TypographyP>
         </Card>
       </div>
-      <div className="flex-1 border border-dashed flex-grow"></div>
+      <div className="flex-1 border border-dashed flex-grow relative flex items-center justify-center">
+        <img
+          src={logoWithoutText}
+          alt="Order Sumary"
+          className="w-1/2 h-auto object-contain absolute opacity-75"
+        />
+      </div>
       <div className="flex items-center justify-between space-x-2">
         <Button className="flex-1">Hold Order</Button>
         <Button className="flex-1">Proceed Order</Button>

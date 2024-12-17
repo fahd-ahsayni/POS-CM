@@ -1,38 +1,50 @@
-import { setSelectedOrderType } from "@/store/slices/views/typeOfOrderViewsSlice";
-import { useDispatch } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { TypographyH3, TypographyH4 } from "@/components/ui/typography";
 import { Card } from "@/components/ui/card";
 
 import { glovo, kaalix, yassir, ownDelivery } from "@/assets";
 import { motion } from "framer-motion";
+import { useRightViewContext } from "../contexts/rightViewContext";
 
 const deliveryApps = [
   {
+    id: "glovo",
     name: "Glovo",
     image: glovo,
   },
   {
+    id: "kaalix",
     name: "Kaalix",
     image: kaalix,
   },
   {
+    id: "yassir",
     name: "Yassir",
     image: yassir,
   },
   {
+    id: "ownDelivery",
     name: "Own Delivery",
     image: ownDelivery,
   },
 ];
 
 export default function SelectDeliveryType() {
-  const dispatch = useDispatch();
+  const { setViews, setSelectedOrderType, selectedOrderType } =
+    useRightViewContext();
 
-  const handleSelect = (
-    orderType: "dineIn" | "takeAway" | "delivery" | "ownDelivery" | "tableConfirmation" | null
-  ) => {
-    dispatch(setSelectedOrderType(orderType));
+  console.log(selectedOrderType);
+
+  const handleSelect = (type: string) => {
+    setSelectedOrderType(type);
+  };
+
+  const handleConfirm = () => {
+    if (selectedOrderType === "ownDelivery") {
+      setViews("OwnDeliveryForm");
+      return;
+    }
+    setViews("OrderSumary");
   };
 
   return (
@@ -40,20 +52,20 @@ export default function SelectDeliveryType() {
       <TypographyH3 className="font-medium max-w-xs">
         Enter the table number to start the order:
       </TypographyH3>
-      <div className="space-y-3 px-4 sm:px-6">
+      <div className="space-y-3">
         {deliveryApps.map((app, index) => (
           <motion.div
+            key={app.name}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.05 }}
           >
             <Card
-              key={app.name}
-              className="flex justify-start items-center px-6 py-3 transition-all hover:ring-2 hover:ring-primary cursor-pointer"
+              className={`flex justify-start items-center px-6 py-3 transition-all cursor-pointer ${
+                selectedOrderType === app.id ? "border-2 border-primary" : ""
+              }`}
               onClick={() => {
-                if (app.name === "Own Delivery") {
-                  handleSelect("ownDelivery");
-                }
+                handleSelect(app.id);
               }}
             >
               <img
@@ -73,11 +85,16 @@ export default function SelectDeliveryType() {
           <Button
             variant="outline"
             className="flex-1 bg-gray-200 hover:bg-gray-300/70 dark:bg-zinc-800"
-            onClick={() => dispatch(setSelectedOrderType(null))}
+            onClick={() => {
+              setViews("TypeOfOrder");
+              setSelectedOrderType(null);
+            }}
           >
             Cancel
           </Button>
-          <Button className="flex-1">Confirm</Button>
+          <Button className="flex-1" onClick={handleConfirm}>
+            Confirm
+          </Button>
         </div>
       </div>
     </div>

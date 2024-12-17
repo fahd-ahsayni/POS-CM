@@ -14,7 +14,6 @@ import {
 } from "@/store/slices/authentication/openDaySlice";
 import { fetchPosData } from "@/store/slices/data/posSlice";
 import { ChevronRight } from "lucide-react";
-import { fetchGeneralData } from "@/store/slices/data/generalDataSlice";
 
 export default function SelectPosPage() {
   const navigate = useNavigate();

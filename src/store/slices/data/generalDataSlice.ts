@@ -1,25 +1,12 @@
 // Import required modules
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { Category, GeneralData, GeneralDataState, Product } from "@/types";
+import {
+  createSlice,
+  createAsyncThunk,
+  PayloadAction,
+  createSelector,
+} from "@reduxjs/toolkit";
 import axios from "axios";
-
-// Define types
-export interface GeneralData {
-  floors: object[];
-  categories: object[];
-  configs: object[];
-  defineNote: object[];
-  orderTypes: object[];
-  discount: object[];
-  paymentMethods: object[];
-  waiters: object[];
-  livreurs: object[];
-}
-
-interface GeneralDataState {
-  data: GeneralData;
-  status: "idle" | "loading" | "succeeded" | "failed";
-  error: string | null;
-}
 
 // Async thunk to fetch general data
 export const fetchGeneralData = createAsyncThunk<
@@ -29,32 +16,43 @@ export const fetchGeneralData = createAsyncThunk<
 >("generalData/fetchGeneralData", async (id, { rejectWithValue }) => {
   try {
     const token = localStorage.getItem("token");
-    console.log('Token:', token); // Debug token
-    console.log('API URL:', `${import.meta.env.VITE_BASE_URL}/general-data/pos/67483260dfb27d34e5dfee58`); // Debug URL
-
     const response = await axios.get(
-      `${import.meta.env.VITE_BASE_URL}/general-data/pos/67483260dfb27d34e5dfee58`,
+      `${import.meta.env.VITE_BASE_URL}/general-data/pos/${id}`,
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       }
     );
-    
-    console.log("POS API Response:", response.data); // Debug full response
-    console.log("POS Data Structure:", {
-      status: response.status,
-      headers: response.headers,
-      data: response.data
-    }); // Debug response structure
-    
     return response.data;
   } catch (error: any) {
-    console.error("POS API Error:", error); // Debug errors
     if (axios.isAxiosError(error)) {
-      console.error("Error Response:", error.response?.data); // Debug error response
       return rejectWithValue(
         error.response?.data || "Failed to fetch POS data"
+      );
+    }
+    return rejectWithValue("An unexpected error occurred");
+  }
+});
+
+// Async thunk to fetch paginated general data
+export const fetchPaginatedGeneralData = createAsyncThunk<
+  GeneralData,
+  { id: string; page: number; limit: number },
+  { rejectValue: string }
+>("generalData/fetchPaginatedGeneralData", async ({ id, page, limit }, { rejectWithValue }) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axios.get(
+      `${import.meta.env.VITE_BASE_URL}/general-data/pos/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { page, limit },
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      return rejectWithValue(
+        error.response?.data || "Failed to fetch paginated POS data"
       );
     }
     return rejectWithValue("An unexpected error occurred");
@@ -91,6 +89,8 @@ const generalDataSlice = createSlice({
         (state, action: PayloadAction<GeneralData>) => {
           state.status = "succeeded";
           state.data = action.payload;
+          // Save data to local storage
+          localStorage.setItem("generalData", JSON.stringify(action.payload));
         }
       )
       .addCase(
@@ -103,25 +103,52 @@ const generalDataSlice = createSlice({
   },
 });
 
-// Selectors
+// Recursive function to extract and sort all products
+const extractProducts = (categories: Category[]): Product[] => {
+  let allProducts: Product[] = [];
+
+  categories.forEach((category) => {
+    if (category.products) {
+      // Add logic to calculate the minimal price of variants
+      const productsWithPrice = category.products.map((product) => {
+        const minPrice = product.variants
+          ? Math.min(...product.variants.map((variant) => variant.price_ttc))
+          : 0;
+        return { ...product, price: minPrice };
+      });
+      allProducts = allProducts.concat(productsWithPrice);
+    }
+    if (category.children && category.children.length > 0) {
+      allProducts = allProducts.concat(extractProducts(category.children));
+    }
+  });
+
+  // Sort products by the sequence field
+  return allProducts.sort((a, b) => (a.sequence || 0) - (b.sequence || 0));
+};
+
+// Export extractProducts
+export { extractProducts };
+
+// Add this before the existing selectAllProducts
+const selectGeneralData = (state: { generalData: GeneralDataState }) =>
+  state.generalData.data;
+
+export const selectAllProducts = createSelector(
+  [selectGeneralData],
+  (generalData) => {
+    return extractProducts(generalData.categories);
+  }
+);
+
+// Other Selectors
 export const selectFloors = (state: { generalData: GeneralDataState }) =>
   state.generalData.data.floors;
 export const selectCategories = (state: { generalData: GeneralDataState }) =>
   state.generalData.data.categories;
-export const selectConfigs = (state: { generalData: GeneralDataState }) =>
-  state.generalData.data.configs;
-export const selectDefineNote = (state: { generalData: GeneralDataState }) =>
-  state.generalData.data.defineNote;
+
 export const selectOrderTypes = (state: { generalData: GeneralDataState }) =>
   state.generalData.data.orderTypes;
-export const selectDiscount = (state: { generalData: GeneralDataState }) =>
-  state.generalData.data.discount;
-export const selectPaymentMethods = (state: {
-  generalData: GeneralDataState;
-}) => state.generalData.data.paymentMethods;
-export const selectGeneralDataError = (state: {
-  generalData: GeneralDataState;
-}) => state.generalData.error;
 
 // Export reducer
 export default generalDataSlice.reducer;

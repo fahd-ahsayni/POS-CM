@@ -1,13 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { useDispatch } from "react-redux";
-import { setSelectedOrderType } from "@/store/slices/views/typeOfOrderViewsSlice";
 import { TypographyH3 } from "@/components/ui/typography";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useRightViewContext } from "../contexts/rightViewContext";
 
 export default function NumberOfTabel() {
-  const dispatch = useDispatch();
+  const { setViews } = useRightViewContext();
 
   return (
     <div className="flex flex-col justify-evenly h-full">
@@ -75,7 +74,7 @@ export default function NumberOfTabel() {
         <Button
           variant="outline"
           className="flex-1 bg-gray-200 hover:bg-gray-300/70 dark:bg-muted"
-          onClick={() => dispatch(setSelectedOrderType(null))}
+          onClick={() => setViews("TypeOfOrder")}
         >
           Cancel
         </Button>
