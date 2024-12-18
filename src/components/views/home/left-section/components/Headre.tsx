@@ -6,14 +6,15 @@ import { useLeftViewContext } from "../contexts/leftViewContext";
 import { ALL_CATEGORIES_VIEW } from "../constants";
 
 export default function Header() {
-  const { setViews, setSelectedProducts } = useLeftViewContext();
+  const { setViews, setSelectedProducts, setQuantityPerVariant, setSelectedProduct } = useLeftViewContext();
 
   const handelBack = () => {
     setSelectedProducts([]);
+    setQuantityPerVariant(0);
     setViews(ALL_CATEGORIES_VIEW);
   };
   return (
-    <div className="flex items-start relative justify-start w-full py-4 mt-2 gap-x-2">
+    <div className="flex items-start relative justify-start w-full py-2 mt-2 gap-x-2">
       <div
         onClick={handelBack}
         className="flex items-center justify-center w-12 h-14 bg-primary-color rounded-lg cursor-pointer"
@@ -26,7 +27,7 @@ export default function Header() {
         transition={{ duration: 0.25 }}
         className="h-14 w-[30%]"
       >
-        <Card className="flex !bg-zinc-900 cursor-pointer flex-col items-center h-full w-full !rounded-lg justify-center ring-2 ring-red-600 ring-offset-0">
+        <Card className="flex !bg-zinc-900 cursor-pointer flex-col items-center h-full w-full !rounded-lg justify-center border-2 border-red-600 ring-offset-0">
           <TypographyP className="text-center text-xl font-medium text-white">
             All Products
           </TypographyP>

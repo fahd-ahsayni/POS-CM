@@ -25,7 +25,7 @@ export default React.memo(function AllCategories() {
         <Card
           key={category._id}
           className={cn(
-            "flex cursor-pointer relative flex-col items-center h-24 !rounded-lg overflow-hidden justify-center",
+            "flex cursor-pointer relative flex-col items-center h-24 !rounded-lg overflow-hidden justify-center bg-zinc-900",
             views !== ORDER_SUMMARY_VIEW && "pointer-events-none"
           )}
         >
@@ -36,8 +36,8 @@ export default React.memo(function AllCategories() {
             className={cn(
               "w-full h-full object-cover transition-all duration-500",
               views !== ORDER_SUMMARY_VIEW
-                ? "grayscale brightness-[0.18]"
-                : "brightness-[0.4]"
+                ? "grayscale dark:brightness-[0.30] brightness-[0.6]"
+                : "dark:brightness-[0.4] brightness-[0.6]"
             )}
           />
           <TypographyP className="text-center group text-xl font-medium absolute text-white">

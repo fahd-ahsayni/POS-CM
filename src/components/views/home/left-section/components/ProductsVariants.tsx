@@ -4,7 +4,7 @@ import Drawer from "@/components/global/Drawer";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ORDER_SUMMARY_VIEW } from "../../right-section/constants";
+import { ON_PLACE_VIEW, ORDER_SUMMARY_VIEW } from "../../right-section/constants";
 import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
 
 export default function ProductsVariants() {
@@ -14,8 +14,10 @@ export default function ProductsVariants() {
     selectedProduct,
     selectedProducts,
     setSelectedProducts,
+    setQuantityPerVariant,
   } = useLeftViewContext();
-  const { setViews } = useRightViewContext();
+
+  const { setViews, orderType } = useRightViewContext();
 
   const handleSelectVariant = (id: string, price: number) => {
     if (!selectedProduct) {
@@ -46,10 +48,14 @@ export default function ProductsVariants() {
             variant_id: id,
             quantity: 1,
             price: price,
+            customer_index: 1,
+            order_type_id: orderType || ON_PLACE_VIEW,
           },
         ];
       }
     });
+
+    setQuantityPerVariant((prev) => prev + 1);
   };
 
   const handleConfirm = () => {
@@ -63,18 +69,22 @@ export default function ProductsVariants() {
   }, [selectedProducts]);
 
   return (
-    <Drawer open={openDrawerVariants} setOpen={setOpenDrawerVariants}>
+    <Drawer
+      title={selectedProduct?.name || ""}
+      open={openDrawerVariants}
+      setOpen={setOpenDrawerVariants}
+    >
       <div className="h-full w-full relative flex justify-center">
         <div className="w-full h-full overflow-auto space-y-2">
           {selectedProduct &&
-            selectedProduct.variants.map((variant) => {
+            selectedProduct.variants.map((variant, index) => {
               const isSelected = selectedProducts.some(
                 (p) => p.variant_id === variant._id
               );
 
               return (
                 <div
-                  key={variant._id}
+                  key={variant._id + index}
                   onClick={() =>
                     handleSelectVariant(variant._id, variant.price_ttc)
                   }
@@ -86,7 +96,7 @@ export default function ProductsVariants() {
                   }}
                 >
                   <Card
-                    className={`w-full h-full px-4 py-2 rounded-lg !bg-zinc-950 ${
+                    className={`w-full h-full px-4 py-2 rounded-lg dark:!bg-zinc-950 ${
                       isSelected ? "border-2 border-primary-color" : ""
                     }`}
                   >
@@ -101,8 +111,10 @@ export default function ProductsVariants() {
               );
             })}
         </div>
-        <div className="w-[105%] px-[2.5%] absolute bottom-0 h-16 flex items-end bg-zinc-900">
-          <Button className="w-full" onClick={handleConfirm}>Add to cart</Button>
+        <div className="w-[105%] px-[2.5%] absolute bottom-0 h-16 flex items-end dark:!bg-zinc-900 bg-gray-100">
+          <Button className="w-full" onClick={handleConfirm}>
+            Add to cart
+          </Button>
         </div>
       </div>
     </Drawer>

@@ -4,8 +4,9 @@ import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { TypographyP } from "@/components/ui/typography";
 import { LucideMaximize, User } from "lucide-react";
+import OrderLines from "../import/OrderLines";
 
-export default function ProceedOrder() {
+export default function OrderSummary() {
   return (
     <div className="flex flex-col h-full gap-y-2 py-4">
       <div className="flex items-center justify-between">
@@ -49,18 +50,14 @@ export default function ProceedOrder() {
           </Button>
         </div>
       </div>
-      <div className="pt-2">
-        <Card className="py-2 rounded-md flex items-center gap-2 justify-center">
-          <User size={16} />
-          <TypographyP className="text-sm font-medium">Customer</TypographyP>
-        </Card>
-      </div>
-      <div className="flex-1 border border-dashed flex-grow relative flex items-center justify-center">
-        <img
+
+      <div className="flex-border flex-grow relative flex items-center justify-center mt-4">
+        {/* <img
           src={logoWithoutText}
           alt="Order Sumary"
           className="w-1/2 h-auto object-contain absolute opacity-75"
-        />
+        /> */}
+        <OrderLines />
       </div>
       <div className="flex items-center justify-between space-x-2">
         <Button className="flex-1">Hold Order</Button>

@@ -94,4 +94,8 @@ export type OrderSelectionState = {
 export interface ProductSelected extends Product {
   variant_id: string;
   quantity: number;
+  customer_index: number;
+  order_type_id: string;
+  note?: string[];
+  suite_commande?: boolean;
 }

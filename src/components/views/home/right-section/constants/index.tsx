@@ -3,7 +3,7 @@ import TakeAway from "../components/TakeAway";
 import OnPlace from "../components/OnPlace";
 import Delivery from "../components/Delivery";
 import OwnDeliveryForm from "../components/OwnDeliveryForm";
-import OrderSumary from "../components/OrderSumary";
+import OrderSummary from "../components/OrderSummary";
 
 export const TYPE_OF_ORDER_VIEW = "TypeOfOrder";
 export const TAKE_AWAY_VIEW = "takeAway";
@@ -22,5 +22,5 @@ export const tabsConfig = [
     component: <OwnDeliveryForm />,
     className: "pb-8",
   },
-  { value: ORDER_SUMMARY_VIEW, component: <OrderSumary />, className: "pb-8" },
-  ];
+  { value: ORDER_SUMMARY_VIEW, component: <OrderSummary />, className: "pb-8" },
+];

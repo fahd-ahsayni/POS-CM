@@ -20,7 +20,7 @@ export const tabsConfig = [
     component: (
       <>
         <Header />
-        <div className="flex items-center justify-between relative flex-shrink-0 mt-5">
+        <div className="flex items-center justify-between relative flex-shrink-0 mt-2">
           <TypographyP className="pr-4 bg-background font-medium">
             Products
           </TypographyP>

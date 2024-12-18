@@ -9,7 +9,7 @@ import { useRightViewContext } from "../contexts/rightViewContext";
 
 export default function SelectTypeOfOrder() {
   const [orderTypes, setOrderTypes] = useState<OrderType[]>([]);
-  const { setViews } = useRightViewContext();
+  const { setViews, setOrderType } = useRightViewContext();
 
   useEffect(() => {
     const storedGeneralData = localStorage.getItem("generalData");
@@ -24,7 +24,8 @@ export default function SelectTypeOfOrder() {
     }
   }, []);
 
-  const handleOrderTypeSelect = (type: string) => {
+  const handleOrderTypeSelect = (id: string, type: string) => {
+    setOrderType(id);
     setViews(type);
   };
 
@@ -42,8 +43,8 @@ export default function SelectTypeOfOrder() {
             key={type._id}
           >
             <Card
-              className="w-full rounded-md h-24 px-8 py-4 !bg-zinc-800 flex space-x-4 items-center justify-between cursor-pointer hover:bg-accent"
-              onClick={() => handleOrderTypeSelect(type.type)}
+              className="w-full rounded-md h-24 px-8 py-4 dark:!bg-zinc-800 bg-white flex space-x-4 items-center justify-between cursor-pointer hover:bg-accent"
+              onClick={() => handleOrderTypeSelect(type._id, type.type)}
             >
               <div className="flex items-center gap-x-4">
                 <LucideAirplay className="w-6 h-auto text-primary" />

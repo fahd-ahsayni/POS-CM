@@ -11,6 +11,8 @@ const LeftViewContext = createContext<{
   setOpenDrawerVariants: React.Dispatch<React.SetStateAction<boolean>>;
   selectedProduct: Product | null;
   setSelectedProduct: React.Dispatch<React.SetStateAction<Product | null>>;
+  quantityPerVariant: number;
+  setQuantityPerVariant: React.Dispatch<React.SetStateAction<number>>;
 } | null>(null);
 
 // Create a provider component
@@ -21,6 +23,7 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
   );
   const [openDrawerVariants, setOpenDrawerVariants] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [quantityPerVariant, setQuantityPerVariant] = useState<number>(0);
   return (
     <LeftViewContext.Provider
       value={{
@@ -32,6 +35,8 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
         setOpenDrawerVariants,
         selectedProduct,
         setSelectedProduct,
+        quantityPerVariant,
+        setQuantityPerVariant,
       }}
     >
       {children}
