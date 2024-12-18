@@ -1,6 +1,6 @@
 import { TypographyP } from "@/components/ui/typography";
 import { Card } from "@/components/ui/card";
-import { motion} from "framer-motion";
+import { motion } from "framer-motion";
 import { Product } from "@/types";
 import { useEffect, useState, useCallback } from "react";
 import { unknownProduct } from "@/assets";
@@ -8,6 +8,7 @@ import { extractProducts } from "@/store/slices/data/generalDataSlice";
 import { useLeftViewContext } from "../contexts/leftViewContext";
 import ProductsVariants from "./ProductsVariants";
 import { ProductSelected } from "@/types";
+import { Loading } from "@/components/global/loading";
 
 export default function AllProducts() {
   const [data, setData] = useState<Product[]>([]);
@@ -70,7 +71,9 @@ export default function AllProducts() {
   return (
     <>
       {loading ? (
-        <div>Loading...</div>
+        <div className="h-96 w-full flex items-center justify-center">
+          <Loading />
+        </div>
       ) : (
         <>
           <ProductsVariants />
@@ -92,7 +95,9 @@ export default function AllProducts() {
                   <Card
                     className={`flex items-center justify-start h-full w-full py-2 px-2 !rounded-lg gap-x-4 ${
                       selectedProducts.some(
-                        (p) => p._id === product._id && p.variant_id === product.variants[0]._id
+                        (p) =>
+                          p._id === product._id &&
+                          p.variant_id === product.variants[0]._id
                       )
                         ? "border-2 border-primary"
                         : ""

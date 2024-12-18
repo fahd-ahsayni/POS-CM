@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { fetchGeneralData } from "@/store/slices/data/generalDataSlice";
 import { RootState } from "@/store";
+import { LoadingFullScreen } from "../global/loading";
 
 export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -22,7 +23,7 @@ export default function Layout() {
     }
   }, [dispatch]);
 
-  if (status === "loading") return <p>Loading...</p>;
+  if (status === "loading") return <LoadingFullScreen />;
   if (status === "failed") return <p>Error: {error}</p>;
 
   return (

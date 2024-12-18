@@ -4,6 +4,8 @@ import Drawer from "@/components/global/Drawer";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { ORDER_SUMMARY_VIEW } from "../../right-section/constants";
+import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
 
 export default function ProductsVariants() {
   const {
@@ -13,6 +15,7 @@ export default function ProductsVariants() {
     selectedProducts,
     setSelectedProducts,
   } = useLeftViewContext();
+  const { setViews } = useRightViewContext();
 
   const handleSelectVariant = (id: string, price: number) => {
     if (!selectedProduct) {
@@ -49,6 +52,11 @@ export default function ProductsVariants() {
     });
   };
 
+  const handleConfirm = () => {
+    setOpenDrawerVariants(false);
+    setViews(ORDER_SUMMARY_VIEW);
+  };
+
   // Monitor updates to selectedProducts
   useEffect(() => {
     console.log("Updated Selected Products:", selectedProducts);
@@ -59,32 +67,42 @@ export default function ProductsVariants() {
       <div className="h-full w-full relative flex justify-center">
         <div className="w-full h-full overflow-auto space-y-2">
           {selectedProduct &&
-            selectedProduct.variants.map((variant) => (
-              <div
-                key={variant._id}
-                onClick={() =>
-                  handleSelectVariant(variant._id, variant.price_ttc)
-                }
-                tabIndex={0} // Makes it focusable
-                role="button" // Improves accessibility
-                onKeyPress={(e) => {
-                  if (e.key === "Enter")
-                    handleSelectVariant(variant._id, variant.price_ttc);
-                }}
-              >
-                <Card className="w-full h-full px-4 py-2 rounded-lg !bg-zinc-950">
-                  <TypographyP className="font-semibold">
-                    {variant.name}
-                  </TypographyP>
-                  <TypographySmall className="text-muted-foreground font-semibold">
-                    {variant.price_ttc} Dhs
-                  </TypographySmall>
-                </Card>
-              </div>
-            ))}
+            selectedProduct.variants.map((variant) => {
+              const isSelected = selectedProducts.some(
+                (p) => p.variant_id === variant._id
+              );
+
+              return (
+                <div
+                  key={variant._id}
+                  onClick={() =>
+                    handleSelectVariant(variant._id, variant.price_ttc)
+                  }
+                  tabIndex={0} // Makes it focusable
+                  role="button" // Improves accessibility
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter")
+                      handleSelectVariant(variant._id, variant.price_ttc);
+                  }}
+                >
+                  <Card
+                    className={`w-full h-full px-4 py-2 rounded-lg !bg-zinc-950 ${
+                      isSelected ? "border-2 border-primary-color" : ""
+                    }`}
+                  >
+                    <TypographyP className="font-semibold">
+                      {variant.name}
+                    </TypographyP>
+                    <TypographySmall className="text-muted-foreground font-semibold">
+                      {variant.price_ttc} Dhs
+                    </TypographySmall>
+                  </Card>
+                </div>
+              );
+            })}
         </div>
         <div className="w-[105%] px-[2.5%] absolute bottom-0 h-16 flex items-end bg-zinc-900">
-          <Button className="w-full">Add to cart</Button>
+          <Button className="w-full" onClick={handleConfirm}>Add to cart</Button>
         </div>
       </div>
     </Drawer>

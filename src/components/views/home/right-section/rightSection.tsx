@@ -7,7 +7,7 @@ export default function RightSection() {
   const { views } = useRightViewContext();
 
   return (
-    <div className="w-full h-full mt-3 px-4 sm:px-6">
+    <div className="w-full h-full mt-3 px-2 sm:px-3">
       <Tabs value={views} className="w-full h-full flex">
         {tabsConfig.map(({ value, component, className = "" }) => (
           <TabsContent

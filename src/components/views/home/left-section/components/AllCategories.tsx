@@ -53,7 +53,7 @@ export default React.memo(function AllCategories() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.35 }}
-      className="grid grid-cols-3 gap-3.5 mt-8 pb-16"
+      className="grid grid-cols-3 gap-3.5 mt-8 pb-16 px-2"
     >
       <Card
         onClick={() => views === ORDER_SUMMARY_VIEW && setViews(ALL_PRODUCTS_VIEW)}
