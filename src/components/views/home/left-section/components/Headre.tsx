@@ -3,13 +3,14 @@ import { TypographyP } from "@/components/ui/typography";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { useLeftViewContext } from "../contexts/leftViewContext";
+import { ALL_CATEGORIES_VIEW } from "../constants";
 
 export default function Header() {
   const { setViews, setSelectedProducts } = useLeftViewContext();
 
   const handelBack = () => {
     setSelectedProducts([]);
-    setViews("AllCategories");
+    setViews(ALL_CATEGORIES_VIEW);
   };
   return (
     <div className="flex items-start relative justify-start w-full py-4 mt-2 gap-x-2">

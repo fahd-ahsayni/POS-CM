@@ -8,6 +8,8 @@ import { selectCategories } from "@/store/slices/data/generalDataSlice";
 import { Category } from "@/types";
 import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
 import { useLeftViewContext } from "../contexts/leftViewContext";
+import { ORDER_SUMMARY_VIEW } from "../../right-section/constants";
+import { ALL_PRODUCTS_VIEW } from "../constants";
 
 
 export default React.memo(function AllCategories() {
@@ -24,7 +26,7 @@ export default React.memo(function AllCategories() {
           key={category._id}
           className={cn(
             "flex cursor-pointer relative flex-col items-center h-24 !rounded-lg overflow-hidden justify-center",
-            views !== "OrderSumary" && "pointer-events-none"
+            views !== ORDER_SUMMARY_VIEW && "pointer-events-none"
           )}
         >
           <img
@@ -33,7 +35,7 @@ export default React.memo(function AllCategories() {
             crossOrigin="anonymous"
             className={cn(
               "w-full h-full object-cover transition-all duration-500",
-              views !== "OrderSumary"
+              views !== ORDER_SUMMARY_VIEW
                 ? "grayscale brightness-[0.18]"
                 : "brightness-[0.4]"
             )}
@@ -54,10 +56,10 @@ export default React.memo(function AllCategories() {
       className="grid grid-cols-3 gap-3.5 mt-8 pb-16"
     >
       <Card
-        onClick={() => views === "OrderSumary" && setViews("AllProducts")}
+        onClick={() => views === ORDER_SUMMARY_VIEW && setViews(ALL_PRODUCTS_VIEW)}
         className={cn(
           "flex !bg-zinc-800 cursor-pointer relative flex-col items-center h-24 !rounded-lg overflow-hidden justify-center",
-          views !== "OrderSumary" && "pointer-events-none"
+          views !== ORDER_SUMMARY_VIEW && "pointer-events-none"
         )}
       >
         <TypographyP className="text-center text-xl font-medium text-white">

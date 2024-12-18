@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { glovo, kaalix, yassir, ownDelivery } from "@/assets";
 import { motion } from "framer-motion";
 import { useRightViewContext } from "../contexts/rightViewContext";
+import { ORDER_SUMMARY_VIEW, OWN_DELIVERY_FORM_VIEW } from "../constants";
 
 const deliveryApps = [
   {
@@ -41,10 +42,10 @@ export default function SelectDeliveryType() {
 
   const handleConfirm = () => {
     if (selectedOrderType === "ownDelivery") {
-      setViews("OwnDeliveryForm");
+      setViews(OWN_DELIVERY_FORM_VIEW);
       return;
     }
-    setViews("OrderSumary");
+    setViews(ORDER_SUMMARY_VIEW);
   };
 
   return (

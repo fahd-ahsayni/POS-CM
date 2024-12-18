@@ -1,7 +1,6 @@
 import { TypographyP } from "@/components/ui/typography";
 import { Card } from "@/components/ui/card";
-import { motion, Variant } from "framer-motion";
-import { Separator } from "@/components/ui/separator";
+import { motion} from "framer-motion";
 import { Product } from "@/types";
 import { useEffect, useState, useCallback } from "react";
 import { unknownProduct } from "@/assets";

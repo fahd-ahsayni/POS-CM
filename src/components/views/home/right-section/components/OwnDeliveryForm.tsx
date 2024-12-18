@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useRightViewContext } from "../contexts/rightViewContext";
+import { TYPE_OF_ORDER_VIEW } from "../constants";
 
 export default function NumberOfTabel() {
   const { setViews } = useRightViewContext();
@@ -74,7 +75,7 @@ export default function NumberOfTabel() {
         <Button
           variant="outline"
           className="flex-1 bg-gray-200 hover:bg-gray-300/70 dark:bg-muted"
-          onClick={() => setViews("TypeOfOrder")}
+          onClick={() => setViews(TYPE_OF_ORDER_VIEW)}
         >
           Cancel
         </Button>
