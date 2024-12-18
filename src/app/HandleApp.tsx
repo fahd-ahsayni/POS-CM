@@ -6,10 +6,14 @@ import HomePage from "./HomePage";
 import Layout from "@/components/Layout/Layout";
 import SelectPosPage from "@/auth/SelectPosPage";
 import OrdersPage from "./OrdersPage";
+import { RightViewProvider } from "@/components/views/home/right-section/contexts/rightViewContext";
+import { LeftViewProvider } from "@/components/views/home/left-section/contexts/leftViewContext";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
+
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
@@ -19,21 +23,30 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 export default function HandleApp() {
   return (
-    <Routes>
-      <Route path="/login" element={<LogInPage />} />
-      <Route path="/select-pos" element={
-        <ProtectedRoute>
-          <SelectPosPage />
-        </ProtectedRoute>
-      } />
-      <Route element={
-        <ProtectedRoute>
-          <Layout />
-        </ProtectedRoute>
-      }>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/orders" element={<OrdersPage />} />
-      </Route>
-    </Routes>
+    <RightViewProvider>
+      <LeftViewProvider>
+        <Routes>
+          <Route path="/login" element={<LogInPage />} />
+          <Route
+            path="/select-pos"
+            element={
+              <ProtectedRoute>
+                <SelectPosPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            element={
+              <ProtectedRoute>
+                <Layout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/" element={<HomePage />} />
+            <Route path="/orders" element={<OrdersPage />} />
+          </Route>
+        </Routes>
+      </LeftViewProvider>
+    </RightViewProvider>
   );
 }

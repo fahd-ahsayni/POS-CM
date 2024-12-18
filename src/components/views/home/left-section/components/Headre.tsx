@@ -6,7 +6,7 @@ import { useLeftViewContext } from "../contexts/leftViewContext";
 import { ALL_CATEGORIES_VIEW } from "../constants";
 
 export default function Header() {
-  const { setViews, setSelectedProducts, setQuantityPerVariant, setSelectedProduct } = useLeftViewContext();
+  const { setViews, setSelectedProducts, setQuantityPerVariant } = useLeftViewContext();
 
   const handelBack = () => {
     setSelectedProducts([]);
@@ -17,7 +17,7 @@ export default function Header() {
     <div className="flex items-start relative justify-start w-full py-2 mt-2 gap-x-2">
       <div
         onClick={handelBack}
-        className="flex items-center justify-center w-12 h-14 bg-primary-color rounded-lg cursor-pointer"
+        className="flex items-center justify-center w-12 h-14 bg-red-600 rounded-lg cursor-pointer"
       >
         <ArrowLeft className="text-white" />
       </div>

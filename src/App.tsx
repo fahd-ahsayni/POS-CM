@@ -5,11 +5,13 @@ import { ThemeProvider } from "./providers/themeProvider";
 
 export default function App() {
   return (
-    <Fonts>
-      <ThemeProvider defaultTheme="dark" storageKey="pos-theme">
-        <ToastContainer />
-        <HandleApp />
-      </ThemeProvider>
-    </Fonts>
+
+        <Fonts>
+          <ThemeProvider defaultTheme="dark" storageKey="pos-theme">
+            <ToastContainer />
+            <HandleApp />
+          </ThemeProvider>
+        </Fonts>
+  
   );
 }

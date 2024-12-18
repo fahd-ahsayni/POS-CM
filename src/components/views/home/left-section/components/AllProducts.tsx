@@ -43,34 +43,39 @@ export default function AllProducts() {
         const variant = product.variants[0];
         setSelectedProducts((prevSelected: ProductSelected[]) => {
           const existingProduct = prevSelected.find(
-            (p) => p._id === product._id && p.variant_id === variant._id
+            (p) => 
+              p._id === product._id && 
+              p.variant_id === variant._id && 
+              p.customer_index === customerIndex
           );
-          const updatedProducts = existingProduct
-            ? prevSelected.map((p) =>
-                p._id === product._id && p.variant_id === variant._id
-                  ? { ...p, quantity: p.quantity + 1 }
-                  : p
-              )
-            : [
-                ...prevSelected,
-                {
-                  ...product,
-                  variant_id: variant._id,
-                  quantity: 1,
-                  customer_index: customerIndex,
-                  order_type_id: orderType || ON_PLACE_VIEW,
-                },
-              ];
 
-          console.log("All Selected Products:", updatedProducts);
-          return updatedProducts;
+          if (existingProduct) {
+            return prevSelected.map((p) =>
+              p._id === product._id && 
+              p.variant_id === variant._id && 
+              p.customer_index === customerIndex
+                ? { ...p, quantity: p.quantity + 1 }
+                : p
+            );
+          } else {
+            return [
+              ...prevSelected,
+              {
+                ...product,
+                variant_id: variant._id,
+                quantity: 1,
+                customer_index: customerIndex,
+                order_type_id: orderType || ON_PLACE_VIEW,
+              },
+            ];
+          }
         });
       } else if (product.variants.length > 1) {
         setSelectedProduct(product);
         setOpenDrawerVariants(true);
       }
     },
-    [setSelectedProducts, setOpenDrawerVariants, setSelectedProduct]
+    [setSelectedProducts, setOpenDrawerVariants, setSelectedProduct, customerIndex, orderType]
   );
 
   return (
@@ -90,15 +95,16 @@ export default function AllProducts() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.35 }}
-              className="w-full grid grid-cols-3 gap-3 overflow-auto"
+              className="w-full grid grid-cols-3 gap-3"
             >
               {data.map((product) => {
-                const selectedProduct = selectedProducts.find(
-                  (p) =>
-                    p._id === product._id &&
-                    p.variant_id === product.variants[0]._id
+                const selectedProductVariants = selectedProducts.filter(
+                  (p) => p._id === product._id
                 );
-                const quantity = selectedProduct ? selectedProduct.quantity : 0;
+                const totalQuantity = selectedProductVariants.reduce(
+                  (sum, p) => sum + p.quantity,
+                  0
+                );
 
                 return (
                   <motion.div
@@ -107,7 +113,7 @@ export default function AllProducts() {
                   >
                     <Card
                       className={`flex items-center justify-start h-full w-full py-2 px-2 !rounded-lg gap-x-4 ${
-                        quantity > 0 ? "border-2 border-primary" : ""
+                        totalQuantity > 0 ? "border-2 border-primary" : ""
                       }`}
                       onClick={() => handleProductClick(product)}
                     >
@@ -123,19 +129,21 @@ export default function AllProducts() {
                           alt={product.name}
                           crossOrigin="anonymous"
                           className={`size-20 object-cover rounded-lg ${
-                            quantity > 0 ? "brightness-50 transition-all duration-500" : ""
+                            totalQuantity > 0
+                              ? "brightness-50 transition-all duration-500"
+                              : ""
                           }`}
                         />
-                        {quantity > 0 && (
+                        {totalQuantity > 0 && (
                           <div className="absolute w-full h-full flex items-center justify-center">
                             <motion.div
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
                               transition={{ duration: 0.35 }}
-                              className="bg-primary-color rounded-full w-8 h-8 flex items-center justify-center"
+                              className="bg-primary rounded-full w-8 h-8 flex items-center justify-center"
                             >
                               <TypographyP className="text-white text-sm font-medium">
-                                {quantity}
+                                {totalQuantity}
                               </TypographyP>
                             </motion.div>
                           </div>

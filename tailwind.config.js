@@ -31,8 +31,6 @@ module.exports = {
           DEFAULT: "#FB0000",
         },
 
-        "primary-color": "#fb0000",
-
         zinc: {
           50: "#BFBFBF",
           100: "#B5B5B5",

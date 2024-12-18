@@ -1,12 +1,16 @@
-import { logoWithoutText } from "@/assets";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { TypographyP } from "@/components/ui/typography";
-import { LucideMaximize, User } from "lucide-react";
+import { LucideMaximize, LucidePlus } from "lucide-react";
 import OrderLines from "../import/OrderLines";
+import { useRightViewContext } from "../contexts/rightViewContext";
+import { useEffect } from "react";
 
 export default function OrderSummary() {
+  const { customerIndex, setCustomerIndex } = useRightViewContext();
+  useEffect(() => {
+    console.log(customerIndex);
+  }, [customerIndex]);
   return (
     <div className="flex flex-col h-full gap-y-2 py-4">
       <div className="flex items-center justify-between">
@@ -33,7 +37,7 @@ export default function OrderSummary() {
         </div>
         <div className="flex items-center gap-2">
           <Button size="icon">
-            <LucideMaximize size={16} />
+            <LucidePlus size={16} />
             <span className="sr-only">Full screen</span>
           </Button>
           <Button size="icon">
@@ -44,8 +48,8 @@ export default function OrderSummary() {
             <LucideMaximize size={16} />
             <span className="sr-only">Full screen</span>
           </Button>
-          <Button size="icon">
-            <LucideMaximize size={16} />
+          <Button onClick={() => setCustomerIndex(customerIndex + 1)} size="icon">
+            <LucidePlus size={16} />
             <span className="sr-only">Full screen</span>
           </Button>
         </div>

@@ -24,19 +24,7 @@ export interface User {
   position: string;
   image?: string | null;
 }
-// Define types
-export interface Product {
-  _id: string;
-  name: string;
-  price: number;
-  image: string | null;
-  sequence: number;
-  category: string;
-  description: string | null;
-  active: boolean;
-  variants: Variant[];
-  quantity?: number;
-}
+
 
 export interface Variant {
   _id: string;
@@ -90,6 +78,20 @@ export type OrderSelectionState = {
     | "tableConfirmation"
     | null;
 };
+
+// Define types
+export interface Product {
+  _id: string;
+  name: string;
+  price: number;
+  image: string | null;
+  sequence: number;
+  category: string;
+  description: string | null;
+  active: boolean;
+  variants: Variant[];
+  quantity?: number;
+}
 
 export interface ProductSelected extends Product {
   variant_id: string;

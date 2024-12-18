@@ -84,7 +84,7 @@ export default function ProductsVariants() {
 
               return (
                 <div
-                  key={variant._id + index}
+                  key={`${selectedProduct._id}-${variant._id}-${index}`}
                   onClick={() =>
                     handleSelectVariant(variant._id, variant.price_ttc)
                   }
@@ -97,7 +97,7 @@ export default function ProductsVariants() {
                 >
                   <Card
                     className={`w-full h-full px-4 py-2 rounded-lg dark:!bg-zinc-950 ${
-                      isSelected ? "border-2 border-primary-color" : ""
+                      isSelected ? "border-2 border-primary" : ""
                     }`}
                   >
                     <TypographyP className="font-semibold">
