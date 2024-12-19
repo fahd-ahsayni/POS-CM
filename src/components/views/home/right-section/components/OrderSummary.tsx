@@ -1,16 +1,17 @@
+import { logoWithoutText } from "@/assets";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { TypographyP } from "@/components/ui/typography";
+import { AnimatePresence, motion } from "framer-motion";
 import { LucideMaximize, LucidePlus } from "lucide-react";
-import OrderLines from "../import/OrderLines";
-import { useRightViewContext } from "../contexts/rightViewContext";
 import { useEffect } from "react";
-import { logoWithoutText } from "@/assets";
 import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
-import { motion, AnimatePresence } from "framer-motion";
+import { useRightViewContext } from "../contexts/rightViewContext";
+import OrderLines from "../import/OrderLines";
 
 export default function OrderSummary() {
-  const { customerIndex, setCustomerIndex, setSelectedCustomer } = useRightViewContext();
+  const { customerIndex, setCustomerIndex, setSelectedCustomer } =
+    useRightViewContext();
   const { selectedProducts } = useLeftViewContext();
 
   useEffect(() => {

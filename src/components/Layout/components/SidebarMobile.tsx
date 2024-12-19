@@ -1,7 +1,7 @@
-import { Fragment } from "react";
+import { cn } from "@/lib/utils";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { cn } from "@/lib/utils";
+import { Fragment } from "react";
 import { sidebarNavigation } from "../constants";
 
 export default function SidebarMobile({
@@ -86,15 +86,7 @@ export default function SidebarMobile({
                         )}
                         aria-current={item.current ? "page" : undefined}
                       >
-                        <item.icon
-                          className={cn(
-                            item.current
-                              ? "text-white"
-                              : "text-indigo-300 group-hover:text-white",
-                            "mr-3 h-6 w-6"
-                          )}
-                          aria-hidden="true"
-                        />
+                       
                         <span>{item.name}</span>
                       </a>
                     ))}

@@ -6,9 +6,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TypographySmall } from "@/components/ui/typography";
-import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
-import { setPageSize, setCurrentPage } from "@/store/slices/data/ordersSlice";
+import { setCurrentPage, setPageSize } from "@/store/slices/data/ordersSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function SelectNumberOfOrderPerPage({
   itemsLength,

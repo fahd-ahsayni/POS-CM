@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
-import { sidebarNavigation } from "../constants";
 import { useLocation, useNavigate } from "react-router-dom";
+import { sidebarNavigation } from "../constants";
 
 export default function Sidebar() {
   const { pathname } = useLocation();

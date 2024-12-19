@@ -1,7 +1,7 @@
 // src/store/slices/auth/authSlice.ts
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
 import { User } from "@/types";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import axios from "axios";
 
 const VITE_LOGIN_URL = import.meta.env.VITE_LOGIN_URL;
 const VITE_API_KEY = import.meta.env.VITE_API_KEY;

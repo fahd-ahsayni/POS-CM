@@ -1,10 +1,10 @@
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { TypographyH1, TypographyH3 } from "@/components/ui/typography";
 import NumberPad from "@/components/global/NumberPad";
+import { Button } from "@/components/ui/button";
+import { TypographyH1, TypographyH3 } from "@/components/ui/typography";
 import { motion } from "framer-motion";
-import { useRightViewContext } from "../contexts/rightViewContext";
+import { useState } from "react";
 import { ORDER_SUMMARY_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
+import { useRightViewContext } from "../contexts/rightViewContext";
 
 export default function TakeAway() {
   const [peopleCount, setPeopleCount] = useState("");

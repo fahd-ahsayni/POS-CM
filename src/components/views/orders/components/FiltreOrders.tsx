@@ -1,3 +1,4 @@
+import ComboboxText from "@/components/global/ComboboxText";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,7 +8,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { FilterIcon, Search } from "lucide-react";
-import ComboboxText from "@/components/global/ComboboxText";
 import { useState } from "react";
 
 export default function FiltreOrders() {

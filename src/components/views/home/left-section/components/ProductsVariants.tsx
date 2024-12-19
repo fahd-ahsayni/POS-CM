@@ -3,14 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { useEffect } from "react";
-import { v4 as uuidv4 } from "uuid";
 import { useLeftViewContext } from "../contexts/leftViewContext";
-
-import {
-  ON_PLACE_VIEW,
-  ORDER_SUMMARY_VIEW,
-} from "../../right-section/constants";
+import { ORDER_SUMMARY_VIEW } from "../../right-section/constants";
 import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
+import { useProductSelection } from "../hooks/useProductSelection";
 
 export default function ProductsVariants() {
   const {
@@ -26,48 +22,20 @@ export default function ProductsVariants() {
 
   const { setViews, orderType } = useRightViewContext();
 
+  const { addOrUpdateProduct } = useProductSelection({
+    selectedProducts,
+    setSelectedProducts,
+    selectedCustomer,
+    orderType,
+  });
+
   const handleSelectVariant = (id: string, price: number) => {
     if (!selectedProduct) {
       console.warn("No selected product. Cannot select a variant.");
       return;
     }
 
-    setSelectedProducts((prev) => {
-      const existingProduct = prev.find(
-        (p) =>
-          p._id === selectedProduct._id &&
-          p.variant_id === id &&
-          p.customer_index === selectedCustomer
-      );
-
-      if (existingProduct) {
-        return prev.map((p) =>
-          p._id === selectedProduct._id && p.variant_id === id
-            ? {
-                ...p,
-                quantity: p.quantity + 1,
-                price: p.price + price,
-              }
-            : p
-        );
-      } else {
-        const variant = selectedProduct.variants.find((v) => v._id === id);
-        return [
-          ...prev,
-          {
-            ...selectedProduct,
-            id: uuidv4(),
-            variants: variant ? [variant] : [],
-            variant_id: id,
-            quantity: 1,
-            price: price,
-            customer_index: selectedCustomer,
-            order_type_id: orderType || ON_PLACE_VIEW,
-          },
-        ];
-      }
-    });
-
+    addOrUpdateProduct(selectedProduct, id, price);
     setQuantityPerVariant((prev) => prev + 1);
   };
 

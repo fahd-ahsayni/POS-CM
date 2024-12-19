@@ -9,10 +9,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { ChevronDown, HelpCircle, LogOut, Power, User } from "lucide-react";
-import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
 import { logout } from "@/store/slices/authentication/authSlice";
+import { ChevronDown, HelpCircle, LogOut, Power, User } from "lucide-react";
+import { useDispatch } from "react-redux";
 
 const menuItems = [
   { icon: User, label: "My Profile" },

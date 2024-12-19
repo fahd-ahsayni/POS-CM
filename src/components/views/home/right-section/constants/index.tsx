@@ -1,9 +1,9 @@
+import Delivery from "../components/Delivery";
+import OnPlace from "../components/OnPlace";
+import OrderSummary from "../components/OrderSummary";
+import OwnDeliveryForm from "../components/OwnDeliveryForm";
 import SelectTypeOfOrder from "../components/SelectTypeOfOrder";
 import TakeAway from "../components/TakeAway";
-import OnPlace from "../components/OnPlace";
-import Delivery from "../components/Delivery";
-import OwnDeliveryForm from "../components/OwnDeliveryForm";
-import OrderSummary from "../components/OrderSummary";
 
 export const TYPE_OF_ORDER_VIEW = "TypeOfOrder";
 export const TAKE_AWAY_VIEW = "takeAway";

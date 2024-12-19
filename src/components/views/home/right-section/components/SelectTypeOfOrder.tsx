@@ -1,8 +1,7 @@
-import { TypographyH3 } from "@/components/ui/typography";
-import { TypographyH4 } from "@/components/ui/typography";
 import { Card } from "@/components/ui/card";
-import { motion } from "framer-motion";
+import { TypographyH3, TypographyH4 } from "@/components/ui/typography";
 import { OrderType } from "@/types";
+import { motion } from "framer-motion";
 import { ChevronRightIcon, LucideAirplay } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRightViewContext } from "../contexts/rightViewContext";

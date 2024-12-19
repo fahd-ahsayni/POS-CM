@@ -1,9 +1,9 @@
-import SelectUser from "./components/SelectUser";
-import Passcode from "./components/Passcode";
+import type { AppDispatch } from "@/store";
+import { fetchUsers } from "@/store/slices/data/usersSlice";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { fetchUsers } from "@/store/slices/data/usersSlice";
-import type { AppDispatch } from "@/store";
+import Passcode from "./components/Passcode";
+import SelectUser from "./components/SelectUser";
 
 export default function LogInPage() {
   const dispatch = useDispatch<AppDispatch>();

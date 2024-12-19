@@ -1,19 +1,19 @@
-import { useState, useEffect } from "react";
 import { logoLightMode } from "@/assets";
-import { motion } from "framer-motion";
-import UserCard from "./components/UserCard";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
-import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
-import { User } from "@/types";
 import {
   checkOpenDay,
   openDay,
 } from "@/store/slices/authentication/openDaySlice";
 import { fetchPosData } from "@/store/slices/data/posSlice";
+import { User } from "@/types";
+import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import UserCard from "./components/UserCard";
 
 export default function SelectPosPage() {
   const navigate = useNavigate();

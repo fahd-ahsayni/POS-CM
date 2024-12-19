@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { TypographyH3 } from "@/components/ui/typography";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useRightViewContext } from "../contexts/rightViewContext";
+import { TypographyH3 } from "@/components/ui/typography";
 import { TYPE_OF_ORDER_VIEW } from "../constants";
+import { useRightViewContext } from "../contexts/rightViewContext";
 
 export default function NumberOfTabel() {
   const { setViews } = useRightViewContext();

@@ -1,6 +1,3 @@
-import { Label } from "@/components/ui/label";
-import { Check, ChevronDown } from "lucide-react";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -16,6 +13,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { Check, ChevronDown } from "lucide-react";
+import { useState } from "react";
 
 type Framework = {
   value: string;
@@ -29,7 +28,12 @@ type SelectProps = {
   onSelect: (value: string) => void;
 };
 
-export default function Select({ items, placeholder, searchPlaceholder, onSelect }: SelectProps) {
+export default function Select({
+  items,
+  placeholder,
+  searchPlaceholder,
+  onSelect,
+}: SelectProps) {
   const [open, setOpen] = useState<boolean>(false);
   const [value, setValue] = useState<string>("");
 

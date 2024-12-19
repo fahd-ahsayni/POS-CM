@@ -1,10 +1,10 @@
 // Import required modules
 import { Category, GeneralData, GeneralDataState, Product } from "@/types";
 import {
-  createSlice,
   createAsyncThunk,
-  PayloadAction,
   createSelector,
+  createSlice,
+  PayloadAction,
 } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -46,26 +46,29 @@ export const fetchPaginatedGeneralData = createAsyncThunk<
   GeneralData,
   { id: string; page: number; limit: number },
   { rejectValue: string }
->("generalData/fetchPaginatedGeneralData", async ({ id, page, limit }, { rejectWithValue }) => {
-  try {
-    const token = localStorage.getItem("token");
-    const response = await axios.get(
-      `${import.meta.env.VITE_BASE_URL}/general-data/pos/${id}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { page, limit },
-      }
-    );
-    return response.data;
-  } catch (error: any) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data || "Failed to fetch paginated POS data"
+>(
+  "generalData/fetchPaginatedGeneralData",
+  async ({ id, page, limit }, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/general-data/pos/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { page, limit },
+        }
       );
+      return response.data;
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        return rejectWithValue(
+          error.response?.data || "Failed to fetch paginated POS data"
+        );
+      }
+      return rejectWithValue("An unexpected error occurred");
     }
-    return rejectWithValue("An unexpected error occurred");
   }
-});
+);
 
 // Create slice
 const generalDataSlice = createSlice({

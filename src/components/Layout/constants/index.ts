@@ -1,12 +1,12 @@
 import {
   addClient,
-  preferences,
-  home,
-  orders,
-  waitingOrders,
-  openDrawer,
-  waiters,
   drop,
+  home,
+  openDrawer,
+  orders,
+  preferences,
+  waiters,
+  waitingOrders,
 } from "@/assets";
 
 export const sidebarNavigation = [

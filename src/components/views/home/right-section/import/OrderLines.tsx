@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
-import OrderLineIndex from "./OrderLineIndex";
-import { useRightViewContext } from "../contexts/rightViewContext";
 import { TypographySmall } from "@/components/ui/typography";
 import { User } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
+import { useRightViewContext } from "../contexts/rightViewContext";
+import OrderLineIndex from "./OrderLineIndex";
 
 export default function OrderLines() {
   const { selectedProducts, setSelectedProducts } = useLeftViewContext();

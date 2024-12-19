@@ -6,16 +6,23 @@ interface Props {
   incorrectPasscode?: boolean;
 }
 
-export default function CirclesAnimation({ currentLength, incorrectPasscode }: Props) {
+export default function CirclesAnimation({
+  currentLength,
+  incorrectPasscode,
+}: Props) {
   useEffect(() => {
     console.log(incorrectPasscode);
   }, [incorrectPasscode]);
   return (
-    <motion.div 
+    <motion.div
       className="flex justify-center gap-3"
-      animate={incorrectPasscode ? {
-        y: [0, -10, 10, -10, 10, -5, 5, 0]
-      } : undefined}
+      animate={
+        incorrectPasscode
+          ? {
+              y: [0, -10, 10, -10, 10, -5, 5, 0],
+            }
+          : undefined
+      }
       transition={{
         duration: 0.5,
         type: "spring",

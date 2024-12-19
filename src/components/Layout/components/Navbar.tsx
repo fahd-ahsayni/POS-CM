@@ -1,12 +1,11 @@
 import { logoDarkMode, logoLightMode, sunset } from "@/assets";
-import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { ModeToggleWithDropdown } from "@/components/global/mode-toggle";
-import { Button } from "@/components/ui/button";
-import { Menu as MenuIcon, LucideMaximize, Bell } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-import { useTheme } from "@/providers/themeProvider";
 import Profile from "@/components/global/Profile";
-
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { TypographyP, TypographySmall } from "@/components/ui/typography";
+import { useTheme } from "@/providers/themeProvider";
+import { Bell, LucideMaximize, Menu as MenuIcon } from "lucide-react";
 
 export default function Navbar({
   setMobileMenuOpen,

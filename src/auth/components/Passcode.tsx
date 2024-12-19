@@ -1,12 +1,12 @@
-import { Button } from "@/components/ui/button";
-import CirclesAnimation from "./CirclesAnimation";
-import { useState, useMemo } from "react";
 import NumberPad from "@/components/global/NumberPad";
-import { useDispatch, useSelector } from "react-redux";
+import { Button } from "@/components/ui/button";
+import { AppDispatch, RootState } from "@/store";
 import { login } from "@/store/slices/authentication/authSlice";
-import { RootState, AppDispatch } from "@/store";
-import { useNavigate } from "react-router-dom";
 import { setSelectedUser } from "@/store/slices/data/usersSlice";
+import { useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import CirclesAnimation from "./CirclesAnimation";
 
 export default function Passcode() {
   const [passcode, setPasscode] = useState<string>("");

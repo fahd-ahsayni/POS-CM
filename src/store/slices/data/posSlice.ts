@@ -1,5 +1,5 @@
 // src/store/slices/data/posSlice.ts
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 // Define the type for your POS data
@@ -31,14 +31,11 @@ export const fetchPosData = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/pos`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/pos`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       console.log("POS API Response:", response.data);
       return response.data;
     } catch (error) {

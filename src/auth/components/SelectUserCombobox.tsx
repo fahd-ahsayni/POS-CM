@@ -1,8 +1,7 @@
-import { useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { Label } from "@/components/ui/label";
 import { Check, ChevronDown } from "lucide-react";
 import { Fragment, useState } from "react";
+import { useSelector } from "react-redux";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -58,7 +57,7 @@ export default function SelectUserCombobox() {
                         .map((group) =>
                           group.userList.find((user) => user.name === value)
                         )
-                        .filter(Boolean)[0]?.imageUrl
+                        .filter(Boolean)[0]?.image ?? ""
                     }
                     className="h-6 w-6 rounded-full object-cover"
                   />
@@ -89,7 +88,7 @@ export default function SelectUserCombobox() {
                   <CommandGroup heading={group.userType}>
                     {group.userList.map((user) => (
                       <CommandItem
-                        key={user.id}
+                        key={user._id}
                         value={user.name}
                         onSelect={(currentValue) => {
                           setValue(currentValue);
@@ -97,7 +96,7 @@ export default function SelectUserCombobox() {
                         }}
                       >
                         <img
-                          src={user.imageUrl}
+                          src={user.image ?? ""}
                           alt={user.name}
                           className="w-6 h-6 rounded-full object-cover"
                         />

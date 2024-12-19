@@ -1,5 +1,5 @@
-import { ProductSelected, Product } from "@/types";
-import { createContext, useContext, useState, ReactNode } from "react";
+import { Category, Product, ProductSelected } from "@/types";
+import { createContext, ReactNode, useContext, useState } from "react";
 
 // Create a context for the tab state
 const LeftViewContext = createContext<{
@@ -13,6 +13,8 @@ const LeftViewContext = createContext<{
   setSelectedProduct: React.Dispatch<React.SetStateAction<Product | null>>;
   quantityPerVariant: number;
   setQuantityPerVariant: React.Dispatch<React.SetStateAction<number>>;
+  category: Category | null;
+  setCategory: React.Dispatch<React.SetStateAction<Category | null>>;
 } | null>(null);
 
 // Create a provider component
@@ -25,7 +27,8 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [quantityPerVariant, setQuantityPerVariant] = useState<number>(0);
 
-
+  // TODO: Categories Context
+  const [category, setCategory] = useState<Category | null>(null);
   return (
     <LeftViewContext.Provider
       value={{
@@ -39,6 +42,8 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
         setSelectedProduct,
         quantityPerVariant,
         setQuantityPerVariant,
+        category,
+        setCategory,
       }}
     >
       {children}

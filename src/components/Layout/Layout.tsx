@@ -1,14 +1,11 @@
-import { useEffect, useState } from "react";
-import Sidebar from "./components/Sidebar";
-import SidebarMobile from "./components/SidebarMobile";
-import Navbar from "./components/Navbar";
-import { useNavigate, Outlet } from "react-router-dom";
-import { AppDispatch } from "@/store";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
 import { fetchGeneralData } from "@/store/slices/data/generalDataSlice";
-import { RootState } from "@/store";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Outlet, useNavigate } from "react-router-dom";
 import { LoadingFullScreen } from "../global/loading";
+import Navbar from "./components/Navbar";
+import Sidebar from "./components/Sidebar";
 
 export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

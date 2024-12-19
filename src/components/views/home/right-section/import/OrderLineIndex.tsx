@@ -1,9 +1,9 @@
-import { TypographySmall } from "@/components/ui/typography";
-import OrderLine from "./OrderLine";
 import { Button } from "@/components/ui/button";
-import { Delete, LucidePlus, Trash, User } from "lucide-react";
-import { useRightViewContext } from "../contexts/rightViewContext";
+import { TypographySmall } from "@/components/ui/typography";
+import { LucidePlus, Trash, User } from "lucide-react";
 import { useEffect } from "react";
+import { useRightViewContext } from "../contexts/rightViewContext";
+import OrderLine from "./OrderLine";
 
 export default function OrderLineIndex({
   customerIndex,
@@ -18,14 +18,13 @@ export default function OrderLineIndex({
   decrementQuantity: (productId: string) => void;
   deleteCustomer: (customerIndex: number) => void;
 }) {
-
   const { selectedCustomer, setSelectedCustomer } = useRightViewContext();
 
   useEffect(() => {
     console.log("selectedCustomer", selectedCustomer);
   }, [selectedCustomer]);
 
-      return (
+  return (
     <>
       <div
         onClick={() => {

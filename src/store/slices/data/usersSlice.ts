@@ -2,24 +2,13 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { createApiInstance } from "@/api/axiosInstance";
 import axios from "axios";
+import { User } from "@/types";
 
 const VITE_API_KEY = import.meta.env.VITE_API_KEY;
 const VITE_API_USERS_CASHIERS = import.meta.env.VITE_API_USERS_CASHIERS;
 const VITE_API_USERS_MANAGERS = import.meta.env.VITE_API_USERS_MANAGERS;
 
-interface User {
-  id: string;
-  name: string;
-  position: string;
-  image: string | null;
-  phone: string;
-  sex: string;
-  has_pos: boolean;
-  email: string;
-  admin_password: string | null;
-  rfid: string | null;
-  admin_rfid: string | null;
-}
+
 
 interface UserState {
   users: {
@@ -49,8 +38,14 @@ export const fetchUsers = createAsyncThunk(
     const apiInstance = createApiInstance("", true);
     try {
       const [cashiersResponse, managersResponse] = await Promise.all([
-        apiInstance.get<User[]>(`${import.meta.env.VITE_BASE_URL}/users?position=Cashier`, { timeout: 5000 }),
-        apiInstance.get<User[]>(`${import.meta.env.VITE_BASE_URL}/users?position=Manager`, { timeout: 5000 }),
+        apiInstance.get<User[]>(
+          `${import.meta.env.VITE_BASE_URL}/users?position=Cashier`,
+          { timeout: 5000 }
+        ),
+        apiInstance.get<User[]>(
+          `${import.meta.env.VITE_BASE_URL}/users?position=Manager`,
+          { timeout: 5000 }
+        ),
       ]);
 
       if (!cashiersResponse.data || !managersResponse.data) {

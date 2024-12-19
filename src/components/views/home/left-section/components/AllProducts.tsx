@@ -3,13 +3,12 @@ import { Loading } from "@/components/global/loading";
 import { Card } from "@/components/ui/card";
 import { TypographyP } from "@/components/ui/typography";
 import { extractProducts } from "@/store/slices/data/generalDataSlice";
-import { Product, ProductSelected } from "@/types";
+import { Product } from "@/types";
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
-import { ON_PLACE_VIEW } from "../../right-section/constants";
 import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
 import { useLeftViewContext } from "../contexts/leftViewContext";
+import { useProductSelection } from "../hooks/useProductSelection";
 import ProductsVariants from "./ProductsVariants";
 
 export default function AllProducts() {
@@ -22,6 +21,13 @@ export default function AllProducts() {
     setSelectedProduct,
   } = useLeftViewContext();
   const { customerIndex, orderType, selectedCustomer } = useRightViewContext();
+
+  const { addOrUpdateProduct } = useProductSelection({
+    selectedProducts,
+    setSelectedProducts,
+    selectedCustomer,
+    orderType,
+  });
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -40,50 +46,13 @@ export default function AllProducts() {
   const handleProductClick = useCallback(
     (product: Product) => {
       if (product.variants.length === 1) {
-        const variant = product.variants[0];
-        setSelectedProducts((prevSelected: ProductSelected[]) => {
-          const existingProduct = prevSelected.find(
-            (p) =>
-              p._id === product._id &&
-              p.variant_id === variant._id &&
-              p.customer_index === selectedCustomer
-          );
-
-          if (existingProduct) {
-            return prevSelected.map((p) =>
-              p._id === product._id &&
-              p.variant_id === variant._id &&
-              p.customer_index === selectedCustomer
-                ? { ...p, quantity: p.quantity + 1 }
-                : p
-            );
-          } else {
-            return [
-              ...prevSelected,
-              {
-                ...product,
-                id: uuidv4(),
-                variant_id: variant._id,
-                quantity: 1,
-                customer_index: selectedCustomer,
-                order_type_id: orderType || ON_PLACE_VIEW,
-              },
-            ];
-          }
-        });
+        addOrUpdateProduct(product, product.variants[0]._id);
       } else if (product.variants.length > 1) {
         setSelectedProduct(product);
         setOpenDrawerVariants(true);
       }
     },
-    [
-      setSelectedProducts,
-      setOpenDrawerVariants,
-      setSelectedProduct,
-      customerIndex,
-      orderType,
-      selectedCustomer,
-    ]
+    [addOrUpdateProduct, setOpenDrawerVariants, setSelectedProduct]
   );
 
   return (

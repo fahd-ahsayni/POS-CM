@@ -1,7 +1,7 @@
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { useRightViewContext } from "./contexts/rightViewContext";
 import { cn } from "@/lib/utils";
 import { tabsConfig } from "./constants";
+import { useRightViewContext } from "./contexts/rightViewContext";
 
 export default function RightSection() {
   const { views } = useRightViewContext();

@@ -1,7 +1,6 @@
 import { unknownUser } from "@/assets";
 import { cn } from "@/lib/utils";
 import { User } from "@/types";
-import { useEffect } from "react";
 
 interface UserCardProps {
   user: User;

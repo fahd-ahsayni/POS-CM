@@ -3,7 +3,15 @@ import { TypographyP } from "@/components/ui/typography";
 import { motion } from "framer-motion";
 import { Minus, Plus } from "lucide-react";
 
-export default function OrderLine({ item, increment, decrement }: { item: any, increment: () => void, decrement: () => void }) {
+export default function OrderLine({
+  item,
+  increment,
+  decrement,
+}: {
+  item: any;
+  increment: () => void;
+  decrement: () => void;
+}) {
   console.log(item);
   return (
     <motion.div
@@ -25,7 +33,9 @@ export default function OrderLine({ item, increment, decrement }: { item: any, i
       <div className="h-full w-1.5 bg-red-800 absolute left-0" />
       <div className="pr-4 pl-5 h-20 flex flex-col justify-between w-full relative">
         <div className="flex items-center justify-between gap-x-2 w-full">
-          <TypographyP className="font-medium">{item.variants[0].name}</TypographyP>
+          <TypographyP className="font-medium">
+            {item.variants[0].name}
+          </TypographyP>
           <div className="flex items-center gap-x-2">
             <Button
               slot="decrement"

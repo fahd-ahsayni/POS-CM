@@ -1,8 +1,8 @@
-import React, { useMemo, useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { fetchOrders } from "@/store/slices/data/ordersSlice";
 import { AppDispatch } from "@/store";
+import { fetchOrders } from "@/store/slices/data/ordersSlice";
 import { ArrowDownAZ, ArrowUpAZ, SortDesc } from "lucide-react";
+import React, { useCallback, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 interface Header {
   key: string;
@@ -23,7 +23,10 @@ const DataTable: React.FC<DataTableProps> = ({ headers }) => {
   const orders = useSelector((state: any) => state.orders.orders);
   const pageSize = useSelector((state: any) => state.orders.pageSize);
   const currentPage = useSelector((state: any) => state.orders.currentPage);
-  const [sortConfig, setSortConfig] = React.useState<{ key: string; direction: string } | null>(null);
+  const [sortConfig, setSortConfig] = React.useState<{
+    key: string;
+    direction: string;
+  } | null>(null);
 
   React.useEffect(() => {
     dispatch(fetchOrders());
@@ -45,7 +48,10 @@ const DataTable: React.FC<DataTableProps> = ({ headers }) => {
   }, [orders, sortConfig]);
 
   const paginatedData = useMemo(() => {
-    return sortedData.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
+    return sortedData.slice(
+      currentPage * pageSize,
+      (currentPage + 1) * pageSize
+    );
   }, [sortedData, currentPage, pageSize]);
 
   const getStatusTextColor = useCallback((status: string | undefined) => {
@@ -60,15 +66,22 @@ const DataTable: React.FC<DataTableProps> = ({ headers }) => {
     }
   }, []);
 
-  const requestSort = useCallback((key: string) => {
-    setSortConfig((prevSortConfig) => {
-      let direction = "ascending";
-      if (prevSortConfig && prevSortConfig.key === key && prevSortConfig.direction === "ascending") {
-        direction = "descending";
-      }
-      return { key, direction };
-    });
-  }, [sortConfig]);
+  const requestSort = useCallback(
+    (key: string) => {
+      setSortConfig((prevSortConfig) => {
+        let direction = "ascending";
+        if (
+          prevSortConfig &&
+          prevSortConfig.key === key &&
+          prevSortConfig.direction === "ascending"
+        ) {
+          direction = "descending";
+        }
+        return { key, direction };
+      });
+    },
+    [sortConfig]
+  );
 
   if (orders.length === 0) {
     return <div className="text-center py-4">Data not found</div>;
@@ -112,7 +125,7 @@ const DataTable: React.FC<DataTableProps> = ({ headers }) => {
                   width: header.width,
                   whiteSpace: "nowrap",
                   overflow: "hidden",
-                  textOverflow: "ellipsis"
+                  textOverflow: "ellipsis",
                 }}
               >
                 {item[header.key]}

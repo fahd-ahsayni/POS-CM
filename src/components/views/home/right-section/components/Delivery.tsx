@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { TypographyH3, TypographyH4 } from "@/components/ui/typography";
 import { Card } from "@/components/ui/card";
+import { TypographyH3, TypographyH4 } from "@/components/ui/typography";
 
-import { glovo, kaalix, yassir, ownDelivery } from "@/assets";
+import { glovo, kaalix, ownDelivery, yassir } from "@/assets";
 import { motion } from "framer-motion";
-import { useRightViewContext } from "../contexts/rightViewContext";
 import { ORDER_SUMMARY_VIEW, OWN_DELIVERY_FORM_VIEW } from "../constants";
+import { useRightViewContext } from "../contexts/rightViewContext";
 
 const deliveryApps = [
   {

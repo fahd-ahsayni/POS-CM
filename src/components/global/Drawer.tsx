@@ -1,4 +1,3 @@
-import { Fragment, ReactNode } from "react";
 import {
   Dialog,
   DialogPanel,
@@ -7,6 +6,7 @@ import {
   TransitionChild,
 } from "@headlessui/react";
 import { X } from "lucide-react";
+import { Fragment, ReactNode } from "react";
 
 export default function Drawer({
   children,
@@ -23,7 +23,6 @@ export default function Drawer({
     <Transition show={open} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={setOpen}>
         <div className="fixed inset-0" />
-
         <div className="fixed inset-0 overflow-hidden transform-gpu backdrop-blur-[2px] bg-background/60">
           <div className="absolute inset-0 overflow-hidden">
             <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">

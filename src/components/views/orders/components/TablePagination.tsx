@@ -6,9 +6,9 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
 import { setCurrentPage } from "@/store/slices/data/ordersSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 export function TablePagination({ itemsLength }: { itemsLength: number }) {
   const dispatch = useDispatch<AppDispatch>();

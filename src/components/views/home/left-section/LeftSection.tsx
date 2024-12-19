@@ -1,9 +1,9 @@
-import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { useLeftViewContext } from "./contexts/leftViewContext";
-import { TypographyP } from "@/components/ui/typography";
 import { Separator } from "@/components/ui/separator";
-import { tabsConfig } from "./constants";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { TypographyP } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
+import { tabsConfig } from "./constants";
+import { useLeftViewContext } from "./contexts/leftViewContext";
 
 export default function RightSection() {
   const { views } = useLeftViewContext();

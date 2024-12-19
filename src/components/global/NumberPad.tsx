@@ -1,6 +1,6 @@
+import { HTMLMotionProps, motion } from "framer-motion";
 import { Delete } from "lucide-react";
 import React from "react";
-import { motion, HTMLMotionProps } from "framer-motion";
 
 interface NumberPadProps {
   onNumberClick: (value: string) => void;

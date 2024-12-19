@@ -18,13 +18,18 @@ export interface GeneralDataState {
 }
 
 export interface User {
-  id: string;
+  _id: string;
   name: string;
-  email: string;
   position: string;
-  image?: string | null;
+  image: string | null;
+  phone: string;
+  sex: string;
+  has_pos: boolean;
+  email: string;
+  admin_password: string | null;
+  rfid: string | null;
+  admin_rfid: string | null;
 }
-
 
 export interface Variant {
   _id: string;
