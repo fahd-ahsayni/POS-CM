@@ -1,16 +1,16 @@
-import { TypographyP } from "@/components/ui/typography";
-import { Card } from "@/components/ui/card";
-import { motion } from "framer-motion";
-import { Product } from "@/types";
-import { useEffect, useState, useCallback } from "react";
 import { unknownProduct } from "@/assets";
+import { Loading } from "@/components/global/loading";
+import { Card } from "@/components/ui/card";
+import { TypographyP } from "@/components/ui/typography";
 import { extractProducts } from "@/store/slices/data/generalDataSlice";
+import { Product, ProductSelected } from "@/types";
+import { motion } from "framer-motion";
+import { useCallback, useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+import { ON_PLACE_VIEW } from "../../right-section/constants";
+import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
 import { useLeftViewContext } from "../contexts/leftViewContext";
 import ProductsVariants from "./ProductsVariants";
-import { ProductSelected } from "@/types";
-import { Loading } from "@/components/global/loading";
-import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
-import { ON_PLACE_VIEW } from "../../right-section/constants";
 
 export default function AllProducts() {
   const [data, setData] = useState<Product[]>([]);
@@ -21,7 +21,7 @@ export default function AllProducts() {
     setOpenDrawerVariants,
     setSelectedProduct,
   } = useLeftViewContext();
-  const { customerIndex, orderType } = useRightViewContext();
+  const { customerIndex, orderType, selectedCustomer } = useRightViewContext();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -43,17 +43,17 @@ export default function AllProducts() {
         const variant = product.variants[0];
         setSelectedProducts((prevSelected: ProductSelected[]) => {
           const existingProduct = prevSelected.find(
-            (p) => 
-              p._id === product._id && 
-              p.variant_id === variant._id && 
-              p.customer_index === customerIndex
+            (p) =>
+              p._id === product._id &&
+              p.variant_id === variant._id &&
+              p.customer_index === selectedCustomer
           );
 
           if (existingProduct) {
             return prevSelected.map((p) =>
-              p._id === product._id && 
-              p.variant_id === variant._id && 
-              p.customer_index === customerIndex
+              p._id === product._id &&
+              p.variant_id === variant._id &&
+              p.customer_index === selectedCustomer
                 ? { ...p, quantity: p.quantity + 1 }
                 : p
             );
@@ -62,9 +62,10 @@ export default function AllProducts() {
               ...prevSelected,
               {
                 ...product,
+                id: uuidv4(),
                 variant_id: variant._id,
                 quantity: 1,
-                customer_index: customerIndex,
+                customer_index: selectedCustomer,
                 order_type_id: orderType || ON_PLACE_VIEW,
               },
             ];
@@ -75,7 +76,14 @@ export default function AllProducts() {
         setOpenDrawerVariants(true);
       }
     },
-    [setSelectedProducts, setOpenDrawerVariants, setSelectedProduct, customerIndex, orderType]
+    [
+      setSelectedProducts,
+      setOpenDrawerVariants,
+      setSelectedProduct,
+      customerIndex,
+      orderType,
+      selectedCustomer,
+    ]
   );
 
   return (

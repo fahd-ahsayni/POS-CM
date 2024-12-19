@@ -51,6 +51,14 @@ export default function SelectPosPage() {
     navigate("/");
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <div className="flex h-screen overflow-hidden">
       <div className="w-3/12 h-full bg-gray-100">

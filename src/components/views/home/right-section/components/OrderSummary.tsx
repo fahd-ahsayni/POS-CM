@@ -5,12 +5,19 @@ import { LucideMaximize, LucidePlus } from "lucide-react";
 import OrderLines from "../import/OrderLines";
 import { useRightViewContext } from "../contexts/rightViewContext";
 import { useEffect } from "react";
+import { logoWithoutText } from "@/assets";
+import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function OrderSummary() {
-  const { customerIndex, setCustomerIndex } = useRightViewContext();
+  const { customerIndex, setCustomerIndex, setSelectedCustomer } = useRightViewContext();
+  const { selectedProducts } = useLeftViewContext();
+
   useEffect(() => {
-    console.log(customerIndex);
-  }, [customerIndex]);
+    console.log("selectedProducts", selectedProducts);
+    console.log("customerIndex", customerIndex);
+  }, [selectedProducts, customerIndex]);
+
   return (
     <div className="flex flex-col h-full gap-y-2 py-4">
       <div className="flex items-center justify-between">
@@ -48,20 +55,38 @@ export default function OrderSummary() {
             <LucideMaximize size={16} />
             <span className="sr-only">Full screen</span>
           </Button>
-          <Button onClick={() => setCustomerIndex(customerIndex + 1)} size="icon">
+          <Button
+            onClick={() => {
+              if (selectedProducts.length > 0) {
+                setCustomerIndex(customerIndex + 1);
+                setSelectedCustomer(customerIndex + 1);
+              }
+            }}
+            size="icon"
+          >
             <LucidePlus size={16} />
             <span className="sr-only">Full screen</span>
           </Button>
         </div>
       </div>
 
-      <div className="flex-border flex-grow relative flex items-center justify-center mt-4">
-        {/* <img
-          src={logoWithoutText}
-          alt="Order Sumary"
-          className="w-1/2 h-auto object-contain absolute opacity-75"
-        /> */}
-        <OrderLines />
+      <div className="flex-1 flex flex-col gap-y-2 overflow-hidden">
+        <div className="flex-border flex-grow relative flex items-center justify-center mt-4 overflow-y-auto overflow-x-hidden h-full">
+          <AnimatePresence>
+            {selectedProducts.length < 1 && (
+              <motion.img
+                src={logoWithoutText}
+                alt="Order Sumary"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.75 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="w-1/2 h-auto object-contain absolute"
+              />
+            )}
+          </AnimatePresence>
+          <OrderLines />
+        </div>
       </div>
       <div className="flex items-center justify-between space-x-2">
         <Button className="flex-1">Hold Order</Button>

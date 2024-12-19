@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Sidebar from "./components/Sidebar";
 import SidebarMobile from "./components/SidebarMobile";
 import Navbar from "./components/Navbar";
-import { Outlet } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom";
 import { AppDispatch } from "@/store";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
@@ -15,6 +15,7 @@ export default function Layout() {
   const dispatch = useDispatch<AppDispatch>();
   const status = useSelector((state: RootState) => state.generalData.status);
   const error = useSelector((state: RootState) => state.generalData.error);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const posId = localStorage.getItem("posId");
@@ -23,8 +24,13 @@ export default function Layout() {
     }
   }, [dispatch]);
 
+  useEffect(() => {
+    if (status === "failed") {
+      navigate("/login");
+    }
+  }, [status, navigate]);
+
   if (status === "loading") return <LoadingFullScreen />;
-  if (status === "failed") return <p>Error: {error}</p>;
 
   return (
     <div className="flex relative w-screen h-screen overflow-hidden">

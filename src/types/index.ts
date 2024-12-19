@@ -98,6 +98,7 @@ export interface ProductSelected extends Product {
   quantity: number;
   customer_index: number;
   order_type_id: string;
+  id: string;
   note?: string[];
   suite_commande?: boolean;
 }

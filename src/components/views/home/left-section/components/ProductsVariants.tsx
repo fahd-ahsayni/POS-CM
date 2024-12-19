@@ -1,10 +1,15 @@
-import { Card } from "@/components/ui/card";
-import { useLeftViewContext } from "../contexts/leftViewContext";
 import Drawer from "@/components/global/Drawer";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { ON_PLACE_VIEW, ORDER_SUMMARY_VIEW } from "../../right-section/constants";
+import { v4 as uuidv4 } from "uuid";
+import { useLeftViewContext } from "../contexts/leftViewContext";
+
+import {
+  ON_PLACE_VIEW,
+  ORDER_SUMMARY_VIEW,
+} from "../../right-section/constants";
 import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
 
 export default function ProductsVariants() {
@@ -17,6 +22,8 @@ export default function ProductsVariants() {
     setQuantityPerVariant,
   } = useLeftViewContext();
 
+  const { selectedCustomer } = useRightViewContext();
+
   const { setViews, orderType } = useRightViewContext();
 
   const handleSelectVariant = (id: string, price: number) => {
@@ -25,17 +32,22 @@ export default function ProductsVariants() {
       return;
     }
 
-    console.info("Attempting to select variant:", { id, price });
-
     setSelectedProducts((prev) => {
       const existingProduct = prev.find(
-        (p) => p._id === selectedProduct._id && p.variant_id === id
+        (p) =>
+          p._id === selectedProduct._id &&
+          p.variant_id === id &&
+          p.customer_index === selectedCustomer
       );
 
       if (existingProduct) {
         return prev.map((p) =>
           p._id === selectedProduct._id && p.variant_id === id
-            ? { ...p, quantity: p.quantity + 1, price: p.price + price }
+            ? {
+                ...p,
+                quantity: p.quantity + 1,
+                price: p.price + price,
+              }
             : p
         );
       } else {
@@ -44,11 +56,12 @@ export default function ProductsVariants() {
           ...prev,
           {
             ...selectedProduct,
+            id: uuidv4(),
             variants: variant ? [variant] : [],
             variant_id: id,
             quantity: 1,
             price: price,
-            customer_index: 1,
+            customer_index: selectedCustomer,
             order_type_id: orderType || ON_PLACE_VIEW,
           },
         ];

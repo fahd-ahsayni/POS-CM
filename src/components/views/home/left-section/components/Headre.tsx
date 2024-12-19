@@ -4,14 +4,19 @@ import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { useLeftViewContext } from "../contexts/leftViewContext";
 import { ALL_CATEGORIES_VIEW } from "../constants";
+import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
 
 export default function Header() {
-  const { setViews, setSelectedProducts, setQuantityPerVariant } = useLeftViewContext();
+  const { setViews, setSelectedProducts, setQuantityPerVariant } =
+    useLeftViewContext();
+  const { setSelectedCustomer, setCustomerIndex } = useRightViewContext();
 
   const handelBack = () => {
     setSelectedProducts([]);
     setQuantityPerVariant(0);
     setViews(ALL_CATEGORIES_VIEW);
+    setSelectedCustomer(1);
+    setCustomerIndex(1);
   };
   return (
     <div className="flex items-start relative justify-start w-full py-2 mt-2 gap-x-2">

@@ -23,30 +23,30 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 export default function HandleApp() {
   return (
-    <RightViewProvider>
-      <LeftViewProvider>
-        <Routes>
-          <Route path="/login" element={<LogInPage />} />
-          <Route
-            path="/select-pos"
-            element={
-              <ProtectedRoute>
-                <SelectPosPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            element={
-              <ProtectedRoute>
+    <Routes>
+      <Route path="/login" element={<LogInPage />} />
+      <Route
+        path="/select-pos"
+        element={
+          <ProtectedRoute>
+            <SelectPosPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        element={
+          <ProtectedRoute>
+            <RightViewProvider>
+              <LeftViewProvider>
                 <Layout />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="/" element={<HomePage />} />
-            <Route path="/orders" element={<OrdersPage />} />
-          </Route>
-        </Routes>
-      </LeftViewProvider>
-    </RightViewProvider>
+              </LeftViewProvider>
+            </RightViewProvider>
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/" element={<HomePage />} />
+        <Route path="/orders" element={<OrdersPage />} />
+      </Route>
+    </Routes>
   );
 }

@@ -1,6 +1,4 @@
 import LeftSection from "@/components/views/home/right-section/rightSection";
-import { LeftViewProvider } from "@/components/views/home/left-section/contexts/leftViewContext";
-import { RightViewProvider } from "@/components/views/home/right-section/contexts/rightViewContext";
 import RightSection from "@/components/views/home/left-section/LeftSection";
 
 export default function HomePage() {
