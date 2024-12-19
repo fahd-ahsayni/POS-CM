@@ -1,32 +1,182 @@
 import { TypographyP } from "@/components/ui/typography";
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useLeftViewContext } from "../contexts/leftViewContext";
 import Header from "./Headre";
+import { Card } from "@/components/ui/card";
+import { ArrowLeft } from "lucide-react";
+import ProductsVariants from "./ProductsVariants";
+import { motion } from "framer-motion";
+import { Loading } from "@/components/global/loading";
+import { ProductCard } from "../Layout/ProductCard";
+import { useProductSelection } from "../hooks/useProductSelection";
+import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
+import { Category, Product } from "@/types";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 
 export default function ProductsByCategory() {
-  const { category } = useLeftViewContext();
+  const {
+    category,
+    selectedProducts,
+    setSelectedProducts,
+    setOpenDrawerVariants,
+    setSelectedProduct,
+  } = useLeftViewContext();
+  const { orderType, selectedCustomer } = useRightViewContext();
+  const { subCategory, setSubCategory } = useLeftViewContext();
+  const [loading, setLoading] = useState(false);
+
+  const { addOrUpdateProduct } = useProductSelection({
+    selectedProducts,
+    setSelectedProducts,
+    selectedCustomer,
+    orderType,
+  });
+
+  const [products, setProducts] = useState<Product[]>(category?.products ?? []);
+  const [subCategories, setSubCategories] = useState<Category[]>(
+    category?.children ?? []
+  );
+
+  const [breadcrumbs, setBreadcrumbs] = useState<Category[]>(
+    [category].filter(Boolean) as Category[]
+  );
+
+  const handleProductClick = useCallback(
+    (product: Product) => {
+      if (product.variants.length === 1) {
+        addOrUpdateProduct(product, product.variants[0]._id);
+      } else if (product.variants.length > 1) {
+        setSelectedProduct(product);
+        setOpenDrawerVariants(true);
+      }
+    },
+    [addOrUpdateProduct, setOpenDrawerVariants, setSelectedProduct]
+  );
 
   useEffect(() => {
-    console.log(category?.children);
+    if (
+      subCategory &&
+      subCategory._id !== breadcrumbs[breadcrumbs.length - 1]._id
+    ) {
+      setProducts(subCategory.products);
+      setSubCategories(subCategory.children);
+      setBreadcrumbs([...breadcrumbs, subCategory]);
+    }
+  }, [subCategory]);
+
+  const handleBack = useCallback(() => {
+    if (breadcrumbs.length <= 1) return;
+
+    // Remove the last item from breadcrumbs
+    const newBreadcrumbs = breadcrumbs.slice(0, -1);
+    const previousCategory = newBreadcrumbs[newBreadcrumbs.length - 1];
+
+    // Update state
+    setBreadcrumbs(newBreadcrumbs);
+    setSubCategory(previousCategory);
+    setProducts(previousCategory.products);
+    setSubCategories(previousCategory.children);
+  }, [breadcrumbs]);
+
+  useEffect(() => {
+    console.log("category", category?.children);
   }, [category]);
+
+  useEffect(() => {
+    console.log("subCategory", subCategory);
+  }, [subCategory]);
+
+  useEffect(() => {
+    console.log("breadcrumbs", breadcrumbs);
+  }, [breadcrumbs]);
+
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full overflow-hidden">
       <Header />
       {(category?.children?.length ?? 0) > 0 && (
-        <div>
+        <div className="max-w-full">
           <div className="flex items-center justify-between relative flex-shrink-0 mt-4 w-full">
             <TypographyP className="absolute pr-4 bg-background font-medium">
               Sub Categories
             </TypographyP>
             <div className="w-full h-px dark:bg-zinc-800/60 bg-zinc-50/70" />
           </div>
-          <div className="mt-4">
-            {category?.children.map((subCategory) => (
-              <div key={subCategory._id}>{subCategory.name}</div>
-            ))}
+          <div className="mt-6 max-w-full relative">
+            <div className="flex gap-2 pb-2 overflow-x-auto scrollbar-hide">
+              <button
+                onClick={handleBack}
+                disabled={breadcrumbs.length === 1}
+                className="flex items-center justify-center w-12 bg-red-600 rounded-lg cursor-pointer flex-shrink-0 disabled:bg-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ArrowLeft className="text-white" />
+              </button>
+              <div className="w-full flex-1 scrollbar-hide overflow-x-auto relative">
+                {subCategories.length > 0 ? (
+                  <div className="grid grid-flow-col gap-3 auto-cols-[200px]">
+                    {subCategories.map((subCategory, index) => (
+                      <Card
+                        onClick={() => setSubCategory(subCategory)}
+                        key={`${subCategory._id}-${index}`}
+                        className="h-16 flex items-center justify-center px-4 rounded-lg cursor-pointer"
+                      >
+                        <TypographyP className="font-medium text-lg max-w-[7rem]">
+                          {subCategory.name}
+                        </TypographyP>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <motion.div className="h-16 w-[230px]">
+                    <Card className="flex overflow-hidden relative !bg-zinc-900 cursor-pointer flex-col items-center h-full w-full !rounded-lg justify-center border-2 border-red-600 ring-offset-0">
+                      <TypographyP className="text-center relative text-xl font-medium text-white">
+                        {subCategory?.name}
+                      </TypographyP>
+                    </Card>
+                  </motion.div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}
+      <div>
+        <div className="flex items-center justify-between relative flex-shrink-0 mt-4">
+          <TypographyP className="pr-4 bg-background font-medium">
+            Products
+          </TypographyP>
+          <Separator className="dark:bg-zinc-800/60 bg-zinc-50/70" />
+        </div>
+        <div className="w-full h-full overflow-auto scrollbar-hide relative pb-52 px-2">
+          <div className="w-full h-8 sticky top-0 left-0 bg-gradient-to-b from-background to-transparent" />
+          {loading ? (
+            <div className="h-96 w-full flex items-center justify-center">
+              <Loading />
+            </div>
+          ) : (
+            <>
+              <ProductsVariants />
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.35 }}
+                className="w-full flex-1 pb-16"
+              >
+                <div className="w-full grid grid-cols-3 gap-3">
+                  {products.map((product) => (
+                    <ProductCard
+                      key={product._id}
+                      product={product}
+                      selectedProducts={selectedProducts}
+                      onProductClick={handleProductClick}
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,24 +1,15 @@
-import LeftSection from "@/components/views/home/right-section/rightSection";
-import RightSection from "@/components/views/home/left-section/LeftSection";
+import LeftSection from "@/components/views/home/left-section/LeftSection";
+import RightSection from "@/components/views/home/right-section/rightSection";
 
 export default function HomePage() {
   return (
     <>
-      {/* Content area */}
-      <div className="flex flex-1">
-        {/* Main content */}
-        <div className="w-full flex">
-          <main className="flex-1 w-8/12">
-            {/* Primary column */}
-            <section className="flex h-full min-w-0 flex-1 flex-col lg:order-last px-4 sm:px-6">
-              <RightSection />
-            </section>
-          </main>
-
-          {/* Secondary column (hidden on smaller screens) */}
-          <aside className="hidden w-4/12 overflow-y-hidden lg:block">
-            <LeftSection />
-          </aside>
+      <div className="flex flex-1 w-[calc(100vw-80px)]">
+        <div className="w-8/12 px-4 sm:px-6">
+          <LeftSection />
+        </div>
+        <div className="w-4/12 px-4 sm:px-6">
+          <RightSection />
         </div>
       </div>
     </>

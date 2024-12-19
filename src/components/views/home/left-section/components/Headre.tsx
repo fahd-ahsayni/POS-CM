@@ -30,7 +30,7 @@ export default function Header() {
         initial={{ x: -50, height: "6rem" }}
         animate={{ x: 0, height: "3.54rem" }}
         transition={{ duration: 0.25 }}
-        className="h-14 w-[30%]"
+        className="h-14 w-[230px]"
       >
         <Card className="flex overflow-hidden relative !bg-zinc-900 cursor-pointer flex-col items-center h-full w-full !rounded-lg justify-center border-2 border-red-600 ring-offset-0">
           {category && (

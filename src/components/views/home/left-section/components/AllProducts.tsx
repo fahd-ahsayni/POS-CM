@@ -1,7 +1,4 @@
-import { unknownProduct } from "@/assets";
 import { Loading } from "@/components/global/loading";
-import { Card } from "@/components/ui/card";
-import { TypographyP } from "@/components/ui/typography";
 import { extractProducts } from "@/store/slices/data/generalDataSlice";
 import { Product } from "@/types";
 import { motion } from "framer-motion";
@@ -9,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
 import { useLeftViewContext } from "../contexts/leftViewContext";
 import { useProductSelection } from "../hooks/useProductSelection";
+import { ProductCard } from "../Layout/ProductCard";
 import ProductsVariants from "./ProductsVariants";
 
 export default function AllProducts() {
@@ -20,7 +18,7 @@ export default function AllProducts() {
     setOpenDrawerVariants,
     setSelectedProduct,
   } = useLeftViewContext();
-  const { customerIndex, orderType, selectedCustomer } = useRightViewContext();
+  const { orderType, selectedCustomer } = useRightViewContext();
 
   const { addOrUpdateProduct } = useProductSelection({
     selectedProducts,
@@ -74,72 +72,14 @@ export default function AllProducts() {
               transition={{ duration: 0.35 }}
               className="w-full grid grid-cols-3 gap-3"
             >
-              {data.map((product) => {
-                const selectedProductVariants = selectedProducts.filter(
-                  (p) => p._id === product._id
-                );
-                const totalQuantity = selectedProductVariants.reduce(
-                  (sum, p) => sum + p.quantity,
-                  0
-                );
-
-                return (
-                  <motion.div
-                    key={product._id}
-                    className="flex cursor-pointer items-center justify-start h-full w-full"
-                  >
-                    <Card
-                      className={`flex items-center justify-start h-full w-full py-2 px-2 !rounded-lg gap-x-4 ${
-                        totalQuantity > 0 ? "border-2 border-primary" : ""
-                      }`}
-                      onClick={() => handleProductClick(product)}
-                    >
-                      <div className="relative flex items-center justify-center">
-                        <img
-                          src={
-                            product.image
-                              ? `${import.meta.env.VITE_BASE_URL}${
-                                  product.image
-                                }`
-                              : unknownProduct
-                          }
-                          alt={product.name}
-                          crossOrigin="anonymous"
-                          className={`size-20 object-cover rounded-lg ${
-                            totalQuantity > 0
-                              ? "brightness-50 transition-all duration-500"
-                              : ""
-                          }`}
-                        />
-                        {totalQuantity > 0 && (
-                          <div className="absolute w-full h-full flex items-center justify-center">
-                            <motion.div
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              transition={{ duration: 0.35 }}
-                              className="bg-primary rounded-full w-8 h-8 flex items-center justify-center"
-                            >
-                              <TypographyP className="text-white text-sm font-medium">
-                                {totalQuantity}
-                              </TypographyP>
-                            </motion.div>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex flex-col items-start justify-between flex-1 h-full w-full">
-                        <TypographyP className="font-medium">
-                          {product.name}
-                        </TypographyP>
-                        <div className="flex items-center justify-between w-full">
-                          <TypographyP className="text-sm font-medium text-zinc-300">
-                            {product.price} Dhs
-                          </TypographyP>
-                        </div>
-                      </div>
-                    </Card>
-                  </motion.div>
-                );
-              })}
+              {data.map((product) => (
+                <ProductCard
+                  key={product._id}
+                  product={product}
+                  selectedProducts={selectedProducts}
+                  onProductClick={handleProductClick}
+                />
+              ))}
             </motion.div>
           </motion.div>
         </>

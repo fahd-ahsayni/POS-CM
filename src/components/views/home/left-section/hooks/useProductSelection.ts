@@ -49,7 +49,7 @@ export const useProductSelection = ({
           variants: variant ? [variant] : [],
           variant_id: variantId,
           quantity: 1,
-          price: price || product.price,
+          price: price || product.variants[0].price_ttc,
           customer_index: selectedCustomer,
           order_type_id: orderType || ON_PLACE_VIEW,
         },

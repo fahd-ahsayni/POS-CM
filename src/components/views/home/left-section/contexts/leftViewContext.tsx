@@ -15,6 +15,8 @@ const LeftViewContext = createContext<{
   setQuantityPerVariant: React.Dispatch<React.SetStateAction<number>>;
   category: Category | null;
   setCategory: React.Dispatch<React.SetStateAction<Category | null>>;
+  subCategory: Category | null;
+  setSubCategory: React.Dispatch<React.SetStateAction<Category | null>>;
 } | null>(null);
 
 // Create a provider component
@@ -29,6 +31,9 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
 
   // TODO: Categories Context
   const [category, setCategory] = useState<Category | null>(null);
+  const [subCategory, setSubCategory] = useState<Category | null>(null);
+
+  
   return (
     <LeftViewContext.Provider
       value={{
@@ -44,6 +49,8 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
         setQuantityPerVariant,
         category,
         setCategory,
+        subCategory,
+        setSubCategory,
       }}
     >
       {children}
