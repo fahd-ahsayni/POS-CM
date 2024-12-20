@@ -81,6 +81,11 @@
     @apply bg-background text-foreground;
   }
 }
+.last-pos-card {
+  box-shadow: 3px -1px 21px 1px rgba(251, 0, 0, 0.62);
+  -webkit-box-shadow: 3px -1px 21px 1px rgba(251, 0, 0, 0.62);
+  -moz-box-shadow: 3px -1px 21px 1px rgba(251, 0, 0, 0.62);
+}
 
 .scrollbar-hide {
   -ms-overflow-style: none; /* IE and Edge */

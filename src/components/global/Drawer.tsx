@@ -8,19 +8,21 @@ import {
 import { X } from "lucide-react";
 import { Fragment, ReactNode } from "react";
 
+interface DrawerProps {
+  children: ReactNode;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  title: string;
+}
+
 export default function Drawer({
   children,
   open,
   setOpen,
   title,
-}: {
-  children: ReactNode;
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  title: string;
-}) {
+}: DrawerProps) {
   return (
-    <Transition show={open} as={Fragment}>
+    <Transition.Root show={open} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={setOpen}>
         <div className="fixed inset-0" />
         <div className="fixed inset-0 overflow-hidden transform-gpu backdrop-blur-[2px] bg-background/60">
@@ -55,9 +57,7 @@ export default function Drawer({
                       </div>
                     </div>
                     <div className="relative mt-6 flex-1 px-4 sm:px-6 bg-blue overflow-y-auto">
-                      {/* Replace with your content */}
                       {children}
-                      {/* /End replace */}
                     </div>
                   </div>
                 </DialogPanel>
@@ -66,6 +66,6 @@ export default function Drawer({
           </div>
         </div>
       </Dialog>
-    </Transition>
+    </Transition.Root>
   );
 }

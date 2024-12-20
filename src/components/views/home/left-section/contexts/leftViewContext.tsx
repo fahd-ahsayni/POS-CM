@@ -25,7 +25,7 @@ interface LeftViewContextType {
   setSubCategory: React.Dispatch<React.SetStateAction<Category | null>>;
 }
 
-const LeftViewContext = createContext<LeftViewContextType | null>(null);
+const LeftViewContext = createContext<LeftViewContextType>({} as LeftViewContextType);
 
 export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
   const [views, setViews] = useState("AllCategories");
@@ -38,10 +38,14 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
   const [category, setCategory] = useState<Category | null>(null);
   const [subCategory, setSubCategory] = useState<Category | null>(null);
 
+  // Define callbacks at the top level
+  const handleSetViews = useCallback((view: string) => setViews(view), []);
+  const handleSetCategory = useCallback((cat: Category | null) => setCategory(cat), []);
+
   const contextValue = useMemo(
     () => ({
       views,
-      setViews: useCallback((view: string) => setViews(view), []),
+      setViews: handleSetViews,
       selectedProducts,
       setSelectedProducts,
       openDrawerVariants,
@@ -51,7 +55,7 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
       quantityPerVariant,
       setQuantityPerVariant,
       category,
-      setCategory,
+      setCategory: handleSetCategory,
       subCategory,
       setSubCategory,
     }),
@@ -63,6 +67,8 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
       quantityPerVariant,
       category,
       subCategory,
+      handleSetViews,
+      handleSetCategory
     ]
   );
 
@@ -74,11 +80,5 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export const useLeftViewContext = () => {
-  const context = useContext(LeftViewContext);
-  if (!context) {
-    throw new Error(
-      "useLeftViewContext must be used within a LeftViewProvider"
-    );
-  }
-  return context;
+  return useContext(LeftViewContext);
 };

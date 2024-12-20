@@ -1,56 +1,89 @@
-import { AppDispatch, RootState } from "@/store";
+import { AppDispatch } from "@/store";
 import { fetchGeneralData } from "@/store/slices/data/generalDataSlice";
-import { useEffect, useState } from "react";
+import {
+  fetchPosData,
+  selectPosData,
+  selectPosLoading,
+  selectPosError,
+} from "@/store/slices/data/posSlice";
+import { useEffect, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
 import { LoadingFullScreen } from "../global/loading";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
+import { RootState } from "@/store";
 
-export default function Layout() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+const Layout = () => {
+  // Hooks
   const dispatch = useDispatch<AppDispatch>();
-  const status = useSelector((state: RootState) => state.generalData.status);
-  const error = useSelector((state: RootState) => state.generalData.error);
   const navigate = useNavigate();
 
+  // Selectors
+  const generalStatus = useSelector(
+    (state: RootState) => state.generalData.status
+  );
+  const generalError = useSelector(
+    (state: RootState) => state.generalData.error
+  );
+
+  // State
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Handlers
+  const handleMobileMenu = useCallback((value: boolean) => {
+    setMobileMenuOpen(value);
+  }, []);
+
+  // Effects
   useEffect(() => {
     const posId = localStorage.getItem("posId");
     if (posId) {
       dispatch(fetchGeneralData(posId));
+      dispatch(fetchPosData());
+    } else {
+      navigate("/select-pos");
     }
-  }, [dispatch]);
+  }, [dispatch, navigate]);
 
   useEffect(() => {
-    if (status === "failed") {
+    if (generalStatus === "failed") {
       navigate("/login");
     }
-  }, [status, navigate]);
+  }, [generalStatus, navigate]);
 
-  if (status === "loading") return <LoadingFullScreen />;
+  // Loading state
+  if (generalStatus === "loading") {
+    return <LoadingFullScreen />;
+  }
+
+  // Error state
+  if (generalError) {
+    return <div>Error: {generalError}</div>;
+  }
 
   return (
     <div className="flex relative w-screen h-screen overflow-hidden">
-      <div className="absolute rounded-full -top-52 -right-52 w-[400px] h-[400px] bg-red-600 blur-3xl opacity-30" />
-
-      {/* Mobile menu */}
-      {/* <SidebarMobile
-        mobileMenuOpen={mobileMenuOpen}
-        setMobileMenuOpen={setMobileMenuOpen}
-      /> */}
+      {/* Background decoration */}
+      <div
+        className="absolute rounded-full -top-52 -right-52 w-[400px] h-[400px] bg-red-600 blur-3xl opacity-30"
+        aria-hidden="true"
+      />
 
       {/* Content area */}
-      <div className="flex flex-1 flex-col relative z-10">
-        <Navbar setMobileMenuOpen={setMobileMenuOpen} />
+      <main className="flex flex-1 flex-col relative z-10">
+        <Navbar setMobileMenuOpen={handleMobileMenu} />
 
         {/* Main content */}
         <div className="flex flex-1 items-stretch overflow-y-hidden">
           <Outlet />
         </div>
-      </div>
+      </main>
 
-      {/* Narrow sidebar */}
+      {/* Sidebar */}
       <Sidebar />
     </div>
   );
-}
+};
+
+export default Layout;

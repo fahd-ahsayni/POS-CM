@@ -8,6 +8,7 @@ import SelectPosPage from "@/auth/SelectPosPage";
 import OrdersPage from "./OrdersPage";
 import { RightViewProvider } from "@/components/views/home/right-section/contexts/rightViewContext";
 import { LeftViewProvider } from "@/components/views/home/left-section/contexts/leftViewContext";
+import OpenShift from "@/auth/OpenShift";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = useSelector(
@@ -36,11 +37,7 @@ export default function HandleApp() {
       <Route
         element={
           <ProtectedRoute>
-            <RightViewProvider>
-              <LeftViewProvider>
-                <Layout />
-              </LeftViewProvider>
-            </RightViewProvider>
+            <Layout />
           </ProtectedRoute>
         }
       >

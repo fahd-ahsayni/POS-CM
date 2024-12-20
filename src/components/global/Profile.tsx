@@ -11,8 +11,9 @@ import {
 
 import { AppDispatch } from "@/store";
 import { logout } from "@/store/slices/authentication/authSlice";
+import { selectPosData } from "@/store/slices/data/posSlice";
 import { ChevronDown, HelpCircle, LogOut, Power, User } from "lucide-react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const menuItems = [
   { icon: User, label: "My Profile" },
@@ -23,6 +24,8 @@ const menuItems = [
 
 export default function Profile() {
   const dispatch = useDispatch<AppDispatch>();
+  const posId = localStorage.getItem("posId");
+  const pos = useSelector(selectPosData);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -31,15 +34,15 @@ export default function Profile() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-auto p-0 hover:bg-transparent">
+        <Button variant="ghost" className="h-auto p-0 flex">
           <div>
             <img
-              className="inline-block h-9 w-9 rounded-lg"
+              className="inline-block h-9 w-9 rounded"
               src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
               alt=""
             />
           </div>
-          <div className="ml-3 flex flex-col justify-center items-start h-10">
+          <div className="ml-3 md:flex hidden flex-col justify-center items-start h-10">
             <p className="text-sm/4 font-medium">Fahd AHSAYNI</p>
             <p className="text-xs font-medium text-zinc-300">View profile</p>
           </div>
@@ -51,16 +54,15 @@ export default function Profile() {
           />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="max-w-64">
+      <DropdownMenuContent className="min-w-44">
         <DropdownMenuLabel className="flex min-w-0 flex-col">
           <span className="truncate text-sm font-medium text-foreground">
-            Terrace POS 1
+            {pos.pos.find((p) => p._id === posId)?.name}
           </span>
           <span className="truncate text-xs font-normal text-muted-foreground">
             Shift: 3h ago
           </span>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
         <DropdownMenuGroup>
           {menuItems.slice(0, 2).map((item, index) => (
             <DropdownMenuItem key={index}>

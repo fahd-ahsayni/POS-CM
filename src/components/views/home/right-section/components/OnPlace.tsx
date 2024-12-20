@@ -1,6 +1,10 @@
 import NumberPad from "@/components/global/NumberPad";
 import { Button } from "@/components/ui/button";
-import { TypographyH1, TypographyH3 } from "@/components/ui/typography";
+import {
+  TypographyH1,
+  TypographyH2,
+  TypographyH3,
+} from "@/components/ui/typography";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { ORDER_SUMMARY_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
@@ -39,16 +43,14 @@ export default function OnPlace() {
         </TypographyH3>
         <div className="flex flex-col justify-center items-center gap-4">
           <div className="flex justify-center items-center">
-            <TypographyH1 className="text-center font-medium tracking-wider">
-              {tableCount || "0"}
-            </TypographyH1>
+            <TypographyH2>{tableCount || "0"}</TypographyH2>
           </div>
           <NumberPad onNumberClick={handleNumberClick} />
         </div>
         <div className="flex gap-2">
           <Button
-            variant="outline"
-            className="flex-1 bg-gray-200 hover:bg-gray-300/70 dark:bg-zinc-800"
+            className="flex-1"
+            variant="secondary"
             onClick={() => setViews(TYPE_OF_ORDER_VIEW)}
           >
             Cancel

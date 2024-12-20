@@ -1,47 +1,56 @@
 // src/store/slices/data/posSlice.ts
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { PosState } from "@/types/pos";
 
-// Define the type for your POS data
-interface PosData {
-  _id: string;
-  name: string;
-  printer_ip: string;
-  order_types: string[];
-  createdAt: string;
-  updatedAt: string;
-  shift: null | string;
-}
-
-interface PosState {
-  data: PosData[];
-  loading: boolean;
-  error: string | null;
-}
-
+// Initial state as a constant
 const initialState: PosState = {
-  data: [],
+  data: {
+    pos: [],
+    day: {
+      _id: "",
+      name: "",
+      opening_time: "",
+      closing_time: null,
+      status: "",
+      revenue_system: 0,
+      revenue_declared: 0,
+      difference: 0,
+      cancel_total_amount: 0,
+      is_archived: false,
+      opening_employee_id: "",
+      createdAt: "",
+      updatedAt: "",
+    },
+  },
   loading: false,
   error: null,
 };
 
-// Create async thunk for fetching POS data
+// Thunk with proper error handling and type safety
 export const fetchPosData = createAsyncThunk(
   "pos/fetchPosData",
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/pos`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log("POS API Response:", response.data);
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      const response = await axios.get<PosState["data"]>(
+        `${import.meta.env.VITE_BASE_URL}/pos`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         return rejectWithValue(
-          error.response?.data || "Failed to fetch POS data"
+          error.response?.data?.message || "Failed to fetch POS data"
         );
       }
       return rejectWithValue("An unexpected error occurred");
@@ -49,13 +58,13 @@ export const fetchPosData = createAsyncThunk(
   }
 );
 
+// Slice with proper type annotations
 const posSlice = createSlice({
   name: "pos",
   initialState,
   reducers: {
-    // Add any additional reducers here if needed
     clearPosData: (state) => {
-      state.data = [];
+      state.data.pos = [];
       state.error = null;
     },
   },
@@ -65,9 +74,9 @@ const posSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchPosData.fulfilled, (state, action) => {
+      .addCase(fetchPosData.fulfilled, (state, { payload }) => {
         state.loading = false;
-        state.data = action.payload;
+        state.data = payload;
         state.error = null;
       })
       .addCase(fetchPosData.rejected, (state, action) => {
@@ -76,6 +85,11 @@ const posSlice = createSlice({
       });
   },
 });
+
+// Selectors
+export const selectPosData = (state: { pos: PosState }) => state.pos.data;
+export const selectPosLoading = (state: { pos: PosState }) => state.pos.loading;
+export const selectPosError = (state: { pos: PosState }) => state.pos.error;
 
 export const { clearPosData } = posSlice.actions;
 export default posSlice.reducer;

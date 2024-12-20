@@ -27,7 +27,7 @@ export default memo(function ProductsByCategory() {
     setOpenDrawerVariants,
     setSelectedProduct,
     subCategory,
-    setSubCategory
+    setSubCategory,
   } = useLeftViewContext();
 
   const rightViewContext = useRightViewContext();
@@ -36,8 +36,12 @@ export default memo(function ProductsByCategory() {
 
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>(category?.products ?? []);
-  const [subCategories, setSubCategories] = useState<Category[]>(category?.children ?? []);
-  const [breadcrumbs, setBreadcrumbs] = useState<Category[]>([category].filter(Boolean) as Category[]);
+  const [subCategories, setSubCategories] = useState<Category[]>(
+    category?.children ?? []
+  );
+  const [breadcrumbs, setBreadcrumbs] = useState<Category[]>(
+    [category].filter(Boolean) as Category[]
+  );
 
   const { addOrUpdateProduct } = useProductSelection({
     selectedProducts,
@@ -64,9 +68,12 @@ export default memo(function ProductsByCategory() {
   }, []);
 
   const handleSubCategoryChange = useCallback(() => {
-    if (subCategory && subCategory._id !== breadcrumbs[breadcrumbs.length - 1]._id) {
+    if (
+      subCategory &&
+      subCategory._id !== breadcrumbs[breadcrumbs.length - 1]._id
+    ) {
       updateSubcategoryState(subCategory);
-      setBreadcrumbs(prev => [...prev, subCategory]);
+      setBreadcrumbs((prev) => [...prev, subCategory]);
     }
   }, [subCategory, breadcrumbs, updateSubcategoryState]);
 
@@ -79,15 +86,29 @@ export default memo(function ProductsByCategory() {
     updateSubcategoryState(previousCategory);
   }, [breadcrumbs, setSubCategory, updateSubcategoryState]);
 
-  const handleCategoryClick = useCallback((category: Category) => {
-    setSubCategory(category);
-    updateSubcategoryState(category);
-    setBreadcrumbs(prev => prev.slice(0, prev.findIndex(c => c._id === category._id) + 1));
-  }, [setSubCategory, updateSubcategoryState]);
+  const handleCategoryClick = useCallback(
+    (category: Category) => {
+      setSubCategory(category);
+      updateSubcategoryState(category);
+      setBreadcrumbs((prev) =>
+        prev.slice(0, prev.findIndex((c) => c._id === category._id) + 1)
+      );
+    },
+    [setSubCategory, updateSubcategoryState]
+  );
 
   useEffect(() => {
     handleSubCategoryChange();
   }, [handleSubCategoryChange]);
+
+  useEffect(() => {
+    if (category) {
+      setProducts(category.products ?? []);
+      setSubCategories(category.children ?? []);
+      setBreadcrumbs([category]);
+      setSubCategory(null);
+    }
+  }, [category, setSubCategory]);
 
   const SubCategoriesSection = useMemo(() => {
     if (!(category?.children?.length ?? 0)) return null;

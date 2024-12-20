@@ -27,7 +27,7 @@ export default function Navbar({
       <div className="relative z-10 flex h-16 flex-shrink-0">
         <button
           type="button"
-          className="border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden"
+          className="px-4 text-zinc-300 focus:outline-none md:hidden"
           onClick={() => setMobileMenuOpen(true)}
         >
           <span className="sr-only">Open sidebar</span>
@@ -39,12 +39,12 @@ export default function Navbar({
             alt="logo"
             className="w-24 h-auto"
           />
-          <div className="flex flex-col justify-center flex-1 ml-12">
+          <div className="lg:flex flex-col justify-center flex-1 ml-12 hidden">
             <TypographyP className="flex items-center gap-1 text-sm font-medium">
               <span>
                 <img src={sunset} alt="sunset" className="w-5 h-auto" />
               </span>
-              <span>Good Morning! Let's make today productive.</span>
+              <span>Good MorninG! Let's make today productive.</span>
             </TypographyP>
             <TypographySmall className="text-xs text-zinc-100 dark:text-zinc-300 pl-6 mt-1">
               Last updated on July 10, 2024, at 10:00 AM

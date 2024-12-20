@@ -47,8 +47,8 @@ export default function TakeAway() {
         </div>
         <div className="flex gap-2">
           <Button
-            variant="outline"
-            className="flex-1 bg-gray-200 hover:bg-gray-300/70 dark:bg-zinc-800"
+            className="flex-1"
+            variant="secondary"
             onClick={() => setViews(TYPE_OF_ORDER_VIEW)}
           >
             Cancel

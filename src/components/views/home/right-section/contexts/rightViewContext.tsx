@@ -16,7 +16,7 @@ interface RightViewContextType {
   setSelectedCustomer: (customer: number) => void;
 }
 
-const RightViewContext = createContext<RightViewContextType | null>(null);
+const RightViewContext = createContext<RightViewContextType>({} as RightViewContextType);
 
 export const RightViewProvider = ({ children }: { children: ReactNode }) => {
   const [views, setViews] = useState(TYPE_OF_ORDER_VIEW);
@@ -26,23 +26,41 @@ export const RightViewProvider = ({ children }: { children: ReactNode }) => {
   const [tableNumber, setTableNumber] = useState(1);
   const [selectedCustomer, setSelectedCustomer] = useState<number>(1);
 
-  const contextValue = useMemo(
-    () => ({
-      views,
-      setViews: useCallback((view: string) => setViews(view), []),
-      selectedOrderType,
-      setSelectedOrderType: useCallback((type: string | null) => setSelectedOrderType(type), []),
-      customerIndex,
-      setCustomerIndex: useCallback((index: number) => setCustomerIndex(index), []),
-      tableNumber,
-      setTableNumber: useCallback((number: number) => setTableNumber(number), []),
-      orderType,
-      setOrderType: useCallback((type: string | null) => setOrderType(type), []),
-      selectedCustomer,
-      setSelectedCustomer: useCallback((customer: number) => setSelectedCustomer(customer), []),
-    }),
-    [views, selectedOrderType, customerIndex, tableNumber, orderType, selectedCustomer]
-  );
+  // Define callbacks at the top level
+  const handleSetViews = useCallback((view: string) => setViews(view), []);
+  const handleSetOrderType = useCallback((type: string | null) => setSelectedOrderType(type), []);
+  const handleSetCustomerIndex = useCallback((index: number) => setCustomerIndex(index), []);
+  const handleSetTableNumber = useCallback((number: number) => setTableNumber(number), []);
+  const handleSetType = useCallback((type: string | null) => setOrderType(type), []);
+  const handleSetCustomer = useCallback((customer: number) => setSelectedCustomer(customer), []);
+
+  const contextValue = useMemo(() => ({
+    views,
+    setViews: handleSetViews,
+    selectedOrderType,
+    setSelectedOrderType: handleSetOrderType,
+    customerIndex,
+    setCustomerIndex: handleSetCustomerIndex,
+    tableNumber,
+    setTableNumber: handleSetTableNumber,
+    orderType,
+    setOrderType: handleSetType,
+    selectedCustomer,
+    setSelectedCustomer: handleSetCustomer,
+  }), [
+    views,
+    selectedOrderType,
+    customerIndex,
+    tableNumber,
+    orderType,
+    selectedCustomer,
+    handleSetViews,
+    handleSetOrderType,
+    handleSetCustomerIndex,
+    handleSetTableNumber,
+    handleSetType,
+    handleSetCustomer
+  ]);
 
   return (
     <RightViewContext.Provider value={contextValue}>
@@ -52,9 +70,5 @@ export const RightViewProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export const useRightViewContext = () => {
-  const context = useContext(RightViewContext);
-  if (!context) {
-    throw new Error("useRightViewContext must be used within a RightViewProvider");
-  }
-  return context;
+  return useContext(RightViewContext);
 };
