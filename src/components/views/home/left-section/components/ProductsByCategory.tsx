@@ -1,24 +1,23 @@
 import { Loading } from "@/components/global/loading";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { TypographyP } from "@/components/ui/typography";
 import { Category, Product } from "@/types";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
-import { useCallback, useEffect, useState, useMemo } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import "swiper/css";
+import "swiper/css/navigation";
+import { Navigation } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
+import { CustomBreadcrumb } from "../Layout/Bredcrump";
 import { ProductCard } from "../Layout/ProductCard";
 import { useLeftViewContext } from "../contexts/leftViewContext";
 import { useProductSelection } from "../hooks/useProductSelection";
 import Header from "./Headre";
 import ProductsVariants from "./ProductsVariants";
-import { CustomBreadcrumb } from "../Layout/Bredcrump";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import { Button } from "@/components/ui/button";
-import { memo } from "react";
 
 export default memo(function ProductsByCategory() {
   const {
