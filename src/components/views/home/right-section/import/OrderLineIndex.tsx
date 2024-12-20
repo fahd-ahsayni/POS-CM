@@ -18,7 +18,10 @@ export default function OrderLineIndex({
   decrementQuantity: (productId: string) => void;
   deleteCustomer: (customerIndex: number) => void;
 }) {
-  const { selectedCustomer, setSelectedCustomer } = useRightViewContext();
+  const rightViewContext = useRightViewContext();
+  if (!rightViewContext) return null;
+  
+  const { selectedCustomer, setSelectedCustomer } = rightViewContext;
 
   useEffect(() => {
     console.log("selectedCustomer", selectedCustomer);
@@ -30,16 +33,16 @@ export default function OrderLineIndex({
         onClick={() => {
           setSelectedCustomer(customerIndex);
         }}
-        className="flex items-center justify-between w-full pl-3 pr-1.5 rounded-md mb-2.5"
+        className="flex items-center justify-between w-full mb-2.5"
       >
         <Button
           size="icon"
           variant="link"
           onClick={() => deleteCustomer(customerIndex)}
         >
-          <Trash className="w-4 h-4 text-red-500" />
+          <Trash className="w-5 h-5 text-red-500" />
         </Button>
-        <div className="flex items-center justify-between gap-x-2 flex-1 bg-zinc-800 rounded-md px-2 py-1">
+        <div className="flex items-center justify-between gap-x-2 flex-1 bg-[#1E1E1E] rounded-md px-2 ">
           <div className="flex items-center gap-x-2">
             <User className="w-4 h-4" />
             <TypographySmall className="text-sm">

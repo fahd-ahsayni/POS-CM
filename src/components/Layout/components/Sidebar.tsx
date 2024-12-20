@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { useLocation, useNavigate } from "react-router-dom";
 import { sidebarNavigation } from "../constants";
+import { Card } from "@/components/ui/card";
 
 export default function Sidebar() {
   const { pathname } = useLocation();
@@ -11,7 +12,7 @@ export default function Sidebar() {
       <div className="flex w-full flex-col h-full items-center">
         <div className="w-full flex-1 flex flex-col justify-evenly px-2">
           {sidebarNavigation.map((item) => (
-            <a
+            <Card
               key={item.name}
               onClick={() => navigate(item.href)}
               className={cn(
@@ -24,7 +25,7 @@ export default function Sidebar() {
             >
               <img src={item.icon} alt={item.name} className="w-5 h-5" />
               <span className="mt-2 text-center">{item.name}</span>
-            </a>
+            </Card>
           ))}
         </div>
       </div>

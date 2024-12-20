@@ -23,7 +23,7 @@ export const tabsConfig = [
       <>
         <Header />
         <div className="flex items-center justify-between relative flex-shrink-0 mt-2">
-          <TypographyP className="pr-4 bg-background font-medium">
+          <TypographyP className="pr-4 bg-background text-sm font-medium">
             Products
           </TypographyP>
           <Separator className="dark:bg-zinc-800/60 bg-zinc-50/70" />

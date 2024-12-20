@@ -2,22 +2,16 @@ import { Card } from "@/components/ui/card";
 import { TypographyP } from "@/components/ui/typography";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
-import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
 import { ALL_CATEGORIES_VIEW } from "../constants";
 import { useLeftViewContext } from "../contexts/leftViewContext";
 
 export default function Header() {
-  const { setViews, setSelectedProducts, setQuantityPerVariant, category } =
-    useLeftViewContext();
-  const { setSelectedCustomer, setCustomerIndex } = useRightViewContext();
+  const { setViews, category } = useLeftViewContext();
 
   const handelBack = () => {
-    setSelectedProducts([]);
-    setQuantityPerVariant(0);
     setViews(ALL_CATEGORIES_VIEW);
-    setSelectedCustomer(1);
-    setCustomerIndex(1);
   };
+  
   return (
     <div className="flex items-start relative justify-start w-full py-2 mt-2 gap-x-2">
       <div
@@ -32,7 +26,7 @@ export default function Header() {
         transition={{ duration: 0.25 }}
         className="h-14 w-[230px]"
       >
-        <Card className="flex overflow-hidden relative !bg-zinc-900 cursor-pointer flex-col items-center h-full w-full !rounded-lg justify-center border-2 border-red-600 ring-offset-0">
+        <Card className="flex overflow-hidden relative cursor-pointer flex-col items-center h-full w-full justify-center !border-2 !border-red-600">
           {category && (
             <img
               src={`${import.meta.env.VITE_BASE_URL}${category.image}` ?? ""}
@@ -41,7 +35,7 @@ export default function Header() {
               crossOrigin="anonymous"
             />
           )}
-          <TypographyP className="text-center relative text-xl font-medium text-white">
+          <TypographyP className="text-center relative font-medium text-white">
             {category ? category.name : "All Products"}
           </TypographyP>
         </Card>

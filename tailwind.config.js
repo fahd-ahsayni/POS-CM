@@ -16,6 +16,22 @@ module.exports = {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
+        "primary-red": "#FB0000",
+        "primary-black": "#121212",
+        "secondary-red": "#C70000",
+        "secondary-white": "#F8F9FA",
+        "secondary-black": "#1E1E1E",
+        "neutral-dark-grey": "#7E7E7E",
+        "neutral-neutral-grey": "#AAAAAA",
+        "neutral-bright-grey": "#EBEBEB",
+        "accent-white": "#94949440",
+        "accent-white-form": "#FFFFFF4D",
+        "accent-white-row": "#F4F4F499",
+        "accent-black": "#1212121A",
+        "accent-black-form": "#1212121A",
+        "accent-black-row": "#1E1E1E4D",
+        "interactive-dark-red": "#960101",
+        "interactive-vivid-red": "#CE0303",
         red: {
           50: "#FFDCDC",
           100: "#FFC8C8",
@@ -30,7 +46,6 @@ module.exports = {
           950: "#370000",
           DEFAULT: "#FB0000",
         },
-
         zinc: {
           50: "#BFBFBF",
           100: "#B5B5B5",

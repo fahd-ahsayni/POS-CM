@@ -27,7 +27,7 @@
     --border: 20 5.9% 90%;
     --input: 20 5.9% 90%;
     --ring: 0 100% 49%;
-    --radius: 0.5rem;
+    --radius: 0.75rem;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -97,22 +97,21 @@
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #1e1e1e;
+  background: var(--secondary-black);
   border-radius: 10px;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #fb0000;
+  background: var(--primary-red);
   border-radius: 10px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #fb0000;
+  background: var(--primary-red);
 }
 
-/* Add this to your CSS file */
 .custom-slider .slick-slide {
   transition: transform 300ms ease;
 }
@@ -122,12 +121,10 @@
   z-index: 1;
 }
 
-/* Optional: add hover effect */
 .custom-slider .slick-slide:hover {
   cursor: pointer;
 }
 
-/* Custom dots styling */
 .custom-dots {
   bottom: -30px;
 }
@@ -142,12 +139,12 @@
 }
 
 .custom-dots li button:before {
-  color: #d1d5db; /* inactive dot color */
+  color: var(--muted);
   opacity: 1;
   font-size: 10px;
 }
 
 .custom-dots li.slick-active button:before {
-  color: #6366f1; /* active dot color - change to match your theme */
+  color: var(--primary);
   opacity: 1;
 }

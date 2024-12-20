@@ -10,8 +10,10 @@ import { useRightViewContext } from "../contexts/rightViewContext";
 import OrderLines from "../import/OrderLines";
 
 export default function OrderSummary() {
-  const { customerIndex, setCustomerIndex, setSelectedCustomer } =
-    useRightViewContext();
+  const rightViewContext = useRightViewContext();
+  if (!rightViewContext) return null;
+
+  const { customerIndex, setCustomerIndex, setSelectedCustomer } = rightViewContext;
   const { selectedProducts } = useLeftViewContext();
 
   useEffect(() => {
@@ -58,7 +60,12 @@ export default function OrderSummary() {
           </Button>
           <Button
             onClick={() => {
-              if (selectedProducts.length > 0) {
+              // Check if there are products for the current last customer
+              const lastCustomerProducts = selectedProducts.filter(
+                product => product.customer_index === customerIndex
+              );
+
+              if (selectedProducts.length > 0 && lastCustomerProducts.length > 0) {
                 setCustomerIndex(customerIndex + 1);
                 setSelectedCustomer(customerIndex + 1);
               }
@@ -66,7 +73,7 @@ export default function OrderSummary() {
             size="icon"
           >
             <LucidePlus size={16} />
-            <span className="sr-only">Full screen</span>
+            <span className="sr-only">add customer</span>
           </Button>
         </div>
       </div>
@@ -90,9 +97,13 @@ export default function OrderSummary() {
         </div>
       </div>
       <div className="flex items-center justify-between space-x-2">
-        <Button className="flex-1">Hold Order</Button>
-        <Button className="flex-1">Proceed Order</Button>
-        <Button size="icon" variant="outline">
+        <Button className="flex-1" disabled={selectedProducts.length === 0}>
+          Hold Order
+        </Button>
+        <Button className="flex-1" disabled={selectedProducts.length === 0}>
+          Proceed Order
+        </Button>
+        <Button size="icon" variant="outline" disabled={selectedProducts.length === 0}>
           <LucideMaximize size={16} />
           <span className="sr-only">Full screen</span>
         </Button>

@@ -40,7 +40,7 @@ export default React.memo(function AllCategories() {
           <Card
             onClick={() => handleCategoryClick(category)}
             className={cn(
-              "flex cursor-pointer relative flex-col items-center h-24 !rounded-lg overflow-hidden justify-center bg-zinc-900",
+              "flex cursor-pointer relative flex-col items-center h-24 overflow-hidden justify-center bg-zinc-900",
               views !== ORDER_SUMMARY_VIEW && "pointer-events-none"
             )}
           >

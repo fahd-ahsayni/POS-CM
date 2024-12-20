@@ -15,18 +15,9 @@ export default function OrderLine({
   console.log(item);
   return (
     <motion.div
-      initial={{
-        x: 50,
-        opacity: 0,
-      }}
-      animate={{
-        x: 0,
-        opacity: 1,
-      }}
-      transition={{
-        duration: 0.14,
-        ease: "easeInOut",
-      }}
+      initial={{ x: 50, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ duration: 0.14, ease: "easeInOut" }}
       key={item._id}
       className="flex min-h-24 items-center py-2 bg-gray-50 shadow-sm dark:bg-zinc-900 rounded-md h-full relative overflow-hidden"
     >

@@ -1,8 +1,7 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useMemo, useCallback } from "react";
 import { ON_PLACE_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
 
-// Create a context for the tab state
-const RightViewContext = createContext<{
+interface RightViewContextType {
   views: string;
   setViews: (view: string) => void;
   selectedOrderType: string | null;
@@ -15,60 +14,47 @@ const RightViewContext = createContext<{
   setOrderType: (type: string | null) => void;
   selectedCustomer: number;
   setSelectedCustomer: (customer: number) => void;
-} | null>(null);
+}
 
-// Create a provider component
+const RightViewContext = createContext<RightViewContextType | null>(null);
+
 export const RightViewProvider = ({ children }: { children: ReactNode }) => {
   const [views, setViews] = useState(TYPE_OF_ORDER_VIEW);
-  const [selectedOrderType, setSelectedOrderType] = useState<string | null>(
-    null
-  );
-
+  const [selectedOrderType, setSelectedOrderType] = useState<string | null>(null);
   const [customerIndex, setCustomerIndex] = useState(1);
   const [orderType, setOrderType] = useState<string | null>(ON_PLACE_VIEW);
   const [tableNumber, setTableNumber] = useState(1);
   const [selectedCustomer, setSelectedCustomer] = useState<number>(1);
 
+  const contextValue = useMemo(
+    () => ({
+      views,
+      setViews: useCallback((view: string) => setViews(view), []),
+      selectedOrderType,
+      setSelectedOrderType: useCallback((type: string | null) => setSelectedOrderType(type), []),
+      customerIndex,
+      setCustomerIndex: useCallback((index: number) => setCustomerIndex(index), []),
+      tableNumber,
+      setTableNumber: useCallback((number: number) => setTableNumber(number), []),
+      orderType,
+      setOrderType: useCallback((type: string | null) => setOrderType(type), []),
+      selectedCustomer,
+      setSelectedCustomer: useCallback((customer: number) => setSelectedCustomer(customer), []),
+    }),
+    [views, selectedOrderType, customerIndex, tableNumber, orderType, selectedCustomer]
+  );
+
   return (
-    <RightViewContext.Provider
-      value={{
-        views,
-        setViews,
-        selectedOrderType,
-        setSelectedOrderType,
-        customerIndex,
-        setCustomerIndex,
-        tableNumber,
-        setTableNumber,
-        orderType,
-        setOrderType,
-        selectedCustomer,
-        setSelectedCustomer,
-      }}
-    >
+    <RightViewContext.Provider value={contextValue}>
       {children}
     </RightViewContext.Provider>
   );
 };
 
-// Custom hook to use the TabContext
 export const useRightViewContext = () => {
   const context = useContext(RightViewContext);
   if (!context) {
-    return {
-      views: TYPE_OF_ORDER_VIEW,
-      setViews: () => {},
-      selectedOrderType: null,
-      setSelectedOrderType: () => {},
-      customerIndex: 1,
-      setCustomerIndex: () => {},
-      tableNumber: 1,
-      setTableNumber: () => {},
-      orderType: ON_PLACE_VIEW,
-      setOrderType: () => {},
-      selectedCustomer: 1,
-      setSelectedCustomer: () => {},
-    };
+    throw new Error("useRightViewContext must be used within a RightViewProvider");
   }
   return context;
 };

@@ -1,8 +1,14 @@
 import { Category, Product, ProductSelected } from "@/types";
-import { createContext, ReactNode, useContext, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
 
-// Create a context for the tab state
-const LeftViewContext = createContext<{
+interface LeftViewContextType {
   views: string;
   setViews: (view: string) => void;
   selectedProducts: ProductSelected[];
@@ -14,12 +20,13 @@ const LeftViewContext = createContext<{
   quantityPerVariant: number;
   setQuantityPerVariant: React.Dispatch<React.SetStateAction<number>>;
   category: Category | null;
-  setCategory: React.Dispatch<React.SetStateAction<Category | null>>;
+  setCategory: (category: Category | null) => void;
   subCategory: Category | null;
   setSubCategory: React.Dispatch<React.SetStateAction<Category | null>>;
-} | null>(null);
+}
 
-// Create a provider component
+const LeftViewContext = createContext<LeftViewContextType | null>(null);
+
 export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
   const [views, setViews] = useState("AllCategories");
   const [selectedProducts, setSelectedProducts] = useState<ProductSelected[]>(
@@ -28,37 +35,44 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
   const [openDrawerVariants, setOpenDrawerVariants] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [quantityPerVariant, setQuantityPerVariant] = useState<number>(0);
-
-  // TODO: Categories Context
   const [category, setCategory] = useState<Category | null>(null);
   const [subCategory, setSubCategory] = useState<Category | null>(null);
 
-  
+  const contextValue = useMemo(
+    () => ({
+      views,
+      setViews: useCallback((view: string) => setViews(view), []),
+      selectedProducts,
+      setSelectedProducts,
+      openDrawerVariants,
+      setOpenDrawerVariants,
+      selectedProduct,
+      setSelectedProduct,
+      quantityPerVariant,
+      setQuantityPerVariant,
+      category,
+      setCategory,
+      subCategory,
+      setSubCategory,
+    }),
+    [
+      views,
+      selectedProducts,
+      openDrawerVariants,
+      selectedProduct,
+      quantityPerVariant,
+      category,
+      subCategory,
+    ]
+  );
+
   return (
-    <LeftViewContext.Provider
-      value={{
-        views,
-        setViews,
-        selectedProducts,
-        setSelectedProducts,
-        openDrawerVariants,
-        setOpenDrawerVariants,
-        selectedProduct,
-        setSelectedProduct,
-        quantityPerVariant,
-        setQuantityPerVariant,
-        category,
-        setCategory,
-        subCategory,
-        setSubCategory,
-      }}
-    >
+    <LeftViewContext.Provider value={contextValue}>
       {children}
     </LeftViewContext.Provider>
   );
 };
 
-// Custom hook to use the TabContext
 export const useLeftViewContext = () => {
   const context = useContext(LeftViewContext);
   if (!context) {

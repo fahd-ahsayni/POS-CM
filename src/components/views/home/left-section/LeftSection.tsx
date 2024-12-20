@@ -11,7 +11,7 @@ export default function RightSection() {
   return (
     <div className="w-full h-full mt-6">
       <div className="flex items-center justify-between relative flex-shrink-0">
-        <TypographyP className="absolute pr-4 bg-background font-medium">
+        <TypographyP className="absolute pr-4 bg-background font-medium text-sm">
           Categories
         </TypographyP>
         <Separator className="dark:bg-zinc-800/60 bg-zinc-50/70" />

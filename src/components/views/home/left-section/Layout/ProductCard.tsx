@@ -28,8 +28,8 @@ export function ProductCard({
   return (
     <motion.div className="flex cursor-pointer items-center justify-start h-full w-full">
       <Card
-        className={`flex items-center justify-start h-full w-full py-2 px-2 !rounded-lg gap-x-4 ${
-          totalQuantity > 0 ? "border-2 border-primary" : ""
+        className={`flex items-center justify-start h-full w-full py-2 px-2 gap-x-4 ${
+          totalQuantity > 0 ? "!border-2 !border-red-600" : ""
         }`}
         onClick={() => onProductClick(product)}
       >
@@ -63,10 +63,10 @@ export function ProductCard({
             </div>
           )}
         </div>
-        <div className="flex flex-col items-start justify-between flex-1 h-full w-full">
-          <TypographyP className="font-medium">{product.name}</TypographyP>
+        <div className="flex flex-col items-start justify-between flex-1 h-full w-full pr-2">
+          <TypographyP className="font-medium text-sm">{product.name}</TypographyP>
           <div className="flex items-center justify-between w-full">
-            <TypographyP className="text-sm font-medium text-zinc-300">
+            <TypographyP className="text-sm font-semibold text-[#AAAAAA]">
               {product.price ? product.price : product.variants[0].price_ttc} Dhs
             </TypographyP>
           </div>
