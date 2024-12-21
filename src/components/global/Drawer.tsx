@@ -16,6 +16,7 @@ interface DrawerProps {
   setOpen: (open: boolean) => void;
   title: string;
   classNames?: string;
+  position?: 'left' | 'right';
 }
 
 export default function Drawer({
@@ -24,6 +25,7 @@ export default function Drawer({
   setOpen,
   title,
   classNames = "max-w-md",
+  position = 'right',
 }: DrawerProps) {
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -42,15 +44,15 @@ export default function Drawer({
         <div className="fixed inset-0" />
         <div className="fixed inset-0 overflow-hidden transform-gpu backdrop-blur-[2px] bg-background/60">
           <div className="absolute inset-0 overflow-hidden">
-            <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+            <div className={`pointer-events-none fixed inset-y-0 ${position}-0 flex max-w-full ${position === 'left' ? 'pr-10' : 'pl-10'}`}>
               <TransitionChild
                 as={Fragment}
                 enter="transform transition ease-in-out duration-300 sm:duration-300"
-                enterFrom="translate-x-full"
+                enterFrom={position === 'left' ? '-translate-x-full' : 'translate-x-full'}
                 enterTo="translate-x-0"
                 leave="transform transition ease-in-out duration-300 sm:duration-300"
                 leaveFrom="translate-x-0"
-                leaveTo="translate-x-full"
+                leaveTo={position === 'left' ? '-translate-x-full' : 'translate-x-full'}
               >
                 <DialogPanel
                   className={cn("pointer-events-auto w-screen", classNames)}
@@ -65,7 +67,7 @@ export default function Drawer({
                           <Button
                             variant="link"
                             size="icon"
-                            className="text-primary-black dark:text-primary-white"
+                            className="text-primary-black dark:text-white"
                             onClick={() => setOpen(false)}
                           >
                             <span className="sr-only">Close panel</span>

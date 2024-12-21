@@ -2,7 +2,7 @@ import Drawer from "@/components/global/Drawer";
 import NumberPad from "@/components/global/NumberPad";
 import { Button } from "@/components/ui/button";
 import { TypographyH2 } from "@/components/ui/typography";
-import axios from "axios";
+import { openShift } from "@/api/services";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -33,18 +33,7 @@ export default function OpenShift({ open, setOpen, posId }: OpenShiftProps) {
 
     try {
       setIsLoading(true);
-      await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/shift/open`,
-        {
-          starting_balance: amount,
-          pos_id: posId,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      await openShift(amount, posId);
       navigate("/");
       setOpen(false);
     } catch (error) {

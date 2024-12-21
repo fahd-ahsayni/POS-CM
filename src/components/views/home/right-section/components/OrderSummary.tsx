@@ -1,7 +1,7 @@
 import { logoWithoutText } from "@/assets";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { TypographyP } from "@/components/ui/typography";
+import { updateOrder } from "@/functions/updateOrder";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   LucideFileText,
@@ -10,21 +10,18 @@ import {
   LucidePrinter,
 } from "lucide-react";
 import { useCallback, useEffect } from "react";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { useDispatch } from "react-redux";
 import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
+import { useOrderLines } from "../contexts/orderLinesContext";
 import { useRightViewContext } from "../contexts/rightViewContext";
 import OrderLines from "../import/OrderLines";
-import { BsThreeDotsVertical } from "react-icons/bs";
-import { useOrderLines } from "../contexts/orderLinesContext";
-import { useDispatch } from "react-redux";
-import { updateOrder } from "@/functions/updateOrder";
 
 export default function OrderSummary() {
-  const rightViewContext = useRightViewContext();
-  if (!rightViewContext) return null;
+  const { customerIndex, setCustomerIndex, setSelectedCustomer, tableNumber } =
+    useRightViewContext();
   const dispatch = useDispatch();
 
-  const { customerIndex, setCustomerIndex, setSelectedCustomer } =
-    rightViewContext;
   const { selectedProducts } = useLeftViewContext();
   const { toggleAllCustomers } = useOrderLines();
 
@@ -50,15 +47,12 @@ export default function OrderSummary() {
   }, [selectedProducts, customerIndex]);
 
   return (
-    <div className="flex flex-col h-full gap-y-2 py-4">
+    <div className="flex flex-col justify-start h-full gap-y-2">
       <div className="flex items-center justify-between">
         <div>
-          <TypographyP className="text-sm">
-            <span className="font-medium">Table 18</span>{" "}
-            <span className="text-muted-foreground">{"(dining Area)"}</span>
-          </TypographyP>
+          <TypographyP className="text-xs">Table {tableNumber}</TypographyP>
         </div>
-        <TypographyP className="text-sm">
+        <TypographyP className="text-xs">
           <span>Order ref</span>{" "}
           <span className="text-muted-foreground">01-1423-26</span>
         </TypographyP>
@@ -111,10 +105,14 @@ export default function OrderSummary() {
         </div>
       </div>
       <div className="flex items-center justify-between space-x-2">
-        <Button variant="secondary" className="flex-1" disabled={selectedProducts.length === 0}>
+        <Button
+          variant="secondary"
+          className="flex-2"
+          disabled={selectedProducts.length === 0}
+        >
           Hold Order
         </Button>
-        <Button className="flex-2" disabled={selectedProducts.length === 0}>
+        <Button className="flex-1" disabled={selectedProducts.length === 0}>
           Proceed Order
         </Button>
         <Button size="icon" disabled={selectedProducts.length === 0}>

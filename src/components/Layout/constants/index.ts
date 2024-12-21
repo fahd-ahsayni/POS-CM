@@ -1,3 +1,4 @@
+import { openCashDrawer } from "@/api/services";
 import {
   addClient,
   drop,
@@ -8,22 +9,18 @@ import {
   waiters,
   waitingOrders,
 } from "@/assets";
-import axios from "axios";
 
 const handleOpenCashDrawer = async () => {
-  const shiftId = localStorage.getItem("shiftId");
-
-  await axios.post(
-    `${import.meta.env.VITE_BASE_URL}/pos/open-cashdrawer`,
-    {
-      shift_id: shiftId,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+  try {
+    const shiftId = localStorage.getItem("shiftId");
+    if (!shiftId) {
+      console.error("No shift ID found");
+      return;
     }
-  );
+    await openCashDrawer(shiftId);
+  } catch (error) {
+    console.error("Failed to open cash drawer:", error);
+  }
 };
 
 export const sidebarPagesLink = [

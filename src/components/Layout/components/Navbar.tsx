@@ -1,11 +1,12 @@
 import { logoDarkMode, logoLightMode, sunset } from "@/assets";
+import { AlertIcon } from "@/assets/figma-icons";
 import { ModeToggleWithDropdown } from "@/components/global/mode-toggle";
 import Profile from "@/components/global/Profile";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { useTheme } from "@/providers/themeProvider";
-import { Bell, LucideMaximize } from "lucide-react";
+import { LucideMaximize } from "lucide-react";
 
 export default function Navbar() {
   const theme = useTheme();
@@ -28,19 +29,19 @@ export default function Navbar() {
             className="w-24 h-auto"
           />
           <div className="lg:flex flex-col justify-center flex-1 ml-12 hidden">
-            <TypographyP className="flex items-center gap-1 text-sm font-medium">
+            <TypographyP className="flex items-center gap-1 text-xs font-medium">
               <span>
                 <img src={sunset} alt="sunset" className="w-5 h-auto" />
               </span>
               <span>Good MorninG! Let's make today productive.</span>
             </TypographyP>
-            <TypographySmall className="text-xs text-zinc-100 dark:text-zinc-300 pl-6 mt-1">
+            <TypographySmall className="text-[0.7rem] leading-3 text-zinc-100 dark:text-zinc-300 pl-6 mt-1">
               Last updated on July 10, 2024, at 10:00 AM
             </TypographySmall>
           </div>
           <div className="ml-2 flex items-center space-x-2 sm:ml-6 sm:space-x-2">
             <Button size="icon" className="relative">
-              <Bell size={16} />
+              <AlertIcon className="w-5 h-auto fill-white" />
               <span className="absolute h-2 w-2 -top-0.5 ring-1 ring-background left-full -translate-x-1/2 bg-red-500 rounded-full" />
               <span className="sr-only">Notification</span>
             </Button>
@@ -48,7 +49,7 @@ export default function Navbar() {
             <ModeToggleWithDropdown />
 
             <Button size="icon" onClick={handleFullScreen}>
-              <LucideMaximize size={16} />
+              <LucideMaximize size={18} />
               <span className="sr-only">Full screen</span>
             </Button>
             <Separator orientation="vertical" className="h-6" />

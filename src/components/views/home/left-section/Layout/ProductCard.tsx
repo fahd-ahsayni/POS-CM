@@ -41,7 +41,7 @@ export function ProductCard({
             }
             alt={product.name}
             crossOrigin="anonymous"
-            className={`size-20 object-cover rounded-lg ${
+            className={`size-16 object-cover rounded-lg ${
               totalQuantity > 0
                 ? "brightness-50 transition-all duration-500"
                 : ""
@@ -63,8 +63,8 @@ export function ProductCard({
           )}
         </div>
         <div className="flex flex-col items-start justify-between flex-1 h-full w-full pr-2">
-          <TypographyP className="font-medium text-sm">
-            {product.name}
+          <TypographyP className="font-medium text-sm capitalize">
+            {product.name.toLowerCase()}
           </TypographyP>
           <div className="flex items-center justify-between w-full">
             <TypographyP className="text-sm font-semibold text-[#AAAAAA]">

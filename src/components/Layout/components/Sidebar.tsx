@@ -1,14 +1,13 @@
-import { cn } from "@/lib/utils";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { sidebarNavigation, sidebarPagesLink } from "../constants";
 import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { Link, useLocation } from "react-router-dom";
+import { sidebarNavigation, sidebarPagesLink } from "../constants";
 
 export default function Sidebar() {
   const { pathname } = useLocation();
 
-  const navigate = useNavigate();
   return (
-    <div className="hidden w-20 h-screen overflow-y-auto md:block z-10">
+    <div className="hidden w-ful h-screen overflow-y-auto md:block z-10">
       <div className="flex w-full flex-col h-full items-center">
         <div className="w-full flex-1 flex flex-col justify-evenly px-2">
           {sidebarPagesLink.map((item) => (
@@ -16,8 +15,8 @@ export default function Sidebar() {
               <Card
                 className={cn(
                   pathname === item.route
-                    ? "bg-red-600 text-white"
-                    : "text-zinc-50 bg-zinc-900 hover:bg-zinc-800 hover:text-white",
+                    ? "bg-primary-red text-white border-interactive-vivid-red"
+                    : "",
                   "group w-full p-2 rounded-md flex flex-col items-center text-xs font-medium"
                 )}
               >
@@ -33,7 +32,7 @@ export default function Sidebar() {
               className={cn(
                 pathname === item.route
                   ? "bg-red-600 text-white"
-                  : "text-zinc-50 bg-zinc-900 hover:bg-zinc-800 hover:text-white",
+                  : "",
                 "group cursor-pointer w-full p-2 rounded-md flex flex-col items-center text-xs font-medium"
               )}
             >

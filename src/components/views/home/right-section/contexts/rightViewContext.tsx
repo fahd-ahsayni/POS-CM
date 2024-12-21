@@ -1,6 +1,6 @@
-import { createContext, useContext, useState, ReactNode, useMemo, useCallback, useEffect } from "react";
+import { setCustomerCount } from "@/store/slices/order/createOrder";
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { ON_PLACE_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
-import { setCustomerCount, setOrderData } from "@/store/slices/order/createOrder";
 
 interface RightViewContextType {
   views: string;
@@ -9,8 +9,8 @@ interface RightViewContextType {
   setSelectedOrderType: (type: string | null) => void;
   customerIndex: number;
   setCustomerIndex: (index: number) => void;
-  tableNumber: number;
-  setTableNumber: (number: number) => void;
+  tableNumber: string;
+  setTableNumber: (number: string) => void;
   orderType: string | null;
   setOrderType: (type: string | null) => void;
   selectedCustomer: number;
@@ -24,20 +24,24 @@ export const RightViewProvider = ({ children }: { children: ReactNode }) => {
   const [selectedOrderType, setSelectedOrderType] = useState<string | null>(null);
   const [customerIndex, setCustomerIndex] = useState(1);
   const [orderType, setOrderType] = useState<string | null>(ON_PLACE_VIEW);
-  const [tableNumber, setTableNumber] = useState(1);
+  const [tableNumber, setTableNumber] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState<number>(1);
 
   // Define callbacks at the top level
   const handleSetViews = useCallback((view: string) => setViews(view), []);
   const handleSetOrderType = useCallback((type: string | null) => setSelectedOrderType(type), []);
   const handleSetCustomerIndex = useCallback((index: number) => setCustomerIndex(index), []);
-  const handleSetTableNumber = useCallback((number: number) => setTableNumber(number), []);
+  const handleSetTableNumber = useCallback((number: string) => setTableNumber(number), []);
   const handleSetType = useCallback((type: string | null) => setOrderType(type), []);
   const handleSetCustomer = useCallback((customer: number) => setSelectedCustomer(customer), []);
 
   useEffect(() => {
     setCustomerCount(customerIndex);
   }, [customerIndex]);
+
+  useEffect(() => {
+    console.log("views", views);
+  }, [views]);
 
   const contextValue = useMemo(() => ({
     views,

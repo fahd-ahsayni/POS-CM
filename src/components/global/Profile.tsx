@@ -9,12 +9,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AppDispatch, RootState } from "@/store";
+import { AppDispatch } from "@/store";
 import { logout } from "@/store/slices/authentication/authSlice";
 import { selectPosData } from "@/store/slices/data/posSlice";
 import { formatDistanceToNow } from "date-fns";
 import { ChevronDown, HelpCircle, LogOut, Power, User } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { TypographySmall } from "../ui/typography";
 
@@ -27,16 +27,19 @@ const menuItems = [
 
 export default function Profile() {
   const [open, setOpen] = useState(false);
-  const { user } = useSelector((state: RootState) => state.auth);
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
   const dispatch = useDispatch<AppDispatch>();
   const posId = localStorage.getItem("posId");
   const pos = useSelector(selectPosData);
   const currentShift = pos.pos.find((p) => p._id === posId)?.shift;
 
+  console.log(user);
+
   localStorage.setItem("shiftId", currentShift?._id || "");
 
   const handleLogout = () => {
     dispatch(logout());
+    localStorage.clear();
   };
 
   return (
@@ -54,10 +57,10 @@ export default function Profile() {
             </div>
             <div className="ml-3 md:flex hidden flex-col justify-center items-start h-10">
               <TypographySmall className="text-sm font-medium">
-                Fahd AHSAYNI
+                {user?.name}
               </TypographySmall>
               <TypographySmall className="text-xs text-neutral-dark-grey">
-                View profile
+                {user?.position}
               </TypographySmall>
             </div>
             <ChevronDown
@@ -70,7 +73,7 @@ export default function Profile() {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="min-w-52">
           <DropdownMenuLabel className="flex items-center justify-between">
-            <span className="truncate text-sm font-medium text-foreground">
+            <span className="truncate text-xs font-medium text-foreground">
               {pos.pos.find((p) => p._id === posId)?.name}
             </span>
             <span className="truncate text-xs font-normal text-muted-foreground">

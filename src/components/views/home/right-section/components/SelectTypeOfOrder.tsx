@@ -56,7 +56,7 @@ export default function SelectTypeOfOrder() {
                   </TypographyH4>
                 </div>
               </div>
-              <ChevronRightIcon className="w-6 h-auto text-gray-200" />
+              <ChevronRightIcon className="w-6 h-auto text-primary-black dark:text-white" />
             </Card>
           </motion.div>
         ))}

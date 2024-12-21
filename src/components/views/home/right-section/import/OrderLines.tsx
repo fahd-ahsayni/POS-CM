@@ -1,10 +1,10 @@
 import { TypographySmall } from "@/components/ui/typography";
-import { User } from "lucide-react";
+import { UserIcon } from "@/assets/figma-icons";
 import { useEffect, useState } from "react";
 import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
+import { useOrderLines } from '../contexts/orderLinesContext';
 import { useRightViewContext } from "../contexts/rightViewContext";
 import OrderLineIndex from "./OrderLineIndex";
-import { useOrderLines } from '../contexts/orderLinesContext';
 
 export default function OrderLines() {
   const { selectedProducts, setSelectedProducts } = useLeftViewContext();
@@ -82,7 +82,7 @@ export default function OrderLines() {
           <div className="flex items-center justify-between w-full rounded-md mb-2.5">
             <div className="flex items-center justify-center gap-x-2 flex-1 bg-secondary-white dark:bg-secondary-black rounded-md px-2 py-2">
               <div className="flex items-center justify-center gap-x-2">
-                <User className="w-4 h-4" />
+                <UserIcon className="w-4 h-auto fill-primary-black dark:fill-white" />
                 <TypographySmall className="text-sm">
                   Customer {customerIndex}
                 </TypographySmall>

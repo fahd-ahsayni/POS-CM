@@ -2,22 +2,22 @@ import NumberPad from "@/components/global/NumberPad";
 import { Button } from "@/components/ui/button";
 import {
   TypographyH1,
-  TypographyH2,
   TypographyH3,
   TypographySmall,
 } from "@/components/ui/typography";
+import { updateOrder } from "@/functions/updateOrder";
+import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { toast } from "sonner";
 import { ORDER_SUMMARY_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
 import { useRightViewContext } from "../contexts/rightViewContext";
-import { updateOrder } from "@/functions/updateOrder";
-import { useDispatch } from "react-redux";
-import axios from "axios";
-import { cn } from "@/lib/utils";
+import { getByTableName } from "@/api/services";
 
 export default function OnPlace() {
-  const [tableNumber, setTableNumber] = useState("");
-  const [takenTable, setTakenTable] = useState<boolean>(false);
+  const { tableNumber, setTableNumber } = useRightViewContext();
+  const [tableValid, setTableValid] = useState<string>("valid");
   const { setViews } = useRightViewContext();
   const dispatch = useDispatch();
   const data = JSON.parse(localStorage.getItem("generalData") || "{}")[
@@ -25,24 +25,17 @@ export default function OnPlace() {
   ];
 
   useEffect(() => {
-    setTakenTable(false);
+    setTableValid("valid");
   }, [tableNumber]);
-
-  console.log("tableNumber", tableNumber);
 
   const handleNumberClick = (value: string) => {
     if (value === "C") {
       setTableNumber("");
     } else if (value === "delete") {
-      setTableNumber((prev) => prev.slice(0, -1));
+      setTableNumber(tableNumber.slice(0, -1));
     } else {
-      setTableNumber((prev) => {
-        const newValue = prev + value;
-        if (parseInt(newValue) <= 999999) {
-          return newValue;
-        }
-        return prev;
-      });
+      const newValue = tableNumber + value;
+      setTableNumber(parseInt(newValue) <= 999999 ? newValue : tableNumber);
     }
   };
 
@@ -56,24 +49,22 @@ export default function OnPlace() {
   }
 
   const handleConfirm = async (number: string) => {
-    const response = await axios.get(
-      `${import.meta.env.VITE_BASE_URL}/order/by-table-name/${number}`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+    try {
+      const response = await getByTableName(number);
+
+      if (response.status === 204) {
+        setViews(ORDER_SUMMARY_VIEW);
+        dispatch(updateOrder({ table_id: findTableByName(number)?._id }));
+        setTableValid("valid");
+        setTableNumber(number);
+        toast.success("Table is taken");
+      } else if (response.status === 200) {
+        setTableValid("invalid");
+        toast.error("Table is already taken");
       }
-    );
-
-    console.log(response.status);
-    console.log(findTableByName(number));
-
-    if (response.status === 204) {
-      setViews(ORDER_SUMMARY_VIEW);
-      dispatch(updateOrder({ table_id: findTableByName(number)?._id }));
-      setTakenTable(false);
-    } else if (response.status === 200) {
-      setTakenTable(true);
+    } catch (error) {
+      setTableValid("not-found");
+      toast.error("Table not found");
     }
   };
 
@@ -90,12 +81,25 @@ export default function OnPlace() {
         </TypographyH3>
         <div className="flex flex-col justify-center items-center gap-4">
           <div className="flex flex-col space-y-2 justify-center items-center">
-            <TypographyH1 className={cn(takenTable && "text-red-500", "font-medium tracking-wider")}>
+            <TypographyH1
+              className={cn(
+                tableValid === "invalid" && "text-primary-red",
+                tableValid === "not-found" && "text-yellow-500",
+                "font-medium tracking-wider"
+              )}
+            >
               {tableNumber || "0"}
             </TypographyH1>
-            <TypographySmall className="text-red-500 text-sm text-center">
-              {takenTable && "Table is already taken"}
-              <span className="opacity-0">s</span>
+            <TypographySmall
+              className={cn(
+                tableValid === "invalid" && "text-primary-red",
+                tableValid === "not-found" && "text-yellow-500",
+                "text-sm text-center"
+              )}
+            >
+              {tableValid === "invalid" && "Table is already taken"}
+              {tableValid === "not-found" && "Table not found"}
+              <span className="opacity-0">?</span>
             </TypographySmall>
           </div>
           <NumberPad onNumberClick={handleNumberClick} />
@@ -111,7 +115,7 @@ export default function OnPlace() {
           <Button
             onClick={() => handleConfirm(tableNumber)}
             className="flex-1"
-            disabled={takenTable}
+            disabled={tableValid !== "valid"}
           >
             Confirm
           </Button>
