@@ -8,7 +8,7 @@ export function ModeToggleWithDropdown() {
   return (
     <div>
       <Toggle
-        className="group size-9 !bg-red-600 !rounded"
+        className="group size-9 !bg-red-600 !rounded-md"
         pressed={theme === "dark"}
         onPressedChange={() => setTheme(theme === "dark" ? "light" : "dark")}
         aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}

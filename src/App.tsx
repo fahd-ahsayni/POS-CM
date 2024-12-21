@@ -2,17 +2,20 @@ import { ToastContainer } from "react-toastify";
 import HandleApp from "./app/HandleApp";
 import Fonts from "./providers/Fonts";
 import { ThemeProvider } from "./providers/themeProvider";
-import HomeProvider from "./components/views/home/HomeProvider";
+import { KeyboardProvider } from "./components/global/keyboard/context/KeyboardContext";
+import ContextsProvider from "./providers/ContextsProvider";
 
 export default function App() {
   return (
-    <HomeProvider>
-      <Fonts>
-        <ThemeProvider defaultTheme="dark" storageKey="pos-theme">
-          <ToastContainer />
-          <HandleApp />
-        </ThemeProvider>
-      </Fonts>
-    </HomeProvider>
+    <ContextsProvider>
+      <KeyboardProvider>
+        <Fonts>
+          <ThemeProvider defaultTheme="dark" storageKey="pos-theme">
+            <ToastContainer />
+            <HandleApp />
+          </ThemeProvider>
+        </Fonts>
+      </KeyboardProvider>
+    </ContextsProvider>
   );
 }

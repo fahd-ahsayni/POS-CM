@@ -3,18 +3,46 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { TypographyP } from "@/components/ui/typography";
 import { AnimatePresence, motion } from "framer-motion";
-import { LucideMaximize, LucidePlus } from "lucide-react";
-import { useEffect } from "react";
+import {
+  LucideFileText,
+  LucideMaximize,
+  LucidePlus,
+  LucidePrinter,
+} from "lucide-react";
+import { useCallback, useEffect } from "react";
 import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
 import { useRightViewContext } from "../contexts/rightViewContext";
 import OrderLines from "../import/OrderLines";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { useOrderLines } from "../contexts/orderLinesContext";
+import { useDispatch } from "react-redux";
+import { updateOrder } from "@/functions/updateOrder";
 
 export default function OrderSummary() {
   const rightViewContext = useRightViewContext();
   if (!rightViewContext) return null;
+  const dispatch = useDispatch();
 
-  const { customerIndex, setCustomerIndex, setSelectedCustomer } = rightViewContext;
+  const { customerIndex, setCustomerIndex, setSelectedCustomer } =
+    rightViewContext;
   const { selectedProducts } = useLeftViewContext();
+  const { toggleAllCustomers } = useOrderLines();
+
+  useEffect(() => {
+    dispatch(updateOrder({ customer_count: customerIndex }));
+  }, [customerIndex, dispatch]);
+
+  const handleAddCustomer = useCallback(() => {
+    // Check if there are products for the current last customer
+    const lastCustomerProducts = selectedProducts.filter(
+      (product) => product.customer_index === customerIndex
+    );
+
+    if (selectedProducts.length > 0 && lastCustomerProducts.length > 0) {
+      setCustomerIndex(customerIndex + 1);
+      setSelectedCustomer(customerIndex + 1);
+    }
+  }, [selectedProducts, customerIndex]);
 
   useEffect(() => {
     console.log("selectedProducts", selectedProducts);
@@ -37,44 +65,30 @@ export default function OrderSummary() {
       </div>
       <div className="flex items-center justify-between pt-1">
         <div className="flex items-center gap-2">
-          <TypographyP className="text-sm font-medium">
-            Order at once
-          </TypographyP>
-          <Switch
-            id="switch-02"
-            className="h-5 w-8 [&_span]:size-4 [&_span]:data-[state=checked]:translate-x-3 rtl:[&_span]:data-[state=checked]:-translate-x-3"
-          />
+          <Button size="icon">
+            <LucidePrinter size={16} />
+            <span className="sr-only">Print Addition</span>
+          </Button>
+          <Button size="icon">
+            <LucideFileText size={16} />
+            <span className="sr-only">Print Facture</span>
+          </Button>
         </div>
-        <div className="flex items-center gap-2">
-          <Button size="icon">
-            <LucidePlus size={16} />
-            <span className="sr-only">Full screen</span>
-          </Button>
-          <Button size="icon">
-            <LucideMaximize size={16} />
-            <span className="sr-only">Full screen</span>
-          </Button>
-          <Button size="icon">
-            <LucideMaximize size={16} />
-            <span className="sr-only">Full screen</span>
-          </Button>
-          <Button
-            onClick={() => {
-              // Check if there are products for the current last customer
-              const lastCustomerProducts = selectedProducts.filter(
-                product => product.customer_index === customerIndex
-              );
-
-              if (selectedProducts.length > 0 && lastCustomerProducts.length > 0) {
-                setCustomerIndex(customerIndex + 1);
-                setSelectedCustomer(customerIndex + 1);
-              }
-            }}
-            size="icon"
-          >
-            <LucidePlus size={16} />
-            <span className="sr-only">add customer</span>
-          </Button>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Button size="icon">
+              <LucideMaximize size={16} />
+              <span className="sr-only">Full screen</span>
+            </Button>
+            <Button size="icon" onClick={toggleAllCustomers}>
+              <BsThreeDotsVertical size={16} />
+              <span className="sr-only">Toggle Customers</span>
+            </Button>
+            <Button onClick={handleAddCustomer} size="icon">
+              <LucidePlus size={16} />
+              <span className="sr-only">add customer</span>
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -97,13 +111,13 @@ export default function OrderSummary() {
         </div>
       </div>
       <div className="flex items-center justify-between space-x-2">
-        <Button className="flex-1" disabled={selectedProducts.length === 0}>
+        <Button variant="secondary" className="flex-1" disabled={selectedProducts.length === 0}>
           Hold Order
         </Button>
-        <Button className="flex-1" disabled={selectedProducts.length === 0}>
+        <Button className="flex-2" disabled={selectedProducts.length === 0}>
           Proceed Order
         </Button>
-        <Button size="icon" variant="outline" disabled={selectedProducts.length === 0}>
+        <Button size="icon" disabled={selectedProducts.length === 0}>
           <LucideMaximize size={16} />
           <span className="sr-only">Full screen</span>
         </Button>

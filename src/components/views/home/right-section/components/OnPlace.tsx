@@ -4,29 +4,76 @@ import {
   TypographyH1,
   TypographyH2,
   TypographyH3,
+  TypographySmall,
 } from "@/components/ui/typography";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ORDER_SUMMARY_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
 import { useRightViewContext } from "../contexts/rightViewContext";
+import { updateOrder } from "@/functions/updateOrder";
+import { useDispatch } from "react-redux";
+import axios from "axios";
+import { cn } from "@/lib/utils";
 
 export default function OnPlace() {
-  const [tableCount, setTableCount] = useState("");
+  const [tableNumber, setTableNumber] = useState("");
+  const [takenTable, setTakenTable] = useState<boolean>(false);
   const { setViews } = useRightViewContext();
+  const dispatch = useDispatch();
+  const data = JSON.parse(localStorage.getItem("generalData") || "{}")[
+    "floors"
+  ];
+
+  useEffect(() => {
+    setTakenTable(false);
+  }, [tableNumber]);
+
+  console.log("tableNumber", tableNumber);
 
   const handleNumberClick = (value: string) => {
     if (value === "C") {
-      setTableCount("");
+      setTableNumber("");
     } else if (value === "delete") {
-      setTableCount((prev) => prev.slice(0, -1));
+      setTableNumber((prev) => prev.slice(0, -1));
     } else {
-      setTableCount((prev) => {
+      setTableNumber((prev) => {
         const newValue = prev + value;
         if (parseInt(newValue) <= 999999) {
           return newValue;
         }
         return prev;
       });
+    }
+  };
+
+  function findTableByName(tableName: string) {
+    return Object.values(data)
+      .map((floor: any) =>
+        floor.table_ids?.filter((table: any) => table.name === tableName)
+      )
+      .flat()
+      .find((table: any) => table);
+  }
+
+  const handleConfirm = async (number: string) => {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BASE_URL}/order/by-table-name/${number}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    console.log(response.status);
+    console.log(findTableByName(number));
+
+    if (response.status === 204) {
+      setViews(ORDER_SUMMARY_VIEW);
+      dispatch(updateOrder({ table_id: findTableByName(number)?._id }));
+      setTakenTable(false);
+    } else if (response.status === 200) {
+      setTakenTable(true);
     }
   };
 
@@ -42,8 +89,14 @@ export default function OnPlace() {
           Enter the table number to start the order:
         </TypographyH3>
         <div className="flex flex-col justify-center items-center gap-4">
-          <div className="flex justify-center items-center">
-            <TypographyH2>{tableCount || "0"}</TypographyH2>
+          <div className="flex flex-col space-y-2 justify-center items-center">
+            <TypographyH1 className={cn(takenTable && "text-red-500", "font-medium tracking-wider")}>
+              {tableNumber || "0"}
+            </TypographyH1>
+            <TypographySmall className="text-red-500 text-sm text-center">
+              {takenTable && "Table is already taken"}
+              <span className="opacity-0">s</span>
+            </TypographySmall>
           </div>
           <NumberPad onNumberClick={handleNumberClick} />
         </div>
@@ -56,8 +109,9 @@ export default function OnPlace() {
             Cancel
           </Button>
           <Button
-            onClick={() => setViews(ORDER_SUMMARY_VIEW)}
+            onClick={() => handleConfirm(tableNumber)}
             className="flex-1"
+            disabled={takenTable}
           >
             Confirm
           </Button>

@@ -24,7 +24,6 @@ export function ProductCard({
     0
   );
 
-  console.log(product);
   return (
     <motion.div className="flex cursor-pointer items-center justify-start h-full w-full">
       <Card
@@ -64,10 +63,13 @@ export function ProductCard({
           )}
         </div>
         <div className="flex flex-col items-start justify-between flex-1 h-full w-full pr-2">
-          <TypographyP className="font-medium text-sm">{product.name}</TypographyP>
+          <TypographyP className="font-medium text-sm">
+            {product.name}
+          </TypographyP>
           <div className="flex items-center justify-between w-full">
             <TypographyP className="text-sm font-semibold text-[#AAAAAA]">
-              {product.price ? product.price : product.variants[0].price_ttc} Dhs
+              {product.price ? product.price : product.variants[0].price_ttc}{" "}
+              Dhs
             </TypographyP>
           </div>
         </div>

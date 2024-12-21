@@ -64,8 +64,10 @@ export default function Passcode() {
         })
       ).unwrap();
 
-      navigate("/select-pos");
-      dispatch(setSelectedUser(users.cashiers[0]));
+      if (result) {
+        navigate("/select-pos");
+        dispatch(setSelectedUser(users.cashiers[0]));
+      }
     } catch (error) {
       console.error("Login failed:", error);
       setIncorrectPasscode(true);

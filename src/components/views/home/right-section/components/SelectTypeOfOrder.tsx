@@ -1,14 +1,17 @@
 import { Card } from "@/components/ui/card";
 import { TypographyH3, TypographyH4 } from "@/components/ui/typography";
+import { updateOrder } from "@/functions/updateOrder";
 import { OrderType } from "@/types";
 import { motion } from "framer-motion";
 import { ChevronRightIcon, LucideAirplay } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useRightViewContext } from "../contexts/rightViewContext";
 
 export default function SelectTypeOfOrder() {
   const [orderTypes, setOrderTypes] = useState<OrderType[]>([]);
   const { setViews, setOrderType } = useRightViewContext();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const storedGeneralData = localStorage.getItem("generalData");
@@ -18,7 +21,6 @@ export default function SelectTypeOfOrder() {
         (a: OrderType, b: OrderType) => a.sequence - b.sequence
       );
 
-      console.log("Order Types After Sorting:", sortedOrderTypes);
       setOrderTypes(sortedOrderTypes);
     }
   }, []);
@@ -26,6 +28,7 @@ export default function SelectTypeOfOrder() {
   const handleOrderTypeSelect = (id: string, type: string) => {
     setOrderType(id);
     setViews(type);
+    dispatch(updateOrder({ order_type_id: id }));
   };
 
   return (

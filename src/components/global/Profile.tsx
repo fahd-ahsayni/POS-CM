@@ -1,4 +1,5 @@
-import { Button } from "@/components/ui/button";
+import { unknownUser } from "@/assets";
+import CloseShift from "@/auth/CloseShift";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,12 +9,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-import { AppDispatch } from "@/store";
+import { AppDispatch, RootState } from "@/store";
 import { logout } from "@/store/slices/authentication/authSlice";
 import { selectPosData } from "@/store/slices/data/posSlice";
+import { formatDistanceToNow } from "date-fns";
 import { ChevronDown, HelpCircle, LogOut, Power, User } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { TypographySmall } from "../ui/typography";
 
 const menuItems = [
   { icon: User, label: "My Profile" },
@@ -23,84 +26,97 @@ const menuItems = [
 ];
 
 export default function Profile() {
+  const [open, setOpen] = useState(false);
+  const { user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
   const posId = localStorage.getItem("posId");
   const pos = useSelector(selectPosData);
+  const currentShift = pos.pos.find((p) => p._id === posId)?.shift;
+
+  localStorage.setItem("shiftId", currentShift?._id || "");
 
   const handleLogout = () => {
     dispatch(logout());
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-auto p-0 flex">
-          <div>
-            <img
-              className="inline-block h-9 w-9 rounded"
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-              alt=""
+    <>
+      <CloseShift open={open} setOpen={setOpen} />
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="h-auto p-0 flex">
+            <div>
+              <img
+                className="inline-block h-9 w-9 rounded-md border border-border"
+                src={user?.image ? user?.image : unknownUser}
+                alt=""
+              />
+            </div>
+            <div className="ml-3 md:flex hidden flex-col justify-center items-start h-10">
+              <TypographySmall className="text-sm font-medium">
+                Fahd AHSAYNI
+              </TypographySmall>
+              <TypographySmall className="text-xs text-neutral-dark-grey">
+                View profile
+              </TypographySmall>
+            </div>
+            <ChevronDown
+              size={16}
+              strokeWidth={2}
+              className="ms-2 opacity-60"
+              aria-hidden="true"
             />
-          </div>
-          <div className="ml-3 md:flex hidden flex-col justify-center items-start h-10">
-            <p className="text-sm/4 font-medium">Fahd AHSAYNI</p>
-            <p className="text-xs font-medium text-zinc-300">View profile</p>
-          </div>
-          <ChevronDown
-            size={16}
-            strokeWidth={2}
-            className="ms-2 opacity-60"
-            aria-hidden="true"
-          />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="min-w-44">
-        <DropdownMenuLabel className="flex min-w-0 flex-col">
-          <span className="truncate text-sm font-medium text-foreground">
-            {pos.pos.find((p) => p._id === posId)?.name}
-          </span>
-          <span className="truncate text-xs font-normal text-muted-foreground">
-            Shift: 3h ago
-          </span>
-        </DropdownMenuLabel>
-        <DropdownMenuGroup>
-          {menuItems.slice(0, 2).map((item, index) => (
-            <DropdownMenuItem key={index}>
-              <item.icon
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="min-w-52">
+          <DropdownMenuLabel className="flex items-center justify-between">
+            <span className="truncate text-sm font-medium text-foreground">
+              {pos.pos.find((p) => p._id === posId)?.name}
+            </span>
+            <span className="truncate text-xs font-normal text-muted-foreground">
+              {currentShift?.opening_time &&
+                formatDistanceToNow(new Date(currentShift.opening_time), {
+                  addSuffix: true,
+                })}
+            </span>
+          </DropdownMenuLabel>
+          <DropdownMenuGroup>
+            {menuItems.slice(0, 2).map((item, index) => (
+              <DropdownMenuItem key={index}>
+                <item.icon
+                  size={16}
+                  strokeWidth={2}
+                  className="opacity-60"
+                  aria-hidden="true"
+                />
+                <span>{item.label}</span>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem onClick={() => setOpen(true)}>
+              <Power
                 size={16}
                 strokeWidth={2}
                 className="opacity-60"
                 aria-hidden="true"
               />
-              <span>{item.label}</span>
+              <span>End Shift</span>
             </DropdownMenuItem>
-          ))}
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          {menuItems.slice(2, 3).map((item, index) => (
-            <DropdownMenuItem key={index}>
-              <item.icon
-                size={16}
-                strokeWidth={2}
-                className="opacity-60"
-                aria-hidden="true"
-              />
-              <span>{item.label}</span>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="!text-red-600" onClick={handleLogout}>
-          <LogOut
-            size={16}
-            strokeWidth={2}
-            className="opacity-60"
-            aria-hidden="true"
-          />
-          <span>Logout</span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="!text-red-600" onClick={handleLogout}>
+            <LogOut
+              size={16}
+              strokeWidth={2}
+              className="opacity-60"
+              aria-hidden="true"
+            />
+            <span>Logout</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
   );
 }

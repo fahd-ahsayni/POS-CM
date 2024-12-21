@@ -1,14 +1,13 @@
-import { Route, Routes, Navigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import SelectPosPage from "@/auth/SelectPosPage";
+import Layout from "@/components/Layout/Layout";
 import { RootState } from "@/store";
+import { useSelector } from "react-redux";
+import { Navigate, Route, Routes } from "react-router-dom";
 import LogInPage from "../auth/LogInPage";
 import HomePage from "./HomePage";
-import Layout from "@/components/Layout/Layout";
-import SelectPosPage from "@/auth/SelectPosPage";
 import OrdersPage from "./OrdersPage";
-import { RightViewProvider } from "@/components/views/home/right-section/contexts/rightViewContext";
-import { LeftViewProvider } from "@/components/views/home/left-section/contexts/leftViewContext";
-import OpenShift from "@/auth/OpenShift";
+import { useEffect } from "react";
+import { useTheme } from "@/providers/themeProvider";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = useSelector(
@@ -23,6 +22,10 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default function HandleApp() {
+  const { setTheme } = useTheme();
+  useEffect(() => {
+    setTheme("dark");
+  }, []);
   return (
     <Routes>
       <Route path="/login" element={<LogInPage />} />

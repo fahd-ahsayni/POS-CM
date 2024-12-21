@@ -1,7 +1,7 @@
 import Drawer from "@/components/global/Drawer";
 import NumberPad from "@/components/global/NumberPad";
 import { Button } from "@/components/ui/button";
-import { TypographyH2, TypographyH4 } from "@/components/ui/typography";
+import { TypographyH2 } from "@/components/ui/typography";
 import axios from "axios";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";

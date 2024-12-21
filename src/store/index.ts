@@ -5,6 +5,7 @@ import authReducer from "@/store/slices/authentication/authSlice";
 import dayStatusReducer from "@/store/slices/authentication/openDaySlice";
 import posReducer from "@/store/slices/data/posSlice";
 import generalDataReducer from "@/store/slices/data/generalDataSlice";
+import createOrderReducer from "@/store/slices/order/createOrder";
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     dayStatus: dayStatusReducer,
     pos: posReducer,
     generalData: generalDataReducer,
+    createOrder: createOrderReducer,
   },
 });
 

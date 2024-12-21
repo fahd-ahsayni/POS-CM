@@ -1,3 +1,5 @@
+import { calculateSelectedProductsTotal } from "@/functions/calculateSelectedProductsTotal";
+import { updateOrder } from "@/functions/updateOrder";
 import { Category, Product, ProductSelected } from "@/types";
 import {
   createContext,
@@ -6,7 +8,9 @@ import {
   useState,
   useMemo,
   useCallback,
+  useEffect,
 } from "react";
+import { useDispatch } from "react-redux";
 
 interface LeftViewContextType {
   views: string;
@@ -25,7 +29,7 @@ interface LeftViewContextType {
   setSubCategory: React.Dispatch<React.SetStateAction<Category | null>>;
 }
 
-const LeftViewContext = createContext<LeftViewContextType>({} as LeftViewContextType);
+const LeftViewContext = createContext<LeftViewContextType | null>(null);
 
 export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
   const [views, setViews] = useState("AllCategories");
@@ -38,9 +42,26 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
   const [category, setCategory] = useState<Category | null>(null);
   const [subCategory, setSubCategory] = useState<Category | null>(null);
 
+  const dispatch = useDispatch();
+
+  const updateOrderTotal = useCallback(() => {
+    dispatch(
+      updateOrder({
+        total_amount: calculateSelectedProductsTotal(selectedProducts),
+      })
+    );
+  }, [dispatch, selectedProducts]);
+
+  useEffect(() => {
+    updateOrderTotal();
+  }, [updateOrderTotal]);
+
   // Define callbacks at the top level
   const handleSetViews = useCallback((view: string) => setViews(view), []);
-  const handleSetCategory = useCallback((cat: Category | null) => setCategory(cat), []);
+  const handleSetCategory = useCallback(
+    (cat: Category | null) => setCategory(cat),
+    []
+  );
 
   const contextValue = useMemo(
     () => ({
@@ -68,7 +89,7 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
       category,
       subCategory,
       handleSetViews,
-      handleSetCategory
+      handleSetCategory,
     ]
   );
 
@@ -80,5 +101,9 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export const useLeftViewContext = () => {
-  return useContext(LeftViewContext);
+  const context = useContext(LeftViewContext);
+  if (context === null) {
+    throw new Error('useLeftViewContext must be used within a LeftViewProvider');
+  }
+  return context;
 };

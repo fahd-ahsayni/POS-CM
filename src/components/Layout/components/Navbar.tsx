@@ -5,13 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { useTheme } from "@/providers/themeProvider";
-import { Bell, LucideMaximize, Menu as MenuIcon } from "lucide-react";
+import { Bell, LucideMaximize } from "lucide-react";
 
-export default function Navbar({
-  setMobileMenuOpen,
-}: {
-  setMobileMenuOpen: (open: boolean) => void;
-}) {
+export default function Navbar() {
   const theme = useTheme();
 
   const handleFullScreen = () => {
@@ -25,14 +21,6 @@ export default function Navbar({
   return (
     <header className="w-full">
       <div className="relative z-10 flex h-16 flex-shrink-0">
-        <button
-          type="button"
-          className="px-4 text-zinc-300 focus:outline-none md:hidden"
-          onClick={() => setMobileMenuOpen(true)}
-        >
-          <span className="sr-only">Open sidebar</span>
-          <MenuIcon className="h-6 w-6" />
-        </button>
         <div className="flex flex-1 justify-between px-4 sm:px-6">
           <img
             src={theme.theme === "dark" ? logoDarkMode : logoLightMode}

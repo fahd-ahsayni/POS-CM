@@ -1,4 +1,3 @@
-import { products } from "./../data/index";
 export interface GeneralData {
   floors: object[];
   categories: Category[]; // Updated to include nested categories
@@ -99,11 +98,14 @@ export interface Product {
 }
 
 export interface ProductSelected extends Product {
-  variant_id: string;
+  product_variant_id: string;
   quantity: number;
   customer_index: number;
   order_type_id: string;
+  uom_id: string | null;
   id: string;
-  note?: string[];
-  suite_commande?: boolean;
+  note: string[] | null;
+  is_paid: boolean | false;
+  is_ordered: boolean | false;
+  suite_commande: boolean | false;
 }

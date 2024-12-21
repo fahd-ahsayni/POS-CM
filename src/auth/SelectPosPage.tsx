@@ -22,6 +22,7 @@ import { pageAnimations } from "./animation";
 import UserCard from "./components/UserCard";
 import OpenShift from "./OpenShift";
 import PosCard from "./components/PosCard";
+import { updateOrder } from "@/functions/updateOrder";
 
 export default function SelectPosPage() {
   const navigate = useNavigate();
@@ -48,7 +49,8 @@ export default function SelectPosPage() {
     localStorage.setItem("posId", id);
     if (id && data.pos) {
       const findPos = data.pos.find((pos) => pos._id === id);
-      if (findPos?.shift !== null) {
+      if (findPos && findPos.shift !== null) {
+        dispatch(updateOrder({ shift_id: findPos.shift._id }));
         navigate("/");
       } else {
         setOpen(true);

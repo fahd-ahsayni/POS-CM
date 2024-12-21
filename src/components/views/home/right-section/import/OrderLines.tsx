@@ -4,14 +4,18 @@ import { useEffect, useState } from "react";
 import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
 import { useRightViewContext } from "../contexts/rightViewContext";
 import OrderLineIndex from "./OrderLineIndex";
+import { useOrderLines } from '../contexts/orderLinesContext';
 
 export default function OrderLines() {
   const { selectedProducts, setSelectedProducts } = useLeftViewContext();
-  const [groupedProducts, setGroupedProducts] = useState<Record<number, any[]>>(
-    {}
-  );
-
+  const [groupedProducts, setGroupedProducts] = useState<Record<number, any[]>>({});
   const { customerIndex, setCustomerIndex } = useRightViewContext();
+  
+  const { expandedCustomers, toggleCustomer, initializeCustomer } = useOrderLines();
+
+  useEffect(() => {
+    initializeCustomer(customerIndex);
+  }, [customerIndex]);
 
   // Function to increment product quantity
   const incrementQuantity = (productId: string) => {
@@ -75,8 +79,8 @@ export default function OrderLines() {
     <div className="z-10 h-full w-full">
       <div className="space-y-4">
         {selectedProducts.length < 1 ? (
-          <div className="flex items-center justify-between w-full pl-3 pr-1.5 rounded-md mb-2.5">
-            <div className="flex items-center justify-center gap-x-2 flex-1 bg-zinc-800 rounded-md px-2 py-2">
+          <div className="flex items-center justify-between w-full rounded-md mb-2.5">
+            <div className="flex items-center justify-center gap-x-2 flex-1 bg-secondary-white dark:bg-secondary-black rounded-md px-2 py-2">
               <div className="flex items-center justify-center gap-x-2">
                 <User className="w-4 h-4" />
                 <TypographySmall className="text-sm">
@@ -94,6 +98,8 @@ export default function OrderLines() {
                 incrementQuantity={incrementQuantity}
                 decrementQuantity={decrementQuantity}
                 deleteCustomer={deleteCustomer}
+                isExpanded={expandedCustomers[index + 1]}
+                onToggle={() => toggleCustomer(index + 1)}
               />
             </div>
           ))

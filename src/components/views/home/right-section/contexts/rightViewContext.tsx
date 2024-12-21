@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, ReactNode, useMemo, useCallback } from "react";
+import { createContext, useContext, useState, ReactNode, useMemo, useCallback, useEffect } from "react";
 import { ON_PLACE_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
+import { setCustomerCount, setOrderData } from "@/store/slices/order/createOrder";
 
 interface RightViewContextType {
   views: string;
@@ -33,6 +34,10 @@ export const RightViewProvider = ({ children }: { children: ReactNode }) => {
   const handleSetTableNumber = useCallback((number: number) => setTableNumber(number), []);
   const handleSetType = useCallback((type: string | null) => setOrderType(type), []);
   const handleSetCustomer = useCallback((customer: number) => setSelectedCustomer(customer), []);
+
+  useEffect(() => {
+    setCustomerCount(customerIndex);
+  }, [customerIndex]);
 
   const contextValue = useMemo(() => ({
     views,
