@@ -17,6 +17,7 @@ import { useLeftViewContext } from "../../left-section/contexts/leftViewContext"
 import { useOrderLines } from "../contexts/orderLinesContext";
 import { useRightViewContext } from "../contexts/rightViewContext";
 import OrderLines from "../import/OrderLines";
+import OtherActionsOrderLines from "../ui/OtherActionsOrderLines";
 
 const OrderSummary = () => {
   const dispatch = useDispatch();
@@ -74,7 +75,7 @@ const OrderSummary = () => {
         </TypographyP>
       </div>
 
-      <div className="flex items-center justify-between pt-1">
+      <div className="flex items-center justify-between mt-4">
         <div className="flex items-center gap-2">
           <Button size="icon">
             <PrinterIcon className="w-[1.2rem] h-auto fill-white" />
@@ -88,10 +89,7 @@ const OrderSummary = () => {
 
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Button size="icon">
-              <BsThreeDotsVertical size={16} />
-              <span className="sr-only">Full screen</span>
-            </Button>
+            <OtherActionsOrderLines />
             <Button size="icon" onClick={handleToggleAll}>
               <ExpandListIcon
                 className={`w-[1.2rem] h-auto fill-white transition-transform duration-200 ${

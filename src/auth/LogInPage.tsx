@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import Passcode from "./components/Passcode";
 import SelectUser from "./components/SelectUser";
+import { useTheme } from "@/providers/themeProvider";
 
 export default function LogInPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -11,6 +12,11 @@ export default function LogInPage() {
   useEffect(() => {
     dispatch(fetchUsers());
   }, [dispatch]);
+
+  const { setTheme } = useTheme();
+  useEffect(() => {
+    setTheme("dark");
+  }, []);
 
   return (
     <>

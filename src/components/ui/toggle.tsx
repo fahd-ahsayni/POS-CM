@@ -1,5 +1,6 @@
 "use client";
 
+import { Switch } from "@headlessui/react";
 import * as TogglePrimitive from "@radix-ui/react-toggle";
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
@@ -25,12 +26,13 @@ const toggleVariants = cva(
       variant: "default",
       size: "default",
     },
-  },
+  }
 );
 
 const Toggle = React.forwardRef<
   React.ElementRef<typeof TogglePrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof TogglePrimitive.Root> & VariantProps<typeof toggleVariants>
+  React.ComponentPropsWithoutRef<typeof TogglePrimitive.Root> &
+    VariantProps<typeof toggleVariants>
 >(({ className, variant, size, ...props }, ref) => (
   <TogglePrimitive.Root
     ref={ref}
@@ -42,3 +44,34 @@ const Toggle = React.forwardRef<
 Toggle.displayName = TogglePrimitive.Root.displayName;
 
 export { Toggle, toggleVariants };
+
+export function SwitchToggle({
+  enabled,
+  setEnabled,
+  className,
+}: {
+  enabled: boolean;
+  setEnabled: (enabled: boolean) => void;
+  className?: string;
+}) {
+  return (
+    <Switch
+      checked={enabled}
+      onChange={setEnabled}
+      className={cn(
+        enabled ? "bg-primary-red" : "dark:bg-white/10 bg-primary-black/10",
+        "relative inline-flex h-4 w-8 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-red focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-primary-black",
+        className
+      )}
+    >
+      <span className="sr-only">Use setting</span>
+      <span
+        aria-hidden="true"
+        className={cn(
+          enabled ? "translate-x-5" : "translate-x-0",
+          "pointer-events-none inline-block h-3 w-3 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+        )}
+      />
+    </Switch>
+  );
+}

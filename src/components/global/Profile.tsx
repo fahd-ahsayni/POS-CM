@@ -71,7 +71,7 @@ export default function Profile() {
             />
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="min-w-52">
+        <DropdownMenuContent className="min-w-52 mt-2 -ml-10">
           <DropdownMenuLabel className="flex items-center justify-between">
             <span className="truncate text-xs font-medium text-foreground">
               {pos.pos.find((p) => p._id === posId)?.name}

@@ -49,10 +49,10 @@ export default function SelectDeliveryType() {
   };
 
   return (
-    <div className="flex flex-col justify-evenly h-full">
-      <TypographyH3 className="font-medium max-w-xs">
+    <div className="flex flex-col justify-evenly -mt-6 h-full">
+      <TypographyH4 className="font-medium max-w-xs">
         Enter the table number to start the order:
-      </TypographyH3>
+      </TypographyH4>
       <div className="space-y-3">
         {deliveryApps.map((app, index) => (
           <motion.div

@@ -1,12 +1,22 @@
 import { Card } from "@/components/ui/card";
-import { TypographyH3, TypographyH4 } from "@/components/ui/typography";
+import {
+  TypographyH3,
+  TypographyH4,
+  TypographyP,
+} from "@/components/ui/typography";
 import { updateOrder } from "@/functions/updateOrder";
 import { OrderType } from "@/types";
-import { motion } from "framer-motion";
-import { ChevronRightIcon, LucideAirplay } from "lucide-react";
+import {
+  ChevronRightIcon,
+  ShoppingCart,
+  Package,
+  Truck,
+  Store,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useRightViewContext } from "../contexts/rightViewContext";
+import { TypeOfOrderDescription, TypeOfOrderIcon } from "../ui/TypeOfOrderIcon";
 
 export default function SelectTypeOfOrder() {
   const [orderTypes, setOrderTypes] = useState<OrderType[]>([]);
@@ -32,33 +42,31 @@ export default function SelectTypeOfOrder() {
   };
 
   return (
-    <div className="h-full flex flex-col justify-start">
-      <TypographyH3 className="font-medium max-w-xs">
+    <div className="h-full flex flex-col justify-start mt-2">
+      <TypographyH4 className="font-medium max-w-xs">
         What type of order would you like to process?
-      </TypographyH3>
+      </TypographyH4>
       <div className="flex flex-col h-[60%] justify-center gap-4 mt-10">
-        {orderTypes.map((type, index) => (
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25, delay: index * 0.1 }}
-            key={type._id}
-          >
+        {orderTypes.map((type) => (
+          <div key={type._id}>
             <Card
               className="w-full rounded-md h-24 px-8 py-4 dark:!bg-zinc-800 bg-white flex space-x-4 items-center justify-between cursor-pointer hover:bg-accent"
               onClick={() => handleOrderTypeSelect(type._id, type.type)}
             >
               <div className="flex items-center gap-x-4">
-                <LucideAirplay className="w-6 h-auto text-primary" />
+                <TypeOfOrderIcon type={type.type.toLowerCase()} />
                 <div>
                   <TypographyH4 className="font-medium first-letter:capitalize">
                     {type.type}
                   </TypographyH4>
+                  <TypographyP className="text-xs text-neutral-dark-grey">
+                    {TypeOfOrderDescription({ type: type.type.toLowerCase() })}
+                  </TypographyP>
                 </div>
               </div>
-              <ChevronRightIcon className="w-6 h-auto text-primary-black dark:text-white" />
+              <ChevronRightIcon className="w-6 h-auto text-neutral-dark-grey" />
             </Card>
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>

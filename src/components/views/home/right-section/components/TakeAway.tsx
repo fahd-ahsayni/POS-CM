@@ -1,6 +1,6 @@
 import NumberPad from "@/components/global/NumberPad";
 import { Button } from "@/components/ui/button";
-import { TypographyH1, TypographyH3 } from "@/components/ui/typography";
+import { TypographyH1, TypographyH4 } from "@/components/ui/typography";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { ORDER_SUMMARY_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
@@ -34,9 +34,9 @@ export default function TakeAway() {
         transition={{ duration: 0.25, delay: 0.1 }}
         className="flex flex-col justify-evenly h-full -mt-10"
       >
-        <TypographyH3 className="font-medium max-w-xs">
+        <TypographyH4 className="font-medium max-w-xs">
           Enter the beeper number to start the order:
-        </TypographyH3>
+        </TypographyH4>
         <div className="flex flex-col justify-center items-center gap-4">
           <div className="flex justify-center items-center">
             <TypographyH1 className="text-center font-medium tracking-wider">

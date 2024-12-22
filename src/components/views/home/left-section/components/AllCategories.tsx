@@ -14,8 +14,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 function CategoryCardSkeleton() {
   return (
-    <Card className="flex relative flex-col items-center h-24 overflow-hidden justify-center bg-secondary-black">
-      <Skeleton className="w-full h-full bg-white/5" />
+    <Card className="flex relative flex-col items-center h-24 overflow-hidden justify-center">
+      <Skeleton className="w-full h-full dark:bg-white/5 bg-primary-black/30" />
     </Card>
   );
 }

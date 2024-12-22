@@ -6,8 +6,6 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import LogInPage from "../auth/LogInPage";
 import HomePage from "./HomePage";
 import OrdersPage from "./OrdersPage";
-import { useEffect } from "react";
-import { useTheme } from "@/providers/themeProvider";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = useSelector(
@@ -24,10 +22,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default function HandleApp() {
-  const { setTheme } = useTheme();
-  useEffect(() => {
-    setTheme("dark");
-  }, []);
   return (
     <Routes>
       <Route path="/login" element={<LogInPage />} />

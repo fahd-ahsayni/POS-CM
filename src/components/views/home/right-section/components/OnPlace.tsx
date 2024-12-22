@@ -1,10 +1,10 @@
+import { getByTableName } from "@/api/services";
 import NumberPad from "@/components/global/NumberPad";
 import { Button } from "@/components/ui/button";
 import {
-  TypographyH1,
   TypographyH2,
-  TypographyH3,
-  TypographySmall,
+  TypographyH4,
+  TypographySmall
 } from "@/components/ui/typography";
 import { updateOrder } from "@/functions/updateOrder";
 import { cn } from "@/lib/utils";
@@ -14,7 +14,6 @@ import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { ORDER_SUMMARY_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
 import { useRightViewContext } from "../contexts/rightViewContext";
-import { getByTableName } from "@/api/services";
 
 export default function OnPlace() {
   const { tableNumber, setTableNumber } = useRightViewContext();
@@ -75,11 +74,11 @@ export default function OnPlace() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25, delay: 0.1 }}
-        className="flex flex-col justify-evenly h-full"
+        className="flex flex-col justify-evenly -mt-6 h-full"
       >
-        <TypographyH3 className="font-medium max-w-xs">
+        <TypographyH4 className="font-medium max-w-xs">
           Enter the table number to start the order:
-        </TypographyH3>
+        </TypographyH4>
         <div className="flex flex-col justify-center items-center gap-4">
           <div className="flex flex-col space-y-2 justify-center items-center">
             <TypographyH2
