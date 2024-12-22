@@ -9,7 +9,7 @@ export default function SelectUser() {
   const [activeTab, setActiveTab] = useState("cashiers");
 
   return (
-    <div className="relative w-1/2 bg-gray-100 hidden flex-1 lg:flex flex-col">
+    <div className="relative w-1/2 bg-secondary-white hidden flex-1 lg:flex flex-col">
       <div className="relative z-10 flex h-16 flex-shrink-0">
         <div className="flex flex-1 justify-between px-4 sm:px-6">
           <img src={logoLightMode} alt="logo" className="w-24 h-auto" />

@@ -4,16 +4,18 @@ import { User } from "@/types";
 
 interface UserCardProps {
   user: User;
-  isActive: boolean;
+  isActive?: boolean;
   withRole?: boolean;
   className?: string;
+  onClick?: () => void;
 }
 
 export default function UserCard({
   user,
-  isActive,
+  isActive = true,
   className,
   withRole = false,
+  onClick,
 }: UserCardProps) {
   return (
     <div
@@ -21,6 +23,7 @@ export default function UserCard({
         "h-[250px] slide-item w-full !flex !flex-col items-center justify-center",
         className
       )}
+      onClick={onClick}
     >
       <div
         className={`relative ${

@@ -6,7 +6,7 @@ import { setSelectedUser } from "@/store/slices/data/usersSlice";
 import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import CirclesAnimation from "./CirclesAnimation";
+import CirclesAnimation from "./ui/CirclesAnimation";
 
 export default function Passcode() {
   const [passcode, setPasscode] = useState<string>("");
@@ -76,7 +76,7 @@ export default function Passcode() {
   };
 
   return (
-    <div className="flex lg:w-1/2 w-full h-full bg-zinc-950 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24 relative">
+    <div className="flex lg:w-1/2 w-full h-full bg-primary-black flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24 relative">
       <div className="absolute rounded-full -top-52 -right-52 w-[400px] h-[400px] bg-red-600 blur-3xl opacity-30" />
       <div className="mx-auto w-full max-w-sm lg:w-96">
         <div>

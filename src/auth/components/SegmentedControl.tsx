@@ -16,11 +16,11 @@ export default function SegmentedControl({
 
   return (
     <div className="relative">
-      <div className="relative flex w-[200px] rounded-lg py-0.5 bg-zinc-300/10 border-zinc-300/10">
+      <div className="relative flex w-[200px] rounded-md py-0.5 bg-primary-black/5 border-primary-black/10">
         {/* Animated Indicator */}
         <motion.div
           aria-hidden="true"
-          className="absolute top-0 left-0 h-full w-[calc(100%/2)] rounded-lg bg-red-600 shadow-sm will-change-transform"
+          className="absolute top-0 left-0 h-full w-[calc(100%/2)] rounded-md bg-primary-red shadow-sm will-change-transform"
           layout
           transition={{
             type: "spring",
@@ -44,7 +44,7 @@ export default function SegmentedControl({
               ${
                 activeTab === segment.value
                   ? "text-white"
-                  : "text-zinc-500 hover:text-zinc-700"
+                  : "text-neutral-dark-grey"
               }`}
           >
             {segment.label}

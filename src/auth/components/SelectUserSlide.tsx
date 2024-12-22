@@ -1,101 +1,150 @@
-import Slider from "react-slick";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store";
-import UserCard from "./UserCard";
 import { setSelectedUser } from "@/store/slices/data/usersSlice";
+import UserCard from "./ui/UserCard";
+import type { User } from "@/types";
+import NavigationButton from "./ui/NavigationButton";
+import UserCardSkeleton from "./ui/UserCardSkelton";
 
-interface SelectUserSlideProps {
+export interface SelectUserSlideProps {
   userType: string;
 }
 
 const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
-  const [activeSlide, setActiveSlide] = useState(0);
-  const sliderRef = useRef<Slider | null>(null);
-  const users = useSelector((state: RootState) => state.users.users);
-  const searchQuery = useSelector(
-    (state: RootState) => state.users.searchQuery
-  );
   const dispatch = useDispatch();
+  const {
+    users,
+    loading: reduxLoading,
+    error,
+  } = useSelector((state: RootState) => state.users);
+  const selectedUser = useSelector(
+    (state: RootState) => state.users.selectedUser
+  );
+  const [swiperKey, setSwiperKey] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  const currentUsers = useMemo(() => {
-    return users?.[userType as keyof typeof users] || [];
+  useEffect(() => {
+    if (reduxLoading) {
+      setLoading(true);
+    } else {
+      const timer = setTimeout(() => {
+        setLoading(false);
+      }, 700);
+
+      return () => clearTimeout(timer);
+    }
+  }, [reduxLoading]);
+
+  const processedUsers = useMemo(() => {
+    const originalUsers = users[userType as keyof typeof users] || [];
+    if (originalUsers.length > 1 && originalUsers.length < 4) {
+      return [...originalUsers, ...originalUsers];
+    }
+    return originalUsers;
   }, [users, userType]);
 
-  const filteredUsers = useMemo(() => {
-    return currentUsers.filter((user) =>
-      user.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [currentUsers, searchQuery]);
-
-  const duplicatedUsers = useMemo(() => {
-    return filteredUsers.length === 2
-      ? [...filteredUsers, ...filteredUsers]
-      : filteredUsers;
-  }, [filteredUsers]);
-
-  useEffect(() => {
-    if (sliderRef.current && duplicatedUsers.length > 1) {
-      sliderRef.current.slickGoTo(activeSlide);
-    }
-  }, [activeSlide, duplicatedUsers]);
-
-  useEffect(() => {
-    if (duplicatedUsers.length > 0) {
-      dispatch(setSelectedUser(duplicatedUsers[activeSlide]));
-    }
-  }, [duplicatedUsers, activeSlide, dispatch]);
-
-  const settings = useMemo(
-    () => ({
-      className: "center",
-      centerMode: true,
-      infinite: duplicatedUsers.length > 1,
-      centerPadding: "0px",
-      slidesToShow: 3,
-      speed: 300,
-      focusOnSelect: true,
-      afterChange: (current: number) => {
-        setActiveSlide(current);
-        dispatch(setSelectedUser(duplicatedUsers[current]));
-      },
-      arrows: true,
-      nextArrow: <NextButton />,
-      prevArrow: <PrevButton />,
-    }),
-    [duplicatedUsers, dispatch]
+  const currentIndex = useMemo(
+    () => processedUsers.findIndex((user) => user._id === selectedUser?._id),
+    [processedUsers, selectedUser]
   );
+
+  useEffect(() => {
+    if (processedUsers.length > 0) {
+      const centerIndex = Math.floor(processedUsers.length / 2);
+      const centerUser = processedUsers[centerIndex];
+      dispatch(setSelectedUser(centerUser));
+      setSwiperKey((prev) => prev + 1);
+    }
+  }, [userType]);
+
+  const handleSlideChange = (swiper: any) => {
+    const realIndex = swiper.realIndex;
+    const actualIndex =
+      processedUsers.length > 3
+        ? realIndex % (processedUsers.length / 2)
+        : realIndex;
+
+    const newSelectedUser = processedUsers[actualIndex];
+    if (newSelectedUser?._id !== selectedUser?._id) {
+      dispatch(setSelectedUser(newSelectedUser));
+    }
+  };
+
+  const handleUserSelect = (user: User) => {
+    dispatch(setSelectedUser(user));
+  };
+
+  if (loading) {
+    return (
+      <div className="slider-container w-full custom-slider overflow-hidden mt-2 relative">
+        <div className="flex justify-center space-x-4">
+          {[1, 2, 3].map((n) => (
+            <UserCardSkeleton key={n} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full p-4 text-center text-red-500">
+        <p>Error loading users. Please try again later.</p>
+      </div>
+    );
+  }
+
+  if (processedUsers.length === 0) {
+    return (
+      <div className="w-full p-4 text-center text-gray-500">
+        <p>No users available for this category.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="slider-container w-full custom-slider overflow-hidden mt-2 relative">
-      <div className="h-full absolute right-0 top-0 bg-gradient-to-l from-gray-100 to-transparent w-[200px] z-10"></div>
-      <div className="h-full absolute left-0 top-0 bg-gradient-to-r from-gray-100 to-transparent w-[200px] z-10"></div>
-      <Slider {...settings} ref={sliderRef} className="py-8">
-        {duplicatedUsers.map((user, index) => (
-          <UserCard key={index} user={user} isActive={index === activeSlide} />
+      <Swiper
+        key={swiperKey}
+        slidesPerView={3}
+        centeredSlides={true}
+        initialSlide={currentIndex !== -1 ? currentIndex : 0}
+        spaceBetween={30}
+        loop={processedUsers.length > 1}
+        onSlideChange={handleSlideChange}
+        className="mySwiper relative"
+        watchSlidesProgress={true}
+        updateOnWindowResize={true}
+        observer={true}
+        observeParents={true}
+      >
+        {processedUsers.map((user, index) => (
+          <SwiperSlide
+            key={`${user._id}-${index}-${userType}`}
+            virtualIndex={index}
+          >
+            {({ isActive }) => (
+              <UserCard
+                user={user}
+                isActive={user._id === selectedUser?._id}
+                onClick={() => handleUserSelect(user)}
+                className={
+                  isActive
+                    ? "scale-110 transition-transform"
+                    : "scale-90 transition-transform"
+                }
+              />
+            )}
+          </SwiperSlide>
         ))}
-      </Slider>
+        <div className="h-40 left-0 absolute w-24 bg-red-400" />
+        <NavigationButton direction="prev" />
+        <NavigationButton direction="next" />
+      </Swiper>
     </div>
   );
 };
-
-const NextButton: React.FC<{ onClick?: () => void }> = ({ onClick }) => (
-  <button
-    onClick={onClick}
-    className="absolute -right-2 top-[calc(50%-20px)] -translate-y-1/2 z-20 w-10 h-10 rounded-full flex items-center justify-center"
-  >
-    <ChevronRightIcon className="w-14 h-14 text-red-600" />
-  </button>
-);
-
-const PrevButton: React.FC<{ onClick?: () => void }> = ({ onClick }) => (
-  <button
-    onClick={onClick}
-    className="absolute -left-2 top-[calc(50%-20px)] -translate-y-1/2 z-20 w-10 h-10 rounded-full flex items-center justify-center"
-  >
-    <ChevronLeftIcon className="w-14 h-14 text-red-600" />
-  </button>
-);
 
 export default SelectUserSlide;

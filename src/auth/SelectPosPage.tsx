@@ -19,7 +19,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { pageAnimations } from "./animation";
-import UserCard from "./components/UserCard";
+import UserCard from "./components/ui/UserCard";
 import OpenShift from "./OpenShift";
 import PosCard from "./components/PosCard";
 import { updateOrder } from "@/functions/updateOrder";
