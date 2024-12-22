@@ -8,17 +8,17 @@ export function ModeToggleWithDropdown() {
   return (
     <div>
       <Toggle
-        className="group size-9 !bg-red-600 !rounded-md"
+        className="group size-8 !bg-primary-red !rounded-md"
         pressed={theme === "dark"}
         onPressedChange={() => setTheme(theme === "dark" ? "light" : "dark")}
         aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
       >
-        <MoonIcon
-          className="w-5 h-auto shrink-0 scale-0 opacity-0 transition-all group-data-[state=on]:scale-100 group-data-[state=on]:opacity-100 !fill-white"
+        <SunIcon
+          className="w-[1.2rem] h-auto shrink-0 scale-0 opacity-0 transition-all group-data-[state=on]:scale-100 group-data-[state=on]:opacity-100 !fill-white"
           aria-hidden="true"
         />
-        <SunIcon
-          className="w-5 absolute shrink-0 scale-100 opacity-100 transition-all group-data-[state=on]:scale-0 group-data-[state=on]:opacity-0 !fill-white"
+        <MoonIcon
+          className="w-[1.2rem] absolute shrink-0 scale-100 opacity-100 transition-all group-data-[state=on]:scale-0 group-data-[state=on]:opacity-0 !fill-white"
           aria-hidden="true"
         />
       </Toggle>

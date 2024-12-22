@@ -2,6 +2,7 @@ import NumberPad from "@/components/global/NumberPad";
 import { Button } from "@/components/ui/button";
 import {
   TypographyH1,
+  TypographyH2,
   TypographyH3,
   TypographySmall,
 } from "@/components/ui/typography";
@@ -81,7 +82,7 @@ export default function OnPlace() {
         </TypographyH3>
         <div className="flex flex-col justify-center items-center gap-4">
           <div className="flex flex-col space-y-2 justify-center items-center">
-            <TypographyH1
+            <TypographyH2
               className={cn(
                 tableValid === "invalid" && "text-primary-red",
                 tableValid === "not-found" && "text-yellow-500",
@@ -89,7 +90,7 @@ export default function OnPlace() {
               )}
             >
               {tableNumber || "0"}
-            </TypographyH1>
+            </TypographyH2>
             <TypographySmall
               className={cn(
                 tableValid === "invalid" && "text-primary-red",

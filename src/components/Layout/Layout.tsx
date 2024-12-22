@@ -1,7 +1,7 @@
 import { AppDispatch, RootState } from "@/store";
 import { fetchGeneralData } from "@/store/slices/data/generalDataSlice";
 import { fetchPosData } from "@/store/slices/data/posSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
 import Keyboard from "../global/keyboard/Keyboard";
@@ -22,6 +22,9 @@ const Layout = () => {
   const generalError = useSelector(
     (state: RootState) => state.generalData.error
   );
+
+  // Add new state for delayed loading
+  const [isLoading, setIsLoading] = useState(true);
 
   // Effects
   useEffect(() => {
@@ -44,9 +47,22 @@ const Layout = () => {
     dispatch(updateOrder({ shift_id: localStorage.getItem("shiftId") }));
   }, [dispatch, localStorage.getItem("shiftId")]);
 
-  // if (generalStatus === "loading") {
-  //   return <LoadingFullScreen />;
-  // }
+  // Add effect to handle delayed loading
+  useEffect(() => {
+    if (generalStatus === "loading") {
+      setIsLoading(true);
+    } else {
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 500); // 0.2 second delay
+      return () => clearTimeout(timer);
+    }
+  }, [generalStatus]);
+
+  // Update loading condition check
+  if (false) {
+    return <LoadingFullScreen />;
+  }
 
   if (generalError) {
     return <div>Error: {generalError}</div>;

@@ -50,7 +50,7 @@ export default function Profile() {
           <button className="h-auto p-0 flex">
             <div>
               <img
-                className="inline-block h-9 w-9 rounded-md border border-border"
+                className="inline-block size-10 rounded-md border border-border"
                 src={user?.image ? user?.image : unknownUser}
                 alt=""
               />
@@ -64,9 +64,9 @@ export default function Profile() {
               </TypographySmall>
             </div>
             <ChevronDown
-              size={16}
-              strokeWidth={2}
-              className="ms-2 opacity-60"
+              size={20}
+              strokeWidth={1.5}
+              className="ms-2 opacity-60 mt-2"
               aria-hidden="true"
             />
           </button>

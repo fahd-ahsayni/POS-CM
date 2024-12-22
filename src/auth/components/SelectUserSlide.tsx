@@ -72,10 +72,6 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
     }
   };
 
-  const handleUserSelect = (user: User) => {
-    dispatch(setSelectedUser(user));
-  };
-
   if (loading) {
     return (
       <div className="slider-container w-full custom-slider overflow-hidden mt-2 relative">
@@ -129,7 +125,6 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
               <UserCard
                 user={user}
                 isActive={user._id === selectedUser?._id}
-                onClick={() => handleUserSelect(user)}
                 className={
                   isActive
                     ? "scale-110 transition-transform"

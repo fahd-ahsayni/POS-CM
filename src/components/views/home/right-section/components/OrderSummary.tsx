@@ -1,14 +1,10 @@
 import { logoWithoutText } from "@/assets";
+import { AddUserIcon, BillIcon, ExpandListIcon, PrinterIcon } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
 import { TypographyP } from "@/components/ui/typography";
 import { updateOrder } from "@/functions/updateOrder";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  LucideFileText,
-  LucideMaximize,
-  LucidePlus,
-  LucidePrinter,
-} from "lucide-react";
+import { LucideMaximize } from "lucide-react";
 import { useCallback, useEffect } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch } from "react-redux";
@@ -23,7 +19,7 @@ export default function OrderSummary() {
   const dispatch = useDispatch();
 
   const { selectedProducts } = useLeftViewContext();
-  const { toggleAllCustomers } = useOrderLines();
+  const { expandedCustomers, toggleAllCustomers } = useOrderLines();
 
   useEffect(() => {
     dispatch(updateOrder({ customer_count: customerIndex }));
@@ -60,26 +56,32 @@ export default function OrderSummary() {
       <div className="flex items-center justify-between pt-1">
         <div className="flex items-center gap-2">
           <Button size="icon">
-            <LucidePrinter size={16} />
+            <PrinterIcon className="w-[1.2rem] h-auto fill-white" />
             <span className="sr-only">Print Addition</span>
           </Button>
-          <Button size="icon">
-            <LucideFileText size={16} />
+          <Button size="icon" className="relative">
+            <BillIcon className="w-[1.2rem] absolute h-[1.2rem] fill-white top-2 left-[0.6rem]" />
             <span className="sr-only">Print Facture</span>
           </Button>
         </div>
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Button size="icon">
-              <LucideMaximize size={16} />
+              <BsThreeDotsVertical size={16} />
               <span className="sr-only">Full screen</span>
             </Button>
             <Button size="icon" onClick={toggleAllCustomers}>
-              <BsThreeDotsVertical size={16} />
+              <ExpandListIcon
+                className={`w-[1.2rem] h-auto fill-white transition-transform duration-200 ${
+                  Object.values(expandedCustomers).every((value) => value)
+                    ? "rotate-180"
+                    : ""
+                }`}
+              />
               <span className="sr-only">Toggle Customers</span>
             </Button>
             <Button onClick={handleAddCustomer} size="icon">
-              <LucidePlus size={16} />
+              <AddUserIcon className="w-[1.2rem] h-auto fill-white" />
               <span className="sr-only">add customer</span>
             </Button>
           </div>
@@ -106,8 +108,8 @@ export default function OrderSummary() {
       </div>
       <div className="flex items-center justify-between space-x-2">
         <Button
+          className="flex-1"
           variant="secondary"
-          className="flex-2"
           disabled={selectedProducts.length === 0}
         >
           Hold Order

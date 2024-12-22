@@ -41,7 +41,7 @@ export default function Navbar() {
           </div>
           <div className="ml-2 flex items-center space-x-2 sm:ml-6 sm:space-x-2">
             <Button size="icon" className="relative">
-              <AlertIcon className="w-5 h-auto fill-white" />
+              <AlertIcon className="w-[1.2rem] h-auto fill-white" />
               <span className="absolute h-2 w-2 -top-0.5 ring-1 ring-background left-full -translate-x-1/2 bg-red-500 rounded-full" />
               <span className="sr-only">Notification</span>
             </Button>
@@ -49,7 +49,7 @@ export default function Navbar() {
             <ModeToggleWithDropdown />
 
             <Button size="icon" onClick={handleFullScreen}>
-              <LucideMaximize size={18} />
+              <LucideMaximize size={16} />
               <span className="sr-only">Full screen</span>
             </Button>
             <Separator orientation="vertical" className="h-6" />

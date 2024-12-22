@@ -83,7 +83,7 @@ export default function Passcode() {
           <h2 className="tracking-tight scroll-m-20 text-3xl font-semibold text-white">
             Enter Passcode
           </h2>
-          <p className="mt-1 text-sm text-zinc-300">
+          <p className="mt-1 text-sm text-neutral-dark-grey">
             Securely authenticate to access the POS system.
           </p>
         </div>

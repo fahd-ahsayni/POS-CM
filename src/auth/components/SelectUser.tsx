@@ -31,9 +31,9 @@ export default function SelectUser() {
         </div>
         <div>
           <SelectUserSlide userType={activeTab} />
-          <div className="flex justify-center items-center mt-2">
+          <div className="flex justify-center items-center mt-4">
             <ShineBorder
-              className="flex justify-center items-center gap-4 text-white bg-zinc-900 py-3 px-8"
+              className="flex justify-center items-center gap-4 py-3 px-8"
               color="#fff"
               borderWidth={2}
             >

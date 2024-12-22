@@ -54,13 +54,14 @@ export default function ProductsVariants() {
       title={selectedProduct?.name || ""}
       open={openDrawerVariants}
       setOpen={setOpenDrawerVariants}
+      position="left"
     >
-      <div className="h-full w-full relative flex justify-center">
+      <div className="h-full w-full relative flex justify-center px-4 sm:px-6">
         <div className="w-full h-full overflow-auto space-y-2">
           {selectedProduct &&
             selectedProduct.variants.map((variant, index) => {
               const isSelected = selectedProducts.some(
-                (p) => p.variant_id === variant._id
+                (p) => p.product_variant_id === variant._id
               );
 
               return (
@@ -78,7 +79,7 @@ export default function ProductsVariants() {
                 >
                   <Card
                     className={`w-full h-full px-4 py-2 rounded-lg dark:!bg-zinc-950 ${
-                      isSelected ? "border-2 border-primary" : ""
+                      isSelected ? "!border-2 !border-primary" : ""
                     }`}
                   >
                     <TypographyP className="font-semibold">
@@ -92,7 +93,7 @@ export default function ProductsVariants() {
               );
             })}
         </div>
-        <div className="w-[105%] px-[2.5%] absolute bottom-0 h-16 flex items-end dark:!bg-zinc-900 bg-gray-100">
+        <div className="w-full absolute bottom-0 h-16 flex items-end dark:!bg-secondary-black bg-secondary-white px-4 sm:px-6">
           <Button className="w-full" onClick={handleConfirm}>
             Add to cart
           </Button>

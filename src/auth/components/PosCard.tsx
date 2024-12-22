@@ -29,11 +29,11 @@ const PosCard = ({ pos, onClick }: PosCardProps) => {
             </TypographyH3>
             {pos.shift?.user_id && (
               <div className="mt-4">
-                <TypographySmall className="text-zinc-200 text-sm">
+                <TypographySmall className="text-neutral-dark-grey text-[0.8rem]">
                   {pos.shift?.user_id.position} :{" "}
                   <span className="font-medium">{pos.shift?.user_id.name}</span>
                 </TypographySmall>
-                <TypographySmall className="text-zinc-300 text-sm">
+                <TypographySmall className="text-neutral-dark-grey text-[0.8rem]">
                   opened at{" "}
                   <span className="font-medium">
                     {pos.shift?.opening_time
@@ -44,7 +44,7 @@ const PosCard = ({ pos, onClick }: PosCardProps) => {
               </div>
             )}
           </div>
-          <ChevronRight className="w-7 h-7 text-white" />
+          <ChevronRight className="w-7 h-7 text-neutral-dark-grey" />
         </div>
       </Card>
     </motion.div>

@@ -15,7 +15,6 @@ export default function UserCard({
   isActive = true,
   className,
   withRole = false,
-  onClick,
 }: UserCardProps) {
   return (
     <div
@@ -23,12 +22,11 @@ export default function UserCard({
         "h-[250px] slide-item w-full !flex !flex-col items-center justify-center",
         className
       )}
-      onClick={onClick}
     >
       <div
         className={`relative ${
           isActive
-            ? "ring-4 ring-red-500 ring-offset-4 ring-offset-gray-100 rounded-full transition-all duration-300"
+            ? "ring-4 ring-red-500 ring-offset-[6px] ring-offset-secondary-white rounded-full transition-all duration-300"
             : ""
         }`}
       >

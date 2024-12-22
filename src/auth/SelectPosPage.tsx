@@ -79,7 +79,7 @@ export default function SelectPosPage() {
         posId={localStorage.getItem("posId") || ""}
       />
       {/* Left Section */}
-      <aside className="w-3/12 h-full bg-gray-100">
+      <aside className="w-3/12 h-full bg-secondary-white">
         <header className="relative z-10 flex h-16 flex-shrink-0">
           <div className="flex flex-1 justify-between px-4 sm:px-6">
             <img src={logoLightMode} alt="logo" className="w-24 h-auto" />
@@ -103,17 +103,17 @@ export default function SelectPosPage() {
       </aside>
 
       {/* Main Content */}
-      <motion.main className="w-9/12 h-full bg-gray-100">
+      <motion.main className="w-9/12 h-full bg-secondary-white">
         <motion.div
           {...pageAnimations.mainContent}
-          className="bg-zinc-950 flex flex-col items-start justify-center h-full w-full py-6 px-10"
+          className="bg-primary-black flex flex-col items-start justify-center h-full w-full py-6 px-10"
         >
           <header className="flex justify-between items-start w-full">
             <div>
               <h2 className="tracking-tight scroll-m-20 text-3xl font-semibold text-white">
                 Select your POS station
               </h2>
-              <p className="mt-1 text-sm text-zinc-300">
+              <p className="mt-1 text-sm text-neutral-dark-grey">
                 Choose your active POS to continue selling.
               </p>
             </div>

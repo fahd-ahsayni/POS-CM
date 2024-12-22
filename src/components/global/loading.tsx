@@ -18,7 +18,7 @@ export function LoadingFullScreen() {
   const theme = useTheme();
   return (
     <div className="flex items-center justify-center w-screen h-screen">
-      <div className="absolute w-96 h-96 bg-red-600 rounded-full blur-3xl opacity-30 animate-pulse" />
+      <div className="absolute w-96 h-96 bg-red-600 rounded-full blur-3xl opacity-10" />
       <img
         src={theme.theme === "dark" ? logoDarkMode : logoLightMode}
         alt="logo"
