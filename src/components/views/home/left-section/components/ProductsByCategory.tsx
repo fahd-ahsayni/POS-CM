@@ -124,7 +124,7 @@ export default memo(function ProductsByCategory() {
       <div className="max-w-full">
         <div className="flex items-center overflow-hidden relative mt-4">
           <CustomBreadcrumb items={breadcrumbItems} />
-          <Separator className="dark:bg-zinc-800/60 h-[0.5px] bg-zinc-50/70 absolute left-0" />
+          <Separator className="dark:bg-white/5 h-[0.5px] bg-primary-black/5 absolute left-0" />
         </div>
         <div className="mt-4 max-w-full relative">
           <div className="flex gap-2 pb-2 overflow-x-auto scrollbar-hide">

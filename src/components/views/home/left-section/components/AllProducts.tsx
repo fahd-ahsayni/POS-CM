@@ -1,4 +1,3 @@
-import { Loading } from "@/components/global/loading";
 import { extractProducts } from "@/store/slices/data/generalDataSlice";
 import { Product } from "@/types";
 import { motion } from "framer-motion";
@@ -6,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
 import { useLeftViewContext } from "../contexts/leftViewContext";
 import { useProductSelection } from "../hooks/useProductSelection";
-import { ProductCard } from "../Layout/ProductCard";
+import { ProductCard, ProductCardSkeleton } from "../Layout/ProductCard";
 import ProductsVariants from "./ProductsVariants";
 
 export default function AllProducts() {
@@ -56,9 +55,16 @@ export default function AllProducts() {
   return (
     <>
       {loading ? (
-        <div className="h-96 w-full flex items-center justify-center">
-          <Loading />
-        </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.35 }}
+          className="w-full grid grid-cols-3 gap-3 mt-4"
+        >
+          {[...Array(9)].map((_, index) => (
+            <ProductCardSkeleton key={index} />
+          ))}
+        </motion.div>
       ) : (
         <>
           <ProductsVariants />

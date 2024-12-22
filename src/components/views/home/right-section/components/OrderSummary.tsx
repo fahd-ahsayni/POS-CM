@@ -1,11 +1,16 @@
 import { logoWithoutText } from "@/assets";
-import { AddUserIcon, BillIcon, ExpandListIcon, PrinterIcon } from "@/assets/figma-icons";
+import {
+  AddUserIcon,
+  BillIcon,
+  ExpandListIcon,
+  PrinterIcon,
+} from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
 import { TypographyP } from "@/components/ui/typography";
 import { updateOrder } from "@/functions/updateOrder";
 import { AnimatePresence, motion } from "framer-motion";
 import { LucideMaximize } from "lucide-react";
-import { useCallback, useEffect } from "react";
+import { memo, useCallback, useEffect, useMemo } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch } from "react-redux";
 import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
@@ -13,34 +18,49 @@ import { useOrderLines } from "../contexts/orderLinesContext";
 import { useRightViewContext } from "../contexts/rightViewContext";
 import OrderLines from "../import/OrderLines";
 
-export default function OrderSummary() {
+const OrderSummary = () => {
+  const dispatch = useDispatch();
   const { customerIndex, setCustomerIndex, setSelectedCustomer, tableNumber } =
     useRightViewContext();
-  const dispatch = useDispatch();
-
   const { selectedProducts } = useLeftViewContext();
   const { expandedCustomers, toggleAllCustomers } = useOrderLines();
 
-  useEffect(() => {
-    dispatch(updateOrder({ customer_count: customerIndex }));
-  }, [customerIndex, dispatch]);
-
-  const handleAddCustomer = useCallback(() => {
-    // Check if there are products for the current last customer
-    const lastCustomerProducts = selectedProducts.filter(
+  // Memoize the check for last customer's products
+  const lastCustomerHasProducts = useMemo(() => {
+    return selectedProducts.some(
       (product) => product.customer_index === customerIndex
     );
+  }, [selectedProducts, customerIndex]);
 
-    if (selectedProducts.length > 0 && lastCustomerProducts.length > 0) {
+  // Memoize the disabled state for buttons
+  const isActionsDisabled = useMemo(
+    () => selectedProducts.length === 0,
+    [selectedProducts.length]
+  );
+
+  const handleAddCustomer = useCallback(() => {
+    if (selectedProducts.length > 0 && lastCustomerHasProducts) {
       setCustomerIndex(customerIndex + 1);
       setSelectedCustomer(customerIndex + 1);
     }
-  }, [selectedProducts, customerIndex]);
+  }, [
+    selectedProducts.length,
+    lastCustomerHasProducts,
+    customerIndex,
+    setCustomerIndex,
+    setSelectedCustomer,
+  ]);
 
+  const handleToggleAll = useCallback(() => {
+    if (selectedProducts.length > 0) {
+      toggleAllCustomers();
+    }
+  }, [selectedProducts.length, toggleAllCustomers]);
+
+  // Update order when customer index changes
   useEffect(() => {
-    console.log("selectedProducts", selectedProducts);
-    console.log("customerIndex", customerIndex);
-  }, [selectedProducts, customerIndex]);
+    dispatch(updateOrder({ customer_count: customerIndex }));
+  }, [customerIndex, dispatch]);
 
   return (
     <div className="flex flex-col justify-start h-full gap-y-2">
@@ -53,6 +73,7 @@ export default function OrderSummary() {
           <span className="text-muted-foreground">01-1423-26</span>
         </TypographyP>
       </div>
+
       <div className="flex items-center justify-between pt-1">
         <div className="flex items-center gap-2">
           <Button size="icon">
@@ -64,13 +85,14 @@ export default function OrderSummary() {
             <span className="sr-only">Print Facture</span>
           </Button>
         </div>
+
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Button size="icon">
               <BsThreeDotsVertical size={16} />
               <span className="sr-only">Full screen</span>
             </Button>
-            <Button size="icon" onClick={toggleAllCustomers}>
+            <Button size="icon" onClick={handleToggleAll}>
               <ExpandListIcon
                 className={`w-[1.2rem] h-auto fill-white transition-transform duration-200 ${
                   Object.values(expandedCustomers).every((value) => value)
@@ -81,7 +103,7 @@ export default function OrderSummary() {
               <span className="sr-only">Toggle Customers</span>
             </Button>
             <Button onClick={handleAddCustomer} size="icon">
-              <AddUserIcon className="w-[1.2rem] h-auto fill-white" />
+              <AddUserIcon className="w-[1.02rem] h-auto fill-white" />
               <span className="sr-only">add customer</span>
             </Button>
           </div>
@@ -94,7 +116,7 @@ export default function OrderSummary() {
             {selectedProducts.length < 1 && (
               <motion.img
                 src={logoWithoutText}
-                alt="Order Sumary"
+                alt="Order Summary"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 0.75 }}
                 exit={{ opacity: 0 }}
@@ -106,22 +128,25 @@ export default function OrderSummary() {
           <OrderLines />
         </div>
       </div>
+
       <div className="flex items-center justify-between space-x-2">
         <Button
           className="flex-1"
           variant="secondary"
-          disabled={selectedProducts.length === 0}
+          disabled={isActionsDisabled}
         >
           Hold Order
         </Button>
-        <Button className="flex-1" disabled={selectedProducts.length === 0}>
+        <Button className="flex-1" disabled={isActionsDisabled}>
           Proceed Order
         </Button>
-        <Button size="icon" disabled={selectedProducts.length === 0}>
+        <Button size="icon" disabled={isActionsDisabled}>
           <LucideMaximize size={16} />
           <span className="sr-only">Full screen</span>
         </Button>
       </div>
     </div>
   );
-}
+};
+
+export default memo(OrderSummary);

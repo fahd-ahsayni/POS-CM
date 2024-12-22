@@ -1,17 +1,20 @@
-import { TypographySmall } from "@/components/ui/typography";
 import { UserIcon } from "@/assets/figma-icons";
+import { TypographySmall } from "@/components/ui/typography";
 import { useEffect, useState } from "react";
 import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
-import { useOrderLines } from '../contexts/orderLinesContext';
+import { useOrderLines } from "../contexts/orderLinesContext";
 import { useRightViewContext } from "../contexts/rightViewContext";
 import OrderLineIndex from "./OrderLineIndex";
 
 export default function OrderLines() {
   const { selectedProducts, setSelectedProducts } = useLeftViewContext();
-  const [groupedProducts, setGroupedProducts] = useState<Record<number, any[]>>({});
+  const [groupedProducts, setGroupedProducts] = useState<Record<number, any[]>>(
+    {}
+  );
   const { customerIndex, setCustomerIndex } = useRightViewContext();
-  
-  const { expandedCustomers, toggleCustomer, initializeCustomer } = useOrderLines();
+
+  const { expandedCustomers, toggleCustomer, initializeCustomer } =
+    useOrderLines();
 
   useEffect(() => {
     initializeCustomer(customerIndex);
@@ -80,7 +83,7 @@ export default function OrderLines() {
       <div className="space-y-4">
         {selectedProducts.length < 1 ? (
           <div className="flex items-center justify-between w-full rounded-md mb-2.5">
-            <div className="flex items-center justify-center gap-x-2 flex-1 bg-secondary-white dark:bg-secondary-black rounded-md px-2 py-2">
+            <div className="flex items-center justify-center gap-x-2 flex-1 bg-white dark:bg-secondary-black rounded px-2 py-2 shadow">
               <div className="flex items-center justify-center gap-x-2">
                 <UserIcon className="w-4 h-auto fill-primary-black dark:fill-white" />
                 <TypographySmall className="text-sm">

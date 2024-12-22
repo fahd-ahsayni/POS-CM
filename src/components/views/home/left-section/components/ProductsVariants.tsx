@@ -7,6 +7,8 @@ import { useLeftViewContext } from "../contexts/leftViewContext";
 import { ORDER_SUMMARY_VIEW } from "../../right-section/constants";
 import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
 import { useProductSelection } from "../hooks/useProductSelection";
+import { Plus } from "lucide-react";
+import { Minus } from "lucide-react";
 
 export default function ProductsVariants() {
   const {
@@ -15,7 +17,6 @@ export default function ProductsVariants() {
     selectedProduct,
     selectedProducts,
     setSelectedProducts,
-    setQuantityPerVariant,
   } = useLeftViewContext();
 
   const { selectedCustomer } = useRightViewContext();
@@ -36,7 +37,20 @@ export default function ProductsVariants() {
     }
 
     addOrUpdateProduct(selectedProduct, id, price);
-    setQuantityPerVariant((prev) => prev + 1);
+  };
+
+  const handleQuantityChange = (variantId: string, increment: boolean) => {
+    setSelectedProducts(prev => prev.map(product => {
+      if (product.product_variant_id === variantId) {
+        return {
+          ...product,
+          quantity: increment 
+            ? product.quantity + 1 
+            : Math.max(1, product.quantity - 1) // Prevent going below 1
+        };
+      }
+      return product;
+    }));
   };
 
   const handleConfirm = () => {
@@ -60,20 +74,20 @@ export default function ProductsVariants() {
         <div className="w-full h-full overflow-auto space-y-2">
           {selectedProduct &&
             selectedProduct.variants.map((variant, index) => {
-              const isSelected = selectedProducts.some(
+              const selectedProduct = selectedProducts.find(
                 (p) => p.product_variant_id === variant._id
               );
+              const isSelected = !!selectedProduct;
+              const quantity = selectedProduct?.quantity || 0;
 
               return (
                 <div
-                  key={`${selectedProduct._id}-${variant._id}-${index}`}
-                  onClick={() =>
-                    handleSelectVariant(variant._id, variant.price_ttc)
-                  }
-                  tabIndex={0} // Makes it focusable
-                  role="button" // Improves accessibility
+                  key={`${selectedProduct?._id}-${variant._id}-${index}`}
+                  onClick={() => !isSelected && handleSelectVariant(variant._id, variant.price_ttc)}
+                  tabIndex={0}
+                  role="button"
                   onKeyPress={(e) => {
-                    if (e.key === "Enter")
+                    if (e.key === "Enter" && !isSelected)
                       handleSelectVariant(variant._id, variant.price_ttc);
                   }}
                 >
@@ -82,10 +96,41 @@ export default function ProductsVariants() {
                       isSelected ? "!border-2 !border-primary" : ""
                     }`}
                   >
-                    <TypographyP className="font-semibold">
-                      {variant.name}
-                    </TypographyP>
-                    <TypographySmall className="text-muted-foreground font-semibold">
+                    <div className="flex items-center justify-between mb-4">
+                      <TypographyP className="font-semibold capitalize text-sm">
+                        {variant.name.toLowerCase()}
+                      </TypographyP>
+                      {isSelected && (
+                        <div className="flex items-center gap-2">
+                          <Button
+                            slot="decrement"
+                            className="-ms-px h-6 w-6 rounded bg-accent-white/10 hover:bg-accent-black/10"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleQuantityChange(variant._id, false);
+                            }}
+                          >
+                            <Minus size={16} strokeWidth={2} aria-hidden="true" />
+                          </Button>
+                          <TypographyP className="px-1.5 font-medium">
+                            {quantity}
+                          </TypographyP>
+                          <Button
+                            slot="increment"
+                            className="-ms-px h-6 w-6 rounded bg-accent-white/10 hover:bg-accent-black/10"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleQuantityChange(variant._id, true);
+                            }}
+                          >
+                            <Plus size={16} strokeWidth={2} aria-hidden="true" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                    <TypographySmall className="text-neutral-dark-grey font-medium text-xs">
                       {variant.price_ttc} Dhs
                     </TypographySmall>
                   </Card>

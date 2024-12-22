@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { ALL_CATEGORIES_VIEW } from "../constants";
 import { useLeftViewContext } from "../contexts/leftViewContext";
+import { cn } from "@/lib/utils";
 
 export default function Header() {
   const { setViews, category } = useLeftViewContext();
@@ -35,8 +36,13 @@ export default function Header() {
               crossOrigin="anonymous"
             />
           )}
-          <TypographyP className="text-center relative font-semibold">
-            {category ? category.name : "All Products"}
+          <TypographyP
+            className={cn(
+              "text-center relative font-semibold capitalize",
+              category && "text-white"
+            )}
+          >
+            {category ? category.name.toLowerCase() : "All Products"}
           </TypographyP>
         </Card>
       </motion.div>

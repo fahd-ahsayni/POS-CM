@@ -21,13 +21,15 @@ interface BreadcrumbProps {
 export function CustomBreadcrumb({ items }: BreadcrumbProps) {
   if (!items?.length) return null;
 
-  const showEllipsis = items.length > 3;
-  const visibleItems =
-    items.length === 1
-      ? [{ _id: "subcategories", name: "Subcategories", isLast: true }]
-      : showEllipsis
-      ? [...items.slice(0, 1), ...items.slice(-2)]
-      : items;
+  const modifiedItems = [...items];
+  if (modifiedItems[0]) {
+    modifiedItems[0] = { ...modifiedItems[0], name: "Subcategories" };
+  }
+
+  const showEllipsis = modifiedItems.length > 3;
+  const visibleItems = showEllipsis
+    ? [modifiedItems[0], ...modifiedItems.slice(-2)]
+    : modifiedItems;
 
   return (
     <nav aria-label="breadcrumb" className="relative z-10 bg-background pr-4 flex items-center justify-center">
@@ -44,9 +46,9 @@ export function CustomBreadcrumb({ items }: BreadcrumbProps) {
                   <BreadcrumbLink
                     to="#"
                     onClick={item.onClick}
-                    className="cursor-pointer hover:text-primary font-medium transition-colors"
+                    className="cursor-pointer hover:text-primary font-medium transition-colors capitalize"
                   >
-                    {item.name}
+                    {item.name.toLowerCase()}
                   </BreadcrumbLink>
                 )}
               </BreadcrumbItem>

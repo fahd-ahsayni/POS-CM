@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { TypographyP } from "@/components/ui/typography";
 import { Product, ProductSelected } from "@/types";
 import { motion } from "framer-motion";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ProductCardProps {
   product: Product;
@@ -75,5 +76,19 @@ export function ProductCard({
         </div>
       </Card>
     </motion.div>
+  );
+}
+
+export function ProductCardSkeleton() {
+  return (
+    <div className="flex items-center justify-start h-full w-full">
+      <Card className="flex items-center justify-start h-full w-full py-2 px-2 gap-x-4">
+        <Skeleton className="size-16 rounded-lg dark:bg-white/5 bg-primary-black/5" />
+        <div className="flex flex-col items-start justify-between flex-1 h-full w-full pr-2 gap-y-2">
+          <Skeleton className="h-4 w-3/4 dark:bg-white/5 bg-primary-black/5" />
+          <Skeleton className="h-4 w-1/4 dark:bg-white/5 bg-primary-black/5" />
+        </div>
+      </Card>
+    </div>
   );
 }

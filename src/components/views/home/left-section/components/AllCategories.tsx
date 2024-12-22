@@ -4,12 +4,21 @@ import { cn } from "@/lib/utils";
 import { selectCategories } from "@/store/slices/data/generalDataSlice";
 import { Category } from "@/types";
 import { motion } from "framer-motion";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { ORDER_SUMMARY_VIEW } from "../../right-section/constants";
 import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
 import { ALL_PRODUCTS_VIEW, PRODUCTS_BY_CATEGORY_VIEW } from "../constants";
 import { useLeftViewContext } from "../contexts/leftViewContext";
+import { Skeleton } from "@/components/ui/skeleton";
+
+function CategoryCardSkeleton() {
+  return (
+    <Card className="flex relative flex-col items-center h-24 overflow-hidden justify-center bg-secondary-black">
+      <Skeleton className="w-full h-full bg-white/5" />
+    </Card>
+  );
+}
 
 export default React.memo(function AllCategories() {
   const { setViews, setCategory, category } = useLeftViewContext();
@@ -17,9 +26,24 @@ export default React.memo(function AllCategories() {
 
   const categories = useSelector(selectCategories) as Category[];
 
+  const [isLoading, setIsLoading] = useState(() => {
+    const hasSeenLoading = localStorage.getItem("hasSeenCategoryLoading");
+    return !hasSeenLoading;
+  });
+
   useEffect(() => {
     console.log(category);
   }, [category]);
+
+  useEffect(() => {
+    if (isLoading) {
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+        localStorage.setItem("hasSeenCategoryLoading", "true");
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading]);
 
   const handleCategoryClick = (category: Category) => {
     setCategory(category);
@@ -32,9 +56,14 @@ export default React.memo(function AllCategories() {
       categories.map((category, index) => (
         <motion.div
           key={category._id}
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: index * 0.095, duration: 0.25 }}
+          initial={{ opacity: 0, y: -30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={
+            !localStorage.getItem("hasSeenCategoryLoading")
+              ? { delay: Math.floor(index / 3) * 0.15, duration: 0.25 }
+              : { duration: 0 }
+          }
           className="h-24"
         >
           <Card
@@ -52,11 +81,11 @@ export default React.memo(function AllCategories() {
                 "w-full h-full object-cover transition-all duration-500",
                 views !== ORDER_SUMMARY_VIEW
                   ? "grayscale dark:brightness-[0.30] brightness-[0.6]"
-                  : "dark:brightness-[0.4] brightness-[0.6]"
+                  : "dark:brightness-[0.3] brightness-[0.4]"
               )}
             />
-            <TypographyP className="text-center group text-xl font-medium absolute text-white">
-              {category.name}
+            <TypographyP className="text-center group text-xl capitalize font-medium absolute text-white">
+              {category.name.toLowerCase()}
             </TypographyP>
           </Card>
         </motion.div>
@@ -64,10 +93,27 @@ export default React.memo(function AllCategories() {
     [categories, views]
   );
 
+  if (isLoading) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.35 }}
+        className="grid grid-cols-3 gap-3.5 mt-8 pb-16 px-2"
+      >
+        <CategoryCardSkeleton />
+        {[...Array(6)].map((_, index) => (
+          <CategoryCardSkeleton key={index} />
+        ))}
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
+      viewport={{ once: true }}
       transition={{ duration: 0.35 }}
       className="grid grid-cols-3 gap-3.5 mt-8 pb-16 px-2"
     >

@@ -11,6 +11,7 @@
     "server": "json-server --watch db.json --port 3001"
   },
   "dependencies": {
+    "@fluentui/react-icons": "^2.0.270",
     "@fontsource/poppins": "^5.1.0",
     "@gsap/react": "^2.1.1",
     "@headlessui/react": "^2.2.0",

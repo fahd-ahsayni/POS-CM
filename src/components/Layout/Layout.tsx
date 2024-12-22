@@ -1,33 +1,33 @@
+import { updateOrder } from "@/functions/updateOrder";
 import { AppDispatch, RootState } from "@/store";
 import { fetchGeneralData } from "@/store/slices/data/generalDataSlice";
 import { fetchPosData } from "@/store/slices/data/posSlice";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { memo, useCallback, useEffect, useMemo, useRef } from "react";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
 import Keyboard from "../global/keyboard/Keyboard";
-import { LoadingFullScreen } from "../global/loading";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
-import { updateOrder } from "@/functions/updateOrder";
 
 const Layout = () => {
   // Hooks
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  // Selectors
+  // Use useMemo for selectors to prevent unnecessary re-renders
   const generalStatus = useSelector(
-    (state: RootState) => state.generalData.status
+    (state: RootState) => state.generalData.status,
+    shallowEqual
   );
   const generalError = useSelector(
-    (state: RootState) => state.generalData.error
+    (state: RootState) => state.generalData.error,
+    shallowEqual
   );
 
-  // Add new state for delayed loading
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Effects
+  // Combine related effects
   useEffect(() => {
+    localStorage.removeItem("hasSeenCategoryLoading");
+
     const posId = localStorage.getItem("posId");
     if (posId) {
       dispatch(fetchGeneralData(posId));
@@ -35,7 +35,7 @@ const Layout = () => {
     } else {
       navigate("/select-pos");
     }
-  }, [dispatch, navigate]);
+  }, []); // Add dispatch and navigate to deps if needed for strict mode
 
   useEffect(() => {
     if (generalStatus === "failed") {
@@ -43,55 +43,45 @@ const Layout = () => {
     }
   }, [generalStatus, navigate]);
 
-  useEffect(() => {
-    dispatch(updateOrder({ shift_id: localStorage.getItem("shiftId") }));
-  }, [dispatch, localStorage.getItem("shiftId")]);
-
-  // Add effect to handle delayed loading
-  useEffect(() => {
-    if (generalStatus === "loading") {
-      setIsLoading(true);
-    } else {
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-      }, 500); // 0.2 second delay
-      return () => clearTimeout(timer);
+  // Memoize the updateOrder callback
+  const handleUpdateOrder = useCallback(() => {
+    const shiftId = localStorage.getItem("shiftId");
+    if (shiftId) {
+      dispatch(updateOrder({ shift_id: shiftId }));
     }
-  }, [generalStatus]);
+  }, [dispatch]);
 
-  // Update loading condition check
-  if (false) {
-    return <LoadingFullScreen />;
-  }
+  useEffect(() => {
+    handleUpdateOrder();
+  }, [handleUpdateOrder]);
+
+  // Memoize the content to prevent unnecessary re-renders
+  const content = useMemo(
+    () => (
+      <div className="flex relative w-screen h-screen overflow-hidden">
+        <Keyboard />
+        <div
+          className="absolute rounded-full -top-52 -right-52 w-[400px] h-[400px] bg-red-600 blur-3xl opacity-30"
+          aria-hidden="true"
+        />
+        <main className="flex flex-1 flex-col relative z-10">
+          <Navbar />
+          <div className="flex flex-1 items-stretch overflow-y-hidden">
+            <Outlet />
+          </div>
+        </main>
+        <Sidebar />
+      </div>
+    ),
+    []
+  ); // Add dependencies if needed
 
   if (generalError) {
     return <div>Error: {generalError}</div>;
   }
 
-  return (
-    <div className="flex relative w-screen h-screen overflow-hidden">
-      <Keyboard />
-
-      {/* Background decoration */}
-      <div
-        className="absolute rounded-full -top-52 -right-52 w-[400px] h-[400px] bg-red-600 blur-3xl opacity-30"
-        aria-hidden="true"
-      />
-
-      {/* Content area */}
-      <main className="flex flex-1 flex-col relative z-10">
-        <Navbar />
-
-        {/* Main content */}
-        <div className="flex flex-1 items-stretch overflow-y-hidden">
-          <Outlet />
-        </div>
-      </main>
-
-      {/* Sidebar */}
-      <Sidebar />
-    </div>
-  );
+  return content;
 };
 
-export default Layout;
+// Memoize the entire component
+export default memo(Layout);
