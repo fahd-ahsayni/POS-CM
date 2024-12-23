@@ -44,7 +44,10 @@ export interface Variant {
   products_id: string;
   stage_timing: string | null;
   tax_id: object | null;
-  uom_id: object | null;
+  uom_id: {
+    _id: string;
+    name: string;
+  };
   step: object[] | string[];
 }
 
@@ -106,6 +109,9 @@ export interface ProductSelected extends Product {
   id: string;
   note: string[] | null;
   is_paid: boolean | false;
-  is_ordered: boolean | false;
+  is_ordred: boolean | false;
   suite_commande: boolean | false;
+  combo_prod_ids?: string[] | null;
+  compo_supp_ids?: string[] | null;
+  notes?: string[] | null;
 }

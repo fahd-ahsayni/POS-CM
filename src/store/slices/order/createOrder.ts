@@ -68,8 +68,8 @@ const orderSlice = createSlice({
         state.data.orderlines[orderLineIndex] = action.payload.orderLine;
       }
     },
-    addOrderLine: (state, action: PayloadAction<any>) => {
-      state.data.orderlines.push(action.payload);
+    addOrderLine: (state, action: PayloadAction<any[]>) => {
+      state.data.orderlines = action.payload;
     },
     removeOrderLine: (state, action: PayloadAction<number>) => {
       state.data.orderlines = state.data.orderlines.filter(

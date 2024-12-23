@@ -1,5 +1,5 @@
 import LeftSection from "@/components/views/home/left-section/LeftSection";
-import RightSection from "@/components/views/home/right-section/rightSection";
+import RightSection from "@/components/views/home/right-section/RightSection";
 
 export default function HomePage() {
   return (

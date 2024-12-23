@@ -55,7 +55,7 @@ export default function OrdersPage() {
         type: "spring",
         duration: 0.35,
       }}
-      className="px-4 sm:px-6 pt-8 w-full flex flex-col h-full overflow-hidden"
+      className="px-4 sm:px-6 pt-8 flex flex-col h-full overflow-hidden w-[calc(100vw-80px)]"
     >
       <div className="flex justify-between items-center">
         <TypographyH2>Orders</TypographyH2>

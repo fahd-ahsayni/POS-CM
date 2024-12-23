@@ -36,11 +36,15 @@ export default React.memo(function AllCategories() {
   }, [category]);
 
   useEffect(() => {
+    localStorage.removeItem("hasSeenCategoryLoading");
+  }, []);
+
+  useEffect(() => {
     if (isLoading) {
       const timer = setTimeout(() => {
         setIsLoading(false);
         localStorage.setItem("hasSeenCategoryLoading", "true");
-      }, 1000);
+      }, 2000);
       return () => clearTimeout(timer);
     }
   }, [isLoading]);

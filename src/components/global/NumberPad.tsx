@@ -22,7 +22,7 @@ const NumberPad = memo(({
   onNumberClick, 
   numbers = Array.from({ length: 9 }, (_, i) => i + 1)
 }: NumberPadProps) => (
-  <div className="max-w-[13rem] grid grid-cols-3 grid-rows-4 gap-3.5">
+  <div className="max-w-[13rem] grid grid-cols-3 grid-rows-4 gap-5">
     {numbers.map((number) => (
       <NumberButton
         key={number}

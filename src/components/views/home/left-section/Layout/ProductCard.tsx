@@ -4,6 +4,7 @@ import { TypographyP } from "@/components/ui/typography";
 import { Product, ProductSelected } from "@/types";
 import { motion } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
+import { currency } from "@/preferences";
 
 interface ProductCardProps {
   product: Product;
@@ -29,7 +30,7 @@ export function ProductCard({
     <motion.div className="flex cursor-pointer items-center justify-start h-full w-full">
       <Card
         className={`flex items-center justify-start h-full w-full py-2 px-2 gap-x-4 ${
-          totalQuantity > 0 ? "!border-2 !border-red-600" : ""
+          totalQuantity > 0 ? "!ring-2 !ring-red-600" : ""
         }`}
         onClick={() => onProductClick(product)}
       >
@@ -42,7 +43,7 @@ export function ProductCard({
             }
             alt={product.name}
             crossOrigin="anonymous"
-            className={`size-16 object-cover rounded-lg ${
+            className={`size-16 object-cover !rounded-[0.375rem] ${
               totalQuantity > 0
                 ? "brightness-50 transition-all duration-500"
                 : ""
@@ -70,7 +71,7 @@ export function ProductCard({
           <div className="flex items-center justify-between w-full">
             <TypographyP className="text-sm font-semibold text-[#AAAAAA]">
               {product.price ? product.price : product.variants[0].price_ttc}{" "}
-              Dhs
+              {currency.symbol}
             </TypographyP>
           </div>
         </div>

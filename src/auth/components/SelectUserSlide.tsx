@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store";
 import { setSelectedUser } from "@/store/slices/data/usersSlice";
-import UserCard from "./ui/UserCard";
-import type { User } from "@/types";
+import { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Swiper, SwiperSlide } from "swiper/react";
 import NavigationButton from "./ui/NavigationButton";
+import UserCard from "./ui/UserCard";
 import UserCardSkeleton from "./ui/UserCardSkelton";
 
 export interface SelectUserSlideProps {
@@ -134,7 +133,6 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
             )}
           </SwiperSlide>
         ))}
-        <div className="h-40 left-0 absolute w-24 bg-red-400" />
         <NavigationButton direction="prev" />
         <NavigationButton direction="next" />
       </Swiper>

@@ -27,7 +27,7 @@ export const KeyboardProvider: React.FC<{ children: React.ReactNode }> = ({
     useState<React.RefObject<HTMLInputElement> | null>(null);
 
   const toggleKeyboard = useCallback(() => {
-    setIsOpen(true);
+    setIsOpen((prev) => !prev);
   }, []);
 
   const toggleShift = useCallback(() => {

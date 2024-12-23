@@ -1,4 +1,5 @@
 import { Product, ProductSelected } from "@/types";
+import { useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { ON_PLACE_VIEW } from "../../right-section/constants";
 
@@ -15,56 +16,66 @@ export const useProductSelection = ({
   selectedCustomer,
   orderType,
 }: UseProductSelectionProps) => {
-  const addOrUpdateProduct = (
-    product: Product,
-    variantId: string,
-    price?: number
-  ) => {
-    setSelectedProducts((prevSelected) => {
-      const existingProduct = prevSelected.find(
-        (p) =>
-          p._id === product._id &&
-          p.product_variant_id === variantId &&
-          p.customer_index === selectedCustomer
-      );
-      if (existingProduct) {
-        return prevSelected.map((p) =>
-          p._id === product._id &&
-          p.product_variant_id === variantId &&
-          p.customer_index === selectedCustomer
-            ? {
-                ...p,
-                quantity: p.quantity + 1,
-                price: price ? p.price + price : p.price,
-                uom_id: p.uom_id,
-                note: [],
-                is_paid: false,
-                is_ordered: false,
-                suite_commande: false,
-              }
-            : p
+  const addOrUpdateProduct = useCallback(
+    (product: Product, variantId: string, price?: number) => {
+      setSelectedProducts((prevSelected) => {
+        const variant = product.variants.find((v) => v._id === variantId);
+        if (!variant) {
+          console.warn(
+            `Variant ${variantId} not found for product ${product._id}`
+          );
+          return prevSelected;
+        }
+
+        const existingProduct = prevSelected.find(
+          (p) =>
+            p._id === product._id &&
+            p.product_variant_id === variantId &&
+            p.customer_index === selectedCustomer
         );
-      }
-      const variant = product.variants.find((v) => v._id === variantId);
-      return [
-        ...prevSelected,
-        {
-          ...product,
-          id: uuidv4(),
-          variants: variant ? [variant] : [],
-          product_variant_id: variantId,
-          quantity: 1,
-          price: price || product.variants[0].price_ttc,
-          customer_index: selectedCustomer,
-          order_type_id: orderType || ON_PLACE_VIEW,
-          uom_id: null,
-          note: null,
-          is_paid: false,
-          is_ordered: false,
-          suite_commande: false,
-        },
-      ];
-    });
-  };
+
+        if (existingProduct) {
+          return prevSelected.map((p) =>
+            p._id === product._id &&
+            p.product_variant_id === variantId &&
+            p.customer_index === selectedCustomer
+              ? {
+                  ...p,
+                  quantity: p.quantity + 1,
+                  price: price ? p.price + price : p.price,
+                  uom_id: variant.uom_id._id,
+                  notes: [],
+                  is_paid: false,
+                  is_ordred: false,
+                  suite_commande: false,
+                  order_type_id: orderType || ON_PLACE_VIEW,
+                }
+              : p
+          );
+        }
+
+        return [
+          ...prevSelected,
+          {
+            ...product,
+            id: uuidv4(),
+            variants: [variant],
+            product_variant_id: variantId,
+            quantity: 1,
+            price: price || variant.price_ttc,
+            customer_index: selectedCustomer,
+            order_type_id: orderType || ON_PLACE_VIEW,
+            uom_id: variant.uom_id,
+            notes: [],
+            is_paid: false,
+            is_ordred: false,
+            suite_commande: false,
+          },
+        ];
+      });
+    },
+    [selectedCustomer, orderType]
+  );
+
   return { addOrUpdateProduct };
 };

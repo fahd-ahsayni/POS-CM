@@ -2,13 +2,15 @@ import Drawer from "@/components/global/Drawer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
+import { addOrderLine } from "@/store/slices/order/createOrder";
+import { Minus, Plus } from "lucide-react";
 import { useEffect } from "react";
-import { useLeftViewContext } from "../contexts/leftViewContext";
+import { useDispatch } from "react-redux";
 import { ORDER_SUMMARY_VIEW } from "../../right-section/constants";
 import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
+import { useLeftViewContext } from "../contexts/leftViewContext";
 import { useProductSelection } from "../hooks/useProductSelection";
-import { Plus } from "lucide-react";
-import { Minus } from "lucide-react";
+import { updateOrder } from "@/functions/updateOrder";
 
 export default function ProductsVariants() {
   const {
@@ -30,6 +32,8 @@ export default function ProductsVariants() {
     orderType,
   });
 
+  const dispatch = useDispatch();
+
   const handleSelectVariant = (id: string, price: number) => {
     if (!selectedProduct) {
       console.warn("No selected product. Cannot select a variant.");
@@ -40,17 +44,19 @@ export default function ProductsVariants() {
   };
 
   const handleQuantityChange = (variantId: string, increment: boolean) => {
-    setSelectedProducts(prev => prev.map(product => {
-      if (product.product_variant_id === variantId) {
-        return {
-          ...product,
-          quantity: increment 
-            ? product.quantity + 1 
-            : Math.max(1, product.quantity - 1) // Prevent going below 1
-        };
-      }
-      return product;
-    }));
+    setSelectedProducts((prev) =>
+      prev.map((product) => {
+        if (product.product_variant_id === variantId) {
+          return {
+            ...product,
+            quantity: increment
+              ? product.quantity + 1
+              : Math.max(1, product.quantity - 1), // Prevent going below 1
+          };
+        }
+        return product;
+      })
+    );
   };
 
   const handleConfirm = () => {
@@ -60,8 +66,28 @@ export default function ProductsVariants() {
 
   // Monitor updates to selectedProducts
   useEffect(() => {
-    console.log("Updated Selected Products:", selectedProducts);
-  }, [selectedProducts]);
+    if (selectedProducts.length > 0) {
+      const orderlineData = selectedProducts.map((p) => ({
+        price: p.price * p.quantity,
+        product_variant_id: p.product_variant_id,
+        uom_id: p.variants[0].uom_id._id || null,
+        customer_index: selectedCustomer,
+        notes: p.notes,
+        quantity: p.quantity,
+        suite_commande: p.suite_commande,
+        order_type_id: orderType,
+        suite_ordred: false,
+        is_paid: p.is_paid,
+        is_ordred: p.is_ordred,
+        combo_prod_ids: [],
+        combo_supp_ids: [],
+      }));
+
+      dispatch(addOrderLine(orderlineData));
+    } else {
+      dispatch(addOrderLine([]));
+    }
+  }, [selectedProducts, selectedCustomer, orderType, dispatch]);
 
   return (
     <Drawer
@@ -83,7 +109,10 @@ export default function ProductsVariants() {
               return (
                 <div
                   key={`${selectedProduct?._id}-${variant._id}-${index}`}
-                  onClick={() => !isSelected && handleSelectVariant(variant._id, variant.price_ttc)}
+                  onClick={() =>
+                    !isSelected &&
+                    handleSelectVariant(variant._id, variant.price_ttc)
+                  }
                   tabIndex={0}
                   role="button"
                   onKeyPress={(e) => {
@@ -111,7 +140,11 @@ export default function ProductsVariants() {
                               handleQuantityChange(variant._id, false);
                             }}
                           >
-                            <Minus size={16} strokeWidth={2} aria-hidden="true" />
+                            <Minus
+                              size={16}
+                              strokeWidth={2}
+                              aria-hidden="true"
+                            />
                           </Button>
                           <TypographyP className="px-1.5 font-medium">
                             {quantity}
@@ -125,7 +158,11 @@ export default function ProductsVariants() {
                               handleQuantityChange(variant._id, true);
                             }}
                           >
-                            <Plus size={16} strokeWidth={2} aria-hidden="true" />
+                            <Plus
+                              size={16}
+                              strokeWidth={2}
+                              aria-hidden="true"
+                            />
                           </Button>
                         </div>
                       )}

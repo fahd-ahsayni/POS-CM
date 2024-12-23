@@ -1,22 +1,13 @@
 import { Card } from "@/components/ui/card";
-import {
-  TypographyH3,
-  TypographyH4,
-  TypographyP,
-} from "@/components/ui/typography";
+import { TypographyH4, TypographyP } from "@/components/ui/typography";
 import { updateOrder } from "@/functions/updateOrder";
 import { OrderType } from "@/types";
-import {
-  ChevronRightIcon,
-  ShoppingCart,
-  Package,
-  Truck,
-  Store,
-} from "lucide-react";
+import { ChevronRightIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useRightViewContext } from "../contexts/rightViewContext";
 import { TypeOfOrderDescription, TypeOfOrderIcon } from "../ui/TypeOfOrderIcon";
+import { ORDER_SUMMARY_VIEW } from "../constants";
 
 export default function SelectTypeOfOrder() {
   const [orderTypes, setOrderTypes] = useState<OrderType[]>([]);
@@ -36,8 +27,12 @@ export default function SelectTypeOfOrder() {
   }, []);
 
   const handleOrderTypeSelect = (id: string, type: string) => {
+    if (type.toLowerCase() === "takeaway") {
+      setViews(ORDER_SUMMARY_VIEW);
+    } else {
+      setViews(type);
+    }
     setOrderType(id);
-    setViews(type);
     dispatch(updateOrder({ order_type_id: id }));
   };
 

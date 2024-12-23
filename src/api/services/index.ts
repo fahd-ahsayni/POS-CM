@@ -14,3 +14,7 @@ export const openShift = async (startingBalance: string, posId: string) => {
     pos_id: posId,
   });
 };
+
+export const createOrder = async (data: any) => {
+  return api.post("/order/create", data);
+};

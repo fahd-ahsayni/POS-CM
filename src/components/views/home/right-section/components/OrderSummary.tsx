@@ -12,12 +12,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import { LucideMaximize } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
 import { useOrderLines } from "../contexts/orderLinesContext";
 import { useRightViewContext } from "../contexts/rightViewContext";
 import OrderLines from "../import/OrderLines";
 import OtherActionsOrderLines from "../ui/OtherActionsOrderLines";
+import { createOrder } from "@/api/services";
+import { selectOrder } from "@/store/slices/order/createOrder";
 
 const OrderSummary = () => {
   const dispatch = useDispatch();
@@ -25,6 +27,8 @@ const OrderSummary = () => {
     useRightViewContext();
   const { selectedProducts } = useLeftViewContext();
   const { expandedCustomers, toggleAllCustomers } = useOrderLines();
+
+  const order = useSelector(selectOrder);
 
   // Memoize the check for last customer's products
   const lastCustomerHasProducts = useMemo(() => {
@@ -63,16 +67,17 @@ const OrderSummary = () => {
     dispatch(updateOrder({ customer_count: customerIndex }));
   }, [customerIndex, dispatch]);
 
+  const handleProceedOrder = () => {
+    createOrder(order);
+  };
+
   return (
     <div className="flex flex-col justify-start h-full gap-y-2">
       <div className="flex items-center justify-between">
-        <div>
-          <TypographyP className="text-xs">Table {tableNumber}</TypographyP>
-        </div>
-        <TypographyP className="text-xs">
+        {/* <TypographyP className="text-xs">
           <span>Order ref</span>{" "}
           <span className="text-muted-foreground">01-1423-26</span>
-        </TypographyP>
+        </TypographyP> */}
       </div>
 
       <div className="flex items-center justify-between mt-4">
@@ -127,7 +132,7 @@ const OrderSummary = () => {
         </div>
       </div>
 
-      <div className="flex items-center justify-between space-x-2">
+      <div className="flex items-center justify-between space-x-4">
         <Button
           className="flex-1"
           variant="secondary"
@@ -135,7 +140,11 @@ const OrderSummary = () => {
         >
           Hold Order
         </Button>
-        <Button className="flex-1" disabled={isActionsDisabled}>
+        <Button
+          onClick={handleProceedOrder}
+          className="flex-1"
+          disabled={isActionsDisabled}
+        >
           Proceed Order
         </Button>
         <Button size="icon" disabled={isActionsDisabled}>

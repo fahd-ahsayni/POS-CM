@@ -45,7 +45,7 @@ export default function TakeAway() {
           </div>
           <NumberPad onNumberClick={handleNumberClick} />
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-4">
           <Button
             className="flex-1"
             variant="secondary"

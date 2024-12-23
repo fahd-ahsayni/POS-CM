@@ -26,7 +26,7 @@ export default function UserCard({
       <div
         className={`relative ${
           isActive
-            ? "ring-4 ring-red-500 ring-offset-[6px] ring-offset-secondary-white rounded-full transition-all duration-300"
+            ? "ring-[6px] ring-red-500 ring-offset-[8px] ring-offset-secondary-white rounded-full transition-all duration-300"
             : ""
         }`}
       >

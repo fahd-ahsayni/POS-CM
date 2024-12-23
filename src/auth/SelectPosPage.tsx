@@ -50,7 +50,6 @@ export default function SelectPosPage() {
     if (id && data.pos) {
       const findPos = data.pos.find((pos) => pos._id === id);
       if (findPos && findPos.shift !== null) {
-        dispatch(updateOrder({ shift_id: findPos.shift._id }));
         navigate("/");
       } else {
         setOpen(true);

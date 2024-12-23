@@ -78,14 +78,17 @@ export default function AllProducts() {
               transition={{ duration: 0.35 }}
               className="w-full grid grid-cols-3 gap-3"
             >
-              {data.map((product) => (
-                <ProductCard
-                  key={product._id}
-                  product={product}
-                  selectedProducts={selectedProducts}
-                  onProductClick={handleProductClick}
-                />
-              ))}
+              {data.map(
+                (product) =>
+                  product.variants.length > 0 && (
+                    <ProductCard
+                      key={product._id}
+                      product={product}
+                      selectedProducts={selectedProducts}
+                      onProductClick={handleProductClick}
+                    />
+                  )
+              )}
             </motion.div>
           </motion.div>
         </>

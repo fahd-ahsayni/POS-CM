@@ -26,7 +26,13 @@ const Layout = () => {
 
   // Combine related effects
   useEffect(() => {
+    // Remove the flag immediately to show loading
     localStorage.removeItem("hasSeenCategoryLoading");
+
+    // Set the flag after 2 seconds
+    const timer = setTimeout(() => {
+      localStorage.setItem("hasSeenCategoryLoading", "true");
+    }, 2000);
 
     const posId = localStorage.getItem("posId");
     if (posId) {
@@ -35,6 +41,9 @@ const Layout = () => {
     } else {
       navigate("/select-pos");
     }
+
+    // Cleanup timer
+    return () => clearTimeout(timer);
   }, []); // Add dispatch and navigate to deps if needed for strict mode
 
   useEffect(() => {
@@ -46,10 +55,14 @@ const Layout = () => {
   // Memoize the updateOrder callback
   const handleUpdateOrder = useCallback(() => {
     const shiftId = localStorage.getItem("shiftId");
+
+    // Only dispatch if shiftId exists
     if (shiftId) {
-      dispatch(updateOrder({ shift_id: shiftId }));
+      setTimeout(() => {
+        dispatch(updateOrder({ shift_id: shiftId }));
+      }, 1000);
     }
-  }, [dispatch]);
+  }, [dispatch, localStorage.getItem("shiftId")]);
 
   useEffect(() => {
     handleUpdateOrder();

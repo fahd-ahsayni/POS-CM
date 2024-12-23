@@ -6,6 +6,7 @@ import { openShift } from "@/api/services";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { updateOrder } from "@/functions/updateOrder";
 
 interface OpenShiftProps {
   open: boolean;
@@ -35,6 +36,7 @@ export default function OpenShift({ open, setOpen, posId }: OpenShiftProps) {
       setIsLoading(true);
       await openShift(amount, posId);
       navigate("/");
+
       setOpen(false);
     } catch (error) {
       toast.error("Failed to open shift");

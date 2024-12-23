@@ -63,7 +63,7 @@ export default function SelectDeliveryType() {
           >
             <Card
               className={`flex justify-start items-center px-6 py-3 transition-all cursor-pointer ${
-                selectedOrderType === app.id ? "border-2 border-primary" : ""
+                selectedOrderType === app.id ? "ring-2 ring-primary-red" : ""
               }`}
               onClick={() => {
                 handleSelect(app.id);
@@ -82,10 +82,9 @@ export default function SelectDeliveryType() {
         ))}
       </div>
       <div className="flex flex-col justify-center items-center gap-4">
-        <div className="flex gap-2 w-full">
+        <div className="flex gap-4 w-full">
           <Button
-            variant="outline"
-            className="flex-1 bg-gray-200 hover:bg-gray-300/70 dark:bg-zinc-800"
+            variant="secondary"
             onClick={() => {
               setViews("TypeOfOrder");
               setSelectedOrderType(null);
