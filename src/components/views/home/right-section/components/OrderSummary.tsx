@@ -1,3 +1,4 @@
+import { createOrder } from "@/api/services";
 import { logoWithoutText } from "@/assets";
 import {
   AddUserIcon,
@@ -6,20 +7,16 @@ import {
   PrinterIcon,
 } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
-import { TypographyP } from "@/components/ui/typography";
-import { updateOrder } from "@/functions/updateOrder";
+import { selectOrder, setCustomerCount } from "@/store/slices/order/createOrder";
 import { AnimatePresence, motion } from "framer-motion";
 import { LucideMaximize } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo } from "react";
-import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
 import { useOrderLines } from "../contexts/orderLinesContext";
 import { useRightViewContext } from "../contexts/rightViewContext";
 import OrderLines from "../import/OrderLines";
 import OtherActionsOrderLines from "../ui/OtherActionsOrderLines";
-import { createOrder } from "@/api/services";
-import { selectOrder } from "@/store/slices/order/createOrder";
 
 const OrderSummary = () => {
   const dispatch = useDispatch();
@@ -64,7 +61,7 @@ const OrderSummary = () => {
 
   // Update order when customer index changes
   useEffect(() => {
-    dispatch(updateOrder({ customer_count: customerIndex }));
+    dispatch(setCustomerCount(customerIndex));
   }, [customerIndex, dispatch]);
 
   const handleProceedOrder = () => {

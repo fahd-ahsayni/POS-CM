@@ -41,6 +41,7 @@ export function TablePagination({ itemsLength }: { itemsLength: number }) {
         {Array.from({ length: totalPages }, (_, index) => (
           <PaginationItem key={index}>
             <PaginationLink
+              className="text-white"
               isActive={index === currentPage}
               onClick={() => handlePageClick(index)}
             >

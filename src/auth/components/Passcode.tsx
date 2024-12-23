@@ -3,10 +3,12 @@ import { Button } from "@/components/ui/button";
 import { AppDispatch, RootState } from "@/store";
 import { login } from "@/store/slices/authentication/authSlice";
 import { setSelectedUser } from "@/store/slices/data/usersSlice";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import CirclesAnimation from "./ui/CirclesAnimation";
+import { toast } from "react-toastify";
+import { createToast } from "@/components/global/Toasters";
 
 export default function Passcode() {
   const [passcode, setPasscode] = useState<string>("");
@@ -14,14 +16,18 @@ export default function Passcode() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  // Get the selected user from the Redux store
+  // Memoize selectors to prevent unnecessary re-renders
   const selectedUser = useSelector(
-    (state: RootState) => state.users.selectedUser
+    useCallback((state: RootState) => state.users.selectedUser, [])
   );
-  const loading = useSelector((state: RootState) => state.auth.loading);
-  const users = useSelector((state: RootState) => state.users.users);
+  const loading = useSelector(
+    useCallback((state: RootState) => state.auth.loading, [])
+  );
+  const users = useSelector(
+    useCallback((state: RootState) => state.users.users, [])
+  );
 
-  // Shuffle numbers for the number pad
+  // Memoize shuffled numbers
   const shuffledNumbers = useMemo(
     () =>
       Array.from({ length: 9 }, (_, i) => i + 1).sort(
@@ -30,31 +36,42 @@ export default function Passcode() {
     []
   );
 
-  const handleNumberClick = (value: string) => {
-    if (value === "C") {
-      setPasscode("");
-    } else if (value === "delete") {
-      setPasscode((prev) => prev.slice(0, -1));
-    } else if (passcode.length < 6) {
-      setPasscode((prev) => prev + value);
-    }
-  };
+  // Memoize handlers
+  const handleNumberClick = useCallback(
+    (value: string) => {
+      if (value === "C") {
+        setPasscode("");
+      } else if (value === "delete") {
+        setPasscode((prev) => prev.slice(0, -1));
+      } else if (passcode.length < 6) {
+        setPasscode((prev) => prev + value);
+      }
+    },
+    [passcode.length]
+  );
 
-  const handleLogin = async () => {
+  const handleLogin = useCallback(async () => {
     if (!selectedUser) {
-      console.log("No user selected");
+      toast.error(
+        createToast(
+          "User Selection Required",
+          "Please select a user before attempting to login.",
+          "error"
+        )
+      );
       return;
     }
 
     if (!selectedUser._id) {
-      console.log("User ID is undefined");
+      toast.error(
+        createToast(
+          "Invalid User Data",
+          "User information is incomplete. Please try again.",
+          "error"
+        )
+      );
       return;
     }
-
-    console.log("Attempting login with:", {
-      _id: selectedUser._id.toString(),
-      password: passcode,
-    });
 
     try {
       const result = await dispatch(
@@ -65,28 +82,48 @@ export default function Passcode() {
       ).unwrap();
 
       if (result) {
+        toast.success(
+          createToast(
+            "Login Successful",
+            "You have successfully logged in.",
+            "success"
+          )
+        );
         navigate("/select-pos");
         dispatch(setSelectedUser(users.cashiers[0]));
       }
     } catch (error) {
-      console.error("Login failed:", error);
+      toast.error(
+        createToast(
+          "Authentication Failed",
+          "Invalid passcode. Please try again.",
+          "error"
+        )
+      );
       setIncorrectPasscode(true);
-      setPasscode("");
     }
-  };
+  }, [selectedUser, passcode, dispatch, navigate, users.cashiers]);
+
+  // Memoize the main content sections
+  const headerContent = useMemo(
+    () => (
+      <div>
+        <h2 className="tracking-tight scroll-m-20 text-3xl font-semibold text-white">
+          Enter Passcode
+        </h2>
+        <p className="mt-1 text-sm text-neutral-dark-grey">
+          Securely authenticate to access the POS system.
+        </p>
+      </div>
+    ),
+    []
+  );
 
   return (
     <div className="flex lg:w-1/2 w-full h-full bg-primary-black flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24 relative">
       <div className="absolute rounded-full -top-52 -right-52 w-[400px] h-[400px] bg-red-600 blur-3xl opacity-30" />
       <div className="mx-auto w-full max-w-sm lg:w-96">
-        <div>
-          <h2 className="tracking-tight scroll-m-20 text-3xl font-semibold text-white">
-            Enter Passcode
-          </h2>
-          <p className="mt-1 text-sm text-neutral-dark-grey">
-            Securely authenticate to access the POS system.
-          </p>
-        </div>
+        {headerContent}
         <div className="mt-10">
           <CirclesAnimation
             currentLength={passcode.length}

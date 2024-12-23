@@ -1,9 +1,10 @@
+import { memo } from "react";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { tabsConfig } from "./constants";
 import { useRightViewContext } from "./contexts/rightViewContext";
 
-export default function RightSection() {
+const RightSection = () => {
   const { views } = useRightViewContext();
 
   return (
@@ -21,4 +22,6 @@ export default function RightSection() {
       </Tabs>
     </div>
   );
-}
+};
+
+export default memo(RightSection);

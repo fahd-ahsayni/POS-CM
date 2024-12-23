@@ -6,6 +6,17 @@
   user-select: none;
 }
 
+:root {
+  --toastify-color-light: #fff;
+  --toastify-color-dark: #121212;
+  --toastify-color-info: #3498db;
+  --toastify-color-success: #07bc0c;
+  --toastify-color-warning: #f1c40f;
+  --toastify-color-error: #fb0000;
+  --toastify-color-transparent: rgba(255, 255, 255, 0.7);
+  --toastify-font-family: "Poppins";
+}
+
 @layer base {
   :root {
     --background: 210 40% 96%;
@@ -39,7 +50,7 @@
     --color-5: 90 100% 63%;
     --radius: 0.75rem;
   }
-  
+
   .dark {
     --background: 20 14.3% 4.1%;
     --foreground: 60 9.1% 97.8%;

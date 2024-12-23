@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
-import { fetchOrders } from "@/store/slices/data/ordersSlice";
+import { fetchOrders, refreshOrders } from "@/store/slices/data/ordersSlice";
 
 import { TypographyH2 } from "@/components/ui/typography";
 import DataTable from "@/components/views/orders/components/DataTable";
@@ -9,37 +9,14 @@ import SelectNumberOfOrderPerPage from "@/components/views/orders/components/Sel
 import { TablePagination } from "@/components/views/orders/components/TablePagination";
 import FiltreOrders from "@/components/views/orders/components/FiltreOrders";
 import { motion } from "framer-motion";
-
-const headers = [
-  { key: "orderId", label: "Order ID", width: "14%", isTextMuted: true },
-  { key: "dateTime", label: "Date & Time", width: "17%", isTextMuted: true },
-  { key: "orderedBy", label: "Ordered by", width: "12%", isTextMuted: false },
-  { key: "orderType", label: "Order Type", width: "16%", isTextMuted: false },
-  {
-    key: "deliveryPerson",
-    label: "Delivery Person",
-    width: "14%",
-    isTextMuted: true,
-  },
-  {
-    key: "paymentStatus",
-    label: "Payment Status",
-    width: "15%",
-    isTextMuted: true,
-  },
-  {
-    key: "orderTotal",
-    label: "Order Total",
-    width: "12%",
-    isTextMuted: false,
-    isPrice: true,
-  },
-];
+import { TABLE_HEADERS } from "@/components/views/orders/config/table-config";
+import { RefreshCwIcon } from "lucide-react";
 
 export default function OrdersPage() {
   const dispatch = useDispatch<AppDispatch>();
-  const orders = useSelector((state: RootState) => state.orders.orders);
-  const orderStatus = useSelector((state: RootState) => state.orders.status);
+  const { orders, status: orderStatus } = useSelector(
+    (state: RootState) => state.orders
+  );
 
   useEffect(() => {
     if (orderStatus === "idle") {
@@ -51,33 +28,49 @@ export default function OrdersPage() {
     <motion.div
       initial={{ opacity: 0, y: 100 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{
-        type: "spring",
-        duration: 0.35,
-      }}
-      className="px-4 sm:px-6 pt-8 flex flex-col h-full overflow-hidden w-[calc(100vw-80px)]"
+      transition={{ type: "spring", duration: 0.35 }}
+      className="flex h-full w-[calc(100vw-80px)] flex-col overflow-hidden px-4 pt-8 sm:px-6"
     >
-      <div className="flex justify-between items-center">
-        <TypographyH2>Orders</TypographyH2>
-        <FiltreOrders />
-      </div>
-
-      <div className="flex-1 overflow-hidden mt-6">
+      <Header />
+      <main className="mt-6 flex-1 overflow-hidden">
         <DataTable
-          headers={headers}
+          headers={TABLE_HEADERS}
           data={orders}
           caption="A list of your recent orders."
         />
-      </div>
-
-      <div className="w-full h-14 bg-background flex justify-between items-center px-4 sm:px-6">
-        <div className="flex items-center gap-2">
-          <SelectNumberOfOrderPerPage itemsLength={orders.length} />
-        </div>
-        <div>
-          <TablePagination itemsLength={orders.length} />
-        </div>
-      </div>
+      </main>
+      <Footer ordersLength={orders.length} />
     </motion.div>
+  );
+}
+
+function Header() {
+  const dispatch = useDispatch<AppDispatch>();
+  const handleRefreshOrders = () => {
+    dispatch(refreshOrders());
+  };
+  return (
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-x-4">
+        <TypographyH2>Orders</TypographyH2>
+        <button onClick={handleRefreshOrders}>
+          <RefreshCwIcon className="w-4 h-4 rotate-[66deg] text-secondary-black dark:text-secondary-white" />
+        </button>
+      </div>
+      <FiltreOrders />
+    </div>
+  );
+}
+
+function Footer({ ordersLength }: { ordersLength: number }) {
+  return (
+    <div className="flex h-14 w-full items-center justify-between bg-background px-4 sm:px-6">
+      <div className="flex items-center gap-2">
+        <SelectNumberOfOrderPerPage itemsLength={ordersLength} />
+      </div>
+      <div>
+        <TablePagination itemsLength={ordersLength} />
+      </div>
+    </div>
   );
 }

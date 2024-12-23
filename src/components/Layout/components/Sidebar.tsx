@@ -33,7 +33,7 @@ export default function Sidebar() {
                 pathname === item.route
                   ? "bg-red-600 text-white"
                   : "",
-                "group cursor-pointer w-full p-2 rounded-md flex flex-col items-center text-xs font-medium"
+                "group cursor-pointer w-full p-2 rounded-md flex flex-col items-center text-xs font-medium="
               )}
             >
               <img src={item.icon} alt={item.name} className="w-5 h-5" />

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { TypographyH3, TypographyH4 } from "@/components/ui/typography";
+import { TypographyH4 } from "@/components/ui/typography";
 
 import { glovo, kaalix, ownDelivery, yassir } from "@/assets";
 import { motion } from "framer-motion";

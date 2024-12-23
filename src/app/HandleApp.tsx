@@ -6,6 +6,8 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import LogInPage from "../auth/LogInPage";
 import HomePage from "./HomePage";
 import OrdersPage from "./OrdersPage";
+import { Bounce, ToastContainer } from "react-toastify";
+import { useTheme } from "@/providers/themeProvider";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = useSelector(
@@ -22,27 +24,43 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default function HandleApp() {
+  const { theme } = useTheme();
   return (
-    <Routes>
-      <Route path="/login" element={<LogInPage />} />
-      <Route
-        path="/select-pos"
-        element={
-          <ProtectedRoute>
-            <SelectPosPage />
-          </ProtectedRoute>
-        }
+    <>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme={theme}
+        transition={Bounce}
       />
-      <Route
-        element={
-          <ProtectedRoute>
-            <Layout />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="/" element={<HomePage />} />
-        <Route path="/orders" element={<OrdersPage />} />
-      </Route>
-    </Routes>
+      <Routes>
+        <Route path="/login" element={<LogInPage />} />
+        <Route
+          path="/select-pos"
+          element={
+            <ProtectedRoute>
+              <SelectPosPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/" element={<HomePage />} />
+          <Route path="/orders" element={<OrdersPage />} />
+        </Route>
+      </Routes>
+    </>
   );
 }

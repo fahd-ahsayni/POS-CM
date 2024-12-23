@@ -3,8 +3,6 @@ import NumberPad from "@/components/global/NumberPad";
 import { Button } from "@/components/ui/button";
 import {
   TypographyH1,
-  TypographyH2,
-  TypographyH3,
   TypographyH4,
   TypographySmall
 } from "@/components/ui/typography";

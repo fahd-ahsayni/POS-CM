@@ -52,6 +52,7 @@ const PaginationLink = ({
         variant: isActive ? "default" : "ghost",
         size,
       }),
+      isActive ? "text-white" : "!text-neutral-dark-grey",
       className
     )}
     {...props}
@@ -66,10 +67,10 @@ const PaginationPrevious = ({
   <PaginationLink
     aria-label="Go to previous page"
     size="default"
-    className={cn("gap-1 pl-2.5 text-primary hover:bg-primary", className)}
+    className={cn("gap-1 pl-2.5 text-primary-red", className)}
     {...props}
   >
-    <ChevronLeft className="h-6 w-6" />
+    <ChevronLeft className="h-6 w-6 text-primary-red" />
   </PaginationLink>
 );
 PaginationPrevious.displayName = "PaginationPrevious";
@@ -81,10 +82,10 @@ const PaginationNext = ({
   <PaginationLink
     aria-label="Go to next page"
     size="default"
-    className={cn("gap-1 pr-2.5 text-primary hover:bg-primary", className)}
+    className={cn("gap-1 pr-2.5", className)}
     {...props}
   >
-    <ChevronRight className="h-6 w-6" />
+    <ChevronRight className="h-6 w-6 text-primary-red" />
   </PaginationLink>
 );
 PaginationNext.displayName = "PaginationNext";
@@ -95,7 +96,10 @@ const PaginationEllipsis = ({
 }: React.ComponentProps<"span">) => (
   <span
     aria-hidden
-    className={cn("flex h-9 w-9 items-center justify-center", className)}
+    className={cn(
+      "flex h-9 w-9 items-center justify-center text-neutral-dark-grey",
+      className
+    )}
     {...props}
   >
     <MoreHorizontal className="h-4 w-4" />

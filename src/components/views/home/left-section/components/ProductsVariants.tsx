@@ -21,7 +21,7 @@ export default function ProductsVariants() {
     setSelectedProducts,
   } = useLeftViewContext();
 
-  const { selectedCustomer } = useRightViewContext();
+  const { selectedCustomer, customerIndex } = useRightViewContext();
 
   const { setViews, orderType } = useRightViewContext();
 
@@ -71,7 +71,7 @@ export default function ProductsVariants() {
         price: p.price * p.quantity,
         product_variant_id: p.product_variant_id,
         uom_id: p.variants[0].uom_id._id || null,
-        customer_index: selectedCustomer,
+        customer_index: p.customer_index,
         notes: p.notes,
         quantity: p.quantity,
         suite_commande: p.suite_commande,

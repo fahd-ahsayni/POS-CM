@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
+import { getOrdersByDay } from "@/api/services";
 
 interface Order {
   id: number;
@@ -28,24 +28,20 @@ const initialState: OrdersState = {
   error: null,
 };
 
-export const fetchOrders = createAsyncThunk(
-  "orders/fetchOrders",
-  async (_, { getState }) => {
-    const token = localStorage.getItem("token");
-    console.log("Token:", token);
-    if (!token) {
-      throw new Error("No token found - please log in first");
-    }
+export const fetchOrders = createAsyncThunk("orders/fetchOrders", async () => {
+  try {
+    const response = await getOrdersByDay();
+    return response.data;
+  } catch (error: any) {
+    throw error;
+  }
+});
 
+export const refreshOrders = createAsyncThunk(
+  "orders/refreshOrders",
+  async () => {
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/orders`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await getOrdersByDay();
       return response.data;
     } catch (error: any) {
       throw error;
@@ -63,6 +59,9 @@ const ordersSlice = createSlice({
     setCurrentPage(state, action: PayloadAction<number>) {
       state.currentPage = action.payload;
     },
+    resetPagination(state) {
+      state.currentPage = 0;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -76,9 +75,22 @@ const ordersSlice = createSlice({
       .addCase(fetchOrders.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message || "Failed to fetch orders";
+      })
+      .addCase(refreshOrders.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(refreshOrders.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.orders = action.payload;
+        state.currentPage = 0;
+      })
+      .addCase(refreshOrders.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message || "Failed to refresh orders";
       });
   },
 });
 
-export const { setPageSize, setCurrentPage } = ordersSlice.actions;
+export const { setPageSize, setCurrentPage, resetPagination } =
+  ordersSlice.actions;
 export default ordersSlice.reducer;

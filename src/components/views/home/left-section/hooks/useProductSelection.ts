@@ -16,6 +16,8 @@ export const useProductSelection = ({
   selectedCustomer,
   orderType,
 }: UseProductSelectionProps) => {
+
+  
   const addOrUpdateProduct = useCallback(
     (product: Product, variantId: string, price?: number) => {
       setSelectedProducts((prevSelected) => {
@@ -29,14 +31,12 @@ export const useProductSelection = ({
 
         const existingProduct = prevSelected.find(
           (p) =>
-            p._id === product._id &&
             p.product_variant_id === variantId &&
             p.customer_index === selectedCustomer
         );
 
         if (existingProduct) {
           return prevSelected.map((p) =>
-            p._id === product._id &&
             p.product_variant_id === variantId &&
             p.customer_index === selectedCustomer
               ? {

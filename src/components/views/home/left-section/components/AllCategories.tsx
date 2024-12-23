@@ -11,6 +11,7 @@ import { useRightViewContext } from "../../right-section/contexts/rightViewConte
 import { ALL_PRODUCTS_VIEW, PRODUCTS_BY_CATEGORY_VIEW } from "../constants";
 import { useLeftViewContext } from "../contexts/leftViewContext";
 import { Skeleton } from "@/components/ui/skeleton";
+import { BlurImage } from "@/components/global/BlurImage";
 
 function CategoryCardSkeleton() {
   return (
@@ -58,18 +59,7 @@ export default React.memo(function AllCategories() {
   const categoryCards = useMemo(
     () =>
       categories.map((category, index) => (
-        <motion.div
-          key={category._id}
-          initial={{ opacity: 0, y: -30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={
-            !localStorage.getItem("hasSeenCategoryLoading")
-              ? { delay: Math.floor(index / 3) * 0.15, duration: 0.25 }
-              : { duration: 0 }
-          }
-          className="h-24"
-        >
+        <div key={category._id} className="h-24">
           <Card
             onClick={() => handleCategoryClick(category)}
             className={cn(
@@ -77,22 +67,23 @@ export default React.memo(function AllCategories() {
               views !== ORDER_SUMMARY_VIEW && "pointer-events-none"
             )}
           >
-            <img
+            <BlurImage
               src={`${import.meta.env.VITE_BASE_URL}${category.image}` ?? ""}
               alt={category.name}
               crossOrigin="anonymous"
               className={cn(
-                "w-full h-full object-cover transition-all duration-500",
+                "object-cover transition-all duration-500",
                 views !== ORDER_SUMMARY_VIEW
                   ? "grayscale dark:brightness-[0.30] brightness-[0.6]"
-                  : "dark:brightness-[0.3] brightness-[0.4]"
+                  : "dark:brightness-[0.5] brightness-[0.6]"
               )}
+              loadingClassName="dark:bg-white/5 bg-primary-black/30"
             />
             <TypographyP className="text-center group text-xl capitalize font-medium absolute text-white">
               {category.name.toLowerCase()}
             </TypographyP>
           </Card>
-        </motion.div>
+        </div>
       )),
     [categories, views]
   );

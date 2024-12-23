@@ -19,10 +19,9 @@ import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { pageAnimations } from "./animation";
+import PosCard from "./components/PosCard";
 import UserCard from "./components/ui/UserCard";
 import OpenShift from "./OpenShift";
-import PosCard from "./components/PosCard";
-import { updateOrder } from "@/functions/updateOrder";
 
 export default function SelectPosPage() {
   const navigate = useNavigate();
@@ -78,8 +77,8 @@ export default function SelectPosPage() {
         posId={localStorage.getItem("posId") || ""}
       />
       {/* Left Section */}
-      <aside className="w-3/12 h-full bg-secondary-white">
-        <header className="relative z-10 flex h-16 flex-shrink-0">
+      <aside className="w-3/12 h-full bg-secondary-white relative">
+        <header className="absolute top-0 left-0 z-10 flex h-16 flex-shrink-0">
           <div className="flex flex-1 justify-between px-4 sm:px-6">
             <img src={logoLightMode} alt="logo" className="w-24 h-auto" />
           </div>
@@ -95,7 +94,7 @@ export default function SelectPosPage() {
               />
             )}
           </motion.div>
-          <div className="mt-10">
+          <div className="mt-4">
             <Button to="/login">Change Account</Button>
           </div>
         </div>
@@ -105,7 +104,7 @@ export default function SelectPosPage() {
       <motion.main className="w-9/12 h-full bg-secondary-white">
         <motion.div
           {...pageAnimations.mainContent}
-          className="bg-primary-black flex flex-col items-start justify-center h-full w-full py-6 px-10"
+          className="bg-primary-black flex flex-col items-start justify-center h-full w-full px-10 sm:px-20 -pt-10"
         >
           <header className="flex justify-between items-start w-full">
             <div>
