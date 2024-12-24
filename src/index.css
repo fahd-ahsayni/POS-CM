@@ -15,6 +15,11 @@
   --toastify-color-error: #fb0000;
   --toastify-color-transparent: rgba(255, 255, 255, 0.7);
   --toastify-font-family: "Poppins";
+  --toastify-color-progress-bgo: 0;
+  --toastify-color-progress-info: #3498db;
+  --toastify-color-progress-success: #07bc0c;
+  --toastify-color-progress-warning: #f1c40f;
+  --toastify-color-progress-error: #ff0000;
 }
 
 @layer base {

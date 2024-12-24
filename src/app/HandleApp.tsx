@@ -32,13 +32,14 @@ export default function HandleApp() {
         autoClose={5000}
         hideProgressBar={false}
         newestOnTop={false}
-        closeOnClick={false}
+        closeOnClick={true}
         rtl={false}
-        pauseOnFocusLoss
+        pauseOnFocusLoss={false}
         draggable
-        pauseOnHover
+        pauseOnHover={false}
         theme={theme}
         transition={Bounce}
+        closeButton={false}
       />
       <Routes>
         <Route path="/login" element={<LogInPage />} />

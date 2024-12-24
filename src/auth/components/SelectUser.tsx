@@ -29,9 +29,9 @@ export default function SelectUser() {
 
           <SegmentedControl activeTab={activeTab} onChange={setActiveTab} />
         </div>
-        <div>
+        <div className="mt-20">
           <SelectUserSlide userType={activeTab} />
-          <div className="flex justify-center items-center mt-4">
+          <div className="flex justify-center items-center mt-6">
             <ShineBorder
               className="flex justify-center items-center gap-4 py-3 px-8"
               color="#fff"

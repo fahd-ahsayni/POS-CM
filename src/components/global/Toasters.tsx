@@ -6,7 +6,7 @@ export const createToast = (
   type: ToastType = "error"
 ) => {
   const bgColorMap = {
-    error: "bg-red-500",
+    error: "bg-primary-red",
     success: "bg-green-500",
     info: "bg-blue-500",
     warning: "bg-yellow-500",
@@ -14,12 +14,12 @@ export const createToast = (
   };
 
   return (
-    <span className="flex flex-col gap-y-1 justify-start relative">
+    <span className="flex flex-col gap-y-1 justify-start relative pl-1">
       <span
         className={`w-40 h-40 ${bgColorMap[type]} absolute -left-40 -top-10 blur-3xl opacity-30`}
       />
       <span className="text-sm font-medium">{title}</span>
-      <span className="text-xs dark:text-white/50 light:text-primary-black/50 leading-3">
+      <span className="text-xs font-light dark:text-white/50 light:text-primary-black/50 leading-3">
         {message}
       </span>
     </span>

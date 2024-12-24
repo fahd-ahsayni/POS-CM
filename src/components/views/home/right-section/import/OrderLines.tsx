@@ -11,7 +11,8 @@ export default function OrderLines() {
   const [groupedProducts, setGroupedProducts] = useState<Record<number, any[]>>(
     {}
   );
-  const { customerIndex, setCustomerIndex } = useRightViewContext();
+  const { customerIndex, setCustomerIndex, setSelectedCustomer } =
+    useRightViewContext();
 
   const { expandedCustomers, toggleCustomer, initializeCustomer } =
     useOrderLines();
@@ -57,6 +58,8 @@ export default function OrderLines() {
               : product.customer_index,
         }))
     );
+    setSelectedCustomer(customerIndex - 1);
+    setCustomerIndex(customerIndex - 1);
     if (customerIndex > 1) {
       setCustomerIndex(customerIndex - 1);
     }

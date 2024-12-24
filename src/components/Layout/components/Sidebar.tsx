@@ -28,10 +28,10 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, pathname, theme }) => (
         className={cn(
           "h-5 w-5",
           pathname === item.route
-            ? "fill-white"
+            ? "!fill-white"
             : theme === "dark"
-            ? "fill-white"
-            : "fill-black"
+            ? "!fill-white"
+            : "!fill-black"
         )}
       />
       <span className="mt-2 text-center">{item.name}</span>

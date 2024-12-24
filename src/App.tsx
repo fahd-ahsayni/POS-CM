@@ -1,4 +1,4 @@
-import { ToastContainer } from "react-toastify";
+import { Bounce, ToastContainer } from "react-toastify";
 import HandleApp from "./app/HandleApp";
 import Fonts from "./providers/Fonts";
 import { ThemeProvider } from "./providers/themeProvider";
@@ -11,7 +11,6 @@ export default function App() {
       <KeyboardProvider>
         <Fonts>
           <ThemeProvider defaultTheme="dark" storageKey="pos-theme">
-            <ToastContainer />
             <HandleApp />
           </ThemeProvider>
         </Fonts>
