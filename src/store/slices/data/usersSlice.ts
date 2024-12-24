@@ -4,12 +4,6 @@ import { createApiInstance } from "@/api/axiosInstance";
 import axios from "axios";
 import { User } from "@/types";
 
-const VITE_API_KEY = import.meta.env.VITE_API_KEY;
-const VITE_API_USERS_CASHIERS = import.meta.env.VITE_API_USERS_CASHIERS;
-const VITE_API_USERS_MANAGERS = import.meta.env.VITE_API_USERS_MANAGERS;
-
-
-
 interface UserState {
   users: {
     cashiers: User[];
@@ -90,6 +84,9 @@ const userSlice = createSlice({
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.loading = false;
         state.users = action.payload;
+        
+        // Save users to local storage
+        localStorage.setItem('users', JSON.stringify(action.payload));
       })
       .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false;

@@ -11,6 +11,8 @@ import {
 import { format } from "date-fns";
 import { currency } from "@/preferences";
 import { PrinterIcon } from "@/assets/figma-icons";
+import { printOrder } from "@/api/services";
+
 
 export interface Header {
   key: string;
@@ -40,6 +42,7 @@ const formatData = (order: Order) => {
     deliveryPerson: order.delivery_guy_id || "Not Assigned",
     paymentStatus: order.status,
     orderTotal: order.total_amount,
+    id: order._id,
   };
 };
 
@@ -167,8 +170,8 @@ const TableBody: React.FC<{
 }> = memo(({ headers, data, getStatusTextColor }) => (
   <div className="w-full">
     {data.map((item, index) => (
-      <div 
-        key={index} 
+      <div
+        key={index}
         className="flex w-full hover:bg-primary-black/5 dark:hover:bg-white/5 transition-colors duration-200 rounded-md cursor-pointer"
       >
         {headers.map((header) => (
@@ -208,8 +211,13 @@ const TableCell: React.FC<{
     {header.isPrice ? (
       <span className="text-right flex items-center justify-end w-full">
         {item[header.key].toFixed(currency.toFixed)} Dhs
-        <button className="ml-4">
-          <PrinterIcon className="dakr:fill-white fill-primary-black w-5 h-5" />
+        <button
+          className="ml-4"
+          onClick={() => {
+            printOrder(item.id);
+          }}
+        >
+          <PrinterIcon className="dark:!fill-white fill-primary-black w-5 h-5" />
         </button>
       </span>
     ) : (

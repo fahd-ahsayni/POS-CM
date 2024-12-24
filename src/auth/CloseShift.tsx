@@ -1,4 +1,3 @@
-import { Dhs200 } from "@/assets/Dhs";
 import Drawer from "@/components/global/Drawer";
 import InputComponent from "@/components/global/InputField";
 import Keyboard from "@/components/global/keyboard/Keyboard";
@@ -6,6 +5,9 @@ import { KeyboardProvider } from "@/components/global/keyboard/context/KeyboardC
 import { Button } from "@/components/ui/button";
 import { TypographyP } from "@/components/ui/typography";
 import { useState } from "react";
+import SelectNextCashier from "./components/ui/SelectNextCashier";
+import { Dhs200 } from "@/assets/Dhs";
+import { RiInputField } from "react-icons/ri";
 
 export default function CloseShift({
   open,
@@ -34,15 +36,30 @@ export default function CloseShift({
               Count your cash and enter totals for each denomination, then
               continue to add other payment methods.
             </TypographyP>
-            <InputComponent
-              type="number"
-              label="Cash total amount (Dhs)"
-              placeholder="Enter cash total amount"
-            />
+            <div className="flex gap-x-2 items-center">
+              <SelectNextCashier />
+              <InputComponent
+                config={{
+                  label: "Cash total amount (Dhs)",
+                  suffix: "Dhs",
+                  type: "number",
+                  placeholder: "Enter cash total amount",
+                }}
+                className="w-full"
+              />
+            </div>
           </div>
-          <div className="flex flex-flex h-full bg-red-500 gap-2 w-full">
+          <div className="flex flex-flex h-full gap-2 w-full">
             <div className="flex flex-col gap-2 w-full">
-              {/* <img src={Dhs200} alt="" /> */}
+              <div className="flex gap-2 items-center">
+                <img src={Dhs200} alt="" className="h-10 w-auto" />
+                <InputComponent
+                  config={{
+                    type: "number",
+                    placeholder: "Enter 200 Dhs",
+                  }}
+                />
+              </div>
             </div>
           </div>
           <div className="flex flex-col gap-2 w-full">

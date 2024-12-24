@@ -1,54 +1,65 @@
-// Dependencies: pnpm install lucide-react react-aria-components
-
-"use client";
-
-import { Minus, Plus } from "lucide-react";
+import { Label } from "@/components/ui/label";
 import {
-  Button,
-  Group,
-  Input,
-  Label,
-  NumberField,
-} from "react-aria-components";
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import Avatar01 from "@/public/avatar-20-01.jpg";
+import Avatar02 from "@/public/avatar-20-02.jpg";
+import Avatar03 from "@/public/avatar-20-03.jpg";
+import Image from "next/image";
 
-export default function InputDemo() {
+export default function SelectDemo() {
   return (
-    <NumberField defaultValue={2048} minValue={0}>
-      <div className="space-y-2">
-        <Label className="text-sm font-medium text-foreground">
-          Number input with plus/minus buttons
-        </Label>
-        <Group className="relative inline-flex h-9 w-full items-center overflow-hidden whitespace-nowrap rounded-lg border border-input text-sm shadow-sm shadow-black/5 transition-shadow data-[focus-within]:border-ring data-[disabled]:opacity-50 data-[focus-within]:outline-none data-[focus-within]:ring-[3px] data-[focus-within]:ring-ring/20">
-          <Button
-            slot="decrement"
-            className="-ms-px flex aspect-square h-[inherit] items-center justify-center rounded-s-lg border border-input bg-background text-sm text-muted-foreground/80 transition-shadow hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <Minus size={16} strokeWidth={2} aria-hidden="true" />
-          </Button>
-          <Input className="w-full grow bg-background px-3 py-2 text-center tabular-nums text-foreground focus:outline-none" />
-          <Button
-            slot="increment"
-            className="-me-px flex aspect-square h-[inherit] items-center justify-center rounded-e-lg border border-input bg-background text-sm text-muted-foreground/80 transition-shadow hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <Plus size={16} strokeWidth={2} aria-hidden="true" />
-          </Button>
-        </Group>
-      </div>
-      <p
-        className="mt-2 text-xs text-muted-foreground"
-        role="region"
-        aria-live="polite"
-      >
-        Built with{" "}
-        <a
-          className="underline hover:text-foreground"
-          href="https://react-spectrum.adobe.com/react-aria/DateField.html"
-          target="_blank"
-          rel="noopener nofollow"
+    <div className="space-y-2">
+      <Label htmlFor="select-38">Options with avatar</Label>
+      <Select defaultValue="s1">
+        <SelectTrigger
+          id="select-38"
+          className="ps-2 [&>span]:flex [&>span]:items-center [&>span]:gap-2 [&>span_img]:shrink-0"
         >
-          React Aria
-        </a>
-      </p>
-    </NumberField>
+          <SelectValue placeholder="Select framework" />
+        </SelectTrigger>
+        <SelectContent className="[&_*[role=option]>span]:end-2 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:flex [&_*[role=option]>span]:items-center [&_*[role=option]>span]:gap-2 [&_*[role=option]]:pe-8 [&_*[role=option]]:ps-2">
+          <SelectGroup>
+            <SelectLabel className="ps-2">Impersonate user</SelectLabel>
+            <SelectItem value="s1">
+              <Image
+                className="size-5 rounded"
+                src={Avatar01}
+                alt="Frank Allison"
+                width={20}
+                height={20}
+              />
+              <span className="truncate">Jenny Hamilton</span>
+            </SelectItem>
+            <SelectItem value="s2">
+              <Image
+                className="size-5 rounded"
+                src={Avatar02}
+                alt="Xavier Guerra"
+                width={20}
+                height={20}
+              />
+              <span className="truncate">Paul Smith</span>
+            </SelectItem>
+            <SelectItem value="s3">
+              <img
+                className="size-5 rounded"
+                src={Avatar03}
+                alt="Anne Kelley"
+                width={20}
+                height={20}
+              />
+              <span className="truncate">Luna Wyen</span>
+            </SelectItem>
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    </div>
   );
 }

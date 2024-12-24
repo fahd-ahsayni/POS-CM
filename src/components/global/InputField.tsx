@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import { AtSign, Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
-interface InputProps {
-  label: string;
+interface InputConfig {
+  label?: string;
   type?: "text" | "email" | "password" | "number";
   placeholder?: string;
   required?: boolean;
@@ -14,42 +15,53 @@ interface InputProps {
   hasError?: boolean;
   startIcon?: React.ReactNode;
   isPasswordToggleable?: boolean;
-  optionalText?: string; // Optional case to display custom text like "Optional"
+  optionalText?: string;
   value?: string | number;
   setValue?: (value: string | number) => void;
+  suffix?: ReactNode | string;
 }
 
-const InputComponent: React.FC<InputProps> = ({
-  label,
-  type = "text",
-  placeholder = "",
-  required = false,
-  errorMessage,
-  helperText,
-  defaultValue,
-  hasError = false,
-  startIcon,
-  isPasswordToggleable = false,
-  optionalText,
-  value,
-  setValue,
+const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
+  config,
+  className,
 }) => {
+  const {
+    label,
+    type = "text",
+    placeholder = "",
+    required = false,
+    errorMessage,
+    helperText,
+    defaultValue,
+    hasError = false,
+    startIcon,
+    isPasswordToggleable = false,
+    optionalText,
+    value,
+    setValue,
+    suffix,
+  } = config;
+
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  const inputType =
-    isPasswordToggleable && type === "password"
-      ? isVisible
-        ? "text"
-        : "password"
-      : type;
+
+  const getInputType = () => {
+    if (isPasswordToggleable && type === "password") {
+      return isVisible ? "text" : "password";
+    }
+    return type;
+  };
 
   const toggleVisibility = () => setIsVisible((prevState) => !prevState);
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between gap-1 mt-4">
-        <Label className="leading-3 pl-2">{label}</Label>
+    <div className={cn("space-y-1", className)}>
+      <div className="flex items-center justify-between gap-x-1">
+        <Label className="leading-3 pl-3">
+          {label}
+          {required && <span className="text-destructive">*</span>}
+        </Label>
         {optionalText && (
-          <span className="text-sm text-muted-foreground">{optionalText}</span>
+          <span className="text-xs text-neutral-dark-grey">{optionalText}</span>
         )}
       </div>
 
@@ -61,14 +73,16 @@ const InputComponent: React.FC<InputProps> = ({
         )}
 
         <Input
-          className={`w-full${
-            hasError
-              ? "border-red-500"
-              : "border-gray-300"
-          } ${startIcon ? "ps-9" : ""} ${isPasswordToggleable ? "pe-9" : ""} ${
-            type === "number" ? "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" : ""
+          className={`w-full ${
+            hasError ? "!ring-[1.25px] !ring-primary-red" : ""
+          } ${startIcon ? "ps-9" : ""} ${suffix ? "pe-9" : ""} ${
+            isPasswordToggleable ? "pe-9" : ""
+          } ${
+            type === "number"
+              ? "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              : ""
           }`}
-          type={inputType}
+          type={getInputType()}
           placeholder={placeholder}
           required={required}
           defaultValue={defaultValue}
@@ -77,8 +91,18 @@ const InputComponent: React.FC<InputProps> = ({
             helperText || errorMessage ? `description` : undefined
           }
           value={value}
-          onChange={(e) => setValue?.(type === "number" ? Number(e.target.value) : e.target.value)}
+          onChange={(e) =>
+            setValue?.(
+              type === "number" ? Number(e.target.value) : e.target.value
+            )
+          }
         />
+
+        {suffix && (
+          <span className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-sm text-white">
+            {suffix}
+          </span>
+        )}
 
         {isPasswordToggleable && (
           <button
@@ -95,8 +119,8 @@ const InputComponent: React.FC<InputProps> = ({
 
       {(helperText || errorMessage) && (
         <p
-          className={`mt-2 text-xs ${
-            hasError ? "text-destructive" : "text-muted-foreground"
+          className={`mt-2 text-xs font-medium pl-1 ${
+            hasError ? "text-primary-red" : "text-neutral-dark-grey"
           }`}
           role={hasError ? "alert" : "region"}
         >

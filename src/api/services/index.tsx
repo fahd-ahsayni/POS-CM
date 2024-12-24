@@ -1,0 +1,69 @@
+import { api } from "@/api/axios";
+import { createToast } from "@/components/global/Toasters";
+import { toast } from "react-toastify";
+
+export const getByTableName = async (tableName: string) => {
+  return api.get(`/order/by-table-name/${tableName}`);
+};
+
+export const openCashDrawer = async (shiftId: string) => {
+  return api.post("/pos/open-cashdrawer", { shift_id: shiftId });
+};
+
+export const openShift = async (startingBalance: string, posId: string) => {
+  return api.post("/shift/open", {
+    starting_balance: startingBalance,
+    pos_id: posId,
+  });
+};
+
+export const createOrder = async (data: any) => {
+  return api.post("/order/create", data);
+};
+
+export const getOrdersByDay = async () => {
+  return api.get("/order/by-day");
+};
+
+export const printOrder = async (orderId: string) => {
+  try {
+    const posId = localStorage.getItem("posId");
+    if (!posId) {
+      throw new Error("POS ID not found in local storage");
+    }
+
+    const response = await api.post("/order/printer", {
+      order_id: orderId,
+      pos_id: posId,
+    });
+
+    if (response.status === 200) {
+      toast.success(
+        createToast(
+          "Order printed successfully",
+          "The order has been sent to the printer",
+          "success"
+        )
+      );
+    } else {
+      toast.error(
+        createToast(
+          "Failed to print order",
+          "Please check the printer connection and try again",
+          "error"
+        )
+      );
+    }
+
+    return response;
+  } catch (error) {
+    toast.error(
+      createToast(
+        "Error printing order",
+        "An unexpected error occurred while trying to print the order",
+        "error"
+      )
+    );
+    return null;
+  }
+};
