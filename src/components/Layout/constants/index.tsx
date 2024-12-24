@@ -1,14 +1,15 @@
 import { openCashDrawer } from "@/api/services";
+
 import {
-  addClient,
-  drop,
-  home,
-  openDrawer,
-  orders,
-  preferences,
-  waiters,
-  waitingOrders,
-} from "@/assets";
+  HomeIcon,
+  OrdersIcon,
+  OpenDrawerIcon,
+  AddClientIcon,
+  WaitersIcon,
+  DropIcon,
+  PreferencesIcon,
+  WaitingOrdersIcon,
+} from "@/assets/sidebar";
 
 const handleOpenCashDrawer = async () => {
   try {
@@ -27,12 +28,12 @@ export const sidebarPagesLink = [
   {
     name: "Home",
     route: "/",
-    icon: home,
+    icon: HomeIcon,
   },
   {
     name: "Orders",
     route: "/orders",
-    icon: orders,
+    icon: OrdersIcon,
   },
 ];
 
@@ -40,42 +41,42 @@ export const sidebarNavigation = [
   {
     name: "Waiting orders",
     route: "#",
-    icon: waitingOrders,
+    icon: WaitingOrdersIcon,
     onClick: () => console.log("Waiting orders clicked"),
     current: true,
   },
   {
     name: "Open Drawer",
     route: "#",
-    icon: openDrawer,
+    icon: OpenDrawerIcon,
     onClick: handleOpenCashDrawer,
     current: false,
   },
   {
     name: "Add client",
     route: "#",
-    icon: addClient,
+    icon: AddClientIcon,
     onClick: () => console.log("Add client clicked"),
     current: false,
   },
   {
     name: "Waiters",
     route: "#",
-    icon: waiters,
+    icon: WaitersIcon,
     onClick: () => console.log("Waiters clicked"),
     current: false,
   },
   {
     name: "Drop",
     route: "#",
-    icon: drop,
+    icon: DropIcon,
     onClick: () => console.log("Drop clicked"),
     current: false,
   },
   {
     name: "Prefers",
     route: "#",
-    icon: preferences,
+    icon: PreferencesIcon,
     onClick: () => console.log("Preferences clicked"),
     current: false,
   },

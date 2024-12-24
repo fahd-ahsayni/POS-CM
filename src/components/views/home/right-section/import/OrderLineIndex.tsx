@@ -64,7 +64,7 @@ const OrderLineIndex = ({
           className={`flex items-center justify-between gap-x-2 flex-1 bg-white dark:bg-secondary-black rounded px-2 shadow
             ${
               selectedCustomer === customerIndex
-                ? "border-2 border-primary"
+                ? "ring-2 ring-primary-red"
                 : ""
             }`}
         >
