@@ -1,8 +1,8 @@
-import React, { ReactNode, useState } from "react";
-import { AtSign, Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { Eye, EyeOff } from "lucide-react";
+import React, { ReactNode, useState } from "react";
 
 interface InputConfig {
   label?: string;

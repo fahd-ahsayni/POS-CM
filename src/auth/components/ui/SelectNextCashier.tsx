@@ -21,29 +21,29 @@ export default function SelectNextCashier() {
 
   return (
     <Combobox
-      className="mt-3 w-[350px]"
+      className="w-[350px]"
       as="div"
       value={selectedPerson}
       onChange={setSelectedPerson}
     >
-      <Label className="block text-xs leading-3 font-medium tex-primary-black dark:text-white pb-0.5">
+      <Label className="block pl-2 text-xs leading-3 font-medium tex-primary-black dark:text-white pb-0.5">
         Assigned to
       </Label>
       <div className="relative mt-1">
         <ComboboxInput
-          className="w-full h-8 rounded-md ring-[1.25px] ring-primary-black/5 dark:ring-white/5 bg-primary-black/5 dark:bg-white/5 py-1 pl-3 pr-10 shadow-sm focus:outline-none sm:text-xs"
+          className="w-full h-[38px] rounded-md focus:border focus:border-primary-black/5 dark:focus:border-white/5 bg-primary-black/5 dark:bg-white/5 py-1 pl-3 pr-10 shadow-sm focus:outline-none sm:text-xs"
           onChange={(event) => setQuery(event.target.value)}
           displayValue={(user: User) => user?.name}
         />
         <ComboboxButton className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
           <ChevronDown
-            className="h-5 w-5 text-gray-400"
+            className="h-5 w-5 text-neutral-dark-grey"
             aria-hidden="true"
           />
         </ComboboxButton>
 
         {filteredPeople.length > 0 && (
-          <ComboboxOptions className="absolute z-10 mt-2 max-h-56 min-w-64 w-full overflow-auto rounded-md dark:bg-primary-black bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <ComboboxOptions className="absolute z-10 mt-2 max-h-56 min-w-64 w-full overflow-auto rounded-md dark:bg-primary-black bg-white py-1 shadow-lg dark:shadow-black/50 ring-1 ring-black ring-opacity-5 focus:outline-none">
             {filteredPeople.map((user: User) => (
               <ComboboxOption
                 key={user._id}
