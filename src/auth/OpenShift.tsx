@@ -1,12 +1,12 @@
+import { openShift } from "@/api/services";
 import Drawer from "@/components/global/Drawer";
 import NumberPad from "@/components/global/NumberPad";
+import { createToast } from "@/components/global/Toasters";
 import { Button } from "@/components/ui/button";
 import { TypographyH2 } from "@/components/ui/typography";
-import { openShift } from "@/api/services";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { updateOrder } from "@/functions/updateOrder";
+import { toast } from "react-toastify";
 
 interface OpenShiftProps {
   open: boolean;
@@ -35,11 +35,16 @@ export default function OpenShift({ open, setOpen, posId }: OpenShiftProps) {
     try {
       setIsLoading(true);
       await openShift(amount, posId);
+      toast.success(
+        createToast("Shift opened", "You can now start selling", "success")
+      );
       navigate("/");
 
       setOpen(false);
     } catch (error) {
-      toast.error("Failed to open shift");
+      toast.error(
+        createToast("Failed to open shift", "Please try again", "error")
+      );
     } finally {
       setIsLoading(false);
     }

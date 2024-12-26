@@ -8,6 +8,8 @@ import { Outlet, useNavigate } from "react-router-dom";
 import Keyboard from "../global/keyboard/Keyboard";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
+import { getAllVariants } from "@/functions/getAllVariants";
+import { extractProducts } from "@/functions/extractProducts";
 
 const Layout = () => {
   // Hooks
@@ -26,14 +28,6 @@ const Layout = () => {
 
   // Combine related effects
   useEffect(() => {
-    // Remove the flag immediately to show loading
-    localStorage.removeItem("hasSeenCategoryLoading");
-
-    // Set the flag after 2 seconds
-    const timer = setTimeout(() => {
-      localStorage.setItem("hasSeenCategoryLoading", "true");
-    }, 2000);
-
     const posId = localStorage.getItem("posId");
     if (posId) {
       dispatch(fetchGeneralData(posId));
@@ -41,10 +35,25 @@ const Layout = () => {
     } else {
       navigate("/select-pos");
     }
-
-    // Cleanup timer
-    return () => clearTimeout(timer);
   }, []); // Add dispatch and navigate to deps if needed for strict mode
+
+  useEffect(() => {
+    const generalData = localStorage.getItem("generalData");
+    if (generalData) {
+      const parsedData = JSON.parse(generalData);
+      
+      // Save variants
+      localStorage.setItem("variants", JSON.stringify(getAllVariants()));
+      
+      // Save products only if categories exist
+      if (parsedData?.categories) {
+        localStorage.setItem(
+          "products",
+          JSON.stringify(extractProducts(parsedData.categories))
+        );
+      }
+    }
+  }, [localStorage.getItem("generalData")]);
 
   useEffect(() => {
     if (generalStatus === "failed") {

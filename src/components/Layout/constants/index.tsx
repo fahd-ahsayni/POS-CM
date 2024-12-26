@@ -35,16 +35,14 @@ export const sidebarPagesLink = [
     route: "/orders",
     icon: OrdersIcon,
   },
+  {
+    name: "Waiting orders",
+    route: "/waiting-orders",
+    icon: WaitingOrdersIcon,
+  },
 ];
 
 export const sidebarNavigation = [
-  {
-    name: "Waiting orders",
-    route: "#",
-    icon: WaitingOrdersIcon,
-    onClick: () => console.log("Waiting orders clicked"),
-    current: true,
-  },
   {
     name: "Open Drawer",
     route: "#",

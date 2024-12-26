@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import CirclesAnimation from "./ui/CirclesAnimation";
 import { toast } from "react-toastify";
 import { createToast } from "@/components/global/Toasters";
+import { Loading } from "@/components/global/loading";
 
 export default function Passcode() {
   const [passcode, setPasscode] = useState<string>("");
@@ -138,7 +139,11 @@ export default function Passcode() {
         </div>
         <div className="mt-10">
           <Button onClick={handleLogin} className="w-full">
-            {loading ? "Logging in..." : "Log In"}
+            {loading ? (
+              <Loading color="bg-white" borderWidth={3} size={5} />
+            ) : (
+              "Log In"
+            )}
           </Button>
         </div>
       </div>

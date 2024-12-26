@@ -29,7 +29,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     // Handle common errors here
-    if (error.response?.status === 401) {
+    if (error.response?.status === 403) {
       // Handle unauthorized
       localStorage.removeItem('token');
       window.location.href = '/login';

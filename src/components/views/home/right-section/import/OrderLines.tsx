@@ -5,6 +5,7 @@ import { useLeftViewContext } from "../../left-section/contexts/leftViewContext"
 import { useOrderLines } from "../contexts/orderLinesContext";
 import { useRightViewContext } from "../contexts/rightViewContext";
 import OrderLineIndex from "./OrderLineIndex";
+import { ProductSelected } from "@/types";
 
 export default function OrderLines() {
   const { selectedProducts, setSelectedProducts } = useLeftViewContext();
@@ -22,26 +23,29 @@ export default function OrderLines() {
   }, [customerIndex]);
 
   // Function to increment product quantity
-  const incrementQuantity = (productId: string) => {
+  const incrementQuantity = (product: ProductSelected) => {
     setSelectedProducts((prevProducts) =>
-      prevProducts.map((product) =>
-        product.id === productId
-          ? { ...product, quantity: product.quantity + 1 }
-          : product
+      prevProducts.map((item) =>
+        item._id === product._id &&
+        item.customer_index === product.customer_index
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
       )
     );
   };
 
   // Function to decrement product quantity and remove if zero
-  const decrementQuantity = (productId: string) => {
+  const decrementQuantity = (product: ProductSelected) => {
+    console.log("selectedProducts", selectedProducts);
     setSelectedProducts((prevProducts) =>
       prevProducts
-        .map((product) =>
-          product.id === productId
-            ? { ...product, quantity: product.quantity - 1 }
-            : product
+        .map((item) =>
+          item._id === product._id &&
+          item.customer_index === product.customer_index
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
         )
-        .filter((product) => product.quantity > 0)
+        .filter((item) => item.quantity > 0)
     );
   };
 
@@ -58,10 +62,9 @@ export default function OrderLines() {
               : product.customer_index,
         }))
     );
-    setSelectedCustomer(customerIndex - 1);
-    setCustomerIndex(customerIndex - 1);
     if (customerIndex > 1) {
       setCustomerIndex(customerIndex - 1);
+      setSelectedCustomer(customerIndex - 1);
     }
   };
 

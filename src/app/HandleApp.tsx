@@ -1,13 +1,14 @@
 import SelectPosPage from "@/auth/SelectPosPage";
 import Layout from "@/components/Layout/Layout";
+import { useTheme } from "@/providers/themeProvider";
 import { RootState } from "@/store";
 import { useSelector } from "react-redux";
 import { Navigate, Route, Routes } from "react-router-dom";
+import { Bounce, ToastContainer } from "react-toastify";
 import LogInPage from "../auth/LogInPage";
 import HomePage from "./HomePage";
 import OrdersPage from "./OrdersPage";
-import { Bounce, ToastContainer } from "react-toastify";
-import { useTheme } from "@/providers/themeProvider";
+import WaitingOrders from "./WaitingOrders";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = useSelector(
@@ -28,8 +29,8 @@ export default function HandleApp() {
   return (
     <>
       <ToastContainer
-        position="top-right"
-        autoClose={5000}
+        position="bottom-left"
+        autoClose={1500}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick={true}
@@ -60,6 +61,7 @@ export default function HandleApp() {
         >
           <Route path="/" element={<HomePage />} />
           <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/waiting-orders" element={<WaitingOrders />} />
         </Route>
       </Routes>
     </>

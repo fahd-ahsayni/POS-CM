@@ -1,18 +1,21 @@
-import { AppDispatch } from "@/store";
-import { fetchOrders } from "@/store/slices/data/ordersSlice";
-import { Order } from "@/types/getDataByDay";
-import { ArrowDownAZ, ArrowUpAZ, SortDesc } from "lucide-react";
-import React, { useCallback, useMemo, useEffect, memo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { printOrder } from "@/api/services";
+import { PrinterIcon } from "@/assets/figma-icons";
 import {
   TABLE_CONFIG,
   TABLE_MESSAGES,
 } from "@/components/views/orders/config/table-config";
-import { format } from "date-fns";
 import { currency } from "@/preferences";
-import { PrinterIcon } from "@/assets/figma-icons";
-import { printOrder } from "@/api/services";
-
+import { AppDispatch } from "@/store";
+import { fetchOrders } from "@/store/slices/data/ordersSlice";
+import { ArrowDownAZ, ArrowUpAZ, SortDesc } from "lucide-react";
+import React, { memo, useCallback, useEffect, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { handleRowClick } from "../config/waiting-table-config";
+import { useLeftViewContext } from "../../home/left-section/contexts/leftViewContext";
+import { useNavigate } from "react-router-dom";
+import { ORDER_SUMMARY_VIEW } from "../../home/right-section/constants";
+import { useRightViewContext } from "../../home/right-section/contexts/rightViewContext";
 
 export interface Header {
   key: string;
@@ -20,37 +23,43 @@ export interface Header {
   width: string;
   isTextMuted?: boolean;
   isPrice?: boolean;
+  hasPrintButton?: boolean;
 }
 
 interface DataTableProps {
   headers: Header[];
   data: Record<string, any>[];
   caption: string;
+  formatData: (order: any, pos: any) => FormattedData;
+  withPrintButton?: boolean;
+  isWaitingOrders?: boolean;
 }
 
-const formatData = (order: Order) => {
-  const formattedDate = format(
-    new Date(order.createdAt),
-    "dd.MM.yyyy - hh:mm a"
-  );
+interface FormattedData {
+  [key: string]: any;
+  orderId: string;
+  dateTime: string;
+  orderedBy: string;
+  orderType: string;
+  deliveryPerson: string;
+  paymentStatus: string;
+  orderTotal: number;
+  id: string;
+}
 
-  return {
-    orderId: order.ref,
-    dateTime: formattedDate,
-    orderedBy: order.created_by.name,
-    orderType: order.order_type_id.type,
-    deliveryPerson: order.delivery_guy_id || "Not Assigned",
-    paymentStatus: order.status,
-    orderTotal: order.total_amount,
-    id: order._id,
-  };
-};
-
-const DataTable: React.FC<DataTableProps> = ({ headers }) => {
+const DataTable: React.FC<DataTableProps> = ({
+  headers,
+  data,
+  caption,
+  formatData,
+  withPrintButton,
+  isWaitingOrders,
+}) => {
   const dispatch = useDispatch<AppDispatch>();
   const { orders, pageSize, currentPage } = useSelector(
     (state: any) => state.orders
   );
+  const pos = useSelector((state: RootState) => state.pos);
   const [sortConfig, setSortConfig] = React.useState<{
     key: string;
     direction: "ascending" | "descending";
@@ -60,12 +69,17 @@ const DataTable: React.FC<DataTableProps> = ({ headers }) => {
     dispatch(fetchOrders());
   }, [dispatch]);
 
-  const formattedData = useMemo(() => orders.map(formatData), [orders]);
+  const safeData = Array.isArray(data) ? data : [];
+
+  const formattedData = useMemo(
+    () => safeData.map((order) => formatData(order, pos)),
+    [safeData, pos]
+  );
 
   const sortedData = useMemo(() => {
     if (!sortConfig) return formattedData;
 
-    return [...formattedData].sort((a, b) => {
+    return [...formattedData].sort((a: FormattedData, b: FormattedData) => {
       const { key, direction } = sortConfig;
       const comparison = a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0;
       return direction === "ascending" ? comparison : -comparison;
@@ -112,6 +126,7 @@ const DataTable: React.FC<DataTableProps> = ({ headers }) => {
         headers={headers}
         data={paginatedData}
         getStatusTextColor={getStatusTextColor}
+        withPrintButton={withPrintButton}
       />
     </div>
   );
@@ -167,7 +182,8 @@ const TableBody: React.FC<{
   headers: Header[];
   data: any[];
   getStatusTextColor: (status?: string) => string;
-}> = memo(({ headers, data, getStatusTextColor }) => (
+  withPrintButton?: boolean;
+}> = memo(({ headers, data, getStatusTextColor, withPrintButton }) => (
   <div className="w-full">
     {data.map((item, index) => (
       <div
@@ -180,6 +196,8 @@ const TableBody: React.FC<{
             header={header}
             item={item}
             getStatusTextColor={getStatusTextColor}
+            withPrintButton={withPrintButton}
+            isWaitingOrders={true}
           />
         ))}
       </div>
@@ -191,39 +209,61 @@ const TableCell: React.FC<{
   header: Header;
   item: any;
   getStatusTextColor: (status?: string) => string;
-}> = memo(({ header, item, getStatusTextColor }) => (
-  <div
-    className={`px-4 py-3 text-xs flex-shrink-0 ${
-      header.key === "paymentStatus" ? getStatusTextColor(item[header.key]) : ""
-    } ${
-      header.isTextMuted
-        ? "text-neutral-dark-grey"
-        : "dark:text-white text-primary-black"
-    }
+  withPrintButton?: boolean;
+  isWaitingOrders?: boolean;
+}> = memo(
+  ({ header, item, getStatusTextColor, withPrintButton, isWaitingOrders }) => {
+    const { setSelectedProducts } = useLeftViewContext();
+    const { setViews, setCustomerIndex, setSelectedCustomer} = useRightViewContext();
+    const navigate = useNavigate();
+
+    return (
+      <div
+        onClick={() => {
+          if (isWaitingOrders) {
+            handleRowClick(item, setSelectedProducts, setCustomerIndex, setSelectedCustomer);
+            navigate("/");
+            setViews(ORDER_SUMMARY_VIEW);
+          }
+        }}
+        className={`px-4 py-3 text-xs flex-shrink-0 ${
+          header.key === "paymentStatus"
+            ? getStatusTextColor(item[header.key])
+            : ""
+        } ${
+          header.isTextMuted
+            ? "text-neutral-dark-grey"
+            : "dark:text-white text-primary-black"
+        }
     ${header.isPrice ? "text-right" : ""}`}
-    style={{
-      width: header.width,
-      whiteSpace: "nowrap",
-      overflow: "hidden",
-      textOverflow: "ellipsis",
-    }}
-  >
-    {header.isPrice ? (
-      <span className="text-right flex items-center justify-end w-full">
-        {item[header.key].toFixed(currency.toFixed)} Dhs
-        <button
-          className="ml-4"
-          onClick={() => {
-            printOrder(item.id);
-          }}
-        >
-          <PrinterIcon className="dark:!fill-white fill-primary-black w-5 h-5" />
-        </button>
-      </span>
-    ) : (
-      item[header.key]
-    )}
-  </div>
-));
+        style={{
+          width: header.width,
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        }}
+      >
+        {header.isPrice ? (
+          <span className="text-right flex items-center justify-end w-full gap-2">
+            {item[header.key].toFixed(currency.toFixed)} Dhs
+            {withPrintButton && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  printOrder(item.id);
+                }}
+                className="hover:bg-primary-black/5 dark:hover:bg-white/5 p-1 rounded-md mr-2"
+              >
+                <PrinterIcon className="w-5 h-5 fill-white" />
+              </button>
+            )}
+          </span>
+        ) : (
+          item[header.key]
+        )}
+      </div>
+    );
+  }
+);
 
 export default memo(DataTable);

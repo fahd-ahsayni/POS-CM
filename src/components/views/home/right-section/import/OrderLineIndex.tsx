@@ -5,12 +5,13 @@ import { ChevronDown } from "lucide-react";
 import { memo, useMemo } from "react";
 import { useRightViewContext } from "../contexts/rightViewContext";
 import OrderLine from "./OrderLine";
+import { ProductSelected } from "@/types";
 
 interface OrderLineIndexProps {
   customerIndex: number;
-  products: any[];
-  incrementQuantity: (productId: string) => void;
-  decrementQuantity: (productId: string) => void;
+  products: ProductSelected[];
+  incrementQuantity: (product: ProductSelected) => void;
+  decrementQuantity: (product: ProductSelected) => void;
   deleteCustomer: (customerIndex: number) => void;
   isExpanded: boolean;
   onToggle: () => void;
@@ -106,8 +107,8 @@ const OrderLineIndex = ({
             <OrderLine
               key={product.id}
               item={product}
-              increment={() => incrementQuantity(product.id)}
-              decrement={() => decrementQuantity(product.id)}
+              increment={() => incrementQuantity(product)}
+              decrement={() => decrementQuantity(product)}
             />
           ))}
         </div>

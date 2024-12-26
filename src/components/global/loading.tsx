@@ -2,11 +2,19 @@ import { logoLightMode } from "@/assets";
 import { logoDarkMode } from "@/assets";
 import { useTheme } from "@/providers/themeProvider";
 
-export function Loading() {
+export function Loading({
+  color = "text-white",
+  borderWidth = 3,
+  size = 6,
+}: {
+  color?: string;
+  borderWidth?: number;
+  size?: number;
+}) {
   return (
     <div className="flex items-center justify-center w-full h-full">
       <div
-        className="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-primary rounded-full"
+        className={`animate-spin inline-block size-${size} border-[${borderWidth}px] border-current border-t-transparent ${color} rounded-full`}
         role="status"
         aria-label="loading"
       />

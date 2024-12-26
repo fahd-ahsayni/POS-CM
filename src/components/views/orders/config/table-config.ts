@@ -1,9 +1,12 @@
+import { format } from "date-fns";
+
 type Header = {
   key: string;
   label: string;
   width: string;
   isTextMuted: boolean;
   isPrice?: boolean;
+  hasPrintButton?: boolean;
 };
 
 export const TABLE_HEADERS: Header[] = [
@@ -29,6 +32,7 @@ export const TABLE_HEADERS: Header[] = [
     width: "16%",
     isTextMuted: false,
     isPrice: true,
+    hasPrintButton: true,
   },
 ] as const;
 
@@ -55,3 +59,21 @@ export const TABLE_MESSAGES = {
   loading: "Loading orders...",
   error: "Error loading orders",
 } as const;
+
+export const formatData = (order: any) => {
+  const formattedDate = format(
+    new Date(order.createdAt || new Date()),
+    "dd.MM.yyyy - hh:mm a"
+  );
+
+  return {
+    orderId: order.ref,
+    dateTime: formattedDate,
+    orderedBy: order.created_by?.name,
+    orderType: order.order_type_id?.type,
+    deliveryPerson: order.delivery_guy_id || "Not Assigned",
+    paymentStatus: order.status,
+    orderTotal: order.total_amount || 0,
+    id: order._id,
+  };
+};

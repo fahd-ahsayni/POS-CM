@@ -1,4 +1,3 @@
-import { extractProducts } from "@/store/slices/data/generalDataSlice";
 import { Product } from "@/types";
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
@@ -7,6 +6,7 @@ import { useLeftViewContext } from "../contexts/leftViewContext";
 import { useProductSelection } from "../hooks/useProductSelection";
 import { ProductCard, ProductCardSkeleton } from "../Layout/ProductCard";
 import ProductsVariants from "./ProductsVariants";
+import { extractProducts } from "@/functions/extractProducts";
 
 export default function AllProducts() {
   const [data, setData] = useState<Product[]>([]);

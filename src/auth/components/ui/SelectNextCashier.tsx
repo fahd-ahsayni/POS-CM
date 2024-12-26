@@ -8,9 +8,14 @@ import { ChevronDown } from "lucide-react";
 
 const users = JSON.parse(localStorage.getItem("users") || "[]").cashiers;
 
-export default function SelectNextCashier() {
+export default function SelectNextCashier({ 
+  selectedPerson, 
+  setSelectedPerson 
+}: { 
+  selectedPerson: User | null;
+  setSelectedPerson: (user: User | null) => void;
+}) {
   const [query, setQuery] = useState("");
-  const [selectedPerson, setSelectedPerson] = useState<User | null>(users[0]);
 
   const filteredPeople =
     query === ""
@@ -21,7 +26,7 @@ export default function SelectNextCashier() {
 
   return (
     <Combobox
-      className="w-[350px]"
+      className="w-full"
       as="div"
       value={selectedPerson}
       onChange={setSelectedPerson}
@@ -31,9 +36,10 @@ export default function SelectNextCashier() {
       </Label>
       <div className="relative mt-1">
         <ComboboxInput
-          className="w-full h-[38px] rounded-md focus:border focus:border-primary-black/5 dark:focus:border-white/5 bg-primary-black/5 dark:bg-white/5 py-1 pl-3 pr-10 shadow-sm focus:outline-none sm:text-xs"
+          className="w-full h-[38px] placeholder:text-muted-foreground/70 rounded-md focus:border focus:border-primary-black/5 dark:focus:border-white/5 bg-primary-black/5 dark:bg-white/5 py-1 pl-3 pr-10 shadow-sm focus:outline-none text-[.8rem]"
           onChange={(event) => setQuery(event.target.value)}
           displayValue={(user: User) => user?.name}
+          placeholder="Select the cashier who will take over"
         />
         <ComboboxButton className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
           <ChevronDown

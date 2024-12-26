@@ -2,6 +2,8 @@ import { Product, ProductSelected } from "@/types";
 import { useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { ON_PLACE_VIEW } from "../../right-section/constants";
+import { toast } from "react-toastify";
+import { createToast } from "@/components/global/Toasters";
 
 interface UseProductSelectionProps {
   selectedProducts: ProductSelected[];
@@ -16,15 +18,17 @@ export const useProductSelection = ({
   selectedCustomer,
   orderType,
 }: UseProductSelectionProps) => {
-
-  
   const addOrUpdateProduct = useCallback(
     (product: Product, variantId: string, price?: number) => {
-      setSelectedProducts((prevSelected) => {
+      setSelectedProducts((prevSelected: any[]) => {
         const variant = product.variants.find((v) => v._id === variantId);
         if (!variant) {
-          console.warn(
-            `Variant ${variantId} not found for product ${product._id}`
+          toast.warning(
+            createToast(
+              "Variant not found",
+              "Choose another variant",
+              "warning"
+            )
           );
           return prevSelected;
         }

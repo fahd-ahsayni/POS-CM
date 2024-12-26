@@ -22,6 +22,9 @@ import { pageAnimations } from "./animation";
 import PosCard from "./components/PosCard";
 import UserCard from "./components/ui/UserCard";
 import OpenShift from "./OpenShift";
+import { toast } from "react-toastify";
+import { createToast } from "@/components/global/Toasters";
+import { logout } from "@/store/slices/authentication/authSlice";
 
 export default function SelectPosPage() {
   const navigate = useNavigate();
@@ -46,13 +49,35 @@ export default function SelectPosPage() {
 
   const handleChoisePos = (id: string) => {
     localStorage.setItem("posId", id);
-    if (id && data.pos) {
-      const findPos = data.pos.find((pos) => pos._id === id);
-      if (findPos && findPos.shift !== null) {
-        navigate("/");
-      } else {
-        setOpen(true);
-      }
+
+    const findPos = data.pos?.find((pos) => pos._id === id);
+    if (!findPos) return;
+
+    const isAuthorizedUser =
+      findPos.shift?.user_id._id === userAuthenticated?.id ||
+      userAuthenticated?.position === "Manager";
+
+    if (isAuthorizedUser) {
+      toast.success(
+        createToast(
+          "Welcome back",
+          "You are authorized to use this POS",
+          "success"
+        )
+      );
+      navigate("/");
+    } else {
+      toast.error(
+        createToast(
+          "Unauthorized",
+          "You are not authorized to use this POS",
+          "error"
+        )
+      );
+    }
+
+    if (findPos.shift === null) {
+      setOpen(true);
     }
   };
 
@@ -65,6 +90,10 @@ export default function SelectPosPage() {
   useEffect(() => {
     dispatch(fetchPosData());
   }, [dispatch]);
+
+  const handleChangeAccount = () => {
+    dispatch(logout());
+  };
 
   if (loading) return <LoadingFullScreen />;
   if (error) return <div>Error: {error}</div>;
@@ -95,7 +124,7 @@ export default function SelectPosPage() {
             )}
           </motion.div>
           <div className="mt-4">
-            <Button to="/login">Change Account</Button>
+            <Button onClick={handleChangeAccount}>Change Account</Button>
           </div>
         </div>
       </aside>

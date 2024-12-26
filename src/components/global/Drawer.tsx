@@ -42,7 +42,7 @@ export default function Drawer({
         }}
       >
         <div className="fixed inset-0" />
-        <div className="fixed inset-0 overflow-hidden transform-gpu backdrop-blur-[2px] bg-background/60">
+        <div className="fixed inset-0 overflow-hidden transform-gpu bg-primary-black/70">
           <div className="absolute inset-0 overflow-hidden">
             <div className={`pointer-events-none fixed inset-y-0 ${position}-0 flex max-w-full ${position === 'left' ? 'pr-10' : 'pl-10'}`}>
               <TransitionChild
@@ -58,7 +58,7 @@ export default function Drawer({
                   className={cn("pointer-events-auto w-screen", classNames)}
                 >
                   <div className="flex h-full flex-col overflow-y-scroll dark:bg-secondary-black bg-secondary-white py-6 shadow-xl">
-                    <div className="px-4 sm:px-6">
+                    <div className="">
                       <div className="flex items-start justify-between px-4 sm:px-6">
                         <DialogTitle className="text-lg font-medium">
                           {title}

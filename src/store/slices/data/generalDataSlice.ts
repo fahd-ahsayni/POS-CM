@@ -1,4 +1,5 @@
 // Import required modules
+import { extractProducts } from "@/functions/extractProducts";
 import { Category, GeneralData, GeneralDataState, Product } from "@/types";
 import {
   createAsyncThunk,
@@ -113,33 +114,6 @@ const generalDataSlice = createSlice({
       );
   },
 });
-
-// Recursive function to extract and sort all products
-const extractProducts = (categories: Category[]): Product[] => {
-  let allProducts: Product[] = [];
-
-  categories.forEach((category) => {
-    if (category.products) {
-      // Add logic to calculate the minimal price of variants
-      const productsWithPrice = category.products.map((product) => {
-        const minPrice = product.variants
-          ? Math.min(...product.variants.map((variant) => variant.price_ttc))
-          : 0;
-        return { ...product, price: minPrice };
-      });
-      allProducts = allProducts.concat(productsWithPrice);
-    }
-    if (category.children && category.children.length > 0) {
-      allProducts = allProducts.concat(extractProducts(category.children));
-    }
-  });
-
-  // Sort products by the sequence field
-  return allProducts.sort((a, b) => (a.sequence || 0) - (b.sequence || 0));
-};
-
-// Export extractProducts
-export { extractProducts };
 
 // Add this before the existing selectAllProducts
 const selectGeneralData = (state: { generalData: GeneralDataState }) =>

@@ -1,10 +1,8 @@
 // src/store/slices/auth/authSlice.ts
+import { login as loginService, loginWithRfid as loginWithRfidService } from "@/api/services";
 import { User } from "@/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-
-const VITE_LOGIN_URL = import.meta.env.VITE_LOGIN_URL;
-const VITE_API_KEY = import.meta.env.VITE_API_KEY;
 
 interface AuthState {
   user: User | null;
@@ -36,21 +34,9 @@ export const login = createAsyncThunk<LoginResponse, LoginCredentials>(
   "auth/login",
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/auth/login`,
-        {
-          id: credentials._id,
-          password: credentials.password,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Api-Key ${VITE_API_KEY}`,
-          },
-        }
-      );
-      console.log("Login API Response:", response.data);
-      return response.data;
+      const response = await loginService(credentials._id, credentials.password);
+      console.log("Login API Response:", response);
+      return response;
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
         const message = error.response?.data?.message || error.message;
@@ -68,6 +54,24 @@ export const logout = createAsyncThunk(
     localStorage.removeItem("token");
     delete axios.defaults.headers.common["Authorization"];
     return;
+  }
+);
+
+export const loginWithRfid = createAsyncThunk<LoginResponse, string>(
+  "auth/loginWithRfid",
+  async (rfid, { rejectWithValue }) => {
+    try {
+      const response = await loginWithRfidService(rfid);
+      console.log("RFID Login API Response:", response);
+      return response;
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || error.message;
+        console.error("RFID Login API Error:", message);
+        return rejectWithValue(message);
+      }
+      return rejectWithValue("An unexpected error occurred");
+    }
   }
 );
 
@@ -109,6 +113,24 @@ const authSlice = createSlice({
         state.token = null;
         state.isAuthenticated = false;
         state.error = null;
+      })
+      .addCase(loginWithRfid.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loginWithRfid.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        localStorage.setItem("token", action.payload.token);
+        localStorage.setItem("user", JSON.stringify(action.payload.user));
+        state.isAuthenticated = true;
+        state.error = null;
+      })
+      .addCase(loginWithRfid.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+        state.isAuthenticated = false;
       });
   },
 });

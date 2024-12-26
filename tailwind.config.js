@@ -32,6 +32,10 @@ module.exports = {
         "accent-black-row": "#1E1E1E4D",
         "interactive-dark-red": "#960101",
         "interactive-vivid-red": "#CE0303",
+        "warning-color": "#F79009",
+        "success-color": "#0FB420",
+        "error-color": "#F04438",
+        "info-color": "#007BFF",
         red: {
           50: "#FFDCDC",
           100: "#FFC8C8",

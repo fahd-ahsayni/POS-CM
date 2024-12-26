@@ -1,12 +1,85 @@
 import { logoLightMode } from "@/assets";
 import { RiRfidFill } from "react-icons/ri";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import SegmentedControl from "./SegmentedControl";
 import SelectUserSlide from "./SelectUserSlide";
 import ShineBorder from "@/components/ui/shine-border";
+import { useDispatch, useSelector } from "react-redux";
+import { loginWithRfid } from "@/store/slices/authentication/authSlice";
+import type { AppDispatch, RootState } from "@/store";
+import { useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 export default function SelectUser() {
   const [activeTab, setActiveTab] = useState("cashiers");
+  const [rfidInput, setRfidInput] = useState("");
+  const [isScanning, setIsScanning] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
+  // Get loading and error states from Redux
+  const { loading, error } = useSelector((state: RootState) => state.auth);
+
+  // Reset RFID input buffer
+  const resetRfidBuffer = useCallback(() => {
+    setRfidInput("");
+    setIsScanning(false);
+  }, []);
+
+  // Handle successful RFID scan
+  const handleRfidSubmit = useCallback(
+    async (rfid: string) => {
+      if (rfid.length < 8) {
+        // Adjust minimum length based on your RFID format
+        console.error("Invalid RFID length");
+        resetRfidBuffer();
+        return;
+      }
+
+      try {
+        setIsScanning(true);
+        const result = await dispatch(loginWithRfid(rfid)).unwrap();
+        if (result) {
+          navigate("/select-pos");
+        }
+      } catch (err) {
+        console.error("RFID login failed:", err);
+      } finally {
+        resetRfidBuffer();
+      }
+    },
+    [dispatch, navigate, resetRfidBuffer]
+  );
+
+  useEffect(() => {
+    let rfidTimeout: NodeJS.Timeout;
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Only accept numeric and alphanumeric input
+      if (/^[a-zA-Z0-9]$/.test(e.key)) {
+        setIsScanning(true);
+        setRfidInput((prev) => prev + e.key);
+
+        // Reset timeout on each keypress
+        clearTimeout(rfidTimeout);
+        rfidTimeout = setTimeout(() => {
+          resetRfidBuffer();
+        }, 1000); // Timeout after 1 second of no input
+      }
+
+      if (e.key === "Enter" && rfidInput) {
+        clearTimeout(rfidTimeout);
+        handleRfidSubmit(rfidInput);
+      }
+    };
+
+    window.addEventListener("keypress", handleKeyPress);
+
+    return () => {
+      window.removeEventListener("keypress", handleKeyPress);
+      clearTimeout(rfidTimeout);
+    };
+  }, [rfidInput, handleRfidSubmit, resetRfidBuffer]);
 
   return (
     <div className="relative w-1/2 bg-secondary-white hidden flex-1 lg:flex flex-col">
@@ -33,14 +106,27 @@ export default function SelectUser() {
           <SelectUserSlide userType={activeTab} />
           <div className="flex justify-center items-center mt-6">
             <ShineBorder
-              className="flex justify-center items-center gap-4 py-3 px-8"
+              className={cn(
+                "flex justify-center items-center gap-4 py-3 px-8",
+                loading && "opacity-50"
+              )}
               color="#fff"
               borderWidth={2}
             >
-              <RiRfidFill size={20} className="text-white" />
-              Scan your badge
+              <RiRfidFill
+                size={20}
+                className={cn("text-white", isScanning && "animate-pulse")}
+              />
+              {loading
+                ? "Authenticating..."
+                : isScanning
+                ? "Reading card..."
+                : "Scan your badge"}
             </ShineBorder>
           </div>
+          {error && (
+            <p className="text-red-500 text-sm text-center mt-2">{error}</p>
+          )}
         </div>
       </div>
     </div>
