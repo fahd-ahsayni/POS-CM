@@ -10,6 +10,7 @@ interface Order {
   deliveryPerson: string;
   paymentStatus: string;
   orderTotal: number;
+  status: string;
 }
 
 interface OrdersState {

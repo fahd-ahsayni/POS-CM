@@ -69,7 +69,7 @@ export function ProductCard({
             {product.name.toLowerCase()}
           </TypographyP>
           <div className="flex items-center justify-between w-full">
-            <TypographyP className="text-sm font-semibold text-[#AAAAAA]">
+            <TypographyP className="text-sm font-medium text-neutral-dark-grey">
               {product.price ? product.price : product.variants[0].price_ttc}{" "}
               {currency.symbol}
             </TypographyP>

@@ -9,6 +9,7 @@ import {
 import { X } from "lucide-react";
 import { Fragment, ReactNode } from "react";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 
 interface DrawerProps {
   children: ReactNode;
@@ -33,7 +34,6 @@ export default function Drawer({
         as="div" 
         className="relative z-10" 
         onClose={(value) => {
-          // Prevent closing when clicking inside the keyboard
           const target = event?.target as HTMLElement;
           if (target?.closest('[data-keyboard="true"]')) {
             return;
@@ -57,8 +57,15 @@ export default function Drawer({
                 <DialogPanel
                   className={cn("pointer-events-auto w-screen", classNames)}
                 >
-                  <div className="flex h-full flex-col overflow-y-scroll dark:bg-secondary-black bg-secondary-white py-4 shadow-xl">
-                    <div className="">
+                  <motion.div 
+                    layout
+                    transition={{
+                      layout: { duration: 0.3, ease: "easeInOut" },
+                      width: { duration: 0.3, ease: "easeInOut" }
+                    }}
+                    className="flex h-full flex-col overflow-y-scroll dark:bg-secondary-black bg-secondary-white py-4 shadow-xl"
+                  >
+                    <motion.div layout className="">
                       <div className="flex items-start justify-between px-4 sm:px-6">
                         <DialogTitle className="text-lg font-medium">
                           {title}
@@ -75,11 +82,17 @@ export default function Drawer({
                           </Button>
                         </div>
                       </div>
-                    </div>
-                    <div className="relative mt-6 flex-1 px-4 sm:px-6 bg-blue overflow-y-auto">
+                    </motion.div>
+                    <motion.div 
+                      layout
+                      transition={{
+                        layout: { duration: 0.3, ease: "easeInOut" }
+                      }}
+                      className="relative mt-6 flex-1 px-4 sm:px-6 overflow-y-auto"
+                    >
                       {children}
-                    </div>
-                  </div>
+                    </motion.div>
+                  </motion.div>
                 </DialogPanel>
               </TransitionChild>
             </div>

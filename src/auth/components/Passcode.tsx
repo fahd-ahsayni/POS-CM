@@ -74,33 +74,24 @@ export default function Passcode() {
       return;
     }
 
-    try {
-      const result = await dispatch(
-        login({
-          _id: selectedUser._id.toString(),
-          password: passcode,
-        })
-      ).unwrap();
+    const result = await dispatch(
+      login({
+        _id: selectedUser._id.toString(),
+        password: passcode,
+      })
+    ).unwrap();
 
-      if (result) {
-        toast.success(
-          createToast(
-            "Login Successful",
-            "You have successfully logged in.",
-            "success"
-          )
-        );
-        navigate("/select-pos");
-        dispatch(setSelectedUser(users.cashiers[0]));
-      }
-    } catch (error) {
-      toast.error(
+    if (result) {
+      toast.success(
         createToast(
-          "Authentication Failed",
-          "Invalid passcode. Please try again.",
-          "error"
+          "Login Successful",
+          "You have successfully logged in.",
+          "success"
         )
       );
+      navigate("/select-pos");
+      dispatch(setSelectedUser(users.cashiers[0]));
+
       setIncorrectPasscode(true);
     }
   }, [selectedUser, passcode, dispatch, navigate, users.cashiers]);
@@ -140,7 +131,7 @@ export default function Passcode() {
         <div className="mt-10">
           <Button onClick={handleLogin} className="w-full">
             {loading ? (
-              <Loading color="bg-white" borderWidth={3} size={5} />
+              <Loading color="text-white" borderWidth={3} size={5} />
             ) : (
               "Log In"
             )}

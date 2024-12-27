@@ -8,6 +8,7 @@ import { ALL_CATEGORIES_VIEW } from "@/components/views/home/left-section/consta
 import { TYPE_OF_ORDER_VIEW } from "@/components/views/home/right-section/constants";
 import { createToast } from "@/components/global/Toasters";
 import { currency } from "@/preferences";
+import { createOrder } from "@/api/services";
 
 /**
  * Represents a payment method with its properties
@@ -67,16 +68,26 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
       const remainingAmount = getRemainingAmount();
       const currentTotalPaid = getTotalPaidAmount();
 
-      const newPayment = {
-        ...method,
-        _id: `${method._id}_${Date.now()}`,
-        originalId: method._id,
-        amount: initialAmount ? parseFloat(initialAmount) : remainingAmount,
-      };
+      if (currentTotalPaid < order.total_amount) {
+        const newPayment = {
+          ...method,
+          _id: `${method._id}_${Date.now()}`,
+          originalId: method._id,
+          amount: initialAmount ? parseFloat(initialAmount) : remainingAmount,
+        };
 
-      setSelectedPayments((prev) => [...prev, newPayment]);
-      setActivePaymentIndex((prev) => prev + 1);
-      setCurrentAmount(initialAmount || remainingAmount.toString());
+        setSelectedPayments((prev) => [...prev, newPayment]);
+        setActivePaymentIndex((prev) => prev + 1);
+        setCurrentAmount(initialAmount || remainingAmount.toString());
+      } else {
+        toast.info(
+          createToast(
+            "Payment completed",
+            "You have already paid the full amount",
+            "info"
+          )
+        );
+      }
     },
     [getRemainingAmount, getTotalPaidAmount, order.total_amount]
   );
@@ -198,6 +209,7 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
 
   const handleComplete = useCallback(async () => {
     setIsProcessing(true);
+    createOrder(order);
     try {
       console.log("=== Payment Summary ===");
       console.log("Selected Payments:", selectedPayments);

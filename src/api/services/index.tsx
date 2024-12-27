@@ -111,3 +111,8 @@ export const printOrder = async (orderId: string) => {
     return null;
   }
 };
+
+export const closeShift = async (data: any) => {
+  return api.post("/shift/close", data);
+};
+

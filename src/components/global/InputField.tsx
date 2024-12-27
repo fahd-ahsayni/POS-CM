@@ -16,9 +16,12 @@ interface InputConfig {
   startIcon?: React.ReactNode;
   isPasswordToggleable?: boolean;
   optionalText?: string;
-  value?: string | number;
-  setValue?: (value: string | number) => void;
+  value?: string | number | null;
+  setValue?: (value: string | number | null) => void;
   suffix?: ReactNode | string;
+  isFocused?: boolean;
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
 const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
@@ -40,6 +43,9 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
     value,
     setValue,
     suffix,
+    isFocused = false,
+    onFocus,
+    onBlur,
   } = config;
 
   const [isVisible, setIsVisible] = useState<boolean>(false);
@@ -56,7 +62,7 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
   return (
     <div className={cn("space-y-1", className)}>
       <div className="flex items-center justify-between gap-x-1">
-        <Label className="leading-3 pl-3">
+        <Label className="pl-2">
           {label}
           {required && <span className="text-destructive">*</span>}
         </Label>
@@ -73,15 +79,15 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
         )}
 
         <Input
-          className={`w-full ${
-            hasError ? "!ring-[1.25px] !ring-primary-red" : ""
-          } ${startIcon ? "ps-9" : ""} ${suffix ? "pe-9" : ""} ${
-            isPasswordToggleable ? "pe-9" : ""
-          } ${
-            type === "number"
-              ? "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              : ""
-          }`}
+          className={cn(
+            "w-full",
+            hasError && "!ring-[1.25px] !ring-primary-red",
+            startIcon && "ps-9",
+            suffix && "pe-9",
+            isPasswordToggleable && "pe-9",
+            type === "number" && "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+            isFocused && "!ring-1 !ring-primary-black/60 dark:!ring-white/60 !ring-offset-0",
+          )}
           type={getInputType()}
           placeholder={placeholder}
           required={required}
@@ -90,16 +96,18 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
           aria-describedby={
             helperText || errorMessage ? `description` : undefined
           }
-          value={value}
+          value={value ?? ""}
           onChange={(e) =>
             setValue?.(
               type === "number" ? Number(e.target.value) : e.target.value
             )
           }
+          onFocus={onFocus}
+          onBlur={onBlur}
         />
 
         {suffix && (
-          <span className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-sm text-white">
+          <span className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-[0.8rem] font-medium dark:text-white text-primary-black">
             {suffix}
           </span>
         )}

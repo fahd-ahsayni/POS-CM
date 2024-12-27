@@ -35,12 +35,10 @@ export const login = createAsyncThunk<LoginResponse, LoginCredentials>(
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await loginService(credentials._id, credentials.password);
-      console.log("Login API Response:", response);
       return response;
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
         const message = error.response?.data?.message || error.message;
-        console.error("Login API Error:", message);
         return rejectWithValue(message);
       }
       return rejectWithValue("An unexpected error occurred");

@@ -11,6 +11,7 @@ import { LucideMaximize } from "lucide-react";
 export default function Navbar() {
   const theme = useTheme();
 
+
   const handleFullScreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();

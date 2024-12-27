@@ -84,7 +84,7 @@ const OrderLine = ({ item, increment, decrement }: OrderLineProps) => {
             </Button>
           </div>
         </div>
-        <TypographyP className="text-xs font-medium">
+        <TypographyP className="text-[0.8rem] font-medium text-neutral-dark-grey">
           {item.price} Dhs
         </TypographyP>
       </div>

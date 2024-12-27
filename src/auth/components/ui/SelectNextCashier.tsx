@@ -1,17 +1,24 @@
-import { useState } from "react";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions, Button, Input, Label } from "@headlessui/react";
-import { cn } from "@/lib/utils";
 import { unknownUser } from "@/assets";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 import { User } from "@/types";
+import {
+  Combobox,
+  ComboboxButton,
+  ComboboxInput,
+  ComboboxOption,
+  ComboboxOptions,
+} from "@headlessui/react";
+import { CheckIcon } from "@heroicons/react/20/solid";
 import { ChevronDown } from "lucide-react";
+import { useState } from "react";
 
 const users = JSON.parse(localStorage.getItem("users") || "[]").cashiers;
 
-export default function SelectNextCashier({ 
-  selectedPerson, 
-  setSelectedPerson 
-}: { 
+export default function SelectNextCashier({
+  selectedPerson,
+  setSelectedPerson,
+}: {
   selectedPerson: User | null;
   setSelectedPerson: (user: User | null) => void;
 }) {
@@ -31,12 +38,10 @@ export default function SelectNextCashier({
       value={selectedPerson}
       onChange={setSelectedPerson}
     >
-      <Label className="block pl-2 text-xs leading-3 font-medium tex-primary-black dark:text-white pb-0.5">
-        Assigned to
-      </Label>
+      <Label className="pl-2">Assigned to</Label>
       <div className="relative mt-1">
         <ComboboxInput
-          className="w-full h-[38px] placeholder:text-muted-foreground/70 rounded-md focus:border focus:border-primary-black/5 dark:focus:border-white/5 bg-primary-black/5 dark:bg-white/5 py-1 pl-3 pr-10 shadow-sm focus:outline-none text-[.8rem]"
+          className="w-full h-[38px] placeholder:text-muted-foreground/70 rounded-md focus:ring-1 focus:ring-primary-black/10 dark:focus:ring-white/10 bg-primary-black/5 dark:bg-white/5 py-1 pl-3 pr-10 shadow-sm focus:outline-none text-[.8rem]"
           onChange={(event) => setQuery(event.target.value)}
           displayValue={(user: User) => user?.name}
           placeholder="Select the cashier who will take over"

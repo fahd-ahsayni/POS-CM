@@ -13,7 +13,7 @@ import Header from "./components/Header";
 import { Loading } from "@/components/global/loading";
 import { FilterCriteria } from "@/types";
 
-interface OrdersState {
+export interface OrdersState {
   orders: any[];
   status: "idle" | "loading" | "succeeded" | "failed";
 }
@@ -41,11 +41,7 @@ export default function OrdersPage() {
     setFilterCriteria(filters);
   };
 
-  useEffect(() => {
-    if (orderStatus === "idle") {
-      dispatch(fetchOrders());
-    }
-  }, [orderStatus, dispatch]);
+  
 
   return (
     <motion.div

@@ -126,7 +126,7 @@ export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
         <Separator orientation="vertical" className="h-[90%]" />
 
         <div className="w-7/12 h-full pl-2 flex flex-col justify-between gap-6">
-          <div className="w-full flex flex-col items-start justify-center h-[65%]">
+          <div className="w-full flex flex-col items-start justify-center h-[70%]">
             <div className="flex flex-col w-full items-center justify-center">
               <TypographySmall className="dark:text-white/50 text-primary-black/50 mb-0.5 text-xs">
                 Total
@@ -139,7 +139,7 @@ export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
               </TypographyP>
             </div>
 
-            <div className="w-full flex items-center justify-center mt-4 gap-4">
+            <div className="w-full flex items-center justify-center mt-6 gap-x-8">
               <div className="flex items-start justify-center">
                 <NumberPad
                   onNumberClick={(value) => {
@@ -183,10 +183,11 @@ export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
                         handleQuickAmount(amount); // Normal quick amount handling
                       }
                     }}
-                    className="transition-transform hover:scale-105 disabled:opacity-50"
+                    className="transition-transform hover:scale-[0.98] duration-200 disabled:opacity-50 flex items-center justify-center h-full"
                   >
                     <img
                       src={image}
+                      className="h-[2.75rem] w-auto"
                       alt={`Add ${amount} ${currency.symbol}`}
                       title={`Add ${amount} ${currency.symbol}`}
                     />
@@ -196,7 +197,7 @@ export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
             </div>
           </div>
 
-          <div className="h-[35%] overflow-y-auto flex flex-col items-center justify-center mt-4">
+          <div className="h-[30%] overflow-y-auto flex flex-col items-center justify-center mt-4">
             {selectedPayments.length > 0 ? (
               <AnimatePresence>
                 <Swiper

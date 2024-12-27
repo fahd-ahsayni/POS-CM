@@ -9,6 +9,7 @@ import { loginWithRfid } from "@/store/slices/authentication/authSlice";
 import type { AppDispatch, RootState } from "@/store";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import Tilt from "react-parallax-tilt";
 
 export default function SelectUser() {
   const [activeTab, setActiveTab] = useState("cashiers");
@@ -105,28 +106,32 @@ export default function SelectUser() {
         <div className="mt-20">
           <SelectUserSlide userType={activeTab} />
           <div className="flex justify-center items-center mt-6">
-            <ShineBorder
-              className={cn(
-                "flex justify-center items-center gap-4 py-3 px-8",
-                loading && "opacity-50"
-              )}
-              color="#fff"
-              borderWidth={2}
+            <Tilt
+              tiltMaxAngleX={10}
+              tiltMaxAngleY={10}
+              perspective={1000}
+              transitionSpeed={2000}
             >
-              <RiRfidFill
-                size={20}
-                className={cn("text-white", isScanning && "animate-pulse")}
-              />
-              {loading
-                ? "Authenticating..."
-                : isScanning
-                ? "Reading card..."
-                : "Scan your badge"}
-            </ShineBorder>
+              <ShineBorder
+                className={cn(
+                  "flex cursor-pointer justify-center items-center gap-4 py-3 px-8",
+                  loading && "opacity-50"
+                )}
+                color="#fff"
+                borderWidth={2}
+              >
+                <RiRfidFill
+                  size={20}
+                  className={cn("text-white", isScanning && "animate-pulse")}
+                />
+                {loading
+                  ? "Authenticating..."
+                  : isScanning
+                  ? "Reading card..."
+                  : "Scan your badge"}
+              </ShineBorder>
+            </Tilt>
           </div>
-          {error && (
-            <p className="text-red-500 text-sm text-center mt-2">{error}</p>
-          )}
         </div>
       </div>
     </div>

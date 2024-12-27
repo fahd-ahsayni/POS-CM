@@ -1,83 +1,41 @@
+import { CashWithCoinsIcon } from "@/assets/figma-icons";
 import Drawer from "@/components/global/Drawer";
 import InputComponent from "@/components/global/InputField";
-import Keyboard from "@/components/global/keyboard/Keyboard";
 import { KeyboardProvider } from "@/components/global/keyboard/context/KeyboardContext";
 import { Button } from "@/components/ui/button";
 import { TypographyP } from "@/components/ui/typography";
-import { useState } from "react";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import { CurrencyQuantityData } from "./constants";
+import { useCloseShift } from "./hooks/useCloseShift";
 import SelectNextCashier from "./components/ui/SelectNextCashier";
-import {
-  Dhs1,
-  Dhs10,
-  Dhs100,
-  Dhs2,
-  Dhs20,
-  Dhs200,
-  Dhs5,
-  Dhs50,
-} from "@/assets/Dhs";
-import { RiInputField } from "react-icons/ri";
-import { User } from "@/types";
+import { motion } from "framer-motion";
 
-type Denomination = {
-  image: string;
-  value: number;
-  placeholder: string;
-};
-
-const DENOMINATIONS: Denomination[] = [
-  { image: Dhs200, value: 200, placeholder: "Quantity of 200 MAD" },
-  { image: Dhs10, value: 10, placeholder: "Quantity of 10 MAD" },
-  { image: Dhs100, value: 100, placeholder: "Quantity of 100 MAD" },
-  { image: Dhs5, value: 5, placeholder: "Quantity of 5 MAD" },
-  { image: Dhs50, value: 50, placeholder: "Quantity of 50 MAD" },
-  { image: Dhs2, value: 2, placeholder: "Quantity of 2 MAD" },
-  { image: Dhs20, value: 20, placeholder: "Quantity of 20 MAD" },
-  { image: Dhs1, value: 1, placeholder: "Quantity of 1 MAD" },
-];
-
-export default function CloseShift({
-  open,
-  setOpen,
-}: {
+interface CloseShiftProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-}) {
-  const [selectedCashier, setSelectedCashier] = useState<User | null>(null);
-  const [cashAmounts, setCashAmounts] = useState<{ [key: number]: number }>({});
-  const [cardAmount, setCardAmount] = useState<number>(0);
-  const [chequeAmount, setChequeAmount] = useState<number>(0);
+}
 
-  const handleCloseShift = () => {
-    // Calculate total cash amount
-    const totalCash = Object.entries(cashAmounts).reduce(
-      (sum, [denom, qty]) => {
-        return sum + Number(denom) * Number(qty);
-      },
-      0
-    );
-
-    const data = {
-      next_cashier: selectedCashier?._id,
-      shift_id: "generated_shift_id", // You'll need to get this from your system
-      closing_amounts: [
-        {
-          cm_payment_method: "especes",
-          cashier_amount: totalCash,
-        },
-        {
-          cm_payment_method: "cheque",
-          cashier_amount: chequeAmount,
-        },
-        {
-          cm_payment_method: "carte",
-          cashier_amount: cardAmount,
-        },
-      ],
-    };
-
-    console.log(data);
-  };
+export default function CloseShift({ open, setOpen }: CloseShiftProps) {
+  const {
+    selectedCashier,
+    setSelectedCashier,
+    paymentAmounts,
+    requiredNextCashier,
+    openCurrencyQuantity,
+    setOpenCurrencyQuantity,
+    currencyQuantities,
+    focusedDenomination,
+    focusedMethod,
+    setFocusedMethod,
+    paymentMethods,
+    handleAmountChange,
+    handleCurrencyQuantityChange,
+    handleCurrencyIconClick,
+    handleCloseShift,
+    handleReset,
+    handleValidate,
+  } = useCloseShift();
 
   return (
     <KeyboardProvider>
@@ -85,89 +43,141 @@ export default function CloseShift({
         open={open}
         setOpen={setOpen}
         title="End Shift"
-        classNames="max-w-2xl"
+        classNames={cn(
+          "transition-all duration-300",
+          openCurrencyQuantity ? "max-w-[800px]" : "max-w-[500px]"
+        )}
       >
-        <div className="flex flex-col gap-8 h-full px-4 sm:px-6 pt-6">
-          <div className="space-y-6">
-            <TypographyP className="text-sm max-w-lg">
-              Count your cash and enter totals for each denomination, then
-              continue to add other payment methods.
-            </TypographyP>
+        <div className="h-full overflow-hidden w-full relative">
+          <TypographyP className="text-[0.8rem] max-w-lg">
+            Count your cash and enter totals for each denomination, then
+            continue to add other payment methods.
+          </TypographyP>
+          <div className="flex h-full mt-8">
+            <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+              <div className="relative z-0 flex flex-1 overflow-hidden space-x-8">
+                <main className="relative z-0 flex-1 overflow-y-auto focus:outline-none">
+                  {/* Start main area*/}
+                  <div className="absolute inset-0">
+                    <div
+                      className={cn(
+                        "flex flex-col h-full justify-between",
+                        openCurrencyQuantity ? "pr-6" : ""
+                      )}
+                    >
+                      <div className="space-y-6 h-full relative px-1">
+                        {requiredNextCashier && (
+                          <SelectNextCashier
+                            selectedPerson={selectedCashier}
+                            setSelectedPerson={setSelectedCashier}
+                          />
+                        )}
 
-            <div className="flex gap-x-4 items-center">
-              <SelectNextCashier
-                selectedPerson={selectedCashier}
-                setSelectedPerson={setSelectedCashier}
-              />
-              <InputComponent
-                config={{
-                  label: "Cash total amount",
-                  suffix: "MAD",
-                  type: "number",
-                  placeholder: "Enter cash total amount",
-                }}
-                className="w-[380px]"
-              />
+                        {paymentMethods.map((method) => (
+                          <div
+                            key={method._id}
+                            className="w-full flex items-center justify-between space-x-2"
+                          >
+                            <InputComponent
+                              config={{
+                                label: `${method.name} total amount`,
+                                suffix: "MAD",
+                                type: "number",
+                                placeholder: `Enter ${method.name.toLowerCase()} total amount`,
+                                value: paymentAmounts[method._id] || "",
+                                setValue: (value: string | number | null) =>
+                                  handleAmountChange(
+                                    method._id,
+                                    value?.toString() || ""
+                                  ),
+                                isFocused: focusedMethod === method._id,
+                                onFocus: () => setFocusedMethod(method._id),
+                                onBlur: () => setFocusedMethod(null),
+                              }}
+                              className={method.is_cash ? "w-[90%]" : "w-full"}
+                            />
+                            {method.is_cash && (
+                              <div className="w-[10%] mt-6 flex items-center justify-end">
+                                <Button
+                                  variant="link"
+                                  className="w-full"
+                                  onClick={handleCurrencyIconClick}
+                                >
+                                  <CashWithCoinsIcon className="w-auto h-6 dark:fill-white fill-primary-black" />
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                        <div className="absolute bottom-20 left-0 w-full">
+                          <Button className="w-full" onClick={handleCloseShift}>
+                            End Shift
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* End main area */}
+                </main>
+                {openCurrencyQuantity && (
+                  <>
+                    <Separator orientation="vertical" />
+                    <motion.aside
+                      initial={{ x: 30, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                      className="relative w-72 flex-shrink-0 overflow-y-auto xl:flex xl:flex-col"
+                    >
+                      {/* Start secondary column (hidden on smaller screens) */}
+                      <div className="absolute inset-0 h-full space-y-4">
+                        {CurrencyQuantityData.map((item) => (
+                          <div
+                            key={item.value}
+                            className="flex items-center justify-between space-x-2"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <div className="w-20 h-12 flex items-center justify-center">
+                                <img
+                                  src={item.img}
+                                  alt={item.placeholder}
+                                  className={item.className}
+                                />
+                              </div>
+                              <InputComponent
+                                config={{
+                                  placeholder: item.placeholder,
+                                  type: "number",
+                                  value: currencyQuantities[item.value] || "",
+                                  setValue: (value) =>
+                                    handleCurrencyQuantityChange(
+                                      item.value,
+                                      value
+                                    ),
+                                }}
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="absolute bottom-[4.12rem] left-0 w-full p-4 flex items-center space-x-4 dark:bg-secondary-black bg-secondary-white">
+                        <Button
+                          variant="secondary"
+                          className="w-full"
+                          onClick={handleReset}
+                        >
+                          Reset
+                        </Button>
+                        <Button className="w-full" onClick={handleValidate}>
+                          Validate
+                        </Button>
+                      </div>
+                    </motion.aside>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-
-          <div className="grid grid-cols-2 gap-8">
-            {DENOMINATIONS.map((denom, index) => (
-              <div key={denom.value} className="flex gap-4 items-center">
-                <img
-                  src={denom.image}
-                  alt={`${denom.value} MAD`}
-                  className="h-10 w-auto"
-                />
-                <InputComponent
-                  className="w-full"
-                  config={{
-                    type: "number",
-                    placeholder: denom.placeholder,
-                    value: cashAmounts[denom.value] || "",
-                    setValue: (value) =>
-                      setCashAmounts((prev) => ({
-                        ...prev,
-                        [denom.value]: Number(value),
-                      })),
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-
-          <div className="space-y-4">
-            <InputComponent
-              config={{
-                label: "Credit/debit cards total amount",
-                suffix: "MAD",
-                type: "number",
-                placeholder: "Enter total amount",
-                value: cardAmount,
-                setValue: (value) => setCardAmount(Number(value)),
-              }}
-              className="w-full"
-            />
-            <InputComponent
-              config={{
-                label: "Cheque total amount",
-                suffix: "MAD",
-                type: "number",
-                placeholder: "Enter total amount",
-                value: chequeAmount,
-                setValue: (value) => setChequeAmount(Number(value)),
-              }}
-              className="w-full"
-            />
-          </div>
-
-          <div className="mt-auto pb-4">
-            <Button className="w-full" onClick={handleCloseShift}>
-              End Shift
-            </Button>
-          </div>
         </div>
-        <Keyboard />
       </Drawer>
     </KeyboardProvider>
   );
