@@ -57,7 +57,7 @@ export default function Drawer({
                 <DialogPanel
                   className={cn("pointer-events-auto w-screen", classNames)}
                 >
-                  <div className="flex h-full flex-col overflow-y-scroll dark:bg-secondary-black bg-secondary-white py-6 shadow-xl">
+                  <div className="flex h-full flex-col overflow-y-scroll dark:bg-secondary-black bg-secondary-white py-4 shadow-xl">
                     <div className="">
                       <div className="flex items-start justify-between px-4 sm:px-6">
                         <DialogTitle className="text-lg font-medium">

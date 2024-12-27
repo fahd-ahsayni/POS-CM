@@ -37,6 +37,7 @@ export default function WaitingOrders() {
             caption="A list of your waiting orders."
             withPrintButton={false}
             formatData={formatData}
+            isWaitingOrders={true}
           />
         )}
       </main>

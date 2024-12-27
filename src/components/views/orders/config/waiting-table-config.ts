@@ -1,5 +1,7 @@
+import { updateOrder } from "@/functions/updateOrder";
 import { ProductSelected } from "./../../../../types/index";
 import { format } from "date-fns";
+import { useDispatch } from "react-redux";
 
 type Header = {
   key: string;
@@ -49,6 +51,10 @@ export const formatData = (order: any, pos: any) => {
   const posId = localStorage.getItem("posId");
   const findPos = posData.find((pos: any) => pos._id === posId);
   const user = findPos?.shift.user_id;
+
+  const dispatch = useDispatch();
+
+  dispatch(updateOrder({ order_type_id: order.order_type_id }));
 
   const generalData = localStorage.getItem("generalData");
   const orderTypes = generalData ? JSON.parse(generalData).orderTypes : [];

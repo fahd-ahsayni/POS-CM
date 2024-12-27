@@ -36,7 +36,6 @@ export const fetchOrders = createAsyncThunk("orders/fetchOrders", async () => {
     throw error;
   }
 });
-
 export const refreshOrders = createAsyncThunk(
   "orders/refreshOrders",
   async () => {

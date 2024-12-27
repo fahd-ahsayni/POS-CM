@@ -19,11 +19,16 @@ export default function Navbar() {
     }
   };
 
+  const handleResetApp = () => {
+    window.location.reload();
+  };
+
   return (
     <header className="w-full">
       <div className="relative z-10 flex h-16 flex-shrink-0">
         <div className="flex flex-1 justify-between px-4 sm:px-6">
           <img
+            onClick={handleResetApp}
             src={theme.theme === "dark" ? logoDarkMode : logoLightMode}
             alt="logo"
             className="w-24 h-auto"

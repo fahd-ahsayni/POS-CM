@@ -43,6 +43,7 @@ export const updateOrder = (params: OrderUpdateParams): any => {
           dispatch(setCoasterCall(value as boolean | null));
           break;
         case "shift_id":
+          console.log("value", value);
           dispatch(setShiftId(value as string | null));
           break;
         case "table_id":

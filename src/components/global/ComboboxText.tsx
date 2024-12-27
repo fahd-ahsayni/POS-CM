@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Check, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type Framework = {
   value: string;
@@ -26,16 +26,22 @@ type SelectProps = {
   placeholder: string;
   searchPlaceholder: string;
   onSelect: (value: string) => void;
+  value?: string;
 };
 
-export default function Select({
+export default function ComboboxText({
   items,
   placeholder,
   searchPlaceholder,
   onSelect,
+  value: externalValue,
 }: SelectProps) {
   const [open, setOpen] = useState<boolean>(false);
-  const [value, setValue] = useState<string>("");
+  const [value, setValue] = useState<string>(externalValue || "");
+
+  useEffect(() => {
+    setValue(externalValue || "");
+  }, [externalValue]);
 
   const handleSelect = (currentValue: string) => {
     const newValue = currentValue === value ? "" : currentValue;
@@ -49,11 +55,10 @@ export default function Select({
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            id="select-41"
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between dark:bg-muted bg-background px-3 font-normal outline-offset-0 hover:bg-background focus-visible:border-ring focus-visible:outline-[3px] focus-visible:outline-ring/20"
+            className="w-full justify-between dark:bg-white/10 bg-background px-3 font-normal outline-offset-0 hover:bg-background focus-visible:border-ring focus-visible:outline-[3px] focus-visible:outline-ring/20"
           >
             <span className={cn("truncate", !value && "text-muted-foreground")}>
               {value
@@ -69,11 +74,11 @@ export default function Select({
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0 !dark:bg-zinc-900"
+          className="w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0 !rounded-md"
           align="start"
         >
           <Command>
-            <CommandInput placeholder={searchPlaceholder} />
+            <CommandInput placeholder={searchPlaceholder} className="!text-sm" />
             <CommandList>
               <CommandEmpty>No framework found.</CommandEmpty>
               <CommandGroup>

@@ -29,11 +29,11 @@ const OrderCard = memo(
     onSelect,
   }: {
     type: OrderType;
-    onSelect: (id: string, type: string) => void;
+    onSelect: (orderType: OrderType) => void;
   }) => (
     <Card
       className="w-full rounded-md h-24 px-8 py-4 flex space-x-4 items-center justify-between cursor-pointer"
-      onClick={() => onSelect(type._id, type.type)}
+      onClick={() => onSelect(type)}
     >
       <div className="flex items-center gap-x-4">
         <TypeOfOrderIcon type={type.type.toLowerCase()} />
@@ -77,14 +77,15 @@ function SelectTypeOfOrder() {
   }, []);
 
   const handleOrderTypeSelect = useCallback(
-    (id: string, type: string) => {
-      if (type.toLowerCase() === "takeaway") {
+    (orderType: OrderType) => {
+      if (orderType.type.toLowerCase() === "takeaway") {
         setViews(ORDER_SUMMARY_VIEW);
       } else {
-        setViews(type);
+        setViews(orderType.type);
       }
-      setOrderType(id);
-      dispatch(updateOrder({ order_type_id: id }));
+      setOrderType(orderType._id);
+      dispatch(updateOrder({ order_type_id: orderType._id }));
+      localStorage.setItem("orderType", JSON.stringify(orderType));
     },
     [dispatch, setViews, setOrderType]
   );

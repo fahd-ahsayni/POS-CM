@@ -8,6 +8,9 @@ import { v4 as uuidv4 } from "uuid";
 import { createToast } from "../Toasters";
 import { toast } from "react-toastify";
 import BaseModal from "./Layout/BaseModal";
+import { ALL_CATEGORIES_VIEW } from "@/components/views/home/left-section/constants";
+import { TYPE_OF_ORDER_VIEW } from "@/components/views/home/right-section/constants";
+import { updateOrder } from "@/functions/updateOrder";
 
 interface ModalConfirmHoldOrderProps {
   open: boolean;
@@ -22,6 +25,9 @@ export default function ModalConfirmHoldOrder({
   const { setSelectedCustomer, setCustomerIndex } = useRightViewContext();
   const { setSelectedProducts } = useLeftViewContext();
   const order = useSelector(selectOrder);
+
+  const { setViews: setViewsLeft } = useLeftViewContext();
+  const { setViews: setViewsRight } = useRightViewContext();
 
   const handleConfirmHoldOrder = () => {
     const holdOrder = { ...(order as unknown as Order), _id: uuidv4() };
@@ -41,11 +47,23 @@ export default function ModalConfirmHoldOrder({
   };
 
   const resetState = () => {
+    const shiftId = localStorage.getItem("shiftId");
+
     setSelectedCustomer(1);
     setCustomerIndex(1);
     setSelectedProducts([]);
-    dispatch(resetOrder());
     setOpen(false);
+
+    dispatch(resetOrder());
+    if (shiftId) {
+      dispatch(
+        updateOrder({
+          shift_id: shiftId,
+        })
+      );
+    }
+    setViewsLeft(ALL_CATEGORIES_VIEW);
+    setViewsRight(TYPE_OF_ORDER_VIEW);
   };
 
   const showSuccessToast = () => {

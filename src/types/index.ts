@@ -116,3 +116,9 @@ export interface ProductSelected extends Product {
   compo_supp_ids?: string[] | null;
   notes?: string[] | null;
 }
+
+export interface FilterCriteria {
+  employee: string;
+  orderType: string;
+  status: string;
+}

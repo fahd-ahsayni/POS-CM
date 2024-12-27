@@ -2,7 +2,7 @@ import { updateOrder } from "@/functions/updateOrder";
 import { AppDispatch, RootState } from "@/store";
 import { fetchGeneralData } from "@/store/slices/data/generalDataSlice";
 import { fetchPosData } from "@/store/slices/data/posSlice";
-import { memo, useCallback, useEffect, useMemo, useRef } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
 import Keyboard from "../global/keyboard/Keyboard";
@@ -10,6 +10,7 @@ import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import { getAllVariants } from "@/functions/getAllVariants";
 import { extractProducts } from "@/functions/extractProducts";
+import { LoadingFullScreen } from "../global/loading";
 
 const Layout = () => {
   // Hooks
@@ -26,6 +27,9 @@ const Layout = () => {
     shallowEqual
   );
 
+  // Add loading state ref
+  const [isLoading, setIsLoading] = useState(true);
+
   // Combine related effects
   useEffect(() => {
     const posId = localStorage.getItem("posId");
@@ -41,10 +45,10 @@ const Layout = () => {
     const generalData = localStorage.getItem("generalData");
     if (generalData) {
       const parsedData = JSON.parse(generalData);
-      
+
       // Save variants
       localStorage.setItem("variants", JSON.stringify(getAllVariants()));
-      
+
       // Save products only if categories exist
       if (parsedData?.categories) {
         localStorage.setItem(
@@ -77,6 +81,20 @@ const Layout = () => {
     handleUpdateOrder();
   }, [handleUpdateOrder]);
 
+  useEffect(() => {
+    const isFirstRender = localStorage.getItem("firstRender");
+
+    if (!isFirstRender) {
+      // Set 2 second delay for first render
+      setTimeout(() => {
+        localStorage.setItem("firstRender", "true");
+        setIsLoading(false);
+      }, 2000);
+    } else {
+      setIsLoading(false);
+    }
+  }, []);
+
   // Memoize the content to prevent unnecessary re-renders
   const content = useMemo(
     () => (
@@ -97,6 +115,10 @@ const Layout = () => {
     ),
     []
   ); // Add dependencies if needed
+
+  if (isLoading) {
+    return <LoadingFullScreen />; // You can replace this with a loading component
+  }
 
   if (generalError) {
     return <div>Error: {generalError}</div>;

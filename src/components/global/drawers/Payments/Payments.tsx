@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
-  TypographyH1,
   TypographyH2,
   TypographyP,
   TypographySmall,
@@ -14,10 +13,13 @@ import { currency } from "@/preferences/index";
 import { selectOrder } from "@/store/slices/order/createOrder";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
+import { Swiper, SwiperSlide } from "swiper/react";
 import Drawer from "../../Drawer";
 import { usePayments } from "./hooks/usePayments";
+import { Pagination } from "swiper/modules";
+import type { Swiper as SwiperType } from 'swiper';
 
 interface PaymentMethod {
   _id: string;
@@ -28,7 +30,7 @@ interface PaymentMethod {
 interface PaymentsProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  onComplete?: (payments: PaymentMethod[]) => void;
+  onComplete?: (payments: PaymentMethod[]) => Promise<void>;
 }
 
 export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
@@ -52,11 +54,22 @@ export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
 
   const order = useSelector(selectOrder);
 
+  const swiperRef = useRef<SwiperType>();
+  const isManualSwipe = useRef(false);
+
   useEffect(() => {
     if (!open) {
       resetPayments();
     }
   }, [open]);
+
+  useEffect(() => {
+    if (swiperRef.current && selectedPayments.length > 0 && !isManualSwipe.current) {
+      swiperRef.current.slideTo(selectedPayments.length - 1, 0);
+    }
+    // Reset the manual swipe flag
+    isManualSwipe.current = false;
+  }, [selectedPayments.length]);
 
   const getPaymentStatus = () => {
     const totalPaid = getTotalPaidAmount();
@@ -84,60 +97,63 @@ export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
       open={open}
       setOpen={setOpen}
       title="Complete Payment"
-      classNames="max-w-[780px]"
+      classNames="max-w-[700px]"
     >
-      <div className="flex items-center justify-center h-full">
-        <div className="w-5/12 h-full pr-4 flex flex-col gap-2">
+      <div className="flex items-center justify-center h-full gap-6">
+        <div className="w-5/12 h-full pr-3 flex flex-col gap-3">
           <AnimatePresence>
             {paymentMethods.length > 0 ? (
               paymentMethods.map((method, index) => (
                 <div key={method._id}>
                   <Card
                     onClick={() => handlePaymentMethodSelect(method)}
-                    className="h-16 flex items-center justify-start px-4 cursor-pointer dark:bg-primary-black bg-neutral-bright-grey dark:border-white/20 border-primary-black/20"
+                    className="h-[3.5rem] rounded-md flex items-center justify-start px-6 cursor-pointer dark:bg-primary-black bg-neutral-bright-grey dark:border-white/20 border-primary-black/20"
                   >
-                    <TypographyP className="text-lg font-medium">
+                    <TypographyP className="font-medium">
                       {method.name}
                     </TypographyP>
                   </Card>
                 </div>
               ))
             ) : (
-              <TypographyP>No payment methods available</TypographyP>
+              <TypographyP className="text-sm">
+                No payment methods available
+              </TypographyP>
             )}
           </AnimatePresence>
         </div>
 
-        <Separator orientation="vertical" />
+        <Separator orientation="vertical" className="h-[90%]" />
 
-        <div className="w-7/12 h-full pl-6 flex flex-col justify-between">
+        <div className="w-7/12 h-full pl-2 flex flex-col justify-between gap-6">
           <div className="w-full flex flex-col items-start justify-center h-[65%]">
             <div className="flex flex-col w-full items-center justify-center">
-              <TypographySmall className="dark:text-white/50 text-primary-black/50 mb-2">
-                Total Amount
+              <TypographySmall className="dark:text-white/50 text-primary-black/50 mb-0.5 text-xs">
+                Total
               </TypographySmall>
               <TypographyH2 className="text-center font-semibold">
                 {order.total_amount.toFixed(currency.toFixed || 2)}{" "}
-                {currency.symbol}
               </TypographyH2>
-              <TypographyP className="text-center mt-2">
+              <TypographyP className="text-center text-sm mt-0.5">
                 {getPaymentStatus()}
               </TypographyP>
             </div>
 
-            <div className="w-full flex items-center justify-center mt-12">
-              <div className="flex-1 flex items-start justify-center">
+            <div className="w-full flex items-center justify-center mt-4 gap-4">
+              <div className="flex items-start justify-center">
                 <NumberPad
                   onNumberClick={(value) => {
                     if (
                       paymentMethods.length > 0 &&
-                      selectedPayments.length === 0
+                      selectedPayments.length === 0 &&
+                      value !== "C" &&
+                      value !== "delete"
                     ) {
                       // Handle the first selection with the amount clicked
                       handlePaymentMethodSelect(paymentMethods[0], value);
-                      setCurrentAmount(value); // Update the current amount
+                      setCurrentAmount(value);
                     } else {
-                      handleAmountInput(value); // Normal input handling
+                      handleAmountInput(value);
                     }
                   }}
                   fixLightDark={true}
@@ -180,57 +196,73 @@ export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
             </div>
           </div>
 
-          <div className="h-[30%] overflow-y-auto flex flex-col items-center justify-center mt-[5%] px-1">
+          <div className="h-[35%] overflow-y-auto flex flex-col items-center justify-center mt-4">
             {selectedPayments.length > 0 ? (
               <AnimatePresence>
-                {selectedPayments.map((payment, index) => (
-                  <motion.div
-                    key={payment._id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 20 }}
-                    className="w-full"
-                  >
-                    <Card
-                      className={cn(
-                        "p-2 h-12 mb-2",
-                        "dark:!bg-primary-black bg-neutral-bright-grey rounded-md",
-                        "flex items-center justify-between px-4",
-                        "dark:!border-neutral-dark-grey/30",
-                        "cursor-pointer",
-                        "hover:bg-neutral-100 dark:hover:bg-primary-black/80",
-                        index === activePaymentIndex &&
-                          "ring-1 ring-primary-red border-none"
-                      )}
-                      onClick={() => {
-                        setActivePaymentIndex(index);
-                        setCurrentAmount(payment.amount.toString());
-                      }}
-                    >
-                      <div className="flex items-center gap-2">
-                        <TypographyP className="font-medium">
-                          {payment.name}
-                        </TypographyP>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <TypographyP className="font-medium">
-                          {payment.amount.toFixed(currency.toFixed || 2)}{" "}
-                          {currency.symbol}
-                        </TypographyP>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removePaymentMethod(payment._id);
+                <Swiper
+                  direction="vertical"
+                  slidesPerView={3}
+                  spaceBetween={8}
+                  modules={[Pagination]}
+                  className="w-full h-full px-2 py-1"
+                  onSwiper={(swiper) => {
+                    swiperRef.current = swiper;
+                  }}
+                  onSliderMove={() => {
+                    // Set flag when user manually swipes
+                    isManualSwipe.current = true;
+                  }}
+                >
+                  {selectedPayments.map((payment, index) => (
+                    <SwiperSlide key={payment._id}>
+                      <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        className="w-full"
+                      >
+                        <Card
+                          className={cn(
+                            "p-3 h-12 mb-2",
+                            "dark:!bg-primary-black bg-neutral-bright-grey rounded-md",
+                            "flex items-center justify-between px-4",
+                            "dark:!border-neutral-dark-grey/30",
+                            "cursor-pointer",
+                            "hover:bg-neutral-100 dark:hover:bg-primary-black/80",
+                            index === activePaymentIndex &&
+                              "ring-1 ring-primary-red border-none"
+                          )}
+                          onClick={() => {
+                            setActivePaymentIndex(index);
+                            setCurrentAmount(payment.amount.toString());
                           }}
-                          className="p-1 hover:bg-neutral-100 rounded-full 
-                           dark:hover:bg-primary-black/80"
                         >
-                          <X className="h-5 w-5 text-primary-red" />
-                        </button>
-                      </div>
-                    </Card>
-                  </motion.div>
-                ))}
+                          <div className="flex items-center gap-2">
+                            <TypographyP className="font-medium">
+                              {payment.name}
+                            </TypographyP>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <TypographyP className="font-medium">
+                              {payment.amount.toFixed(currency.toFixed || 2)}{" "}
+                              {currency.symbol}
+                            </TypographyP>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removePaymentMethod(payment._id);
+                              }}
+                              className="p-1 hover:bg-neutral-100 rounded-full 
+                                 dark:hover:bg-primary-black/80"
+                            >
+                              <X className="h-5 w-5 text-primary-red" />
+                            </button>
+                          </div>
+                        </Card>
+                      </motion.div>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
               </AnimatePresence>
             ) : (
               <motion.span
@@ -246,13 +278,13 @@ export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
             )}
           </div>
 
-          <div className="px-1">
+          <div className="px-2">
             <Button
               className="w-full"
               disabled={isProcessing}
               onClick={handleComplete}
             >
-              {isProcessing ? "Processing..." : "Complete Payment"}
+              {isProcessing ? "Processing..." : "Continue"}
             </Button>
           </div>
         </div>
