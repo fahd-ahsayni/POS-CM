@@ -42,7 +42,6 @@ export const useCloseShift = () => {
   const [savedTotal, setSavedTotal] = useState<number>(0);
 
   const orders = useSelector((state: RootState) => state.orders.orders);
-  console.log(orders);
 
   const paymentMethods: PaymentMethod[] =
     JSON.parse(localStorage.getItem("generalData") || "{}")?.paymentMethods ||
@@ -65,19 +64,22 @@ export const useCloseShift = () => {
     value: string | number | null
   ) => {
     const newQuantity = Number(value) || 0;
-    
+
     const updatedQuantities = {
       ...currencyQuantities,
-      [denomination]: newQuantity
+      [denomination]: newQuantity,
     };
     setCurrencyQuantities(updatedQuantities);
 
-    const cashMethod = paymentMethods.find(method => method.is_cash);
+    const cashMethod = paymentMethods.find((method) => method.is_cash);
     if (cashMethod) {
-      const newTotal = Object.entries(updatedQuantities).reduce((total, [denom, qty]) => {
-        return total + (Number(denom) * Number(qty));
-      }, 0);
-      
+      const newTotal = Object.entries(updatedQuantities).reduce(
+        (total, [denom, qty]) => {
+          return total + Number(denom) * Number(qty);
+        },
+        0
+      );
+
       setSavedTotal(newTotal);
       setFocusedMethod(cashMethod._id);
       handleAmountChange(cashMethod._id, newTotal.toString());
@@ -153,14 +155,14 @@ export const useCloseShift = () => {
   };
 
   const handleValidate = () => {
-    const cashMethod = paymentMethods.find(method => method.is_cash);
+    const cashMethod = paymentMethods.find((method) => method.is_cash);
     if (cashMethod) {
-      setPaymentAmounts(prev => ({
+      setPaymentAmounts((prev) => ({
         ...prev,
-        [cashMethod._id]: savedTotal
+        [cashMethod._id]: savedTotal,
       }));
     }
-    
+
     setCurrencyQuantities({});
     setOpenCurrencyQuantity(false);
   };

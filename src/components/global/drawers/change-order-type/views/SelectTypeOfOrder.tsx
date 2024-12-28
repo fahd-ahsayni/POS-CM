@@ -1,15 +1,22 @@
 import { memo, useCallback, useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { TypographyH4, TypographyP } from "@/components/ui/typography";
-import { updateOrder } from "@/functions/updateOrder";
 import { OrderType } from "@/types";
 import { ChevronRightIcon } from "lucide-react";
-import { useDispatch } from "react-redux";
-import { useRightViewContext } from "../contexts/rightViewContext";
-import { TypeOfOrderDescription, TypeOfOrderIcon } from "../ui/TypeOfOrderIcon";
-import { ORDER_SUMMARY_VIEW } from "../constants";
+import {
+  TypeOfOrderDescription,
+  TypeOfOrderIcon,
+} from "@/components/views/home/right-section/ui/TypeOfOrderIcon";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
+import { updateOrder } from "@/functions/updateOrder";
+import { useDispatch } from "react-redux";
+import { DELIVERY_VIEW, ON_PLACE_VIEW, TAKE_AWAY_VIEW } from "../constants";
+import { OrderCard } from "@/components/views/home/right-section/components/SelectTypeOfOrder";
+
+interface SelectTypeOfOrderProps {
+  setDrawerView: (view: string) => void;
+  setOpen: (open: boolean) => void;
+}
 
 const OrderCardSkeleton = () => (
   <Card className="w-full rounded-md h-24 px-8 py-4 dark:!bg-secondary-black bg-white flex space-x-4 items-center justify-between">
@@ -23,48 +30,9 @@ const OrderCardSkeleton = () => (
   </Card>
 );
 
-// Memoized OrderCard component
-export const OrderCard = memo(
-  ({
-    type,
-    onSelect,
-    isFixedLightDark = false,
-  }: {
-    type: OrderType;
-    onSelect: (orderType: OrderType) => void;
-    isFixedLightDark?: boolean;
-  }) => (
-    <Card
-      className={cn(
-        "w-full rounded-md h-20 px-8 py-4 flex space-x-4 items-center justify-between cursor-pointer",
-        isFixedLightDark
-          ? "dark:!bg-primary-black bg-neutral-bright-grey"
-          : "dark:bg-secondary-black bg-white"
-      )}
-      onClick={() => onSelect(type)}
-    >
-      <div className="flex items-center gap-x-4">
-        <TypeOfOrderIcon type={type.type.toLowerCase()} />
-        <div>
-          <TypographyH4 className="font-medium first-letter:capitalize">
-            {type.type}
-          </TypographyH4>
-          <TypographyP className="text-xs text-neutral-dark-grey">
-            {TypeOfOrderDescription({ type: type.type.toLowerCase() })}
-          </TypographyP>
-        </div>
-      </div>
-      <ChevronRightIcon className="w-6 h-auto text-neutral-dark-grey" />
-    </Card>
-  )
-);
-
-OrderCard.displayName = "OrderCard";
-
-function SelectTypeOfOrder() {
+function SelectTypeOfOrder({ setDrawerView, setOpen }: SelectTypeOfOrderProps) {
   const [orderTypes, setOrderTypes] = useState<OrderType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { setViews, setOrderType } = useRightViewContext();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -86,24 +54,32 @@ function SelectTypeOfOrder() {
 
   const handleOrderTypeSelect = useCallback(
     (orderType: OrderType) => {
-      if (orderType.type.toLowerCase() === "takeaway") {
-        setViews(ORDER_SUMMARY_VIEW);
-      } else {
-        setViews(orderType.type);
+      const type = orderType.type.toLowerCase();
+      switch (type) {
+        case "takeaway":
+          setDrawerView(TAKE_AWAY_VIEW);
+          break;
+        case "onplace":
+          setDrawerView(ON_PLACE_VIEW);
+          break;
+        case "delivery":
+          setDrawerView(DELIVERY_VIEW);
+          break;
+        default:
+          setOpen(false);
       }
-      setOrderType(orderType._id);
       dispatch(updateOrder({ order_type_id: orderType._id }));
       localStorage.setItem("orderType", JSON.stringify(orderType));
     },
-    [dispatch, setViews, setOrderType]
+    [dispatch, setDrawerView, setOpen]
   );
 
   return (
     <div className="flex flex-col h-full p-4">
       <TypographyH4 className="font-medium mb-6">
-        What type of order would you like to process?
+        Select new order type:
       </TypographyH4>
-      <div className="flex-1 flex flex-col gap-y-8 pt-10">
+      <div className="flex-1 flex flex-col gap-4 pt-10">
         {isLoading ? (
           <>
             <OrderCardSkeleton />
@@ -116,6 +92,7 @@ function SelectTypeOfOrder() {
               key={type._id}
               type={type}
               onSelect={handleOrderTypeSelect}
+              isFixedLightDark
             />
           ))
         )}

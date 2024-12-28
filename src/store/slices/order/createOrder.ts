@@ -4,11 +4,14 @@ import { RootState } from "../../../store";
 interface OrderState {
   waiter_id: number | null;
   coaster_call: boolean | null;
+  urgent: boolean | null;
   shift_id: string | null;
   table_id: string | null;
   delivery_guy_id: string | null;
+  discount_amount: number | null;
   client_id: string | null;
   customer_count: number;
+  notes: string[];
   one_time: boolean;
   total_amount: number;
   order_type_id: string | null;
@@ -24,11 +27,14 @@ interface OrderSliceState {
 const initialOrderState: OrderState = {
   waiter_id: null,
   coaster_call: null,
+  urgent: null,
   shift_id: null,
   table_id: null,
   delivery_guy_id: null,
+  discount_amount: null,
   client_id: null,
   customer_count: 0,
+  notes: [],
   one_time: false,
   total_amount: 0,
   order_type_id: null,
@@ -106,6 +112,15 @@ const orderSlice = createSlice({
     setOrderTypeId: (state, action: PayloadAction<string | null>) => {
       state.data.order_type_id = action.payload;
     },
+    setNotes: (state, action: PayloadAction<string[]>) => {
+      state.data.notes = action.payload;
+    },
+    setUrgent: (state, action: PayloadAction<boolean | null>) => {
+      state.data.urgent = action.payload;
+    },
+    setDiscountAmount: (state, action: PayloadAction<number | null>) => {
+      state.data.discount_amount = action.payload;
+    },
   },
 });
 
@@ -125,6 +140,9 @@ export const {
   setClientId,
   setOneTime,
   setOrderTypeId,
+  setNotes,
+  setUrgent,
+  setDiscountAmount,
 } = orderSlice.actions;
 
 export default orderSlice.reducer;

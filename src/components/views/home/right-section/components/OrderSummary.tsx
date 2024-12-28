@@ -1,4 +1,3 @@
-import { createOrder } from "@/api/services";
 import { logoWithoutText } from "@/assets";
 import {
   AddUserIcon,
@@ -6,23 +5,23 @@ import {
   ExpandListIcon,
   PrinterIcon,
 } from "@/assets/figma-icons";
+import Payments from "@/components/global/drawers/Payments/Payments";
 import ModalConfirmHoldOrder from "@/components/global/modal/ModalConfirmHoldOrder";
 import { Button } from "@/components/ui/button";
 import { TypographyP } from "@/components/ui/typography";
 import {
-  selectOrder,
-  setCustomerCount,
+  setCustomerCount
 } from "@/store/slices/order/createOrder";
 import { AnimatePresence, motion } from "framer-motion";
 import { LucideMaximize } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
 import { useOrderLines } from "../contexts/orderLinesContext";
 import { useRightViewContext } from "../contexts/rightViewContext";
 import OrderLines from "../import/OrderLines";
 import OtherActionsOrderLines from "../ui/OtherActionsOrderLines";
-import Payments from "@/components/global/drawers/Payments/Payments";
+import ChangeOrderType from "@/components/global/drawers/change-order-type/ChangeOrderType";
 
 const OrderSummary = () => {
   const [openModalConfirmHoldOrder, setOpenModalConfirmHoldOrder] =
@@ -83,10 +82,11 @@ const OrderSummary = () => {
         open={openModalConfirmHoldOrder}
         setOpen={setOpenModalConfirmHoldOrder}
       />
+      <ChangeOrderType />
       <div className="flex flex-col justify-start h-full gap-y-2">
         <div className="flex items-center justify-between">
           <TypographyP className="text-xs">
-            <span>Order ref</span>{" "}
+            <span>Order ref</span>
             <span className="text-muted-foreground">01-1423-26</span>
           </TypographyP>
         </div>

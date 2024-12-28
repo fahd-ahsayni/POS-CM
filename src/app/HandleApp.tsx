@@ -30,9 +30,9 @@ export default function HandleApp() {
   const { theme } = useTheme();
   const dispatch = useDispatch<AppDispatch>();
 
-  useEffect(() => {
-    dispatch(fetchOrders());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(fetchOrders());
+  // }, []);
 
   return (
     <>

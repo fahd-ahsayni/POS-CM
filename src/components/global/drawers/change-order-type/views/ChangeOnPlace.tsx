@@ -11,13 +11,19 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { ORDER_SUMMARY_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
-import { useRightViewContext } from "../contexts/rightViewContext";
+import { TYPE_OF_ORDER_VIEW } from "../constants";
 
-export default function OnPlace() {
-  const { tableNumber, setTableNumber } = useRightViewContext();
+interface OnPlaceProps {
+  setDrawerView: (view: string) => void;
+  setOpen: (open: boolean) => void;
+}
+
+export default function ChangeOnPlace({
+  setDrawerView,
+  setOpen,
+}: OnPlaceProps) {
+  const [tableNumber, setTableNumber] = useState("");
   const [tableValid, setTableValid] = useState<string>("valid");
-  const { setViews } = useRightViewContext();
   const dispatch = useDispatch();
   const data = JSON.parse(localStorage.getItem("generalData") || "{}")[
     "floors"
@@ -31,10 +37,12 @@ export default function OnPlace() {
     if (value === "C") {
       setTableNumber("");
     } else if (value === "delete") {
-      setTableNumber(tableNumber.slice(0, -1));
+      setTableNumber((prev) => prev.slice(0, -1));
     } else {
-      const newValue = tableNumber + value;
-      setTableNumber(parseInt(newValue) <= 999999 ? newValue : tableNumber);
+      setTableNumber((prev) => {
+        const newValue = prev + value;
+        return parseInt(newValue) <= 999999 ? newValue : prev;
+      });
     }
   };
 
@@ -52,10 +60,8 @@ export default function OnPlace() {
       const response = await getByTableName(number);
 
       if (response.status === 204) {
-        setViews(ORDER_SUMMARY_VIEW);
         dispatch(updateOrder({ table_id: findTableByName(number)?._id }));
-        setTableValid("valid");
-        setTableNumber(number);
+        setOpen(false);
       } else if (response.status === 200) {
         setTableValid("invalid");
       }
@@ -73,7 +79,7 @@ export default function OnPlace() {
         className="flex flex-col justify-evenly -mt-6 h-full"
       >
         <TypographyH4 className="font-medium max-w-xs">
-          Enter the table number to start the order:
+          Enter the table number to change the order:
         </TypographyH4>
         <div className="flex flex-col justify-center items-center gap-4">
           <div className="flex flex-col space-y-2 justify-center items-center">
@@ -98,20 +104,20 @@ export default function OnPlace() {
               <span className="opacity-0">?</span>
             </TypographySmall>
           </div>
-          <NumberPad onNumberClick={handleNumberClick} />
+          <NumberPad onNumberClick={handleNumberClick} fixLightDark />
         </div>
         <div className="flex gap-4">
           <Button
             className="flex-1"
             variant="secondary"
-            onClick={() => setViews(TYPE_OF_ORDER_VIEW)}
+            onClick={() => setDrawerView(TYPE_OF_ORDER_VIEW)}
           >
-            Cancel
+            Back
           </Button>
           <Button
             onClick={() => handleConfirm(tableNumber)}
             className="flex-1"
-            disabled={tableValid !== "valid"}
+            disabled={!tableNumber || tableValid !== "valid"}
           >
             Confirm
           </Button>

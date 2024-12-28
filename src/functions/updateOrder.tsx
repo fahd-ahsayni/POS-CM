@@ -1,3 +1,4 @@
+import { ProductSelected } from "@/types";
 import {
   addOrderLine,
   removeOrderLine,
@@ -12,7 +13,24 @@ import {
   setWaiterId,
   updateOrderLine,
   updateTotalAmount,
+  setNotes,
+  setUrgent,
+  setDiscountAmount,
 } from "../store/slices/order/createOrder"; // Adjust path as needed
+
+/**
+ * Represents the possible operations that can be performed on order lines
+ */
+
+/**
+ * Parameters for updating an order
+ * @typedef {Object} OrderUpdateParams
+ */
+type OrderLineOperation = {
+  action: 'add' | 'update' | 'remove';
+  data?: ProductSelected;
+  id?: string;
+}
 
 type OrderUpdateParams = {
   waiter_id?: number | null;
@@ -25,13 +43,18 @@ type OrderUpdateParams = {
   one_time?: boolean;
   total_amount?: number;
   order_type_id?: string | null;
-  orderlines?: {
-    action: "add" | "update" | "remove";
-    data: any;
-    id?: number;
-  }[];
+  orderlines?: OrderLineOperation[];
+  notes?: string[];
+  urgent?: boolean | null;
+  discount_amount?: number | null;
 };
 
+/**
+ * Updates an order with the provided parameters
+ * @param {OrderUpdateParams} params - The parameters to update the order
+ * @returns {Function} A Redux thunk action creator
+ * @throws {Warning} Logs a warning for unknown order fields
+ */
 export const updateOrder = (params: OrderUpdateParams): any => {
   return (dispatch: any) => {
     Object.entries(params).forEach(([key, value]) => {
@@ -69,18 +92,18 @@ export const updateOrder = (params: OrderUpdateParams): any => {
           break;
         case "orderlines":
           if (value && Array.isArray(value) && value.length > 0) {
-            value!.forEach((orderlineOp) => {
+            (value as OrderLineOperation[]).forEach((orderlineOp) => {
               switch (orderlineOp.action) {
                 case "add":
                   if (orderlineOp.data) {
-                    dispatch(addOrderLine(orderlineOp.data));
+                    dispatch(addOrderLine([orderlineOp.data]));
                   }
                   break;
                 case "update":
-                  if (orderlineOp.id !== undefined) {
+                  if (typeof orderlineOp !== 'string' && orderlineOp.id !== undefined) {
                     dispatch(
                       updateOrderLine({
-                        id: orderlineOp.id,
+                        id: parseInt(orderlineOp.id),
                         orderLine: orderlineOp.data,
                       })
                     );
@@ -88,14 +111,22 @@ export const updateOrder = (params: OrderUpdateParams): any => {
                   break;
                 case "remove":
                   if (orderlineOp.id !== undefined) {
-                    dispatch(removeOrderLine(orderlineOp.id));
+                    dispatch(removeOrderLine(parseInt(orderlineOp.id)));
                   }
                   break;
               }
             });
           }
           break;
-
+        case "notes":
+          dispatch(setNotes([...(params.notes || []), value as string]));
+          break;
+        case "urgent":
+          dispatch(setUrgent(value as boolean | null));
+          break;
+        case "discount_amount":
+          dispatch(setDiscountAmount(value as number | null));
+          break;
         default:
           console.warn(`Unknown order field: ${key}`);
       }

@@ -1,4 +1,4 @@
-import ComboboxText from "@/components/global/ComboboxText";
+import ComboboxSelect from "@/components/global/ComboboxSelect";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -6,7 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { FilterIcon } from "lucide-react";
+import { FilterIcon, CheckIcon } from "lucide-react";
 import { useState } from "react";
 
 interface FilterCriteria {
@@ -110,7 +110,7 @@ export default function FiltreOrders({
           <form className="space-y-5">
             <div>
               <div className="mb-0.5 flex items-center justify-between gap-1">
-                <Label className="pl-2">users</Label>
+                <Label className="pl-2">Users</Label>
                 <span
                   className="text-xs font-medium text-error-color cursor-pointer"
                   onClick={() => handleClearFilter("employee")}
@@ -118,16 +118,24 @@ export default function FiltreOrders({
                   Clear
                 </span>
               </div>
-              <div className="relative">
-                <ComboboxText
-                  items={employees}
-                  placeholder="Select an employee"
-                  searchPlaceholder="Search by name ..."
-                  onSelect={handleEmployeeSelect}
-                  value={selectedEmployee}
-                />
-              </div>
+              <ComboboxSelect
+                items={employees}
+                value={employees.find((e: any) => e.value === selectedEmployee) || null}
+                onChange={(item) => handleEmployeeSelect(item?.value || "")}
+                displayValue={(item) => item?.label || ""}
+                placeholder="Select an employee"
+                filterFunction={(query, item) => 
+                  item.label.toLowerCase().includes(query.toLowerCase())
+                }
+                renderOption={(item, active, selected) => (
+                  <div className="flex items-center justify-between">
+                    <span>{item.label}</span>
+                    {selected && <CheckIcon className="h-4 w-4 text-primary-red" />}
+                  </div>
+                )}
+              />
             </div>
+
             <div>
               <div className="mb-0.5 flex items-center justify-between gap-1">
                 <Label className="pl-2">Order Type</Label>
@@ -138,16 +146,24 @@ export default function FiltreOrders({
                   Clear
                 </span>
               </div>
-              <div className="relative">
-                <ComboboxText
-                  items={orderTypes}
-                  placeholder="Select an order type"
-                  searchPlaceholder="Search by name ..."
-                  onSelect={handleOrderTypeSelect}
-                  value={selectedOrderType}
-                />
-              </div>
+              <ComboboxSelect
+                items={orderTypes}
+                value={orderTypes.find((t: any) => t.value === selectedOrderType) || null}
+                onChange={(item) => handleOrderTypeSelect(item?.value || "")}
+                displayValue={(item) => item?.label || ""}
+                placeholder="Select an order type"
+                filterFunction={(query, item) => 
+                  item.label.toLowerCase().includes(query.toLowerCase())
+                }
+                renderOption={(item, active, selected) => (
+                  <div className="flex items-center justify-between">
+                    <span>{item.label}</span>
+                    {selected && <CheckIcon className="h-4 w-4 text-primary-red" />}
+                  </div>
+                )}
+              />
             </div>
+
             <div>
               <div className="mb-0.5 flex items-center justify-between gap-1">
                 <Label className="pl-2">Status</Label>
@@ -158,15 +174,22 @@ export default function FiltreOrders({
                   Clear
                 </span>
               </div>
-              <div className="relative">
-                <ComboboxText
-                  items={statuses}
-                  placeholder="Select a status"
-                  searchPlaceholder="Search by name ..."
-                  onSelect={handleStatusSelect}
-                  value={selectedStatus}
-                />
-              </div>
+              <ComboboxSelect
+                items={statuses}
+                value={statuses.find(s => s.value === selectedStatus) || null}
+                onChange={(item) => handleStatusSelect(item?.value || "")}
+                displayValue={(item) => item?.label || ""}
+                placeholder="Select a status"
+                filterFunction={(query, item) => 
+                  item.label.toLowerCase().includes(query.toLowerCase())
+                }
+                renderOption={(item, active, selected) => (
+                  <div className="flex items-center justify-between">
+                    <span>{item.label}</span>
+                    {selected && <CheckIcon className="h-4 w-4 text-primary-red" />}
+                  </div>
+                )}
+              />
             </div>
           </form>
           <div className="flex justify-end gap-x-2 mt-6">
