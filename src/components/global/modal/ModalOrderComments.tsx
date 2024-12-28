@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { TypographyH4, TypographyP } from "@/components/ui/typography";
 import ModalLayout from "./Layout";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { updateOrder } from "@/functions/updateOrder";
 import { useDispatch } from "react-redux";
 import { setNotes } from "@/store/slices/order/createOrder";
@@ -18,12 +18,16 @@ export default function ModalOrderComments({
   isOpen = true,
   setOpen = () => {},
 }: ModalOrderCommentsProps) {
-  const [comment, setComment] = useState("");
   const notes = useSelector((state: RootState) => state.createOrder.data.notes);
+  const [comment, setComment] = useState("");
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    setComment(notes[0]);
+  }, [notes]);
+
   const handleAddComment = () => {
-    dispatch(setNotes([...notes, comment]));
+    dispatch(setNotes([comment]));
     setOpen(false);
   };
 

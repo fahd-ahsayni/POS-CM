@@ -1,35 +1,27 @@
-import { format } from "date-fns";
-
 type Header = {
   key: string;
   label: string;
-  width: string;
   isTextMuted: boolean;
   isPrice?: boolean;
   hasPrintButton?: boolean;
+  defaultValue?: string;
 };
 
 export const TABLE_HEADERS: Header[] = [
-  { key: "orderId", label: "Order ID", width: "12%", isTextMuted: true },
-  { key: "dateTime", label: "Date & Time", width: "17%", isTextMuted: true },
-  { key: "orderedBy", label: "Ordered by", width: "12%", isTextMuted: false },
-  { key: "orderType", label: "Order Type", width: "16%", isTextMuted: false },
+  { key: "ref", label: "Order ID", isTextMuted: true },
+  { key: "createdAt", label: "Date & Time", isTextMuted: true },
+  { key: "created_by.name", label: "Ordered by", isTextMuted: false },
+  { key: "order_type_id.type", label: "Order Type", isTextMuted: false },
   {
-    key: "deliveryPerson",
+    key: "delivery_guy_id.name",
     label: "Delivery Person",
-    width: "15%",
     isTextMuted: true,
+    defaultValue: "Not Assigned",
   },
+  { key: "status", label: "Status", isTextMuted: true },
   {
-    key: "paymentStatus",
-    label: "Status",
-    width: "13%",
-    isTextMuted: true,
-  },
-  {
-    key: "orderTotal",
+    key: "total_amount",
     label: "Order Total (Dhs)",
-    width: "16%",
     isTextMuted: false,
     isPrice: true,
     hasPrintButton: true,
@@ -49,6 +41,7 @@ export const TABLE_CONFIG = {
     colors: {
       paid: "!text-green-500",
       canceled: "text-primary-red",
+      new: "text-primary-blue",
       default: "text-primary-black dark:text-white",
     },
   },
@@ -59,21 +52,3 @@ export const TABLE_MESSAGES = {
   loading: "Loading orders...",
   error: "Error loading orders",
 } as const;
-
-export const formatData = (order: any) => {
-  const formattedDate = format(
-    new Date(order.createdAt || new Date()),
-    "dd.MM.yyyy - hh:mm a"
-  );
-
-  return {
-    orderId: order.ref,
-    dateTime: formattedDate,
-    orderedBy: order.created_by?.name,
-    orderType: order.order_type_id?.type,
-    deliveryPerson: order.delivery_guy_id || "Not Assigned",
-    paymentStatus: order.status,
-    orderTotal: order.total_amount || 0,
-    id: order._id,
-  };
-};

@@ -1,40 +1,68 @@
-import { Fragment, useState } from "react";
-import { Dialog, Transition } from "@headlessui/react";
-import {
-  Bars3Icon,
-  CalendarIcon,
-  HomeIcon,
-  MagnifyingGlassCircleIcon,
-  MapIcon,
-  MegaphoneIcon,
-  UserGroupIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+<Drawer open={open} setOpen={setOpen} title="Open Shift">
 
-const navigation = [
-  { name: "Dashboard", href: "#", icon: HomeIcon, current: true },
-  { name: "Calendar", href: "#", icon: CalendarIcon, current: false },
-  { name: "Teams", href: "#", icon: UserGroupIcon, current: false },
-  {
-    name: "Directory",
-    href: "#",
-    icon: MagnifyingGlassCircleIcon,
-    current: false,
-  },
-  { name: "Announcements", href: "#", icon: MegaphoneIcon, current: false },
-  { name: "Office Map", href: "#", icon: MapIcon, current: false },
-];
+<TypographyP className="text-sm">
+  Enter the admin passcode or scan an admin badge to proceed with the
+  cancellation.
+</TypographyP>
+  <section className="overflow-hidden h-full flex flex-col items-center gap-8 relative">
+    <div className="flex-1 pt-12 flex items-center justify-center flex-col space-y-8">
+    <CirclesAnimation
+      currentLength={passcode.length}
+      incorrectPasscode={incorrectPasscode}
+    />
+      <div>
+      <NumberPad
+      onNumberClick={handleNumberClick}
+      numbers={shuffledNumbers}
+      fixLightDark
+    />
+      </div>
+    </div>
+    <div className="flex gap-4 mt-6 w-full px-8">
+    <ShineBorder
+      className={cn(
+        "flex cursor-pointer justify-center items-center gap-4 py-3 px-8"
+      )}
+      color="#fff"
+      borderWidth={2}
+    >
+      <RiRfidFill size={20} className={cn("text-white")} />
+      Scan Admin Badge
+    </ShineBorder>
+    </div>
+  </section>
+</Drawer>;
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
 
-export default function Example() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+<div className="flex flex-col gap-2 h-full py-8">
 
-  return (
-    <>
-     
-    </>
-  );
-}
+<div className="h-full flex flex-col justify-center items-center">
+  <div className="">
+    <CirclesAnimation
+      currentLength={passcode.length}
+      incorrectPasscode={incorrectPasscode}
+    />
+  </div>
+  <div className="mt-10 min-w-full px-20">
+    <NumberPad
+      onNumberClick={handleNumberClick}
+      numbers={shuffledNumbers}
+      fixLightDark
+    />
+  </div>
+</div>
+<div>
+  <div className="flex justify-center items-center mt-6">
+    <ShineBorder
+      className={cn(
+        "flex cursor-pointer justify-center items-center gap-4 py-3 px-8"
+      )}
+      color="#fff"
+      borderWidth={2}
+    >
+      <RiRfidFill size={20} className={cn("text-white")} />
+      Scan Admin Badge
+    </ShineBorder>
+  </div>
+</div>
+</div>

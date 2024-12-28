@@ -1,13 +1,16 @@
 import { closeShift } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
 import { RootState } from "@/store";
+import { fetchOrders } from "@/store/slices/data/ordersSlice";
 import { User } from "@/types";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { AppDispatch } from "@/store";
+import { logout } from "@/store/slices/authentication/authSlice";
 
 interface PaymentAmount {
-  cm_payment_method: string;
+  payment_method: string;
   cashier_amount: number;
 }
 
@@ -24,6 +27,7 @@ interface PaymentMethod {
 }
 
 export const useCloseShift = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const [selectedCashier, setSelectedCashier] = useState<User | null>(null);
   const [paymentAmounts, setPaymentAmounts] = useState<Record<string, number>>(
     {}
@@ -48,7 +52,11 @@ export const useCloseShift = () => {
     [];
 
   useEffect(() => {
-    const hasNewOrder = orders.some((order) => order.status === "new");
+    dispatch(fetchOrders());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const hasNewOrder = Array.isArray(orders) ? orders.some((order) => order.status === "new") : false;
     setRequiredNextCashier(hasNewOrder);
   }, [orders]);
 
@@ -101,7 +109,7 @@ export const useCloseShift = () => {
       .filter(([_, amount]) => amount !== null && amount !== 0)
       .map(([_id, amount]) => {
         return {
-          cm_payment_method: _id,
+          payment_method: _id,
           cashier_amount: amount,
         };
       });
@@ -140,10 +148,10 @@ export const useCloseShift = () => {
       closing_amounts: getPaymentAmounts(),
     };
 
-    console.log(data);
-
     const response = await closeShift(data);
-    return response;
+    if (response.status === 200) {
+      dispatch(logout());
+    }
   };
 
   const handleReset = () => {

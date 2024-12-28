@@ -25,6 +25,7 @@ import OpenShift from "./OpenShift";
 import { toast } from "react-toastify";
 import { createToast } from "@/components/global/Toasters";
 import { logout } from "@/store/slices/authentication/authSlice";
+import { TypographyH2, TypographySmall } from "@/components/ui/typography";
 
 export default function SelectPosPage() {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ export default function SelectPosPage() {
   const data = useSelector(selectPosData);
   const loading = useSelector(selectPosLoading);
   const error = useSelector(selectPosError);
-  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [checkDay, setCheckDay] = useState(false);
   const [open, setOpen] = useState(false);
 
   // Get authenticated user from localStorage
@@ -43,7 +44,7 @@ export default function SelectPosPage() {
 
   // Handlers
   const handleOpenDay = useCallback(() => {
-    setButtonDisabled(true);
+    setCheckDay(true);
     dispatch(openDay());
   }, [dispatch]);
 
@@ -57,34 +58,40 @@ export default function SelectPosPage() {
       findPos.shift?.user_id._id === userAuthenticated?.id ||
       userAuthenticated?.position === "Manager";
 
-    if (isAuthorizedUser) {
-      toast.success(
-        createToast(
-          "Welcome back",
-          "You are authorized to use this POS",
-          "success"
-        )
-      );
-      navigate("/");
-    } else {
-      toast.error(
-        createToast(
-          "Unauthorized",
-          "You are not authorized to use this POS",
-          "error"
-        )
-      );
-    }
+    if (checkDay) {
+      if (isAuthorizedUser) {
+        toast.success(
+          createToast(
+            "Welcome back",
+            "You are authorized to use this POS",
+            "success"
+          )
+        );
+        navigate("/");
+      } else if (!isAuthorizedUser && findPos.shift !== null) {
+        toast.error(
+          createToast(
+            "Unauthorized",
+            "You are not authorized to use this POS",
+            "error"
+          )
+        );
+      }
 
-    if (findPos.shift === null) {
-      setOpen(true);
+      if (findPos.shift === null) {
+        setOpen(true);
+      }
+    } else {
+      toast.warning(
+        createToast("Day is not open", "Please open the day first", "warning")
+      );
     }
   };
 
   // Effects
   useEffect(() => {
     dispatch(checkOpenDay());
-    setButtonDisabled(isDayOpen ?? false);
+    setCheckDay(isDayOpen ?? false);
   }, [dispatch, isDayOpen]);
 
   useEffect(() => {
@@ -137,14 +144,14 @@ export default function SelectPosPage() {
         >
           <header className="flex justify-between items-start w-full">
             <div>
-              <h2 className="tracking-tight scroll-m-20 text-3xl font-semibold text-white">
+              <TypographyH2 className="text-white">
                 Select your POS station
-              </h2>
-              <p className="mt-1 text-sm text-neutral-dark-grey">
+              </TypographyH2>
+              <TypographySmall className="mt-1 text-[0.8rem] text-neutral-dark-grey">
                 Choose your active POS to continue selling.
-              </p>
+              </TypographySmall>
             </div>
-            <Button onClick={handleOpenDay} disabled={buttonDisabled}>
+            <Button onClick={handleOpenDay} disabled={checkDay}>
               Open new Day
             </Button>
           </header>

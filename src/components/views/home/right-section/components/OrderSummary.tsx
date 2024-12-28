@@ -19,7 +19,6 @@ import { useOrderLines } from "../contexts/orderLinesContext";
 import { useRightViewContext } from "../contexts/rightViewContext";
 import OrderLines from "../import/OrderLines";
 import OtherActionsOrderLines from "../ui/OtherActionsOrderLines";
-import ChangeOrderType from "@/components/global/drawers/change-order-type/ChangeOrderType";
 
 const OrderSummary = () => {
   const [openModalConfirmHoldOrder, setOpenModalConfirmHoldOrder] =
@@ -81,23 +80,25 @@ const OrderSummary = () => {
         setOpen={setOpenModalConfirmHoldOrder}
       />
       <div className="flex flex-col justify-start h-full gap-y-2">
-        <div className="flex items-center justify-between">
+        {/* <div className="flex items-center justify-between">
           <TypographyP className="text-xs">
             <span>Order ref</span>
             <span className="text-muted-foreground">01-1423-26</span>
           </TypographyP>
-        </div>
+        </div> */}
 
-        <div className="flex items-center justify-between mt-4">
+      
+
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Button size="icon">
+            {/* <Button size="icon">
               <PrinterIcon className="w-[1.2rem] h-auto fill-white" />
               <span className="sr-only">Print Addition</span>
             </Button>
             <Button size="icon" className="relative">
               <BillIcon className="w-[1.2rem] absolute h-[1.2rem] fill-white top-2 left-[0.6rem]" />
               <span className="sr-only">Print Facture</span>
-            </Button>
+            </Button> */}
           </div>
 
           <div className="flex items-center justify-between gap-2">

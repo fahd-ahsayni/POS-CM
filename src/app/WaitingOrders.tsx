@@ -1,4 +1,3 @@
-import { Loading } from "@/components/global/loading";
 import DataTable from "@/components/views/orders/components/DataTable";
 import { WAITING_TABLE_HEADERS } from "@/components/views/orders/config/waiting-table-config";
 import { motion } from "framer-motion";
@@ -6,6 +5,7 @@ import { useEffect, useState } from "react";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import { formatData } from "@/components/views/orders/config/waiting-table-config";
+import { BeatLoader } from "react-spinners";
 
 export default function WaitingOrders() {
   const [holdOrders, setHoldOrders] = useState([]);
@@ -28,7 +28,7 @@ export default function WaitingOrders() {
       <main className="mt-6 flex-1 overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center h-full">
-            <Loading color="text-red-600" />
+            <BeatLoader color="#fb0000" size={10} />
           </div>
         ) : (
           <DataTable

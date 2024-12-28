@@ -16,6 +16,7 @@ import { useLeftViewContext } from "../../home/left-section/contexts/leftViewCon
 import { useNavigate } from "react-router-dom";
 import { ORDER_SUMMARY_VIEW } from "../../home/right-section/constants";
 import { useRightViewContext } from "../../home/right-section/contexts/rightViewContext";
+import { useOrder } from "@/components/global/drawers/order-details/context/OrderContext";
 
 export interface Header {
   key: string;
@@ -57,7 +58,6 @@ interface FormattedData {
 const DataTable: React.FC<DataTableProps> = ({
   headers,
   data,
-  caption,
   formatData,
   withPrintButton,
   isWaitingOrders,
@@ -88,29 +88,36 @@ const DataTable: React.FC<DataTableProps> = ({
 
   const filteredData = useMemo(() => {
     let result = formattedData;
-    
+
     if (filterCriteria) {
-      result = result.filter(item => {
-        const matchesEmployee = !filterCriteria.employee || 
-          item.orderedBy?.toLowerCase().includes(filterCriteria.employee.toLowerCase());
-        
-        const matchesOrderType = !filterCriteria.orderType || 
-          item.orderType?.toLowerCase() === filterCriteria.orderType.toLowerCase();
-        
-        const matchesStatus = !filterCriteria.status || 
-          item.paymentStatus?.toLowerCase() === filterCriteria.status.toLowerCase();
+      result = result.filter((item) => {
+        const matchesEmployee =
+          !filterCriteria.employee ||
+          item.orderedBy
+            ?.toLowerCase()
+            .includes(filterCriteria.employee.toLowerCase());
+
+        const matchesOrderType =
+          !filterCriteria.orderType ||
+          item.orderType?.toLowerCase() ===
+            filterCriteria.orderType.toLowerCase();
+
+        const matchesStatus =
+          !filterCriteria.status ||
+          item.paymentStatus?.toLowerCase() ===
+            filterCriteria.status.toLowerCase();
 
         return matchesEmployee && matchesOrderType && matchesStatus;
       });
     }
-    
+
     return result;
   }, [formattedData, filterCriteria]);
 
   const sortedData = useMemo(() => {
     if (!sortConfig) return filteredData;
 
-    return [...filteredData].sort((a: FormattedData, b: FormattedData) => {
+    return [...filteredData].sort((a, b) => {
       const { key, direction } = sortConfig;
       const comparison = a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0;
       return direction === "ascending" ? comparison : -comparison;
@@ -216,44 +223,55 @@ const TableBody: React.FC<{
   getStatusTextColor: (status?: string) => string;
   withPrintButton?: boolean;
   isWaitingOrders?: boolean;
-}> = memo(({ headers, data, getStatusTextColor, withPrintButton, isWaitingOrders }) => {
-  const { setSelectedProducts } = useLeftViewContext();
-  const { setViews, setCustomerIndex, setSelectedCustomer } = useRightViewContext();
-  const navigate = useNavigate();
+}> = memo(
+  ({ headers, data, getStatusTextColor, withPrintButton, isWaitingOrders }) => {
+    const { setSelectedProducts } = useLeftViewContext();
+    const { setViews, setCustomerIndex, setSelectedCustomer } =
+      useRightViewContext();
+    const { setSelectedOrder, setOpenOrderDetails } = useOrder();
+    const navigate = useNavigate();
 
-  const handleClick = (item: any) => {
-    if (isWaitingOrders) {
-      handleRowClick(item, setSelectedProducts, setCustomerIndex, setSelectedCustomer);
-      navigate("/");
-      setViews(ORDER_SUMMARY_VIEW);
-    }
-  };
+    const handleClick = (item: any) => {
+      console.log("item", item);
+      if (isWaitingOrders) {
+        handleRowClick(
+          item,
+          setSelectedProducts,
+          setCustomerIndex,
+          setSelectedCustomer
+        );
+        navigate("/");
+        setViews(ORDER_SUMMARY_VIEW);
+      } else {
+        setSelectedOrder(item);
+        setOpenOrderDetails(true);
+      }
+    };
 
-  return (
-    <div className="w-full">
-      {data.map((item, index) => (
-        <div
-          key={index}
-          onClick={() => handleClick(item)}
-          className={`flex w-full hover:bg-primary-black/5 dark:hover:bg-white/5 transition-colors duration-200 rounded-md ${
-            isWaitingOrders ? "cursor-pointer" : ""
-          }`}
-        >
-          {headers.map((header) => (
-            <TableCell
-              key={header.key}
-              header={header}
-              item={item}
-              getStatusTextColor={getStatusTextColor}
-              withPrintButton={withPrintButton}
-              isWaitingOrders={isWaitingOrders}
-            />
-          ))}
-        </div>
-      ))}
-    </div>
-  );
-});
+    return (
+      <div className="w-full">
+        {data.map((item, index) => (
+          <div
+            key={index}
+            onClick={() => handleClick(item)}
+            className="flex w-full hover:bg-primary-black/5 dark:hover:bg-white/5 transition-colors duration-200 rounded-md cursor-pointer"
+          >
+            {headers.map((header) => (
+              <TableCell
+                key={header.key}
+                header={header}
+                item={item}
+                getStatusTextColor={getStatusTextColor}
+                withPrintButton={withPrintButton}
+                isWaitingOrders={isWaitingOrders}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+    );
+  }
+);
 
 const TableCell: React.FC<{
   header: Header;
@@ -261,56 +279,47 @@ const TableCell: React.FC<{
   getStatusTextColor: (status?: string) => string;
   withPrintButton?: boolean;
   isWaitingOrders?: boolean;
-}> = memo(({ header, item, getStatusTextColor, withPrintButton, isWaitingOrders }) => {
-  const { setSelectedProducts } = useLeftViewContext();
-  const { setViews, setCustomerIndex, setSelectedCustomer } = useRightViewContext();
-  const navigate = useNavigate();
-
-  const handleClick = () => {
-    if (isWaitingOrders) {
-      handleRowClick(item, setSelectedProducts, setCustomerIndex, setSelectedCustomer);
-      navigate("/");
-      setViews(ORDER_SUMMARY_VIEW);
-    }
-  };
-
-  return (
-    <div
-      onClick={isWaitingOrders ? handleClick : undefined}
-      className={`px-4 py-3 text-xs flex-shrink-0 ${
-        header.key === "paymentStatus" ? getStatusTextColor(item[header.key]) : ""
-      } ${
-        header.isTextMuted ? "text-neutral-dark-grey" : "dark:text-white text-primary-black"
-      } ${header.isPrice ? "text-right" : ""} ${
-        isWaitingOrders ? "cursor-pointer" : ""
-      }`}
-      style={{
-        width: header.width,
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-      }}
-    >
-      {header.isPrice ? (
-        <span className="text-right flex items-center justify-end w-full gap-2">
-          {item[header.key].toFixed(currency.toFixed)} Dhs
-          {withPrintButton && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                printOrder(item.id);
-              }}
-              className="hover:bg-primary-black/5 dark:hover:bg-white/5 p-1 rounded-md mr-2"
-            >
-              <PrinterIcon className="w-5 h-5 dark:fill-white fill-primary-black" />
-            </button>
-          )}
-        </span>
-      ) : (
-        item[header.key]
-      )}
-    </div>
-  );
-});
+}> = memo(
+  ({ header, item, getStatusTextColor, withPrintButton, isWaitingOrders }) => {
+    return (
+      <div
+        className={`px-4 py-3 text-xs flex-shrink-0 ${
+          header.key === "paymentStatus"
+            ? getStatusTextColor(item[header.key])
+            : ""
+        } ${
+          header.isTextMuted
+            ? "text-neutral-dark-grey"
+            : "dark:text-white text-primary-black"
+        } ${header.isPrice ? "text-right" : ""}`}
+        style={{
+          width: header.width,
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        }}
+      >
+        {header.isPrice ? (
+          <span className="text-right flex items-center justify-end w-full gap-2">
+            {item[header.key].toFixed(currency.toFixed)} Dhs
+            {withPrintButton && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  printOrder(item.id);
+                }}
+                className="hover:bg-primary-black/5 dark:hover:bg-white/5 p-1 rounded-md mr-2"
+              >
+                <PrinterIcon className="w-5 h-5 dark:fill-white fill-primary-black" />
+              </button>
+            )}
+          </span>
+        ) : (
+          item[header.key]
+        )}
+      </div>
+    );
+  }
+);
 
 export default memo(DataTable);

@@ -93,8 +93,8 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
 
   if (processedUsers.length === 0) {
     return (
-      <div className="w-full p-4 text-center text-gray-500">
-        <p>No users available for this category.</p>
+      <div className="w-full p-4 text-center text-primary-black">
+        <p>No users available</p>
       </div>
     );
   }

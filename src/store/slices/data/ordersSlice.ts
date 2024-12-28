@@ -1,17 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getOrdersByDay } from "@/api/services";
-
-interface Order {
-  id: number;
-  orderId: string;
-  dateTime: string;
-  orderedBy: string;
-  orderType: string;
-  deliveryPerson: string;
-  paymentStatus: string;
-  orderTotal: number;
-  status: string;
-}
+import { Order } from "@/types/getDataByDay";
 
 interface OrdersState {
   orders: Order[];

@@ -1,4 +1,3 @@
-import { Loading } from "@/components/global/loading";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -18,6 +17,7 @@ import { useLeftViewContext } from "../contexts/leftViewContext";
 import { useProductSelection } from "../hooks/useProductSelection";
 import Header from "./Headre";
 import ProductsVariants from "./ProductsVariants";
+import { BeatLoader } from "react-spinners";
 
 export default memo(function ProductsByCategory() {
   const {
@@ -193,7 +193,7 @@ export default memo(function ProductsByCategory() {
     if (loading) {
       return (
         <div className="h-96 w-full flex items-center justify-center">
-          <Loading />
+          <BeatLoader color="#fb0000" size={10} />
         </div>
       );
     }

@@ -54,19 +54,18 @@ export default function Authorization({
 
   return (
     <>
-      <div className="flex flex-col gap-2 h-full py-8">
-        <TypographyP className="text-sm">
+      <section className="overflow-hidden h-full flex flex-col items-center gap-8 relative">
+        <TypographyP className="text-sm opacity-70">
           Enter the admin passcode or scan an admin badge to proceed with the
           cancellation.
         </TypographyP>
-        <div className="h-full flex flex-col justify-center items-center">
-          <div className="">
-            <CirclesAnimation
-              currentLength={passcode.length}
-              incorrectPasscode={incorrectPasscode}
-            />
-          </div>
-          <div className="mt-10 min-w-full px-20">
+        <div className="flex-1 pt-12 flex items-center justify-center flex-col space-y-8">
+          <CirclesAnimation
+            currentLength={passcode.length}
+            incorrectPasscode={incorrectPasscode}
+            isFixedLightDark={true}
+          />
+          <div>
             <NumberPad
               onNumberClick={handleNumberClick}
               numbers={shuffledNumbers}
@@ -74,21 +73,19 @@ export default function Authorization({
             />
           </div>
         </div>
-        <div>
-          <div className="flex justify-center items-center mt-6">
-            <ShineBorder
-              className={cn(
-                "flex cursor-pointer justify-center items-center gap-4 py-3 px-8"
-              )}
-              color="#fff"
-              borderWidth={2}
-            >
-              <RiRfidFill size={20} className={cn("text-white")} />
-              Scan Admin Badge
-            </ShineBorder>
-          </div>
+        <div className="flex justify-center gap-4 w-full px-8">
+          <ShineBorder
+            className={cn(
+              "flex cursor-pointer justify-center items-center gap-4 py-2.5 px-8"
+            )}
+            color="#fff"
+            borderWidth={2}
+          >
+            <RiRfidFill size={20} className={cn("text-white")} />
+            <span className="text-white text-sm">Scan Admin Badge</span>
+          </ShineBorder>
         </div>
-      </div>
+      </section>
     </>
   );
 }

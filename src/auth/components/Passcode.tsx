@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import CirclesAnimation from "./ui/CirclesAnimation";
 import { toast } from "react-toastify";
 import { createToast } from "@/components/global/Toasters";
-import { Loading } from "@/components/global/loading";
+import { BeatLoader } from "react-spinners";
 
 export default function Passcode() {
   const [passcode, setPasscode] = useState<string>("");
@@ -74,25 +74,32 @@ export default function Passcode() {
       return;
     }
 
-    const result = await dispatch(
-      login({
-        _id: selectedUser._id.toString(),
-        password: passcode,
-      })
-    ).unwrap();
+    try {
+      const result = await dispatch(
+        login({
+          _id: selectedUser._id.toString(),
+          password: passcode,
+        })
+      ).unwrap();
 
-    if (result) {
-      toast.success(
-        createToast(
-          "Login Successful",
-          "You have successfully logged in.",
-          "success"
-        )
-      );
-      navigate("/select-pos");
-      dispatch(setSelectedUser(users.cashiers[0]));
-
+      if (result) {
+        toast.success(
+          createToast(
+            "Login Successful",
+            "You have successfully logged in.",
+            "success"
+          )
+        );
+        navigate("/select-pos");
+        dispatch(setSelectedUser(users.cashiers[0]));
+      }
+    } catch (error) {
       setIncorrectPasscode(true);
+      // Reset the incorrect passcode state after animation
+      setTimeout(() => {
+        setIncorrectPasscode(false);
+        setPasscode(""); // Optional: clear passcode on error
+      }, 1000);
     }
   }, [selectedUser, passcode, dispatch, navigate, users.cashiers]);
 
@@ -130,11 +137,7 @@ export default function Passcode() {
         </div>
         <div className="mt-10">
           <Button onClick={handleLogin} className="w-full">
-            {loading ? (
-              <Loading color="text-white" borderWidth={3} size={5} />
-            ) : (
-              "Log In"
-            )}
+            {loading ? <BeatLoader color="white" size={8} /> : "Log In"}
           </Button>
         </div>
       </div>

@@ -18,7 +18,7 @@ const PosCard = ({ pos, onClick }: PosCardProps) => {
     <motion.div {...pageAnimations.posCard} onClick={() => onClick(pos._id)}>
       <Card
         className={cn(
-          "w-full cursor-pointer py-4 px-8",
+          "w-full cursor-pointer py-4 px-8 group",
           pos._id === posId ? "last-pos-card" : ""
         )}
       >
@@ -44,7 +44,7 @@ const PosCard = ({ pos, onClick }: PosCardProps) => {
               </div>
             )}
           </div>
-          <ChevronRight className="w-7 h-7 text-neutral-dark-grey" />
+          <ChevronRight className="w-7 h-7 text-neutral-dark-grey group-hover:translate-x-1 transition-all duration-300" />
         </div>
       </Card>
     </motion.div>

@@ -98,28 +98,28 @@ interface Order {
   _id: string;
   ref: string;
   order_number: number;
+  orderline_ids: any[];
+  __v: number;
   discount_amount: number;
   total_amount: number;
-  notes: string;
+  notes: string[];
   customer_count: number;
-  one_time: boolean;
-  urgent: boolean;
+  one_time: boolean | false;
+  urgent: boolean | false;
   status: string;
-  client_id: string | null;
-  shift_id: Shift;
+  client_id: string;
+  shift_id: object | null;
   table_id: string | null;
   waiter_id: string | null;
-  order_type_id: OrderType;
+  order_type_id: object | null;
   delivery_guy_id: string | null;
   number_of_place: number;
-  created_by: User;
-  updated_by: string;
-  orderline_ids: OrderLine[];
-  archived: boolean;
-  coaster_call: string;
+  created_by: object | null;
+  updated_by: string | null;
   createdAt: string;
   updatedAt: string;
-  __v: number;
+  coaster_call: number | null;
+  archived: boolean | false;
 }
 
 export type {

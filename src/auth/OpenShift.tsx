@@ -4,6 +4,7 @@ import NumberPad from "@/components/global/NumberPad";
 import { createToast } from "@/components/global/Toasters";
 import { Button } from "@/components/ui/button";
 import { TypographyH2 } from "@/components/ui/typography";
+import { currency } from "@/preferences";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -54,15 +55,12 @@ export default function OpenShift({ open, setOpen, posId }: OpenShiftProps) {
     <Drawer open={open} setOpen={setOpen} title="Open Shift">
       <section className="overflow-hidden h-full flex flex-col items-center gap-8 relative">
         <div className="flex-1 pt-12 flex items-center justify-center flex-col space-y-8">
-          <TypographyH2>{amount || "0"} Dhs</TypographyH2>
+          <TypographyH2 className="font-medium">{amount || "0"} {currency.currency}</TypographyH2>
           <div>
-            <NumberPad
-              onNumberClick={handleNumberClick}
-              numbers={[1, 2, 3, 4, 5, 6, 7, 8, 9]}
-            />
+            <NumberPad onNumberClick={handleNumberClick} fixLightDark />
           </div>
         </div>
-        <div className="flex gap-4 mt-6 w-full">
+        <div className="flex gap-4 mt-6 w-full px-8">
           <Button
             className="w-full"
             onClick={handleOpenShift}

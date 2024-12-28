@@ -1,3 +1,5 @@
+import ApplyDiscount from "@/components/global/drawers/apply-discount/ApplyDiscount";
+import ChangeOrderType from "@/components/global/drawers/change-order-type/ChangeOrderType";
 import ModalOrderComments from "@/components/global/modal/ModalOrderComments";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,19 +10,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SwitchToggle } from "@/components/ui/toggle";
-import { BsThreeDotsVertical } from "react-icons/bs";
-import { useState } from "react";
 import { updateOrder } from "@/functions/updateOrder";
+import { useState } from "react";
+import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch } from "react-redux";
-import ChangeOrderType from "@/components/global/drawers/change-order-type/ChangeOrderType";
-import ApplyDiscount from "@/components/global/drawers/apply-discount/ApplyDiscount";
 
 export default function OtherActionsOrderLines() {
   const dispatch = useDispatch();
   const [openModalOrderComments, setOpenModalOrderComments] = useState(false);
+  useState(false);
   const [openModalChangeOrderType, setOpenModalChangeOrderType] =
     useState(false);
-  const [openModalApplyDiscount, setOpenModalApplyDiscount] = useState(true);
+  const [openModalApplyDiscount, setOpenModalApplyDiscount] = useState(false);
   const [isUrgent, setIsUrgent] = useState(false);
   const [isOneTime, setIsOneTime] = useState(false);
 
@@ -48,6 +49,7 @@ export default function OtherActionsOrderLines() {
         isOpen={openModalOrderComments}
         setOpen={setOpenModalOrderComments}
       />
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button size="icon">
@@ -59,7 +61,7 @@ export default function OtherActionsOrderLines() {
           <DropdownMenuItem onClick={() => setOpenModalChangeOrderType(true)}>
             <span className="text-sm">Change Order Type</span>
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setOpenModalApplyDiscount(true)}>
             <span className="text-sm">Apply Discount</span>
           </DropdownMenuItem>
           {/* <DropdownMenuItem>

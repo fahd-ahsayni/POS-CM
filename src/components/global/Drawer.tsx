@@ -29,7 +29,7 @@ export default function Drawer({
   position = 'right',
 }: DrawerProps) {
   return (
-    <Transition.Root show={open} as={Fragment}>
+    <Transition show={open} as={Fragment}>
       <Dialog 
         as="div" 
         className="relative z-10" 
@@ -42,15 +42,15 @@ export default function Drawer({
         }}
       >
         <div className="fixed inset-0" />
-        <div className="fixed inset-0 overflow-hidden transform-gpu bg-primary-black/70">
+        <div className="fixed inset-0 overflow-hidden transform-gpu bg-primary-black/90">
           <div className="absolute inset-0 overflow-hidden">
             <div className={`pointer-events-none fixed inset-y-0 ${position}-0 flex max-w-full ${position === 'left' ? 'pr-10' : 'pl-10'}`}>
               <TransitionChild
                 as={Fragment}
-                enter="transform transition ease-in-out duration-300 sm:duration-300"
+                enter="transform transition ease-in-out duration-150"
                 enterFrom={position === 'left' ? '-translate-x-full' : 'translate-x-full'}
                 enterTo="translate-x-0"
-                leave="transform transition ease-in-out duration-300 sm:duration-300"
+                leave="transform transition ease-in-out duration-150"
                 leaveFrom="translate-x-0"
                 leaveTo={position === 'left' ? '-translate-x-full' : 'translate-x-full'}
               >
@@ -60,14 +60,14 @@ export default function Drawer({
                   <motion.div 
                     layout
                     transition={{
-                      layout: { duration: 0.3, ease: "easeInOut" },
-                      width: { duration: 0.3, ease: "easeInOut" }
+                      layout: { duration: 0.15, ease: "easeInOut" },
+                      width: { duration: 0.15, ease: "easeInOut" }
                     }}
                     className="flex h-full flex-col overflow-y-scroll dark:bg-secondary-black bg-secondary-white py-4 shadow-xl"
                   >
                     <motion.div layout className="">
                       <div className="flex items-start justify-between px-4 sm:px-6">
-                        <DialogTitle className="text-lg font-medium">
+                        <DialogTitle className="font-medium dark:text-white text-primary-black">
                           {title}
                         </DialogTitle>
                         <div className="ml-3 flex h-7 items-center">
@@ -99,6 +99,6 @@ export default function Drawer({
           </div>
         </div>
       </Dialog>
-    </Transition.Root>
+    </Transition>
   );
 }
