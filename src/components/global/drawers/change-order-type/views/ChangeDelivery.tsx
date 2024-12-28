@@ -1,9 +1,9 @@
+import { glovo, kaalix, ownDelivery, yassir } from "@/assets";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TypographyH4 } from "@/components/ui/typography";
 import { motion } from "framer-motion";
-import { glovo, kaalix, ownDelivery, yassir } from "@/assets";
-import { TYPE_OF_ORDER_VIEW, OWN_DELIVERY_FORM_VIEW } from "../constants";
+import { CHANGE_OWN_DELIVERY_FORM_VIEW, CHANGE_TYPE_OF_ORDER_VIEW } from "../constants";
 
 interface DeliveryProps {
   setDrawerView: (view: string) => void;
@@ -39,7 +39,7 @@ export default function ChangeDelivery({
 }: DeliveryProps) {
   const handleDeliverySelect = (deliveryType: string) => {
     if (deliveryType === "ownDelivery") {
-      setDrawerView(OWN_DELIVERY_FORM_VIEW);
+      setDrawerView(CHANGE_OWN_DELIVERY_FORM_VIEW);
     } else {
       // Handle third-party delivery selection
       // Add any necessary state updates here
@@ -80,7 +80,7 @@ export default function ChangeDelivery({
         <Button
           className="w-full"
           variant="secondary"
-          onClick={() => setDrawerView(TYPE_OF_ORDER_VIEW)}
+          onClick={() => setDrawerView(CHANGE_TYPE_OF_ORDER_VIEW)}
         >
           Back
         </Button>

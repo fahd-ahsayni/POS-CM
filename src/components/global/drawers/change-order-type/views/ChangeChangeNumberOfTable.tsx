@@ -11,17 +11,17 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { TYPE_OF_ORDER_VIEW } from "../constants";
+import { CHANGE_TYPE_OF_ORDER_VIEW } from "../constants";
 
-interface OnPlaceProps {
+interface ChangeNumberOfTableProps {
   setDrawerView: (view: string) => void;
   setOpen: (open: boolean) => void;
 }
 
-export default function ChangeOnPlace({
+export default function ChangeNumberOfTable({
   setDrawerView,
   setOpen,
-}: OnPlaceProps) {
+}: ChangeNumberOfTableProps) {
   const [tableNumber, setTableNumber] = useState("");
   const [tableValid, setTableValid] = useState<string>("valid");
   const dispatch = useDispatch();
@@ -110,7 +110,7 @@ export default function ChangeOnPlace({
           <Button
             className="flex-1"
             variant="secondary"
-            onClick={() => setDrawerView(TYPE_OF_ORDER_VIEW)}
+            onClick={() => setDrawerView(CHANGE_TYPE_OF_ORDER_VIEW)}
           >
             Back
           </Button>

@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { TypographyH3 } from "@/components/ui/typography";
 import { motion } from "framer-motion";
-import { TYPE_OF_ORDER_VIEW } from "../constants";
+import { CHANGE_OWN_DELIVERY_FORM_VIEW } from "../constants";
 
 interface OwnDeliveryFormProps {
   setDrawerView: (view: string) => void;
@@ -98,9 +98,8 @@ export default function ChangeOwnDeliveryForm({
           <div className="flex gap-2 pt-4">
             <Button
               type="button"
-              variant="outline"
-              className="flex-1 bg-gray-200 hover:bg-gray-300/70 dark:bg-muted"
-              onClick={() => setDrawerView(TYPE_OF_ORDER_VIEW)}
+              variant="secondary"
+              onClick={() => setDrawerView(CHANGE_OWN_DELIVERY_FORM_VIEW)}
             >
               Back
             </Button>

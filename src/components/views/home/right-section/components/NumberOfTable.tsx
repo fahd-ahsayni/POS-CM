@@ -14,7 +14,7 @@ import { useDispatch } from "react-redux";
 import { ORDER_SUMMARY_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
 import { useRightViewContext } from "../contexts/rightViewContext";
 
-export default function OnPlace() {
+export default function NumberOfTable() {
   const { tableNumber, setTableNumber } = useRightViewContext();
   const [tableValid, setTableValid] = useState<string>("valid");
   const { setViews } = useRightViewContext();

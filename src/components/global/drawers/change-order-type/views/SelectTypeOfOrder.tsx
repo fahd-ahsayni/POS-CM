@@ -1,34 +1,22 @@
-import { memo, useCallback, useEffect, useState } from "react";
-import { Card } from "@/components/ui/card";
-import { TypographyH4, TypographyP } from "@/components/ui/typography";
-import { OrderType } from "@/types";
-import { ChevronRightIcon } from "lucide-react";
+import { TypographyH4 } from "@/components/ui/typography";
 import {
-  TypeOfOrderDescription,
-  TypeOfOrderIcon,
-} from "@/components/views/home/right-section/ui/TypeOfOrderIcon";
-import { Skeleton } from "@/components/ui/skeleton";
+  OrderCard,
+  OrderCardSkeleton,
+} from "@/components/views/home/right-section/components/SelectTypeOfOrder";
 import { updateOrder } from "@/functions/updateOrder";
+import { OrderType } from "@/types";
+import { memo, useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { DELIVERY_VIEW, ON_PLACE_VIEW, TAKE_AWAY_VIEW } from "../constants";
-import { OrderCard } from "@/components/views/home/right-section/components/SelectTypeOfOrder";
+import {
+  CHANGE_DELIVERY_VIEW,
+  CHANGE_NUMBER_OF_TABLE_VIEW,
+  CHANGE_COASTER_CALL_VIEW,
+} from "../constants";
 
 interface SelectTypeOfOrderProps {
   setDrawerView: (view: string) => void;
   setOpen: (open: boolean) => void;
 }
-
-const OrderCardSkeleton = () => (
-  <Card className="w-full rounded-md h-24 px-8 py-4 dark:!bg-secondary-black bg-white flex space-x-4 items-center justify-between">
-    <div className="flex items-center gap-x-4 w-full">
-      <Skeleton className="h-7 w-7 rounded-full bg-neutral-dark-grey/30" />
-      <div className="space-y-2 flex-1">
-        <Skeleton className="h-5 w-24 bg-neutral-dark-grey/30" />
-        <Skeleton className="h-4 w-40 bg-neutral-dark-grey/30" />
-      </div>
-    </div>
-  </Card>
-);
 
 function SelectTypeOfOrder({ setDrawerView, setOpen }: SelectTypeOfOrderProps) {
   const [orderTypes, setOrderTypes] = useState<OrderType[]>([]);
@@ -57,13 +45,13 @@ function SelectTypeOfOrder({ setDrawerView, setOpen }: SelectTypeOfOrderProps) {
       const type = orderType.type.toLowerCase();
       switch (type) {
         case "takeaway":
-          setDrawerView(TAKE_AWAY_VIEW);
+          setDrawerView(CHANGE_COASTER_CALL_VIEW);
           break;
         case "onplace":
-          setDrawerView(ON_PLACE_VIEW);
+          setDrawerView(CHANGE_NUMBER_OF_TABLE_VIEW);
           break;
         case "delivery":
-          setDrawerView(DELIVERY_VIEW);
+          setDrawerView(CHANGE_DELIVERY_VIEW);
           break;
         default:
           setOpen(false);

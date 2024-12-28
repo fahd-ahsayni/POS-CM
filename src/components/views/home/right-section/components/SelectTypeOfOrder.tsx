@@ -1,17 +1,17 @@
-import { memo, useCallback, useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyH4, TypographyP } from "@/components/ui/typography";
 import { updateOrder } from "@/functions/updateOrder";
+import { cn } from "@/lib/utils";
 import { OrderType } from "@/types";
 import { ChevronRightIcon } from "lucide-react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { DELIVERY_VIEW, NUMBER_OF_TABLE_VIEW, ORDER_SUMMARY_VIEW } from "../constants";
 import { useRightViewContext } from "../contexts/rightViewContext";
 import { TypeOfOrderDescription, TypeOfOrderIcon } from "../ui/TypeOfOrderIcon";
-import { ORDER_SUMMARY_VIEW } from "../constants";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
 
-const OrderCardSkeleton = () => (
+export const OrderCardSkeleton = () => (
   <Card className="w-full rounded-md h-24 px-8 py-4 dark:!bg-secondary-black bg-white flex space-x-4 items-center justify-between">
     <div className="flex items-center gap-x-4 w-full">
       <Skeleton className="h-7 w-7 rounded-full bg-neutral-dark-grey/30" />
@@ -86,11 +86,16 @@ function SelectTypeOfOrder() {
 
   const handleOrderTypeSelect = useCallback(
     (orderType: OrderType) => {
-      if (orderType.type.toLowerCase() === "takeaway") {
+      const orderTypeLC = orderType.type.toLowerCase();
+      
+      if (orderTypeLC === "takeaway") {
         setViews(ORDER_SUMMARY_VIEW);
+      } else if (orderTypeLC === "delivery") {
+        setViews(DELIVERY_VIEW);
       } else {
-        setViews(orderType.type);
+        setViews(NUMBER_OF_TABLE_VIEW);
       }
+      
       setOrderType(orderType._id);
       dispatch(updateOrder({ order_type_id: orderType._id }));
       localStorage.setItem("orderType", JSON.stringify(orderType));

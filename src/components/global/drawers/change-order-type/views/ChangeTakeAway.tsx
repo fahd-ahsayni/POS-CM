@@ -3,17 +3,17 @@ import { Button } from "@/components/ui/button";
 import { TypographyH1, TypographyH4 } from "@/components/ui/typography";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { TYPE_OF_ORDER_VIEW } from "../constants";
+import { CHANGE_TYPE_OF_ORDER_VIEW } from "../constants";
 
-interface TakeAwayProps {
+interface ChangeCoasterCallProps {
   setDrawerView: (view: string) => void;
   setOpen: (open: boolean) => void;
 }
 
-export default function ChangeTakeAway({
+export default function ChangeCoasterCall({
   setDrawerView,
   setOpen,
-}: TakeAwayProps) {
+}: ChangeCoasterCallProps) {
   const [beeperNumber, setBeeperNumber] = useState("");
 
   const handleNumberClick = (value: string) => {
@@ -57,7 +57,7 @@ export default function ChangeTakeAway({
           <Button
             className="flex-1"
             variant="secondary"
-            onClick={() => setDrawerView(TYPE_OF_ORDER_VIEW)}
+            onClick={() => setDrawerView(CHANGE_TYPE_OF_ORDER_VIEW)}
           >
             Back
           </Button>

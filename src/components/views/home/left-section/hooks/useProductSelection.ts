@@ -1,9 +1,8 @@
+import { createToast } from "@/components/global/Toasters";
 import { Product, ProductSelected } from "@/types";
 import { useCallback } from "react";
-import { v4 as uuidv4 } from "uuid";
-import { ON_PLACE_VIEW } from "../../right-section/constants";
 import { toast } from "react-toastify";
-import { createToast } from "@/components/global/Toasters";
+import { v4 as uuidv4 } from "uuid";
 
 interface UseProductSelectionProps {
   selectedProducts: ProductSelected[];
@@ -52,7 +51,7 @@ export const useProductSelection = ({
                   is_paid: false,
                   is_ordred: false,
                   suite_commande: false,
-                  order_type_id: orderType || ON_PLACE_VIEW,
+                  order_type_id: orderType,
                 }
               : p
           );
@@ -68,7 +67,7 @@ export const useProductSelection = ({
             quantity: 1,
             price: price || variant.price_ttc,
             customer_index: selectedCustomer,
-            order_type_id: orderType || ON_PLACE_VIEW,
+            order_type_id: orderType,
             uom_id: variant.uom_id,
             notes: [],
             is_paid: false,

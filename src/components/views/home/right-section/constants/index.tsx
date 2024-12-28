@@ -1,21 +1,21 @@
 import Delivery from "../components/Delivery";
-import OnPlace from "../components/OnPlace";
 import OrderSummary from "../components/OrderSummary";
 import OwnDeliveryForm from "../components/OwnDeliveryForm";
 import SelectTypeOfOrder from "../components/SelectTypeOfOrder";
-import TakeAway from "../components/TakeAway";
+import CoasterCall from "../components/CoasterCall";
+import NumberOfTable from "../components/NumberOfTable";
 
-export const TYPE_OF_ORDER_VIEW = "TypeOfOrder";
-export const TAKE_AWAY_VIEW = "takeAway";
-export const ON_PLACE_VIEW = "onPlace";
+export const TYPE_OF_ORDER_VIEW = "type-of-order";
+export const NUMBER_OF_TABLE_VIEW = "number-of-table";
+export const COASTER_CALL_VIEW = "coaster-call";
 export const DELIVERY_VIEW = "delivery";
-export const OWN_DELIVERY_FORM_VIEW = "OwnDeliveryForm";
-export const ORDER_SUMMARY_VIEW = "OrderSummary";
+export const OWN_DELIVERY_FORM_VIEW = "own-delivery-form";
+export const ORDER_SUMMARY_VIEW = "order-summary";
 
 export const tabsConfig = [
   { value: TYPE_OF_ORDER_VIEW, component: <SelectTypeOfOrder /> },
-  { value: TAKE_AWAY_VIEW, component: <TakeAway /> },
-  { value: ON_PLACE_VIEW, component: <OnPlace /> },
+  { value: COASTER_CALL_VIEW, component: <CoasterCall /> },
+  { value: NUMBER_OF_TABLE_VIEW, component: <NumberOfTable /> },
   { value: DELIVERY_VIEW, component: <Delivery /> },
   {
     value: OWN_DELIVERY_FORM_VIEW,

@@ -1,61 +1,58 @@
-import { useState } from "react";
-import Drawer from "../../Drawer";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import Drawer from "../../Drawer";
 import {
-  TYPE_OF_ORDER_VIEW,
-  TAKE_AWAY_VIEW,
-  ON_PLACE_VIEW,
-  DELIVERY_VIEW,
-  OWN_DELIVERY_FORM_VIEW,
+  CHANGE_COASTER_CALL_VIEW,
+  CHANGE_DELIVERY_VIEW,
+  CHANGE_NUMBER_OF_TABLE_VIEW,
+  CHANGE_OWN_DELIVERY_FORM_VIEW,
+  CHANGE_TYPE_OF_ORDER_VIEW,
 } from "./constants";
-import SelectTypeOfOrder from "./views/SelectTypeOfOrder";
-import ChangeTakeAway from "./views/ChangeTakeAway";
-import ChangeOnPlace from "./views/ChangeOnPlace";
+import ChangeNumberOfTable from "./views/ChangeChangeNumberOfTable";
 import ChangeDelivery from "./views/ChangeDelivery";
 import ChangeOwnDeliveryForm from "./views/ChangeOwnDeliveryForm";
+import ChangeTakeAway from "./views/ChangeTakeAway";
+import SelectTypeOfOrder from "./views/SelectTypeOfOrder";
 
 export default function ChangeOrderType() {
   const [open, setOpen] = useState(true);
-  const [drawerView, setDrawerView] = useState(TYPE_OF_ORDER_VIEW);
+  const [drawerView, setDrawerView] = useState(CHANGE_TYPE_OF_ORDER_VIEW);
 
   const handleClose = () => {
     setOpen(false);
-    setDrawerView(TYPE_OF_ORDER_VIEW);
+    setDrawerView(CHANGE_TYPE_OF_ORDER_VIEW);
   };
 
   const drawerTabsConfig = [
     {
-      value: TYPE_OF_ORDER_VIEW,
+      value: CHANGE_TYPE_OF_ORDER_VIEW,
       component: (
         <SelectTypeOfOrder setDrawerView={setDrawerView} setOpen={setOpen} />
       ),
     },
     {
-      value: TAKE_AWAY_VIEW,
+      value: CHANGE_COASTER_CALL_VIEW,
       component: (
         <ChangeTakeAway setDrawerView={setDrawerView} setOpen={setOpen} />
       ),
     },
     {
-      value: ON_PLACE_VIEW,
+      value: CHANGE_NUMBER_OF_TABLE_VIEW,
       component: (
-        <ChangeOnPlace setDrawerView={setDrawerView} setOpen={setOpen} />
+        <ChangeNumberOfTable setDrawerView={setDrawerView} setOpen={setOpen} />
       ),
     },
     {
-      value: DELIVERY_VIEW,
+      value: CHANGE_DELIVERY_VIEW,
       component: (
         <ChangeDelivery setDrawerView={setDrawerView} setOpen={setOpen} />
       ),
     },
     {
-      value: OWN_DELIVERY_FORM_VIEW,
+      value: CHANGE_OWN_DELIVERY_FORM_VIEW,
       component: (
-        <ChangeOwnDeliveryForm
-          setDrawerView={setDrawerView}
-          setOpen={setOpen}
-        />
+        <ChangeOwnDeliveryForm setDrawerView={setDrawerView} setOpen={setOpen} />
       ),
     },
   ];

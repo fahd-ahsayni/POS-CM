@@ -6,7 +6,7 @@ import { useState } from "react";
 import { ORDER_SUMMARY_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
 import { useRightViewContext } from "../contexts/rightViewContext";
 
-export default function TakeAway() {
+export default function CoasterCall() {
   const [peopleCount, setPeopleCount] = useState("");
   const { setViews } = useRightViewContext();
 
@@ -32,7 +32,7 @@ export default function TakeAway() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25, delay: 0.1 }}
-        className="flex flex-col justify-evenly h-full -mt-10"
+        className="flex flex-col justify-evenly h-full"
       >
         <TypographyH4 className="font-medium max-w-xs">
           Enter the beeper number to start the order:

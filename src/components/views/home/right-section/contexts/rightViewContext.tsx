@@ -8,7 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { ON_PLACE_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
+import { TYPE_OF_ORDER_VIEW } from "../constants";
 
 interface RightViewContextType {
   views: string;
@@ -35,7 +35,7 @@ export const RightViewProvider = ({ children }: { children: ReactNode }) => {
     null
   );
   const [customerIndex, setCustomerIndex] = useState(1);
-  const [orderType, setOrderType] = useState<string | null>(ON_PLACE_VIEW);
+  const [orderType, setOrderType] = useState<string | null>(TYPE_OF_ORDER_VIEW);
   const [tableNumber, setTableNumber] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState<number>(1);
 

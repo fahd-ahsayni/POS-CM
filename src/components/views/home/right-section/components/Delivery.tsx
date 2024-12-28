@@ -4,7 +4,7 @@ import { TypographyH4 } from "@/components/ui/typography";
 
 import { glovo, kaalix, ownDelivery, yassir } from "@/assets";
 import { motion } from "framer-motion";
-import { ORDER_SUMMARY_VIEW, OWN_DELIVERY_FORM_VIEW } from "../constants";
+import { ORDER_SUMMARY_VIEW, OWN_DELIVERY_FORM_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
 import { useRightViewContext } from "../contexts/rightViewContext";
 
 const deliveryApps = [
@@ -86,7 +86,7 @@ export default function SelectDeliveryType() {
           <Button
             variant="secondary"
             onClick={() => {
-              setViews("TypeOfOrder");
+              setViews(TYPE_OF_ORDER_VIEW);
               setSelectedOrderType(null);
             }}
           >
