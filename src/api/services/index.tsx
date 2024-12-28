@@ -116,3 +116,6 @@ export const closeShift = async (data: any) => {
   return api.post("/shift/close", data);
 };
 
+export const checkAuthorization = async (passcode: string) => {
+  return api.post("/auth/setting/password", { passcode });
+};

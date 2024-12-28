@@ -2,8 +2,8 @@ import NumberPad from "@/components/global/NumberPad";
 import { Button } from "@/components/ui/button";
 import { TypographyH1, TypographyH4 } from "@/components/ui/typography";
 import { motion } from "framer-motion";
-import { useState } from "react";
 import { CHANGE_TYPE_OF_ORDER_VIEW } from "../constants";
+import { useNumberPad } from "../hooks/useNumberPad";
 
 interface ChangeCoasterCallProps {
   setDrawerView: (view: string) => void;
@@ -14,23 +14,12 @@ export default function ChangeCoasterCall({
   setDrawerView,
   setOpen,
 }: ChangeCoasterCallProps) {
-  const [beeperNumber, setBeeperNumber] = useState("");
-
-  const handleNumberClick = (value: string) => {
-    if (value === "C") {
-      setBeeperNumber("");
-    } else if (value === "delete") {
-      setBeeperNumber((prev) => prev.slice(0, -1));
-    } else {
-      setBeeperNumber((prev) => {
-        const newValue = prev + value;
-        return parseInt(newValue) <= 999999 ? newValue : prev;
-      });
-    }
-  };
+  const {
+    number: beeperNumber,
+    handleNumberClick,
+  } = useNumberPad();
 
   const handleConfirm = () => {
-    // Add any additional logic for beeper number validation if needed
     setOpen(false);
   };
 

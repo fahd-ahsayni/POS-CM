@@ -15,8 +15,13 @@ import ChangeOwnDeliveryForm from "./views/ChangeOwnDeliveryForm";
 import ChangeTakeAway from "./views/ChangeTakeAway";
 import SelectTypeOfOrder from "./views/SelectTypeOfOrder";
 
-export default function ChangeOrderType() {
-  const [open, setOpen] = useState(true);
+export default function ChangeOrderType({
+  open,
+  setOpen,
+}: {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}) {
   const [drawerView, setDrawerView] = useState(CHANGE_TYPE_OF_ORDER_VIEW);
 
   const handleClose = () => {
@@ -52,7 +57,10 @@ export default function ChangeOrderType() {
     {
       value: CHANGE_OWN_DELIVERY_FORM_VIEW,
       component: (
-        <ChangeOwnDeliveryForm setDrawerView={setDrawerView} setOpen={setOpen} />
+        <ChangeOwnDeliveryForm
+          setDrawerView={setDrawerView}
+          setOpen={setOpen}
+        />
       ),
     },
   ];

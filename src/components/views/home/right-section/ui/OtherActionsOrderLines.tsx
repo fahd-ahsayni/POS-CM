@@ -10,12 +10,17 @@ import {
 import { SwitchToggle } from "@/components/ui/toggle";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useState } from "react";
-import { updateOrder } from '@/functions/updateOrder';
-import { useDispatch } from 'react-redux';
+import { updateOrder } from "@/functions/updateOrder";
+import { useDispatch } from "react-redux";
+import ChangeOrderType from "@/components/global/drawers/change-order-type/ChangeOrderType";
+import ApplyDiscount from "@/components/global/drawers/apply-discount/ApplyDiscount";
 
 export default function OtherActionsOrderLines() {
   const dispatch = useDispatch();
   const [openModalOrderComments, setOpenModalOrderComments] = useState(false);
+  const [openModalChangeOrderType, setOpenModalChangeOrderType] =
+    useState(false);
+  const [openModalApplyDiscount, setOpenModalApplyDiscount] = useState(true);
   const [isUrgent, setIsUrgent] = useState(false);
   const [isOneTime, setIsOneTime] = useState(false);
 
@@ -31,6 +36,14 @@ export default function OtherActionsOrderLines() {
 
   return (
     <>
+      <ApplyDiscount
+        open={openModalApplyDiscount}
+        setOpen={setOpenModalApplyDiscount}
+      />
+      <ChangeOrderType
+        open={openModalChangeOrderType}
+        setOpen={setOpenModalChangeOrderType}
+      />
       <ModalOrderComments
         isOpen={openModalOrderComments}
         setOpen={setOpenModalOrderComments}
@@ -43,7 +56,7 @@ export default function OtherActionsOrderLines() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="mt-2 -ml-20 min-w-52">
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setOpenModalChangeOrderType(true)}>
             <span className="text-sm">Change Order Type</span>
           </DropdownMenuItem>
           <DropdownMenuItem>
@@ -59,13 +72,19 @@ export default function OtherActionsOrderLines() {
           <DropdownMenuItem>
             <span className="text-sm flex items-center w-full justify-between space-x-4">
               <span>Order Immediately</span>
-              <SwitchToggle enabled={isOneTime} setEnabled={handleOneTimeToggle} />
+              <SwitchToggle
+                enabled={isOneTime}
+                setEnabled={handleOneTimeToggle}
+              />
             </span>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <span className="text-sm flex items-center w-full justify-between space-x-4">
               <span>Mark as Urgent</span>
-              <SwitchToggle enabled={isUrgent} setEnabled={handleUrgentToggle} />
+              <SwitchToggle
+                enabled={isUrgent}
+                setEnabled={handleUrgentToggle}
+              />
             </span>
           </DropdownMenuItem>
         </DropdownMenuContent>

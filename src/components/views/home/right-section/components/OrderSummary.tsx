@@ -9,9 +9,7 @@ import Payments from "@/components/global/drawers/Payments/Payments";
 import ModalConfirmHoldOrder from "@/components/global/modal/ModalConfirmHoldOrder";
 import { Button } from "@/components/ui/button";
 import { TypographyP } from "@/components/ui/typography";
-import {
-  setCustomerCount
-} from "@/store/slices/order/createOrder";
+import { setCustomerCount } from "@/store/slices/order/createOrder";
 import { AnimatePresence, motion } from "framer-motion";
 import { LucideMaximize } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
@@ -82,7 +80,6 @@ const OrderSummary = () => {
         open={openModalConfirmHoldOrder}
         setOpen={setOpenModalConfirmHoldOrder}
       />
-      <ChangeOrderType />
       <div className="flex flex-col justify-start h-full gap-y-2">
         <div className="flex items-center justify-between">
           <TypographyP className="text-xs">

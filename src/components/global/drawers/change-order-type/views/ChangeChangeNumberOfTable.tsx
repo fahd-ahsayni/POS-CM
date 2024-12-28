@@ -1,5 +1,4 @@
 import { getByTableName } from "@/api/services";
-import NumberPad from "@/components/global/NumberPad";
 import { Button } from "@/components/ui/button";
 import {
   TypographyH1,
@@ -9,9 +8,10 @@ import {
 import { updateOrder } from "@/functions/updateOrder";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { CHANGE_TYPE_OF_ORDER_VIEW } from "../constants";
+import { useNumberPad } from "../hooks/useNumberPad";
+import NumberPad from "@/components/global/NumberPad";
 
 interface ChangeNumberOfTableProps {
   setDrawerView: (view: string) => void;
@@ -22,29 +22,16 @@ export default function ChangeNumberOfTable({
   setDrawerView,
   setOpen,
 }: ChangeNumberOfTableProps) {
-  const [tableNumber, setTableNumber] = useState("");
-  const [tableValid, setTableValid] = useState<string>("valid");
+  const {
+    number: tableNumber,
+    valid: tableValid,
+    setValid: setTableValid,
+    handleNumberClick,
+  } = useNumberPad();
   const dispatch = useDispatch();
   const data = JSON.parse(localStorage.getItem("generalData") || "{}")[
     "floors"
   ];
-
-  useEffect(() => {
-    setTableValid("valid");
-  }, [tableNumber]);
-
-  const handleNumberClick = (value: string) => {
-    if (value === "C") {
-      setTableNumber("");
-    } else if (value === "delete") {
-      setTableNumber((prev) => prev.slice(0, -1));
-    } else {
-      setTableNumber((prev) => {
-        const newValue = prev + value;
-        return parseInt(newValue) <= 999999 ? newValue : prev;
-      });
-    }
-  };
 
   function findTableByName(tableName: string) {
     return Object.values(data)

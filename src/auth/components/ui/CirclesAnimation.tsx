@@ -4,6 +4,7 @@ import { useEffect } from "react";
 interface Props {
   currentLength: number;
   incorrectPasscode?: boolean;
+  isFixedLightDark?: boolean;
 }
 
 export default function CirclesAnimation({
@@ -39,7 +40,7 @@ export default function CirclesAnimation({
           transition={{
             duration: 0.2,
           }}
-          className="w-3 h-3 rounded-full bg-zinc-800"
+          className="w-3 h-3 rounded-full bg-neutral-dark-grey"
         />
       ))}
     </motion.div>
