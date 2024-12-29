@@ -1,14 +1,11 @@
 import { logoWithoutText } from "@/assets";
 import {
   AddUserIcon,
-  BillIcon,
-  ExpandListIcon,
-  PrinterIcon,
+  ExpandListIcon
 } from "@/assets/figma-icons";
 import Payments from "@/components/global/drawers/Payments/Payments";
 import ModalConfirmHoldOrder from "@/components/global/modal/ModalConfirmHoldOrder";
 import { Button } from "@/components/ui/button";
-import { TypographyP } from "@/components/ui/typography";
 import { setCustomerCount } from "@/store/slices/order/createOrder";
 import { AnimatePresence, motion } from "framer-motion";
 import { LucideMaximize } from "lucide-react";
@@ -19,6 +16,7 @@ import { useOrderLines } from "../contexts/orderLinesContext";
 import { useRightViewContext } from "../contexts/rightViewContext";
 import OrderLines from "../import/OrderLines";
 import OtherActionsOrderLines from "../ui/OtherActionsOrderLines";
+import Ticket from "../layouts/Ticket";
 
 const OrderSummary = () => {
   const [openModalConfirmHoldOrder, setOpenModalConfirmHoldOrder] =
@@ -89,7 +87,7 @@ const OrderSummary = () => {
 
       
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between px-3">
           <div className="flex items-center gap-2">
             {/* <Button size="icon">
               <PrinterIcon className="w-[1.2rem] h-auto fill-white" />
@@ -122,7 +120,10 @@ const OrderSummary = () => {
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col gap-y-2 overflow-y-hidden">
+        <div className="flex-1 flex flex-col gap-y-2 overflow-y-hidden relative px-3">
+          <div className="absolute w-full h-full top-0 left-0 z-[99] backdrop-blur-[2px] flex items-end pb-8">
+              <Ticket />
+          </div>
           <div className="flex-border flex-grow relative flex items-center justify-center pt-4 overflow-y-auto pr-2  h-full">
             <AnimatePresence>
               {selectedProducts.length < 1 && (

@@ -1,6 +1,6 @@
 import { Product } from "@/types";
 import { motion } from "framer-motion";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
 import { useLeftViewContext } from "../contexts/leftViewContext";
 import { useProductSelection } from "../hooks/useProductSelection";
@@ -52,6 +52,20 @@ export default function AllProducts() {
     [addOrUpdateProduct, setOpenDrawerVariants, setSelectedProduct]
   );
 
+  const productCards = useMemo(() => 
+    data.map(
+      (product) =>
+        product.variants.length > 0 && (
+          <ProductCard
+            key={product._id}
+            product={product}
+            selectedProducts={selectedProducts}
+            onProductClick={handleProductClick}
+          />
+        )
+    ), [data, selectedProducts, handleProductClick]
+  );
+
   return (
     <>
       {loading ? (
@@ -78,17 +92,7 @@ export default function AllProducts() {
               transition={{ duration: 0.35 }}
               className="w-full grid grid-cols-3 gap-3"
             >
-              {data.map(
-                (product) =>
-                  product.variants.length > 0 && (
-                    <ProductCard
-                      key={product._id}
-                      product={product}
-                      selectedProducts={selectedProducts}
-                      onProductClick={handleProductClick}
-                    />
-                  )
-              )}
+              {productCards}
             </motion.div>
           </motion.div>
         </>

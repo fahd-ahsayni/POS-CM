@@ -7,7 +7,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { FilterIcon, CheckIcon } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 
 interface FilterCriteria {
   employee: string;
@@ -24,48 +24,40 @@ export default function FiltreOrders({
   const [selectedOrderType, setSelectedOrderType] = useState<string>("");
   const [selectedStatus, setSelectedStatus] = useState<string>("");
 
-  const users = JSON.parse(localStorage.getItem("users") || "[]").cashiers;
-
-  const employees = users?.map((user: any) => ({
+  const users = useMemo(() => JSON.parse(localStorage.getItem("users") || "[]").cashiers, []);
+  const employees = useMemo(() => users?.map((user: any) => ({
     value: user.name,
     label: user.name,
-  }));
+  })), [users]);
 
-  const orderTypesData = JSON.parse(
-    localStorage.getItem("generalData") || "[]"
-  ).orderTypes;
-
-  const orderTypes = orderTypesData?.map((type: any) => ({
+  const orderTypesData = useMemo(() => JSON.parse(localStorage.getItem("generalData") || "[]").orderTypes, []);
+  const orderTypes = useMemo(() => orderTypesData?.map((type: any) => ({
     value: type.type,
     label: type.name,
-  }));
+  })), [orderTypesData]);
 
-  const statuses = [
+  const statuses = useMemo(() => [
     { value: "new", label: "New" },
     { value: "paid", label: "Paid" },
     { value: "cancelled", label: "Cancelled" },
-  ];
+  ], []);
 
-  const handleEmployeeSelect = (value: string) => {
+  const handleEmployeeSelect = useCallback((value: string) => {
     setSelectedEmployee(value);
     console.log("Selected employee:", value);
-    // Implement any additional logic needed when an employee is selected
-  };
+  }, []);
 
-  const handleOrderTypeSelect = (value: string) => {
+  const handleOrderTypeSelect = useCallback((value: string) => {
     setSelectedOrderType(value);
     console.log("Selected order type:", value);
-    // Implement any additional logic needed when an order type is selected
-  };
+  }, []);
 
-  const handleStatusSelect = (value: string) => {
+  const handleStatusSelect = useCallback((value: string) => {
     setSelectedStatus(value);
     console.log("Selected status:", value);
-  };
+  }, []);
 
-  const handleClearFilter = (
-    filterType: "employee" | "orderType" | "status"
-  ) => {
+  const handleClearFilter = useCallback((filterType: "employee" | "orderType" | "status") => {
     switch (filterType) {
       case "employee":
         setSelectedEmployee("");
@@ -77,22 +69,22 @@ export default function FiltreOrders({
         setSelectedStatus("");
         break;
     }
-  };
+  }, []);
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setSelectedEmployee("");
     setSelectedOrderType("");
     setSelectedStatus("");
     onFilterChange({ employee: "", orderType: "", status: "" });
-  };
+  }, [onFilterChange]);
 
-  const handleApplyFilter = () => {
+  const handleApplyFilter = useCallback(() => {
     onFilterChange({
       employee: selectedEmployee,
       orderType: selectedOrderType,
       status: selectedStatus,
     });
-  };
+  }, [onFilterChange, selectedEmployee, selectedOrderType, selectedStatus]);
 
   return (
     <div className="flex flex-col gap-4">

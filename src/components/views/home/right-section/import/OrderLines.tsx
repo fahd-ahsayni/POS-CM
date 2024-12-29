@@ -86,10 +86,10 @@ export default function OrderLines() {
 
   return (
     <div className="z-10 h-full w-full">
-      <div className="space-y-4">
+      <div className="space-y-4 w-full">
         {selectedProducts.length < 1 ? (
           <div className="flex items-center justify-between w-full rounded-md mb-2.5">
-            <div className="flex items-center justify-center gap-x-2 flex-1 bg-white dark:bg-secondary-black rounded px-2 py-2 shadow">
+            <div className="flex items-center justify-center gap-x-2 flex-1 bg-white dark:bg-secondary-black rounded px-2 py-2 shadow w-full -mr-2">
               <div className="flex items-center justify-center gap-x-2">
                 <UserIcon className="w-4 h-auto fill-primary-black dark:fill-white" />
                 <TypographySmall className="text-sm">

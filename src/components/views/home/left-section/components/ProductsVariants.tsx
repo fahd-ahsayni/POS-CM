@@ -40,7 +40,26 @@ export default function ProductsVariants() {
     orderType,
   });
 
-  // Memoize handlers to prevent unnecessary re-renders
+  useEffect(() => {
+    if (selectedProduct) {
+      setSelectedProducts((prev) => {
+        const productsWithoutCurrent = prev.filter(
+          (p) => 
+            p._id !== selectedProduct._id || 
+            p.customer_index !== selectedCustomer
+        );
+
+        const variantsForNewCustomer = prev.filter(
+          (p) => 
+            p._id === selectedProduct._id && 
+            p.customer_index === selectedCustomer
+        );
+
+        return [...productsWithoutCurrent, ...variantsForNewCustomer];
+      });
+    }
+  }, [selectedCustomer, selectedProduct]);
+
   const handleSelectVariant = useCallback(
     (id: string, price: number) => {
       if (!selectedProduct) {
@@ -48,16 +67,23 @@ export default function ProductsVariants() {
         return;
       }
 
-      addOrUpdateProduct(selectedProduct, id, price);
+      const existingVariant = selectedProducts.find(
+        p => p.product_variant_id === id && p.customer_index === selectedCustomer
+      );
+
+      if (!existingVariant) {
+        addOrUpdateProduct(selectedProduct, id, price);
+      }
     },
-    [selectedProduct, addOrUpdateProduct]
+    [selectedProduct, addOrUpdateProduct, selectedProducts, selectedCustomer]
   );
 
   const handleQuantityChange = useCallback(
     (variantId: string, increment: boolean) => {
       setSelectedProducts((prev) =>
         prev.map((product) =>
-          product.product_variant_id === variantId
+          product.product_variant_id === variantId && 
+          product.customer_index === selectedCustomer
             ? {
                 ...product,
                 quantity: increment
@@ -68,7 +94,7 @@ export default function ProductsVariants() {
         )
       );
     },
-    []
+    [selectedCustomer]
   );
 
   const handleConfirm = useCallback(() => {
@@ -76,7 +102,6 @@ export default function ProductsVariants() {
     setViews(ORDER_SUMMARY_VIEW);
   }, [setOpenDrawerVariants, setViews]);
 
-  // Memoize orderline data transformation
   const orderlineData = useMemo(
     () =>
       selectedProducts.map((p) => ({
@@ -97,24 +122,25 @@ export default function ProductsVariants() {
     [selectedProducts, orderType]
   );
 
-  // Update order line when dependencies change
   useEffect(() => {
     dispatch(addOrderLine(selectedProducts.length > 0 ? orderlineData : []));
   }, [dispatch, orderlineData, selectedProducts.length]);
 
-  // Memoize variant cards rendering
   const variantCards = useMemo(
     () =>
       selectedProduct?.variants.map((variant, index) => {
         const selectedVariant = selectedProducts.find(
-          (p) => p.product_variant_id === variant._id
+          (p) => 
+            p.product_variant_id === variant._id && 
+            p.customer_index === selectedCustomer
         );
+
         const isSelected = !!selectedVariant;
         const quantity = selectedVariant?.quantity || 0;
 
         return (
           <VariantCard
-            key={`${selectedVariant?._id}-${variant._id}-${index}`}
+            key={`${variant._id}-${selectedCustomer}-${index}`}
             variant={variant}
             isSelected={isSelected}
             quantity={quantity}
@@ -126,6 +152,7 @@ export default function ProductsVariants() {
     [
       selectedProduct,
       selectedProducts,
+      selectedCustomer,
       handleSelectVariant,
       handleQuantityChange,
     ]
@@ -152,7 +179,6 @@ export default function ProductsVariants() {
   );
 }
 
-// Extract VariantCard as a separate component
 const VariantCard = memo<VariantCardProps>(
   ({ variant, isSelected, quantity, onSelect, onQuantityChange }) => (
     <div

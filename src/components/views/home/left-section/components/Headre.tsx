@@ -5,18 +5,19 @@ import { ArrowLeft } from "lucide-react";
 import { ALL_CATEGORIES_VIEW } from "../constants";
 import { useLeftViewContext } from "../contexts/leftViewContext";
 import { cn } from "@/lib/utils";
+import { useCallback } from "react";
 
 export default function Header() {
   const { setViews, category } = useLeftViewContext();
 
-  const handelBack = () => {
+  const handleBack = useCallback(() => {
     setViews(ALL_CATEGORIES_VIEW);
-  };
-  
+  }, [setViews]);
+
   return (
     <div className="flex items-start relative justify-start w-full py-2 mt-2 gap-x-2">
       <div
-        onClick={handelBack}
+        onClick={handleBack}
         className="flex items-center justify-center w-12 h-14 bg-primary-red rounded-lg cursor-pointer"
       >
         <ArrowLeft className="text-white" />

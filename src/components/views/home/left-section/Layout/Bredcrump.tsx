@@ -32,7 +32,7 @@ export function CustomBreadcrumb({ items }: BreadcrumbProps) {
     : modifiedItems;
 
   return (
-    <nav aria-label="breadcrumb" className="relative z-10 bg-background pr-4 flex items-center justify-center">
+    <nav aria-label="breadcrumb" className="relative z-10 pr-4 flex items-center justify-center">
       <Breadcrumb>
         <BreadcrumbList>
           {visibleItems.map((item, index) => (

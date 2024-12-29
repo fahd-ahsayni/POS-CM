@@ -117,5 +117,5 @@ export const closeShift = async (data: any) => {
 };
 
 export const checkAuthorization = async (passcode: string) => {
-  return api.post("/auth/setting/password", { passcode });
+  return api.post("/setting/password", { admin_password: passcode });
 };

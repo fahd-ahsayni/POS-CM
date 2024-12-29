@@ -6,8 +6,6 @@ import { Category, Product } from "@/types";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import "swiper/css";
-import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
@@ -124,7 +122,7 @@ export default memo(function ProductsByCategory() {
       <div className="max-w-full">
         <div className="flex items-center overflow-hidden relative mt-4">
           <CustomBreadcrumb items={breadcrumbItems} />
-          <Separator className="dark:bg-white/5 h-[0.5px] bg-primary-black/5 absolute left-0" />
+          <Separator />
         </div>
         <div className="mt-4 max-w-full relative">
           <div className="flex gap-2 pb-2 overflow-x-auto scrollbar-hide">
@@ -144,7 +142,10 @@ export default memo(function ProductsByCategory() {
                   className="w-full"
                 >
                   {subCategories.map((subCategory, index) => (
-                    <SwiperSlide key={`${subCategory._id}-${index}`}>
+                    <SwiperSlide
+                      key={`${subCategory._id}-${index}`}
+                      className="w-full pb-1"
+                    >
                       <motion.div
                         initial={{ opacity: 0, x: 30 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -154,8 +155,8 @@ export default memo(function ProductsByCategory() {
                           onClick={() => setSubCategory(subCategory)}
                           className="text-center h-16 flex items-center justify-center px-4 py-2 rounded-lg cursor-pointer"
                         >
-                          <TypographyP className="capitalize leading-5 font-light">
-                            {subCategory.name}
+                          <TypographyP className="capitalize text-sm font-medium">
+                            {subCategory.name.toLowerCase()}
                           </TypographyP>
                         </Card>
                       </motion.div>
@@ -231,7 +232,7 @@ export default memo(function ProductsByCategory() {
           <TypographyP className="pr-4 bg-background font-medium">
             Products
           </TypographyP>
-          <Separator className="dark:bg-zinc-800/60 bg-zinc-50/70" />
+          <Separator />
         </div>
         <div className="w-full h-full overflow-auto scrollbar-hide relative pb-52 px-2">
           <div className="w-full h-8 sticky top-0 left-0 bg-gradient-to-b from-background to-transparent" />

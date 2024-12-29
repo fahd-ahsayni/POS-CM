@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { tabsConfig } from "./constants";
 import { useLeftViewContext } from "./contexts/leftViewContext";
 
-export default function RightSection() {
+export default function LeftSection() {
   const { views } = useLeftViewContext();
 
   return (
@@ -14,7 +14,7 @@ export default function RightSection() {
         <TypographyP className="absolute pr-4 bg-background font-medium text-sm">
           Categories
         </TypographyP>
-        <Separator className="dark:bg-zinc-800/60 bg-zinc-50/70" />
+        <Separator />
       </div>
       <Tabs value={views} className="w-full h-full flex">
         {tabsConfig.map(({ value, component, className }) => (
