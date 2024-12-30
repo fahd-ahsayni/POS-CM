@@ -1,8 +1,5 @@
 import { logoWithoutText } from "@/assets";
-import {
-  AddUserIcon,
-  ExpandListIcon
-} from "@/assets/figma-icons";
+import { AddUserIcon, ExpandListIcon } from "@/assets/figma-icons";
 import Payments from "@/components/global/drawers/Payments/Payments";
 import ModalConfirmHoldOrder from "@/components/global/modal/ModalConfirmHoldOrder";
 import { Button } from "@/components/ui/button";
@@ -23,6 +20,7 @@ const OrderSummary = () => {
     useState(false);
   const [openDrawerPayments, setOpenDrawerPayments] = useState(false);
   const dispatch = useDispatch();
+  const [showTicket, setShowTicket] = useState(false);
 
   const { customerIndex, setCustomerIndex, setSelectedCustomer } =
     useRightViewContext();
@@ -70,6 +68,12 @@ const OrderSummary = () => {
     setOpenDrawerPayments(true);
   };
 
+  const handleShowTicket = () => {
+    if (selectedProducts.length > 0) {
+      setShowTicket(!showTicket);
+    }
+  };
+
   return (
     <>
       <Payments open={openDrawerPayments} setOpen={setOpenDrawerPayments} />
@@ -84,8 +88,6 @@ const OrderSummary = () => {
             <span className="text-muted-foreground">01-1423-26</span>
           </TypographyP>
         </div> */}
-
-      
 
         <div className="flex items-center justify-between px-3">
           <div className="flex items-center gap-2">
@@ -121,9 +123,19 @@ const OrderSummary = () => {
         </div>
 
         <div className="flex-1 flex flex-col gap-y-2 overflow-y-hidden relative px-3">
-          <div className="absolute w-full h-full top-0 left-0 z-[99] backdrop-blur-[2px] flex items-end pb-8">
-              <Ticket />
-          </div>
+          <AnimatePresence>
+            {showTicket && (
+              <motion.div
+                className="absolute w-full h-full top-0 left-0 z-[99] backdrop-blur-[2px] flex items-end pb-8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Ticket />
+              </motion.div>
+            )}
+          </AnimatePresence>
           <div className="flex-border flex-grow relative flex items-center justify-center pt-4 overflow-y-auto pr-2  h-full">
             <AnimatePresence>
               {selectedProducts.length < 1 && (
@@ -158,9 +170,13 @@ const OrderSummary = () => {
           >
             Proceed Order
           </Button>
-          <Button size="icon" disabled={isActionsDisabled}>
+          <Button
+            size="icon"
+            disabled={isActionsDisabled}
+            onClick={handleShowTicket}
+          >
             <LucideMaximize size={16} />
-            <span className="sr-only">Full screen</span>
+            <span className="sr-only">Show Ticket</span>
           </Button>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { logoutService } from './services';
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 
@@ -27,11 +28,10 @@ api.interceptors.request.use(
 // Response interceptor
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    // Handle common errors here
+  async (error) => {
     if (error.response?.status === 403) {
-      // Handle unauthorized
-      localStorage.removeItem('token');
+      // Handle unauthorized by calling logoutService
+      await logoutService();
       window.location.href = '/login';
     }
     return Promise.reject(error);

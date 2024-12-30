@@ -9,8 +9,10 @@ import { RiRfidFill } from "react-icons/ri";
 
 export default function Authorization({
   setAuthorization,
+  setAdmin,
 }: {
   setAuthorization: (authorization: boolean) => void;
+  setAdmin: (admin: any) => void;
 }) {
   const [passcode, setPasscode] = useState("");
   const [incorrectPasscode, setIncorrectPasscode] = useState(false);
@@ -41,6 +43,7 @@ export default function Authorization({
       const response = await checkAuthorization(passcode);
       if (response.status === 200) {
         setAuthorization(true);
+        setAdmin(response.data);
       }
     }
   }, [passcode, setAuthorization]);
@@ -51,7 +54,7 @@ export default function Authorization({
 
   return (
     <section className="overflow-hidden h-full flex flex-col items-center gap-8 relative">
-      <TypographyP className="text-sm opacity-70 pt-10">
+      <TypographyP className="text-sm pt-10">
         Enter the admin passcode or scan an admin badge to proceed with the
         cancellation.
       </TypographyP>

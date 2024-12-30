@@ -1,7 +1,5 @@
 import OrdersTable from "@/components/views/orders/components/OrdersTable";
-import {
-  TABLE_HEADERS,
-} from "@/components/views/orders/config/table-config";
+import { TABLE_HEADERS } from "@/components/views/orders/config/table-config";
 import { AppDispatch, RootState } from "@/store";
 import { fetchOrders, refreshOrders } from "@/store/slices/data/ordersSlice";
 import { FilterCriteria } from "@/types";
@@ -21,9 +19,11 @@ export interface OrdersState {
 export default function OrdersPage() {
   const dispatch = useDispatch<AppDispatch>();
   const [loading, setLoading] = useState(false);
-  const { orders, status: orderStatus, error } = useSelector(
-    (state: RootState) => state.orders
-  );
+  const {
+    orders,
+    status: orderStatus,
+    error,
+  } = useSelector((state: RootState) => state.orders);
   const [filterCriteria, setFilterCriteria] = useState<FilterCriteria>({
     employee: "",
     orderType: "",
@@ -45,7 +45,14 @@ export default function OrdersPage() {
     setFilterCriteria(filters);
   };
 
-  console.log('Orders in component:', orders, 'Status:', orderStatus, 'Error:', error);
+  console.log(
+    "Orders in component:",
+    orders,
+    "Status:",
+    orderStatus,
+    "Error:",
+    error
+  );
 
   return (
     <>
@@ -66,6 +73,10 @@ export default function OrdersPage() {
           {loading ? (
             <div className="flex items-center justify-center h-full">
               <BeatLoader color="#fb0000" size={10} />
+            </div>
+          ) : orders.length === 0 ? (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-gray-500 text-lg">No orders available</p>
             </div>
           ) : (
             <OrdersTable

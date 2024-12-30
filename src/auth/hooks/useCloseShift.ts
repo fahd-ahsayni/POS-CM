@@ -56,7 +56,9 @@ export const useCloseShift = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    const hasNewOrder = Array.isArray(orders) ? orders.some((order) => order.status === "new") : false;
+    const hasNewOrder = Array.isArray(orders)
+      ? orders.some((order) => order.status === "new")
+      : false;
     setRequiredNextCashier(hasNewOrder);
   }, [orders]);
 
@@ -121,7 +123,13 @@ export const useCloseShift = () => {
       .some((method) => paymentAmounts[method._id]);
 
     if (!hasCashAmount) {
-      toast.error(createToast("Please enter the cash amount", "...", "error"));
+      toast.error(
+        createToast(
+          "Cash amount is required",
+          "Enter the total cash amount",
+          "error"
+        )
+      );
       return false;
     }
 
@@ -149,8 +157,16 @@ export const useCloseShift = () => {
     };
 
     const response = await closeShift(data);
+
     if (response.status === 200) {
       dispatch(logout());
+      toast.success(
+        createToast(
+          "Shift closed successfully",
+          "You have been logged out",
+          "success"
+        )
+      );
     }
   };
 

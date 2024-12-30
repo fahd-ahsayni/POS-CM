@@ -38,11 +38,11 @@ export default function OrderDetails() {
       title={`Order Reference: ${selectedOrder.ref}`}
       position="left"
     >
-      <div>
+      <div className="overflow-y-auto h-full space-y-4">
         {orderLines.map((orderLine) => (
           <div
             key={orderLine._id}
-            className="flex flex-col gap-4 w-full dark:bg-primary-black bg-neutral-bright-grey shadow-md py-4 px-4 rounded-md"
+            className="flex flex-col gap-4 w-full dark:bg-primary-black bg-neutral-bright-grey shadow py-4 px-4 rounded-md"
           >
             <TypographyP className="dark:text-white text-primary-black font-medium capitalize">
               {orderLine.product_variant_id.name.toLowerCase()}

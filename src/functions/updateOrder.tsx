@@ -15,7 +15,7 @@ import {
   updateTotalAmount,
   setNotes,
   setUrgent,
-  setDiscountAmount,
+  setDiscount,
 } from "../store/slices/order/createOrder"; // Adjust path as needed
 
 /**
@@ -27,10 +27,10 @@ import {
  * @typedef {Object} OrderUpdateParams
  */
 type OrderLineOperation = {
-  action: 'add' | 'update' | 'remove';
+  action: "add" | "update" | "remove";
   data?: ProductSelected;
   id?: string;
-}
+};
 
 type OrderUpdateParams = {
   waiter_id?: number | null;
@@ -46,7 +46,7 @@ type OrderUpdateParams = {
   orderlines?: OrderLineOperation[];
   notes?: string[];
   urgent?: boolean | null;
-  discount_amount?: number | null;
+  discount_id?: any | null;
 };
 
 /**
@@ -100,7 +100,10 @@ export const updateOrder = (params: OrderUpdateParams): any => {
                   }
                   break;
                 case "update":
-                  if (typeof orderlineOp !== 'string' && orderlineOp.id !== undefined) {
+                  if (
+                    typeof orderlineOp !== "string" &&
+                    orderlineOp.id !== undefined
+                  ) {
                     dispatch(
                       updateOrderLine({
                         id: parseInt(orderlineOp.id),
@@ -119,13 +122,13 @@ export const updateOrder = (params: OrderUpdateParams): any => {
           }
           break;
         case "notes":
-          dispatch(setNotes([...(params.notes || []), value as string]));
+          dispatch(setNotes(value as string));
           break;
         case "urgent":
-          dispatch(setUrgent(value as boolean | null));
+          dispatch(setUrgent(value as boolean));
           break;
-        case "discount_amount":
-          dispatch(setDiscountAmount(value as number | null));
+        case "discount_id":
+          dispatch(setDiscount(value as any | null));
           break;
         default:
           console.warn(`Unknown order field: ${key}`);

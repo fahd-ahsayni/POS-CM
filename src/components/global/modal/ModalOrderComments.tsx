@@ -23,11 +23,11 @@ export default function ModalOrderComments({
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setComment(notes[0]);
+    setComment(notes);
   }, [notes]);
 
   const handleAddComment = () => {
-    dispatch(setNotes([comment]));
+    dispatch(setNotes(comment));
     setOpen(false);
   };
 

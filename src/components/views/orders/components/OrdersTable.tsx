@@ -1,4 +1,5 @@
 import { printOrder } from "@/api/services";
+import { PrinterIcon } from "@/assets/figma-icons";
 import { useOrder } from "@/components/global/drawers/order-details/context/OrderContext";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,7 +13,8 @@ import {
 import { useTableOrders } from "@/components/views/orders/hooks/useTableOrders";
 import { FilterCriteria } from "@/types";
 import { Order } from "@/types/getDataByDay";
-import { ArrowDownAZ, ArrowUpAZ, Printer, SortDesc } from "lucide-react";
+import { ArrowDownAZ, ArrowUpAZ, SortDesc } from "lucide-react";
+import { useSelector } from "react-redux";
 
 interface DataTableProps {
   headers: {
@@ -36,8 +38,17 @@ export default function DataTable({
   filterCriteria,
 }: DataTableProps) {
   const { setSelectedOrder, setOpenOrderDetails } = useOrder();
+  const currentPage = useSelector((state: any) => state.orders.currentPage);
+  const pageSize = useSelector((state: any) => state.orders.pageSize);
+
+  // Slice the data based on currentPage and pageSize
+  const paginatedData = data.slice(
+    currentPage * pageSize,
+    (currentPage + 1) * pageSize
+  );
+
   const { sortedData, sortConfig, handleSort } = useTableOrders({
-    data,
+    data: paginatedData,
     filterCriteria,
   });
 
@@ -60,7 +71,7 @@ export default function DataTable({
     // Helper function to get nested values
     const getValue = (obj: any, path: string, defaultValue = "-") => {
       const value = path.split(".").reduce((acc, part) => acc?.[part], obj);
-      return value || defaultValue;
+      return value ?? defaultValue;
     };
 
     const cellValue = header.key.includes(".")
@@ -69,7 +80,12 @@ export default function DataTable({
 
     const cellContent = header.isPrice ? (
       <>
-        <span>{(cellValue || 0).toFixed(2)} Dhs</span>
+        <span>
+          {typeof cellValue === 'number' 
+            ? cellValue.toFixed(2) 
+            : Number(cellValue || 0).toFixed(2)
+          } Dhs
+        </span>
         {withPrintButton && header.hasPrintButton && (
           <Button
             variant="ghost"
@@ -79,7 +95,7 @@ export default function DataTable({
               printOrder(row._id);
             }}
           >
-            <Printer className="h-4 w-4" />
+            <PrinterIcon className="h-5 w-5 dark:fill-white fill-primary-black" />
           </Button>
         )}
       </>
@@ -115,9 +131,9 @@ export default function DataTable({
   };
 
   return (
-    <div className="rounded-md">
-      <Table>
-        <TableHeader className="dark:bg-secondary-black bg-white">
+    <div className="rounded-md h-full relative overflow-y-auto">
+      <Table className="w-full">
+        <TableHeader className="dark:bg-secondary-black bg-white sticky top-0 z-10">
           <TableRow>
             {headers.map((header) => (
               <TableHead
@@ -139,7 +155,7 @@ export default function DataTable({
               <TableRow
                 key={row._id || index}
                 onClick={() => handleRowClick(row)}
-                className="cursor-pointer hover:bg-muted/50"
+                className="cursor-pointer hover:bg-white/70 dark:hover:bg-white/5"
               >
                 {headers.map((header) => renderCell(row, header, index))}
               </TableRow>

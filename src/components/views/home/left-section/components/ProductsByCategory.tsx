@@ -6,6 +6,7 @@ import { Category, Product } from "@/types";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { BeatLoader } from "react-spinners";
 import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
@@ -15,7 +16,6 @@ import { useLeftViewContext } from "../contexts/leftViewContext";
 import { useProductSelection } from "../hooks/useProductSelection";
 import Header from "./Headre";
 import ProductsVariants from "./ProductsVariants";
-import { BeatLoader } from "react-spinners";
 
 export default memo(function ProductsByCategory() {
   const {

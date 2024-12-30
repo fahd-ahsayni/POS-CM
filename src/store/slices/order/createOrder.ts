@@ -4,14 +4,14 @@ import { RootState } from "../../../store";
 interface OrderState {
   waiter_id: number | null;
   coaster_call: boolean | null;
-  urgent: boolean | null;
+  urgent: boolean | false;
   shift_id: string | null;
   table_id: string | null;
   delivery_guy_id: string | null;
-  discount_amount: number | null;
+  discount: any | null;
   client_id: string | null;
   customer_count: number;
-  notes: string[];
+  notes: string;
   one_time: boolean;
   total_amount: number;
   order_type_id: string | null;
@@ -27,14 +27,14 @@ interface OrderSliceState {
 const initialOrderState: OrderState = {
   waiter_id: null,
   coaster_call: null,
-  urgent: null,
+  urgent: false,
   shift_id: null,
   table_id: null,
   delivery_guy_id: null,
-  discount_amount: null,
+  discount: null,
   client_id: null,
   customer_count: 0,
-  notes: [],
+  notes: "",
   one_time: false,
   total_amount: 0,
   order_type_id: null,
@@ -112,14 +112,14 @@ const orderSlice = createSlice({
     setOrderTypeId: (state, action: PayloadAction<string | null>) => {
       state.data.order_type_id = action.payload;
     },
-    setNotes: (state, action: PayloadAction<string[]>) => {
+    setNotes: (state, action: PayloadAction<string>) => {
       state.data.notes = action.payload;
     },
-    setUrgent: (state, action: PayloadAction<boolean | null>) => {
+    setUrgent: (state, action: PayloadAction<boolean>) => {
       state.data.urgent = action.payload;
     },
-    setDiscountAmount: (state, action: PayloadAction<number | null>) => {
-      state.data.discount_amount = action.payload;
+    setDiscount: (state, action: PayloadAction<any | null>) => {
+      state.data.discount = action.payload;
     },
   },
 });
@@ -142,7 +142,7 @@ export const {
   setOrderTypeId,
   setNotes,
   setUrgent,
-  setDiscountAmount,
+  setDiscount,
 } = orderSlice.actions;
 
 export default orderSlice.reducer;

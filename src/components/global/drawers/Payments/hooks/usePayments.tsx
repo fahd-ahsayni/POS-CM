@@ -8,7 +8,8 @@ import { ALL_CATEGORIES_VIEW } from "@/components/views/home/left-section/consta
 import { TYPE_OF_ORDER_VIEW } from "@/components/views/home/right-section/constants";
 import { createToast } from "@/components/global/Toasters";
 import { currency } from "@/preferences";
-import { createOrder } from "@/api/services";
+import { createOrder, createPaymentDiscount } from "@/api/services";
+import { Item } from "@radix-ui/react-dropdown-menu";
 
 /**
  * Represents a payment method with its properties
@@ -38,8 +39,9 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [activePaymentIndex, setActivePaymentIndex] = useState<number>(-1);
 
-  const { setViews: setViewsRight } = useRightViewContext();
-  const { setViews: setViewsLeft } = useLeftViewContext();
+
+  const { setViews: setViewsRight, setCustomerIndex, setSelectedCustomer } = useRightViewContext();
+  const { setViews: setViewsLeft, setSelectedProducts } = useLeftViewContext();
 
   const order = useSelector(selectOrder);
 
@@ -209,27 +211,26 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
 
   const handleComplete = useCallback(async () => {
     setIsProcessing(true);
-    createOrder(order);
+
     try {
-      console.log("=== Payment Summary ===");
-      console.log("Selected Payments:", selectedPayments);
-      console.log("Total Amount:", order.total_amount);
-      console.log("Total Paid:", getTotalPaidAmount());
-      console.log("Remaining Amount:", getRemainingAmount());
-      console.log(
-        "Payment Methods Details:",
-        selectedPayments.map((payment) => ({
-          id: payment._id,
-          originalId: payment.originalId,
-          name: payment.name,
-          amount: payment.amount,
-        }))
-      );
+      const validPaymentData = selectedPayments.map((item) => ({
+        payment_method_id: item.originalId,
+        amount_given: item.amount,
+      }));
+
+      const response = await createPaymentDiscount({
+        order: order,
+        shift_id: order.shift_id,
+        payments: validPaymentData,
+      });
 
       await onComplete?.(selectedPayments);
       setSelectedPayments([]);
       setCurrentAmount("");
       setActivePaymentIndex(-1);
+      setSelectedProducts([]);
+      setSelectedCustomer(1);
+      setCustomerIndex(1);
       setViewsLeft(ALL_CATEGORIES_VIEW);
       setViewsRight(TYPE_OF_ORDER_VIEW);
       toast.success(

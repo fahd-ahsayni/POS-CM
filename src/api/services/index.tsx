@@ -1,5 +1,6 @@
 import { api } from "@/api/axios";
 import { createToast } from "@/components/global/Toasters";
+import { logout } from "@/store/slices/authentication/authSlice";
 import { toast } from "react-toastify";
 
 export const login = async (id: string, password: string) => {
@@ -113,9 +114,27 @@ export const printOrder = async (orderId: string) => {
 };
 
 export const closeShift = async (data: any) => {
-  return api.post("/shift/close", data);
+  const response = await api.post("/shift/close", data);
+  if (response.data.message === "Shift is not open.") {
+    await logoutService();
+  }
+  return response;
 };
 
 export const checkAuthorization = async (passcode: string) => {
-  return api.post("/setting/password", { admin_password: passcode });
+  return api.post("/auth/check-admin-password", { admin_password: passcode });
+};
+
+export const createPaymentDiscount = async (data: any) => {
+  return api.post("/order/create-with-payment", data);
+};
+
+export const logoutService = async () => {
+  try {
+    const response = await api.post("/auth/logout");
+    localStorage.clear();
+    return response.data;
+  } catch (error) {
+    console.error("Error logging out:", error);
+  }
 };
