@@ -44,14 +44,14 @@ export default function ProductsVariants() {
     if (selectedProduct) {
       setSelectedProducts((prev) => {
         const productsWithoutCurrent = prev.filter(
-          (p) => 
-            p._id !== selectedProduct._id || 
+          (p) =>
+            p._id !== selectedProduct._id ||
             p.customer_index !== selectedCustomer
         );
 
         const variantsForNewCustomer = prev.filter(
-          (p) => 
-            p._id === selectedProduct._id && 
+          (p) =>
+            p._id === selectedProduct._id &&
             p.customer_index === selectedCustomer
         );
 
@@ -68,7 +68,8 @@ export default function ProductsVariants() {
       }
 
       const existingVariant = selectedProducts.find(
-        p => p.product_variant_id === id && p.customer_index === selectedCustomer
+        (p) =>
+          p.product_variant_id === id && p.customer_index === selectedCustomer
       );
 
       if (!existingVariant) {
@@ -82,7 +83,7 @@ export default function ProductsVariants() {
     (variantId: string, increment: boolean) => {
       setSelectedProducts((prev) =>
         prev.map((product) =>
-          product.product_variant_id === variantId && 
+          product.product_variant_id === variantId &&
           product.customer_index === selectedCustomer
             ? {
                 ...product,
@@ -130,8 +131,8 @@ export default function ProductsVariants() {
     () =>
       selectedProduct?.variants.map((variant, index) => {
         const selectedVariant = selectedProducts.find(
-          (p) => 
-            p.product_variant_id === variant._id && 
+          (p) =>
+            p.product_variant_id === variant._id &&
             p.customer_index === selectedCustomer
         );
 

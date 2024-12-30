@@ -2,7 +2,7 @@ import { CashIcon, DishIcon, TrashIcon, UserIcon } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
 import { TypographySmall } from "@/components/ui/typography";
 import { ChevronDown } from "lucide-react";
-import { memo, useMemo } from "react";
+import { memo, useMemo, useCallback } from "react";
 import { useRightViewContext } from "../contexts/rightViewContext";
 import OrderLine from "./OrderLine";
 import { ProductSelected } from "@/types";
@@ -42,23 +42,36 @@ const OrderLineIndex = ({
     [products]
   );
 
-  const handleDelete = (e: React.MouseEvent) => {
+  const handleDelete = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     deleteCustomer(customerIndex);
-  };
+  }, [customerIndex, deleteCustomer]);
 
-  const handleToggle = (e: React.MouseEvent) => {
+  const handleToggle = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     onToggle();
-  };
+  }, [onToggle]);
+
+  const handleCustomerSelect = useCallback(() => {
+    setSelectedCustomer(customerIndex);
+  }, [customerIndex, setSelectedCustomer]);
 
   return (
     <>
       <div
-        onClick={() => setSelectedCustomer(customerIndex)}
+        onClick={handleCustomerSelect}
         className="flex items-center justify-between w-full mb-2.5"
+        role="button"
+        tabIndex={0}
+        aria-expanded={isExpanded}
+        onKeyDown={(e) => e.key === 'Enter' && handleCustomerSelect()}
       >
-        <Button size="icon" variant="link" onClick={handleDelete}>
+        <Button 
+          size="icon" 
+          variant="link" 
+          onClick={handleDelete}
+          aria-label={`Delete customer ${customerIndex}`}
+        >
           <TrashIcon className="w-5 h-5 fill-primary-red" />
         </Button>
         <div

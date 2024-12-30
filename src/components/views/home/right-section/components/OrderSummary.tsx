@@ -3,76 +3,36 @@ import { AddUserIcon, ExpandListIcon } from "@/assets/figma-icons";
 import Payments from "@/components/global/drawers/Payments/Payments";
 import ModalConfirmHoldOrder from "@/components/global/modal/ModalConfirmHoldOrder";
 import { Button } from "@/components/ui/button";
-import { setCustomerCount } from "@/store/slices/order/createOrder";
 import { AnimatePresence, motion } from "framer-motion";
 import { LucideMaximize } from "lucide-react";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
-import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
-import { useOrderLines } from "../contexts/orderLinesContext";
-import { useRightViewContext } from "../contexts/rightViewContext";
+import { memo } from "react";
 import OrderLines from "../import/OrderLines";
 import OtherActionsOrderLines from "../ui/OtherActionsOrderLines";
 import Ticket from "../layouts/Ticket";
+import { useCustomerManagement } from "../hooks/useCustomerManagement";
+import { useOrderSummary } from "../hooks/useOrderSummary";
+import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
 
 const OrderSummary = () => {
-  const [openModalConfirmHoldOrder, setOpenModalConfirmHoldOrder] =
-    useState(false);
-  const [openDrawerPayments, setOpenDrawerPayments] = useState(false);
-  const dispatch = useDispatch();
-  const [showTicket, setShowTicket] = useState(false);
-
-  const { customerIndex, setCustomerIndex, setSelectedCustomer } =
-    useRightViewContext();
   const { selectedProducts } = useLeftViewContext();
-  const { expandedCustomers, toggleAllCustomers } = useOrderLines();
-
-  // Memoize the check for last customer's products
-  const lastCustomerHasProducts = useMemo(() => {
-    return selectedProducts.some(
-      (product) => product.customer_index === customerIndex
-    );
-  }, [selectedProducts, customerIndex]);
-
-  // Memoize the disabled state for buttons
-  const isActionsDisabled = useMemo(
-    () => selectedProducts.length === 0,
-    [selectedProducts.length]
-  );
-
-  const handleAddCustomer = useCallback(() => {
-    if (selectedProducts.length > 0 && lastCustomerHasProducts) {
-      setCustomerIndex(customerIndex + 1);
-      setSelectedCustomer(customerIndex + 1);
+  const { addCustomer } = useCustomerManagement();
+  const { 
+    state: { 
+      openModalConfirmHoldOrder, 
+      openDrawerPayments, 
+      showTicket, 
+      isActionsDisabled,
+      expandedCustomers 
+    },
+    actions: {
+      setOpenModalConfirmHoldOrder,
+      setOpenDrawerPayments,
+      handleToggleAll,
+      handleProceedOrder,
+      handleShowTicket,
+      handleHoldOrder
     }
-  }, [
-    selectedProducts.length,
-    lastCustomerHasProducts,
-    customerIndex,
-    setCustomerIndex,
-    setSelectedCustomer,
-  ]);
-
-  const handleToggleAll = useCallback(() => {
-    if (selectedProducts.length > 0) {
-      toggleAllCustomers();
-    }
-  }, [selectedProducts.length, toggleAllCustomers]);
-
-  // Update order when customer index changes
-  useEffect(() => {
-    dispatch(setCustomerCount(customerIndex));
-  }, [customerIndex, dispatch]);
-
-  const handleProceedOrder = () => {
-    setOpenDrawerPayments(true);
-  };
-
-  const handleShowTicket = () => {
-    if (selectedProducts.length > 0) {
-      setShowTicket(!showTicket);
-    }
-  };
+  } = useOrderSummary();
 
   return (
     <>
@@ -82,25 +42,8 @@ const OrderSummary = () => {
         setOpen={setOpenModalConfirmHoldOrder}
       />
       <div className="flex flex-col justify-start h-full gap-y-2">
-        {/* <div className="flex items-center justify-between">
-          <TypographyP className="text-xs">
-            <span>Order ref</span>
-            <span className="text-muted-foreground">01-1423-26</span>
-          </TypographyP>
-        </div> */}
-
         <div className="flex items-center justify-between px-3">
-          <div className="flex items-center gap-2">
-            {/* <Button size="icon">
-              <PrinterIcon className="w-[1.2rem] h-auto fill-white" />
-              <span className="sr-only">Print Addition</span>
-            </Button>
-            <Button size="icon" className="relative">
-              <BillIcon className="w-[1.2rem] absolute h-[1.2rem] fill-white top-2 left-[0.6rem]" />
-              <span className="sr-only">Print Facture</span>
-            </Button> */}
-          </div>
-
+          <div className="flex items-center gap-2" />
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <OtherActionsOrderLines />
@@ -114,7 +57,7 @@ const OrderSummary = () => {
                 />
                 <span className="sr-only">Toggle Customers</span>
               </Button>
-              <Button onClick={handleAddCustomer} size="icon">
+              <Button onClick={addCustomer} size="icon">
                 <AddUserIcon className="w-[1.02rem] h-auto fill-white" />
                 <span className="sr-only">add customer</span>
               </Button>
@@ -136,7 +79,7 @@ const OrderSummary = () => {
               </motion.div>
             )}
           </AnimatePresence>
-          <div className="flex-border flex-grow relative flex items-center justify-center pt-4 overflow-y-auto pr-2  h-full">
+          <div className="flex-border flex-grow relative flex items-center justify-center pt-4 overflow-y-auto pr-2 h-full">
             <AnimatePresence>
               {selectedProducts.length < 1 && (
                 <motion.img
@@ -158,7 +101,7 @@ const OrderSummary = () => {
           <Button
             className="flex-1"
             variant="secondary"
-            onClick={() => setOpenModalConfirmHoldOrder(true)}
+            onClick={handleHoldOrder}
             disabled={isActionsDisabled}
           >
             Hold Order

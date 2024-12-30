@@ -2,7 +2,7 @@ import { TypographyP } from "@/components/ui/typography";
 import { Separator } from "@radix-ui/react-separator";
 import AllCategories from "../components/AllCategories";
 import AllProducts from "../components/AllProducts";
-import Header from "../components/Headre";
+import Header from "../components/Header";
 import ProductsByCategory from "../components/ProductsByCategory";
 
 // Define constants for tab values

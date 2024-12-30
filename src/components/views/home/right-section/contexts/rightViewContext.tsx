@@ -1,100 +1,63 @@
 import { setCustomerCount } from "@/store/slices/order/createOrder";
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { createContext, ReactNode, useCallback, useContext, useMemo, useState, useEffect } from "react";
 import { TYPE_OF_ORDER_VIEW } from "../constants";
 
-interface RightViewContextType {
+interface RightViewState {
   views: string;
-  setViews: (view: string) => void;
   selectedOrderType: string | null;
-  setSelectedOrderType: (type: string | null) => void;
   customerIndex: number;
-  setCustomerIndex: (index: number) => void;
   tableNumber: string;
-  setTableNumber: (number: string) => void;
   orderType: string | null;
-  setOrderType: (type: string | null) => void;
   selectedCustomer: number;
+}
+
+interface RightViewContextType extends RightViewState {
+  setViews: (view: string) => void;
+  setSelectedOrderType: (type: string | null) => void;
+  setCustomerIndex: (index: number) => void;
+  setTableNumber: (number: string) => void;
+  setOrderType: (type: string | null) => void;
   setSelectedCustomer: (customer: number) => void;
 }
 
-const RightViewContext = createContext<RightViewContextType>(
-  {} as RightViewContextType
-);
+const RightViewContext = createContext<RightViewContextType>({} as RightViewContextType);
 
 export const RightViewProvider = ({ children }: { children: ReactNode }) => {
-  const [views, setViews] = useState(TYPE_OF_ORDER_VIEW);
-  const [selectedOrderType, setSelectedOrderType] = useState<string | null>(
-    null
-  );
-  const [customerIndex, setCustomerIndex] = useState(1);
-  const [orderType, setOrderType] = useState<string | null>(TYPE_OF_ORDER_VIEW);
-  const [tableNumber, setTableNumber] = useState("");
-  const [selectedCustomer, setSelectedCustomer] = useState<number>(1);
+  const [state, setState] = useState<RightViewState>({
+    views: TYPE_OF_ORDER_VIEW,
+    selectedOrderType: null,
+    customerIndex: 1,
+    tableNumber: "",
+    orderType: TYPE_OF_ORDER_VIEW,
+    selectedCustomer: 1
+  });
 
-  // Define callbacks at the top level
-  const handleSetViews = useCallback((view: string) => setViews(view), []);
-  const handleSetOrderType = useCallback(
-    (type: string | null) => setSelectedOrderType(type),
-    []
-  );
-  const handleSetCustomerIndex = useCallback(
-    (index: number) => setCustomerIndex(index),
-    []
-  );
-  const handleSetTableNumber = useCallback(
-    (number: string) => setTableNumber(number),
-    []
-  );
-  const handleSetType = useCallback(
-    (type: string | null) => setOrderType(type),
-    []
-  );
-  const handleSetCustomer = useCallback(
-    (customer: number) => setSelectedCustomer(customer),
-    []
-  );
+  const updateState = useCallback(<K extends keyof RightViewState>(
+    key: K,
+    value: RightViewState[K]
+  ) => {
+    setState(prev => ({ ...prev, [key]: value }));
+  }, []);
+
+  const handlers = useMemo(() => ({
+    setViews: (view: string) => updateState('views', view),
+    setSelectedOrderType: (type: string | null) => updateState('selectedOrderType', type),
+    setCustomerIndex: (index: number) => updateState('customerIndex', index),
+    setTableNumber: (number: string) => updateState('tableNumber', number),
+    setOrderType: (type: string | null) => updateState('orderType', type),
+    setSelectedCustomer: (customer: number) => updateState('selectedCustomer', customer),
+  }), [updateState]);
 
   useEffect(() => {
-    setCustomerCount(customerIndex);
-  }, [customerIndex]);
+    setCustomerCount(state.customerIndex);
+  }, [state.customerIndex]);
 
   const contextValue = useMemo(
     () => ({
-      views,
-      setViews: handleSetViews,
-      selectedOrderType,
-      setSelectedOrderType: handleSetOrderType,
-      customerIndex,
-      setCustomerIndex: handleSetCustomerIndex,
-      tableNumber,
-      setTableNumber: handleSetTableNumber,
-      orderType,
-      setOrderType: handleSetType,
-      selectedCustomer,
-      setSelectedCustomer: handleSetCustomer,
+      ...state,
+      ...handlers
     }),
-    [
-      views,
-      selectedOrderType,
-      customerIndex,
-      tableNumber,
-      orderType,
-      selectedCustomer,
-      handleSetViews,
-      handleSetOrderType,
-      handleSetCustomerIndex,
-      handleSetTableNumber,
-      handleSetType,
-      handleSetCustomer,
-    ]
+    [state, handlers]
   );
 
   return (
@@ -105,5 +68,9 @@ export const RightViewProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export const useRightViewContext = () => {
-  return useContext(RightViewContext);
+  const context = useContext(RightViewContext);
+  if (!context) {
+    throw new Error("useRightViewContext must be used within RightViewProvider");
+  }
+  return context;
 };

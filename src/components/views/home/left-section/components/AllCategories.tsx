@@ -1,57 +1,19 @@
-import { BlurImage } from "@/components/global/BlurImage";
 import { Card } from "@/components/ui/card";
 import { TypographyP } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
-import { Category } from "@/types";
 import { motion } from "framer-motion";
-import React, { useMemo, useCallback } from "react";
-import { ORDER_SUMMARY_VIEW } from "../../right-section/constants";
-import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
-import { ALL_PRODUCTS_VIEW, PRODUCTS_BY_CATEGORY_VIEW } from "../constants";
-import { useLeftViewContext } from "../contexts/leftViewContext";
+import { memo } from "react";
+import { useCategories } from "../hooks/useCategories";
+import { CategoryCard } from "../Layout/CategoryCard";
+import { Category } from "@/types";
 
-export default React.memo(function AllCategories() {
-  const { setViews, setCategory } = useLeftViewContext();
-  const { views } = useRightViewContext();
-
-  const categories = useMemo(() => {
-    return JSON.parse(localStorage.getItem("generalData") || "{}").categories || [];
-  }, []);
-
-  const handleCategoryClick = useCallback((category: Category) => {
-    setCategory(category);
-    setViews(PRODUCTS_BY_CATEGORY_VIEW);
-  }, [setCategory, setViews]);
-
-  const categoryCards = useMemo(() => 
-    categories.map((category: Category) => (
-      <div key={category._id} className="h-24">
-        <Card
-          onClick={() => handleCategoryClick(category)}
-          className={cn(
-            "flex cursor-pointer relative flex-col items-center h-24 overflow-hidden justify-center",
-            views !== ORDER_SUMMARY_VIEW && "pointer-events-none"
-          )}
-        >
-          <BlurImage
-            src={`${import.meta.env.VITE_BASE_URL}${category.image}` ?? ""}
-            alt={category.name}
-            crossOrigin="anonymous"
-            className={cn(
-              "object-cover transition-all duration-500",
-              views !== ORDER_SUMMARY_VIEW
-                ? "grayscale dark:brightness-[0.30] brightness-[0.6]"
-                : "dark:brightness-[0.5] brightness-[0.6]"
-            )}
-            loadingClassName="dark:bg-white/5 bg-primary-black/30"
-          />
-          <TypographyP className="text-center group text-xl capitalize font-medium absolute text-white">
-            {category.name.toLowerCase()}
-          </TypographyP>
-        </Card>
-      </div>
-    )), [categories, views, handleCategoryClick]
-  );
+export default memo(function AllCategories() {
+  const {
+    categories,
+    handleCategoryClick,
+    handleAllProductsClick,
+    isInteractionDisabled,
+  } = useCategories();
 
   return (
     <motion.div
@@ -62,22 +24,25 @@ export default React.memo(function AllCategories() {
       className="grid grid-cols-3 gap-3.5 mt-8 pb-16 px-2"
     >
       <Card
-        onClick={() => {
-          if (views === ORDER_SUMMARY_VIEW) {
-            setViews(ALL_PRODUCTS_VIEW);
-          }
-          setCategory(null);
-        }}
+        onClick={handleAllProductsClick}
         className={cn(
           "flex cursor-pointer relative flex-col items-center h-24 !rounded-lg overflow-hidden justify-center",
-          views !== ORDER_SUMMARY_VIEW && "pointer-events-none"
+          isInteractionDisabled && "pointer-events-none"
         )}
       >
         <TypographyP className="text-center text-xl font-medium">
           All Products
         </TypographyP>
       </Card>
-      {categoryCards}
+
+      {categories.map((category: Category) => (
+        <CategoryCard
+          key={category._id}
+          category={category}
+          isDisabled={isInteractionDisabled}
+          onClick={() => handleCategoryClick(category)}
+        />
+      ))}
     </motion.div>
   );
 });

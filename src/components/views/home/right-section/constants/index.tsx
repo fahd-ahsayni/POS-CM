@@ -24,3 +24,9 @@ export const tabsConfig = [
   },
   { value: ORDER_SUMMARY_VIEW, component: <OrderSummary />, className: "pb-8" },
 ];
+
+export const ORDER_TYPES = {
+  TAKEAWAY: "takeaway",
+  DELIVERY: "delivery",
+  ON_PLACE: "onplace",
+} as const;

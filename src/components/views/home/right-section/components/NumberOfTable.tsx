@@ -1,4 +1,3 @@
-import { getByTableName } from "@/api/services";
 import NumberPad from "@/components/global/NumberPad";
 import { Button } from "@/components/ui/button";
 import {
@@ -6,63 +5,19 @@ import {
   TypographyH4,
   TypographySmall,
 } from "@/components/ui/typography";
-import { updateOrder } from "@/functions/updateOrder";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { ORDER_SUMMARY_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
-import { useRightViewContext } from "../contexts/rightViewContext";
+import { useNumberOfTable } from "../hooks/useNumberOfTable";
 
 export default function NumberOfTable() {
-  const { tableNumber, setTableNumber } = useRightViewContext();
-  const [tableValid, setTableValid] = useState<string>("valid");
-  const { setViews } = useRightViewContext();
-  const dispatch = useDispatch();
-  const data = JSON.parse(localStorage.getItem("generalData") || "{}")[
-    "floors"
-  ];
-
-  useEffect(() => {
-    setTableValid("valid");
-  }, [tableNumber]);
-
-  const handleNumberClick = (value: string) => {
-    if (value === "C") {
-      setTableNumber("");
-    } else if (value === "delete") {
-      setTableNumber(tableNumber.slice(0, -1));
-    } else {
-      const newValue = tableNumber + value;
-      setTableNumber(parseInt(newValue) <= 999999 ? newValue : tableNumber);
-    }
-  };
-
-  function findTableByName(tableName: string) {
-    return Object.values(data)
-      .map((floor: any) =>
-        floor.table_ids?.filter((table: any) => table.name === tableName)
-      )
-      .flat()
-      .find((table: any) => table);
-  }
-
-  const handleConfirm = async (number: string) => {
-    try {
-      const response = await getByTableName(number);
-
-      if (response.status === 204) {
-        setViews(ORDER_SUMMARY_VIEW);
-        dispatch(updateOrder({ table_id: findTableByName(number)?._id }));
-        setTableValid("valid");
-        setTableNumber(number);
-      } else if (response.status === 200) {
-        setTableValid("invalid");
-      }
-    } catch (error) {
-      setTableValid("not-found");
-    }
-  };
+  const {
+    tableNumber,
+    tableValid,
+    handleNumberClick,
+    handleConfirm,
+    handleCancel,
+    getValidationMessage,
+  } = useNumberOfTable();
 
   return (
     <div className="h-full overflow-hidden">
@@ -79,33 +34,28 @@ export default function NumberOfTable() {
           <div className="flex flex-col space-y-2 justify-center items-center">
             <TypographyH1
               className={cn(
+                "font-medium tracking-wider",
                 tableValid === "invalid" && "text-warning-color",
-                tableValid === "not-found" && "text-error-color",
-                "font-medium tracking-wider"
+                tableValid === "not-found" && "text-error-color"
               )}
             >
               {tableNumber || "0"}
             </TypographyH1>
             <TypographySmall
               className={cn(
+                "text-sm text-center",
                 tableValid === "invalid" && "text-warning-color",
-                tableValid === "not-found" && "text-error-color",
-                "text-sm text-center"
+                tableValid === "not-found" && "text-error-color"
               )}
             >
-              {tableValid === "invalid" && "Table is already taken"}
-              {tableValid === "not-found" && "Table not found"}
+              {getValidationMessage()}
               <span className="opacity-0">?</span>
             </TypographySmall>
           </div>
           <NumberPad onNumberClick={handleNumberClick} />
         </div>
         <div className="flex gap-4">
-          <Button
-            className="flex-1"
-            variant="secondary"
-            onClick={() => setViews(TYPE_OF_ORDER_VIEW)}
-          >
+          <Button className="flex-1" variant="secondary" onClick={handleCancel}>
             Cancel
           </Button>
           <Button

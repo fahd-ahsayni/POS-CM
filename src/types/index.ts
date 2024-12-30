@@ -108,7 +108,6 @@ export interface ProductSelected extends Product {
   order_type_id: string;
   uom_id: string | null;
   id: string;
-  note: string[] | null;
   is_paid: boolean | false;
   is_ordred: boolean | false;
   suite_commande: boolean | false;

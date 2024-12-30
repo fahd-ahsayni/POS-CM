@@ -15,9 +15,11 @@ interface BreadcrumbItemType {
   isLast?: boolean;
   onClick?: () => void;
 }
+
 interface BreadcrumbProps {
   items: BreadcrumbItemType[];
 }
+
 export function CustomBreadcrumb({ items }: BreadcrumbProps) {
   if (!items?.length) return null;
 
@@ -32,15 +34,15 @@ export function CustomBreadcrumb({ items }: BreadcrumbProps) {
     : modifiedItems;
 
   return (
-    <nav aria-label="breadcrumb" className="relative z-10 pr-4 flex items-center justify-center">
+    <nav aria-label="breadcrumb" className="relative z-10 pr-4 flex-shrink-0">
       <Breadcrumb>
-        <BreadcrumbList>
+        <BreadcrumbList className="flex items-center whitespace-nowrap overflow-x-auto scrollbar-hide">
           {visibleItems.map((item, index) => (
             <React.Fragment key={item._id + index}>
-              <BreadcrumbItem className="text-sm">
+              <BreadcrumbItem className="text-sm flex-shrink-0">
                 {item.isLast ? (
-                  <BreadcrumbPage className="font-medium">
-                    {item.name}
+                  <BreadcrumbPage className="font-medium capitalize">
+                    {item.name.toLowerCase()}
                   </BreadcrumbPage>
                 ) : (
                   <BreadcrumbLink
@@ -52,13 +54,15 @@ export function CustomBreadcrumb({ items }: BreadcrumbProps) {
                   </BreadcrumbLink>
                 )}
               </BreadcrumbItem>
-              {!item.isLast && <BreadcrumbSeparator className="text-red-600" />}
+              {!item.isLast && (
+                <BreadcrumbSeparator className="text-red-600 flex-shrink-0" />
+              )}
               {showEllipsis && index === 0 && (
                 <>
-                  <BreadcrumbItem>
+                  <BreadcrumbItem className="flex-shrink-0">
                     <BreadcrumbEllipsis />
                   </BreadcrumbItem>
-                  <BreadcrumbSeparator className="text-red-600" />
+                  <BreadcrumbSeparator className="text-red-600 flex-shrink-0" />
                 </>
               )}
             </React.Fragment>
