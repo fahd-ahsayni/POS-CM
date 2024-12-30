@@ -16,6 +16,7 @@ import { useLeftViewContext } from "../contexts/leftViewContext";
 import { useProductSelection } from "../hooks/useProductSelection";
 import Header from "./Headre";
 import ProductsVariants from "./ProductsVariants";
+import Combo from "@/components/global/drawers/combo/Combo";
 
 export default memo(function ProductsByCategory() {
   const {
@@ -28,9 +29,8 @@ export default memo(function ProductsByCategory() {
     setSubCategory,
   } = useLeftViewContext();
 
-  const rightViewContext = useRightViewContext();
-  if (!rightViewContext) return null;
-  const { orderType, selectedCustomer } = rightViewContext;
+  const { orderType, selectedCustomer } = useRightViewContext();
+  const { setOpenDrawerCombo, setSelectedCombo } = useLeftViewContext();
 
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>(category?.products ?? []);
@@ -51,7 +51,12 @@ export default memo(function ProductsByCategory() {
   const handleProductClick = useCallback(
     (product: Product) => {
       if (product.variants.length === 1) {
-        addOrUpdateProduct(product, product.variants[0]._id);
+        if (product.variants[0].is_menu) {
+          setSelectedCombo(product.variants[0]);
+          setOpenDrawerCombo(true);
+        } else {
+          addOrUpdateProduct(product, product.variants[0]._id);
+        }
       } else if (product.variants.length > 1) {
         setSelectedProduct(product);
         setOpenDrawerVariants(true);
@@ -201,6 +206,7 @@ export default memo(function ProductsByCategory() {
 
     return (
       <>
+        <Combo />
         <ProductsVariants />
         <motion.div
           initial={{ opacity: 0 }}

@@ -27,6 +27,10 @@ interface LeftViewContextType {
   setCategory: (category: Category | null) => void;
   subCategory: Category | null;
   setSubCategory: React.Dispatch<React.SetStateAction<Category | null>>;
+  openDrawerCombo: boolean;
+  setOpenDrawerCombo: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedCombo: any | null;
+  setSelectedCombo: React.Dispatch<React.SetStateAction<any | null>>;
 }
 
 const LeftViewContext = createContext<LeftViewContextType | null>(null);
@@ -41,6 +45,14 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
   const [quantityPerVariant, setQuantityPerVariant] = useState<number>(0);
   const [category, setCategory] = useState<Category | null>(null);
   const [subCategory, setSubCategory] = useState<Category | null>(null);
+
+
+  /**
+   * @Combo
+   * !! Dont forget edit Type in the context !!
+   */
+  const [openDrawerCombo, setOpenDrawerCombo] = useState(false);
+  const [selectedCombo, setSelectedCombo] = useState<any | null>(null);
 
   const dispatch = useDispatch();
 
@@ -79,6 +91,10 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
       setCategory: handleSetCategory,
       subCategory,
       setSubCategory,
+      openDrawerCombo,
+      setOpenDrawerCombo,
+      selectedCombo,
+      setSelectedCombo,
     }),
     [
       views,
@@ -90,6 +106,10 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
       subCategory,
       handleSetViews,
       handleSetCategory,
+      openDrawerCombo,
+      setOpenDrawerCombo,
+      selectedCombo,
+      setSelectedCombo,
     ]
   );
 
@@ -103,7 +123,9 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
 export const useLeftViewContext = () => {
   const context = useContext(LeftViewContext);
   if (context === null) {
-    throw new Error('useLeftViewContext must be used within a LeftViewProvider');
+    throw new Error(
+      "useLeftViewContext must be used within a LeftViewProvider"
+    );
   }
   return context;
 };

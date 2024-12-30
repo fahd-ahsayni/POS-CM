@@ -78,6 +78,18 @@ export default function DataTable({
       ? getValue(row, header.key, header.defaultValue)
       : row[header.key] || header.defaultValue || "-";
 
+    // Add status-specific styling
+    const getStatusStyle = (status: string) => {
+      switch (status.toLowerCase()) {
+        case 'paid':
+          return 'text-green-500 dark:text-green-400';
+        case 'canceled':
+          return 'text-error-color';
+        default:
+          return '';
+      }
+    };
+
     const cellContent = header.isPrice ? (
       <>
         <span>
@@ -99,6 +111,10 @@ export default function DataTable({
           </Button>
         )}
       </>
+    ) : header.key === 'status' ? (
+      <span className={getStatusStyle(cellValue)}>
+        {cellValue}
+      </span>
     ) : (
       cellValue
     );

@@ -9,8 +9,6 @@ import LogInPage from "../auth/LogInPage";
 import HomePage from "./HomePage";
 import OrdersPage from "./OrdersPage";
 import WaitingOrders from "./WaitingOrders";
-import { useEffect } from "react";
-import { fetchOrders } from "@/store/slices/data/ordersSlice";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = useSelector(

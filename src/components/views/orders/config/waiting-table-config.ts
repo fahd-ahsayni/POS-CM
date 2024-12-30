@@ -1,7 +1,6 @@
-import { updateOrder } from "@/functions/updateOrder";
-import { ProductSelected } from "./../../../../types/index";
+import { ProductSelected } from "@/types";
+import { Order } from "@/types/getDataByDay";
 import { format } from "date-fns";
-import { useDispatch } from "react-redux";
 
 type Header = {
   key: string;
@@ -12,11 +11,21 @@ type Header = {
 };
 
 export const WAITING_TABLE_HEADERS: Header[] = [
-  { key: "dateTime", label: "Date & Time", width: "20%", isTextMuted: true },
-  { key: "orderedBy", label: "Created by", width: "20%", isTextMuted: false },
-  { key: "orderType", label: "Order Type", width: "40%", isTextMuted: false },
+  { key: "createdAt", label: "Date & Time", width: "20%", isTextMuted: true },
   {
-    key: "orderTotal",
+    key: "created_by.name",
+    label: "Created by",
+    width: "20%",
+    isTextMuted: false,
+  },
+  {
+    key: "order_type_id.type",
+    label: "Order Type",
+    width: "40%",
+    isTextMuted: false,
+  },
+  {
+    key: "total_amount",
     label: "Order Total (Dhs)",
     width: "20%",
     isTextMuted: false,
@@ -41,47 +50,14 @@ export const WAITING_TABLE_MESSAGES = {
   error: "Error loading waiting orders",
 } as const;
 
-export const formatData = (order: any, pos: any) => {
-  const posData = pos?.data.pos;
-  const formattedDate = format(
-    new Date(order.createdAt || new Date()),
-    "dd.MM.yyyy - hh:mm a"
-  );
-
-  const posId = localStorage.getItem("posId");
-  const findPos = posData.find((pos: any) => pos._id === posId);
-  const user = findPos?.shift.user_id;
-
-  const dispatch = useDispatch();
-
-  dispatch(updateOrder({ order_type_id: order.order_type_id }));
-
-  const generalData = localStorage.getItem("generalData");
-  const orderTypes = generalData ? JSON.parse(generalData).orderTypes : [];
-  const orderType = orderTypes.find(
-    (type: any) => type._id === order.order_type_id
-  );
-
-  return {
-    dateTime: formattedDate,
-    orderedBy: user?.name,
-    orderType: orderType?.name,
-    orderTotal: order.total_amount || 0,
-    orderLines: order.orderlines,
-    orderId: order._id,
-    _id: order._id,
-    id: order._id,
-    deliveryPerson: order.delivery_person || "",
-    paymentStatus: order.payment_status || "",
-  };
-};
-
 export const handleRowClick = (
   orderData: any,
   setSelectedProducts: React.Dispatch<React.SetStateAction<ProductSelected[]>>,
   setCustomerIndex: (index: number) => void,
   setSelectedCustomer: (index: number) => void
 ) => {
+  console.log("Clicked order data:", orderData);
+
   if (!orderData?.orderLines) {
     console.error("No orderlines found in order data");
     return;
@@ -89,14 +65,22 @@ export const handleRowClick = (
 
   const products = JSON.parse(localStorage.getItem("products") || "[]");
   const variants = JSON.parse(localStorage.getItem("variants") || "[]");
+  
+  console.log("Available products:", products);
+  console.log("Available variants:", variants);
 
   const mappedOrder = {
     ...orderData,
     orderLines: orderData.orderLines.map((orderline: any) => {
+      console.log("Processing orderline:", orderline);
+
       const variant = variants.find(
         (v: any) => v._id === orderline.product_variant_id
       );
       const product = products.find((p: any) => p._id === variant?.product_id);
+
+      console.log("Found variant:", variant);
+      console.log("Found product:", product);
 
       return {
         ...product,
@@ -115,14 +99,16 @@ export const handleRowClick = (
     }),
   };
 
+  console.log("Mapped order:", mappedOrder);
+
   const maxCustomerIndex = Math.max(
     ...mappedOrder.orderLines.map((orderline: any) => orderline.customer_index)
   );
 
   setCustomerIndex(maxCustomerIndex);
   setSelectedCustomer(maxCustomerIndex);
-
   setSelectedProducts(mappedOrder.orderLines);
+
   const holdOrders = JSON.parse(localStorage.getItem("holdOrders") || "[]");
   localStorage.setItem(
     "holdOrders",
@@ -130,4 +116,15 @@ export const handleRowClick = (
       holdOrders.filter((order: any) => order._id !== orderData._id)
     )
   );
+};
+
+export const formatData = (order: any) => {
+  return {
+    _id: order._id,
+    createdAt: format(new Date(order.createdAt || new Date()), "dd.MM.yyyy - hh:mm a"),
+    created_by: order.created_by || { name: '-' },
+    order_type_id: order.order_type_id || { type: '-' },
+    total_amount: order.total_amount || 0,
+    orderLines: order.orderlines || [],
+  };
 };

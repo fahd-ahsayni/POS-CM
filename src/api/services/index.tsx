@@ -131,9 +131,7 @@ export const createPaymentDiscount = async (data: any) => {
 
 export const logoutService = async () => {
   try {
-    const response = await api.post("/auth/logout");
     localStorage.clear();
-    return response.data;
   } catch (error) {
     console.error("Error logging out:", error);
   }

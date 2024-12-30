@@ -1,8 +1,8 @@
+import { TypographyP } from "@/components/ui/typography";
 import { currency } from "@/preferences";
+import { useEffect } from "react";
 import Drawer from "../../Drawer";
 import { useOrder } from "./context/OrderContext";
-import { useEffect } from "react";
-import { TypographyH4, TypographyP } from "@/components/ui/typography";
 
 export default function OrderDetails() {
   const {

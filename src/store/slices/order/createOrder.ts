@@ -41,8 +41,6 @@ const initialOrderState: OrderState = {
   orderlines: [],
 };
 
-console.log("Initializing order state:", initialOrderState);
-
 const initialState: OrderSliceState = {
   data: initialOrderState,
   status: "idle",

@@ -7,6 +7,7 @@ import { useProductSelection } from "../hooks/useProductSelection";
 import { ProductCard, ProductCardSkeleton } from "../Layout/ProductCard";
 import ProductsVariants from "./ProductsVariants";
 import { extractProducts } from "@/functions/extractProducts";
+import Combo from "@/components/global/drawers/combo/Combo";
 
 export default function AllProducts() {
   const [data, setData] = useState<Product[]>([]);
@@ -81,6 +82,7 @@ export default function AllProducts() {
         </motion.div>
       ) : (
         <>
+          <Combo />
           <ProductsVariants />
           <motion.div
             transition={{ duration: 0.35 }}

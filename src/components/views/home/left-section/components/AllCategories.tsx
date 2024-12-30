@@ -29,7 +29,7 @@ export default React.memo(function AllCategories() {
         <Card
           onClick={() => handleCategoryClick(category)}
           className={cn(
-            "flex cursor-pointer relative flex-col items-center h-24 overflow-hidden justify-center bg-zinc-900",
+            "flex cursor-pointer relative flex-col items-center h-24 overflow-hidden justify-center",
             views !== ORDER_SUMMARY_VIEW && "pointer-events-none"
           )}
         >
@@ -69,11 +69,11 @@ export default React.memo(function AllCategories() {
           setCategory(null);
         }}
         className={cn(
-          "flex !bg-zinc-800 cursor-pointer relative flex-col items-center h-24 !rounded-lg overflow-hidden justify-center",
+          "flex cursor-pointer relative flex-col items-center h-24 !rounded-lg overflow-hidden justify-center",
           views !== ORDER_SUMMARY_VIEW && "pointer-events-none"
         )}
       >
-        <TypographyP className="text-center text-xl font-medium text-white">
+        <TypographyP className="text-center text-xl font-medium">
           All Products
         </TypographyP>
       </Card>

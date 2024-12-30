@@ -1,12 +1,10 @@
+import { DishIcon } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
 import { TypographyP } from "@/components/ui/typography";
 import { motion } from "framer-motion";
 import { Minus, Plus } from "lucide-react";
 import { memo, useMemo, useState } from "react";
-import { BsSuitcase } from "react-icons/bs";
 import OderLineAddComments from "../ui/OderLineAddComments";
-import { DishIcon } from "@/assets/figma-icons";
-import { suite } from "node:test";
 import OrderLineOtherActions from "../ui/OrderLineOtherActions";
 
 interface OrderLineProps {
@@ -24,9 +22,8 @@ const OrderLine = ({ item, increment, decrement }: OrderLineProps) => {
   const [isSuitCamand, setIsSuitCamand] = useState(false);
   const [launched, setLaunched] = useState(false);
 
-  const config = JSON.parse(localStorage.getItem("generalData") || "{}").configs[0];
-
-  console.log(config);
+  const config = JSON.parse(localStorage.getItem("generalData") || "{}")
+    .configs[0];
 
   const itemVariants = useMemo(
     () => ({
