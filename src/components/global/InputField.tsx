@@ -62,7 +62,7 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
   return (
     <div className={cn("space-y-1", className)}>
       <div className="flex items-center justify-between gap-x-1">
-        <Label className="pl-2">
+        <Label className="pl-1">
           {label}
           {required && <span className="text-destructive">*</span>}
         </Label>
@@ -71,7 +71,7 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
         )}
       </div>
 
-      <div className="relative">
+      <div className="relative mt-0.5">
         {startIcon && (
           <div className="absolute inset-y-0 start-0 flex items-center ps-3 text-muted-foreground/80">
             {startIcon}
@@ -85,8 +85,8 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
             startIcon && "ps-9",
             suffix && "pe-9",
             isPasswordToggleable && "pe-9",
-            type === "number" && "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-            isFocused && "!ring-1 !ring-primary-black/60 dark:!ring-white/60 !ring-offset-0",
+            type === "number" &&
+              "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           )}
           type={getInputType()}
           placeholder={placeholder}

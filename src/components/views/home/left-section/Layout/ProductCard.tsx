@@ -55,9 +55,9 @@ export function ProductCard({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.35 }}
-                className="bg-primary rounded-full w-8 h-8 flex items-center justify-center"
+                className="bg-primary-red rounded-full w-7 h-7 flex items-center justify-center shadow-lg shadow-primary-red/50"
               >
-                <TypographyP className="text-white text-sm font-medium">
+                <TypographyP className="text-white text-[.8rem] font-semibold">
                   {totalQuantity}
                 </TypographyP>
               </motion.div>

@@ -23,7 +23,7 @@ export default function OrderLineOtherActions() {
         <Button
           size="icon"
           variant="ghost"
-          className="-ms-px rounded h-8 w-8 bg-accent-white/10 hover:bg-accent-white/20"
+          className="-ms-px rounded h-7 w-7 bg-accent-white/10 hover:bg-accent-white/20"
           aria-label="Open edit menu"
         >
           <BsThreeDotsVertical className="text-primary-black dark:text-white" />

@@ -1,4 +1,5 @@
-import { Order } from '@/types/getDataByDay'
+import { WaitingOrder } from '@/types/waitingOrders';
+import { WaitingTableData } from '../config/waiting-table-config';
 import { useState, useMemo } from 'react'
 
 interface SortConfig {
@@ -37,10 +38,16 @@ export function useWaitingOrders<T>({
   }
 
   const sortedData = useMemo(() => {
-    let sorted = [...data]
+    const tableData: WaitingTableData[] = (data as WaitingOrder[]).map(order => ({
+      _id: order._id,
+      createdAt: order.createdAt,
+      'created_by.name': order.created_by.name,
+      'order_type_id.type': order.order_type_id.type,
+      total_amount: order.total_amount
+    }));
 
     if (sortConfig) {
-      sorted.sort((a, b) => {
+      tableData.sort((a, b) => {
         let aValue = getNestedValue(a, sortConfig.key)
         let bValue = getNestedValue(b, sortConfig.key)
 
@@ -70,7 +77,7 @@ export function useWaitingOrders<T>({
       })
     }
 
-    return sorted
+    return tableData
   }, [data, sortConfig])
 
   return {

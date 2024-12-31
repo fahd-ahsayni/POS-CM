@@ -1,121 +1,92 @@
-import { memo } from 'react'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { useWaitingOrders } from '../hooks/useWaitingOrders'
-import { ArrowDownAZ, ArrowUpAZ, SortDesc } from 'lucide-react'
-import { useLeftViewContext } from '../../home/left-section/contexts/leftViewContext'
-import { useRightViewContext } from '../../home/right-section/contexts/rightViewContext'
-import { useNavigate } from 'react-router-dom'
-import { ORDER_SUMMARY_VIEW } from '../../home/right-section/constants'
-import { handleRowClick } from '../config/waiting-table-config'
-import { currency } from '@/preferences'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { WaitingOrder } from "@/types/waitingOrders";
+import { memo } from "react";
+import { useNavigate } from "react-router-dom";
+import { useLeftViewContext } from "../../home/left-section/contexts/leftViewContext";
+import { ORDER_SUMMARY_VIEW } from "../../home/right-section/constants";
+import { useRightViewContext } from "../../home/right-section/contexts/rightViewContext";
+import { useWaitingOrders } from "../hooks/useWaitingOrders";
+import { handleWaitingOrderSelect } from "../hooks/useWaitingOrdersManagement";
 
-interface Header {
-  key: string
-  label: string
-  width: string
-  isTextMuted?: boolean
-  isPrice?: boolean
-}
+const HEADERS = [
+  { key: "createdAt", label: "Date & Time", isTextMuted: true },
+  { key: "created_by.name", label: "Created by" },
+  { key: "order_type_id.type", label: "Order Type" },
+  { key: "total_amount", label: "Order Total (Dhs)", isPrice: true },
+];
 
-interface WaitingOrder {
-  [key: string]: any;  // Index signature to allow string keys
-  _id: string;
-  dateTime: string;
-  orderedBy: string;
-  orderType: string;
-  orderTotal: number;
-}
+const WaitingOrdersTable = ({ data }: { data: WaitingOrder[] }) => {
+  const { sortedData, sortConfig, handleSort } = useWaitingOrders({ data });
+  const { setSelectedProducts } = useLeftViewContext();
+  const { setCustomerIndex, setSelectedCustomer, setViews } =
+    useRightViewContext();
+  const navigate = useNavigate();
 
-interface WaitingOrdersTableProps {
-  headers: Header[]
-  data: WaitingOrder[]
-  caption?: string
-}
+  const handleOrderClick = (displayItem: any) => {
+    const originalOrder = data.find((order) => order._id === displayItem._id);
+    if (!originalOrder) return;
 
-const WaitingOrdersTable = ({ headers, data }: WaitingOrdersTableProps) => {
-  const { sortedData, sortConfig, handleSort } = useWaitingOrders<WaitingOrder>({ data })
-  const { setSelectedProducts } = useLeftViewContext()
-  const { setViews, setCustomerIndex, setSelectedCustomer } = useRightViewContext()
-  const navigate = useNavigate()
-
-  const handleOrderClick = (item: any) => {
-    handleRowClick(
-      item,
+    handleWaitingOrderSelect(
+      originalOrder,
       setSelectedProducts,
       setCustomerIndex,
       setSelectedCustomer
-    )
-    navigate('/')
-    setViews(ORDER_SUMMARY_VIEW)
-  }
-
-  const renderSortIcon = (headerKey: string) => {
-    if (sortConfig?.key !== headerKey) {
-      return <SortDesc className="ml-2 h-3.5 w-3.5 text-muted-foreground" />
-    }
-    return sortConfig.direction === 'ascending' ? (
-      <ArrowUpAZ className="ml-2 h-3.5 w-3.5 text-muted-foreground" />
-    ) : (
-      <ArrowDownAZ className="ml-2 h-3.5 w-3.5 text-muted-foreground" />
-    )
-  }
+    );
+    navigate("/");
+    setViews(ORDER_SUMMARY_VIEW);
+  };
 
   return (
     <div className="rounded-md h-full relative overflow-y-auto">
       <Table>
-        <TableHeader className="sticky top-0 z-10 bg-white dark:bg-secondary-black">
+        <TableHeader>
           <TableRow>
-            {headers.map((header) => (
+            {HEADERS.map((header) => (
               <TableHead
                 key={header.key}
                 className="cursor-pointer"
-                style={{ width: header.width }}
                 onClick={() => handleSort(header.key)}
               >
-                <div className="flex items-center justify-between">
-                  {header.label}
-                  {renderSortIcon(header.key)}
-                </div>
+                {header.label}
               </TableHead>
             ))}
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedData.length > 0 ? (
-            sortedData.map((item, index) => (
-              <TableRow
-                key={item._id || index}
-                onClick={() => handleOrderClick(item)}
-                className="cursor-pointer hover:bg-white/70 dark:hover:bg-white/5"
-              >
-                {headers.map((header) => (
-                  <TableCell
-                    key={`${item._id || index}-${header.key}`}
-                    className={`${header.isTextMuted ? 'text-muted-foreground' : ''} 
-                              ${header.isPrice ? 'text-right' : ''}`}
-                  >
-                    {header.isPrice ? (
-                      <span>
-                        {(Number(item[header.key]) || 0).toFixed(currency.toFixed ?? 2)} Dhs
-                      </span>
-                    ) : (
-                      item[header.key]
-                    )}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={headers.length} className="text-center">
-                No waiting orders available
-              </TableCell>
+          {sortedData.map((item) => (
+            <TableRow
+              key={item._id}
+              onClick={() => handleOrderClick(item)}
+              className="cursor-pointer hover:bg-white/70 dark:hover:bg-white/5"
+            >
+              {HEADERS.map((header) => (
+                <TableCell
+                  key={`${item._id}-${header.key}`}
+                  className={`${
+                    header.isTextMuted ? "text-muted-foreground" : ""
+                  } 
+                            ${header.isPrice ? "text-right" : ""}`}
+                >
+                  {header.isPrice ? (
+                    <span>{Number(item.total_amount).toFixed(2)} Dhs</span>
+                  ) : (
+                    item[header.key as keyof typeof item]
+                  )}
+                </TableCell>
+              ))}
             </TableRow>
-          )}
+          ))}
         </TableBody>
       </Table>
     </div>
-  )
-}
+  );
+};
 
-export default memo(WaitingOrdersTable)
+export default memo(WaitingOrdersTable);

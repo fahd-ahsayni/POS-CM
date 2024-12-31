@@ -7,7 +7,11 @@ import { OrderType } from "@/types";
 import { ChevronRightIcon } from "lucide-react";
 import { memo, useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { DELIVERY_VIEW, NUMBER_OF_TABLE_VIEW, ORDER_SUMMARY_VIEW } from "../constants";
+import {
+  DELIVERY_VIEW,
+  NUMBER_OF_TABLE_VIEW,
+  ORDER_SUMMARY_VIEW,
+} from "../constants";
 import { useRightViewContext } from "../contexts/rightViewContext";
 import { TypeOfOrderDescription, TypeOfOrderIcon } from "../ui/TypeOfOrderIcon";
 
@@ -36,7 +40,7 @@ export const OrderCard = memo(
   }) => (
     <Card
       className={cn(
-        "w-full rounded-md h-20 px-8 py-4 flex space-x-4 items-center justify-between cursor-pointer",
+        "w-full rounded-md h-24 px-8 py-6 flex space-x-4 items-center justify-between cursor-pointer",
         isFixedLightDark
           ? "dark:!bg-primary-black bg-neutral-bright-grey"
           : "dark:bg-secondary-black bg-white"
@@ -54,7 +58,7 @@ export const OrderCard = memo(
           </TypographyP>
         </div>
       </div>
-      <ChevronRightIcon className="w-6 h-auto text-neutral-dark-grey" />
+      <ChevronRightIcon className="w-6 h-6 text-primary-black dark:text-white" />
     </Card>
   )
 );
@@ -87,7 +91,7 @@ function SelectTypeOfOrder() {
   const handleOrderTypeSelect = useCallback(
     (orderType: OrderType) => {
       const orderTypeLC = orderType.type.toLowerCase();
-      
+
       if (orderTypeLC === "takeaway") {
         setViews(ORDER_SUMMARY_VIEW);
       } else if (orderTypeLC === "delivery") {
@@ -95,7 +99,7 @@ function SelectTypeOfOrder() {
       } else {
         setViews(NUMBER_OF_TABLE_VIEW);
       }
-      
+
       setOrderType(orderType._id);
       dispatch(updateOrder({ order_type_id: orderType._id }));
       localStorage.setItem("orderType", JSON.stringify(orderType));
@@ -104,8 +108,8 @@ function SelectTypeOfOrder() {
   );
 
   return (
-    <div className="flex flex-col h-full p-4">
-      <TypographyH4 className="font-medium mb-6">
+    <div className="flex flex-col h-full">
+      <TypographyH4 className="font-medium">
         What type of order would you like to process?
       </TypographyH4>
       <div className="flex-1 flex flex-col gap-y-8 pt-10">

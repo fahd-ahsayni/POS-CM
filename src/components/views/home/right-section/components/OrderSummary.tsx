@@ -12,17 +12,20 @@ import Ticket from "../layouts/Ticket";
 import { useCustomerManagement } from "../hooks/useCustomerManagement";
 import { useOrderSummary } from "../hooks/useOrderSummary";
 import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
+import { TypographyP } from "@/components/ui/typography";
+import { useRightViewContext } from "../contexts/rightViewContext";
+import getOrderTypeData from "@/functions/getOrderTypeData";
 
 const OrderSummary = () => {
   const { selectedProducts } = useLeftViewContext();
   const { addCustomer } = useCustomerManagement();
-  const { 
-    state: { 
-      openModalConfirmHoldOrder, 
-      openDrawerPayments, 
-      showTicket, 
+  const {
+    state: {
+      openModalConfirmHoldOrder,
+      openDrawerPayments,
+      showTicket,
       isActionsDisabled,
-      expandedCustomers 
+      expandedCustomers,
     },
     actions: {
       setOpenModalConfirmHoldOrder,
@@ -30,9 +33,11 @@ const OrderSummary = () => {
       handleToggleAll,
       handleProceedOrder,
       handleShowTicket,
-      handleHoldOrder
-    }
+      handleHoldOrder,
+    },
   } = useOrderSummary();
+
+  const { orderType } = useRightViewContext();
 
   return (
     <>
@@ -42,8 +47,12 @@ const OrderSummary = () => {
         setOpen={setOpenModalConfirmHoldOrder}
       />
       <div className="flex flex-col justify-start h-full gap-y-2">
-        <div className="flex items-center justify-between px-3">
-          <div className="flex items-center gap-2" />
+        <div className="flex items-center justify-between p-1">
+          <div className="flex items-center gap-2">
+            <TypographyP className="capitalize text-sm font-medium">
+              {getOrderTypeData(orderType).type}
+            </TypographyP>
+          </div>
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <OtherActionsOrderLines />
@@ -58,14 +67,14 @@ const OrderSummary = () => {
                 <span className="sr-only">Toggle Customers</span>
               </Button>
               <Button onClick={addCustomer} size="icon">
-                <AddUserIcon className="w-[1.02rem] h-auto fill-white" />
+                <AddUserIcon className="w-[1.2rem] h-auto fill-white" />
                 <span className="sr-only">add customer</span>
               </Button>
             </div>
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col gap-y-2 overflow-y-hidden relative px-3">
+        <div className="flex-1 flex flex-col gap-y-2 overflow-y-hidden relative">
           <AnimatePresence>
             {showTicket && (
               <motion.div
@@ -79,7 +88,7 @@ const OrderSummary = () => {
               </motion.div>
             )}
           </AnimatePresence>
-          <div className="flex-border flex-grow relative flex items-center justify-center pt-4 overflow-y-auto pr-2 h-full">
+          <div className="flex-border flex-grow relative flex items-center justify-center pt-4 overflow-y-auto h-full p-1">
             <AnimatePresence>
               {selectedProducts.length < 1 && (
                 <motion.img
@@ -93,7 +102,9 @@ const OrderSummary = () => {
                 />
               )}
             </AnimatePresence>
-            <OrderLines />
+            <div className="flex-1 h-full w-full">
+              <OrderLines />
+            </div>
           </div>
         </div>
 

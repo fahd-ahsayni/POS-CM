@@ -64,7 +64,7 @@ export default function OderLineAddComments() {
         <Button
           size="icon"
           variant="ghost"
-          className="-ms-px rounded h-8 w-8 bg-accent-white/10 hover:bg-accent-white/20"
+          className="-ms-px rounded h-7 w-7 bg-accent-white/10 hover:bg-accent-white/20"
         >
           <CommentIcon className="fill-primary-black dark:fill-white h-4 w-4" />
           <span className="sr-only">Comments</span>

@@ -47,10 +47,6 @@ const OrderLine = ({ item, increment, decrement }: OrderLineProps) => {
     decrement();
   };
 
-  const handleSuitCamand = () => {
-    console.log("suit camand");
-  };
-
   return (
     <motion.div
       initial="initial"
@@ -86,10 +82,10 @@ const OrderLine = ({ item, increment, decrement }: OrderLineProps) => {
       ) : (
         <div className="h-24 w-1.5 bg-red-700 dark:bg-red-800 "></div>
       )}
-      <div className="pr-4 pl-5 h-24 py-2 flex flex-col justify-between w-full relative">
+      <div className="pr-4 pl-2 h-24 py-2 flex flex-col justify-between w-full relative">
         <div className="flex items-center justify-between gap-x-2 w-full">
-          <TypographyP className="font-semibold text-sm">
-            {item.variants[0].name}
+          <TypographyP className="font-medium capitalize">
+            {item.variants[0].name.toLowerCase()}
           </TypographyP>
           {isSuitCamand ? (
             <div className="flex items-center">
@@ -102,7 +98,7 @@ const OrderLine = ({ item, increment, decrement }: OrderLineProps) => {
             <div className="flex items-center gap-x-2">
               <Button
                 slot="decrement"
-                className="-ms-px h-6 w-6 rounded bg-accent-white/10 hover:bg-accent-white/20"
+                className="-ms-px h-7 w-7 rounded bg-accent-white/10 hover:bg-accent-white/20"
                 size="icon"
                 onClick={handleDecrement}
               >
@@ -118,7 +114,7 @@ const OrderLine = ({ item, increment, decrement }: OrderLineProps) => {
               </TypographyP>
               <Button
                 slot="increment"
-                className="-ms-px h-6 w-6 rounded bg-accent-white/10 hover:bg-accent-white/20"
+                className="-ms-px h-7 w-7 rounded bg-accent-white/10 hover:bg-accent-white/20"
                 size="icon"
                 onClick={handleIncrement}
               >
@@ -133,11 +129,11 @@ const OrderLine = ({ item, increment, decrement }: OrderLineProps) => {
           )}
         </div>
         <div className="flex items-end justify-between w-full">
-          <TypographyP className="text-[0.8rem] font-medium text-neutral-dark-grey">
+          <TypographyP className="font-medium text-neutral-dark-grey">
             {item.price} Dhs
           </TypographyP>
           <div className="flex items-center gap-x-3">
-            {config?.value !== "fastfood" && (
+            {config?.value !== "restaurant" && (
               <button onClick={() => setIsSuitCamand(!isSuitCamand)}>
                 suite_command
               </button>
