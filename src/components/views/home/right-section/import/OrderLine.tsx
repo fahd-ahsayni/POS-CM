@@ -114,7 +114,7 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
           <div className="mt-2 pl-4 border-l-2 border-gray-200 dark:border-gray-700">
             {item.combo_items.variants.map((variant, idx) => (
               <div
-                key={`${variant._id}-${idx}`}
+                key={`${variant.name}-${idx}`}
                 className="text-sm text-neutral-dark-grey"
               >
                 <TypographyP className="text-xs">
@@ -127,7 +127,7 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
               <div className="mt-1">
                 {item.combo_items.supplements.map((supp, idx) => (
                   <div
-                    key={`${supp._id}-${idx}`}
+                    key={`${supp.name}-${idx}`}
                     className="text-sm text-neutral-dark-grey"
                   >
                     <TypographyP className="text-xs text-red-600">

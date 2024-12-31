@@ -15,11 +15,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
+import type { Swiper as SwiperType } from 'swiper';
+import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Drawer from "../../Drawer";
 import { usePayments } from "./hooks/usePayments";
-import { Pagination } from "swiper/modules";
-import type { Swiper as SwiperType } from 'swiper';
 
 interface PaymentMethod {
   _id: string;

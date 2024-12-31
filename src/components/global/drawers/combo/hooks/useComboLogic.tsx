@@ -1,67 +1,35 @@
-import { useEffect, useCallback } from "react";
-import { useCombo } from "../context/ComboContext";
-import { Step } from "@/types/comboTypes";
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/leftViewContext";
 import { useRightViewContext } from "@/components/views/home/right-section/contexts/rightViewContext";
+import { Step } from "@/types/comboTypes";
+import { useCallback, useEffect } from "react";
+import { useCombo } from "../context/ComboContext";
 import { ProductSelected } from "@/types";
 
-interface FormattedComboData {
-  is_combo: boolean;
-  price: number;
-  product_variant_id: string;
-  uom_id: string;
-  customer_index: number;
-  notes: string[];
-  quantity: number;
-  suite_commande: boolean;
-  order_type_id: string;
-  suite_ordred: boolean;
-  is_paid: boolean;
-  is_ordred: boolean;
-  combo_prod_ids: Array<{
-    notes: string[];
-    quantity: number;
-    suite_commande: boolean;
-    order_type_id: string;
-    product_variant_id: string;
-  }>;
-  combo_supp_ids: Array<{
-    notes: string[];
-    quantity: number;
-    suite_commande: boolean;
-    order_type_id: string;
-    product_variant_id: string;
-  }>;
-}
-
 export function useComboLogic(currentStep: number, selectedStep?: Step) {
-  const { selections, setSelections } = useCombo();
+  const {
+    selections,
+    setSelections,
+    setCurrentStep,
+    setTotalSupplementsPrice,
+  } = useCombo();
   const { setOpenDrawerCombo, selectedCombo, setSelectedProducts } =
     useLeftViewContext();
-  const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
   const { customerIndex } = useRightViewContext();
-
-  const createComboItem = (id: string, quantity: number) => ({
-    notes: [],
-    quantity,
-    suite_commande: false,
-    order_type_id: orderType._id,
-    product_variant_id: id,
-  });
+  const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
 
   const handleFinish = useCallback(() => {
     if (!selectedCombo) return;
 
-    // Create a new product structure for the combo
+    // Create combo product
     const comboProduct: any = {
       _id: selectedCombo._id,
       name: selectedCombo.name,
       quantity: 1,
       price: selectedCombo.price_ttc,
-      variants: [selectedCombo], // Include the combo variant
+      variants: [selectedCombo],
       customer_index: customerIndex,
       order_type_id: orderType?._id || "",
-      is_combo: true, // Add flag to identify as combo
+      is_combo: true,
       combo_items: {
         variants: selections.variants.map((v) => ({
           ...v,
@@ -74,10 +42,17 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
           order_type_id: orderType?._id || "",
         })),
       },
+      notes: [],
+      suite_commande: false,
     };
 
-    // Add combo to selected products
+    // Add to selected products
     setSelectedProducts((prev) => [...prev, comboProduct]);
+
+    // Reset combo state
+    setSelections({ variants: [], supplements: [] });
+    setCurrentStep(0);
+    setTotalSupplementsPrice(0);
     setOpenDrawerCombo(false);
   }, [
     selectedCombo,
@@ -86,6 +61,9 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
     orderType,
     setSelectedProducts,
     setOpenDrawerCombo,
+    setSelections,
+    setCurrentStep,
+    setTotalSupplementsPrice,
   ]);
 
   useEffect(() => {

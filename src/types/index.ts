@@ -144,12 +144,19 @@ export interface ProductSelected extends OrderItemBase {
   variants: any[];
   customer_index: number;
   order_type_id: string;
+  product_variant_id?: string;
   is_combo?: boolean;
   combo_items?: ComboItem;
+  notes: string[];
+  suite_commande: boolean | false;
+  is_paid: boolean | false;
+  is_ordred: boolean | false;
 }
 
 // Type guard for combo products
-export const isComboProduct = (product: ProductSelected): product is ProductSelected & { is_combo: true } => {
+export const isComboProduct = (
+  product: ProductSelected
+): product is ProductSelected & { is_combo: true } => {
   return product.is_combo === true;
 };
 
