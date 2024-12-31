@@ -1,6 +1,5 @@
 import { api } from "@/api/axios";
 import { createToast } from "@/components/global/Toasters";
-import { logout } from "@/store/slices/authentication/authSlice";
 import { toast } from "react-toastify";
 
 export const login = async (id: string, password: string) => {

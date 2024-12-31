@@ -1,50 +1,91 @@
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/leftViewContext";
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { TypographySmall } from "@/components/ui/typography";
 import Drawer from "../../Drawer";
-import { Card } from "@/components/ui/card";
-import { TypographyP } from "@/components/ui/typography";
-import { currency } from "@/preferences";
+import { StepContent } from "./components/StepContent";
+import { ComboProvider } from "./context/ComboContext";
+import { useCombo } from "./context/ComboContext";
+import { useComboLogic } from "./hooks/useComboLogic";
+
+function ComboContent() {
+  const { selectedCombo } = useLeftViewContext();
+  console.log("selectedCombo", selectedCombo);
+  const { currentStep, selections } = useCombo();
+  const { handleNavigation } = useCombo();
+  const { handleFinish } = useComboLogic(
+    currentStep,
+    selectedCombo?.steps[currentStep]
+  );
+
+  const { getStepDescription } = useComboLogic(
+    currentStep,
+    selectedCombo?.steps[currentStep]
+  );
+
+  if (!selectedCombo) return null;
+
+  const isLastStep = currentStep === selectedCombo.steps.length - 1;
+  const currentStepData = selectedCombo.steps[currentStep];
+
+  const handleNextOrFinish = () => {
+    if (isLastStep) {
+      handleFinish();
+    } else {
+      handleNavigation("next");
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-full">
+      <header className="mb-4">
+        <TypographySmall className="text-neutral-dark-grey">
+          Step{" "}
+          <span className="font-semibold text-white">{currentStep + 1}</span> of{" "}
+          <span className="font-semibold text-white">
+            {selectedCombo.steps.length}
+          </span>
+        </TypographySmall>
+      </header>
+      <TypographySmall className="mb-4">
+        {getStepDescription(currentStepData)}
+      </TypographySmall>
+      <main className="flex-1 overflow-auto">
+        {currentStepData && <StepContent step={currentStepData} />}
+      </main>
+
+      <footer className="flex gap-2 mt-4">
+        {currentStep > 0 && (
+          <Button
+            variant="outline"
+            onClick={() => handleNavigation("previous")}
+          >
+            Previous
+          </Button>
+        )}
+        <Button className="flex-1" onClick={handleNextOrFinish}>
+          {isLastStep ? "Finish" : "Next"}
+        </Button>
+      </footer>
+    </div>
+  );
+}
 
 export default function Combo() {
   const { openDrawerCombo, setOpenDrawerCombo, selectedCombo } =
     useLeftViewContext();
-  const [currentStep, setCurrentStep] = useState(0);
 
-  console.log(selectedCombo);
+  if (!selectedCombo) return null;
 
   return (
-    <Drawer
-      open={openDrawerCombo}
-      setOpen={setOpenDrawerCombo}
-      title="Combo"
-      position="left"
-    >
-      <div className="space-y-3">
-        {selectedCombo &&
-          selectedCombo.steps[currentStep].product_variant_ids.map(
-            (variant: any) => (
-              <Card
-                key={variant._id}
-                className="!bg-background h-24 px-4 py-3 flex flex-col justify-between"
-              >
-                <div>
-                  <TypographyP className="capitalize font-medium">
-                    {variant.name.toLowerCase()}
-                  </TypographyP>
-                </div>
-                <div>
-                  <div>
-                    <TypographyP className="capitalize font-medium text-sm">
-                      {variant.price_ttc.toFixed(currency.toFixed ?? 2)}{" "}
-                      {currency.currency}
-                    </TypographyP>
-                  </div>
-                  <div></div>
-                </div>
-              </Card>
-            )
-          )}
-      </div>
-    </Drawer>
+    <ComboProvider>
+      <Drawer
+        open={openDrawerCombo}
+        setOpen={setOpenDrawerCombo}
+        title={selectedCombo.name}
+        position="left"
+      >
+        <ComboContent />
+      </Drawer>
+    </ComboProvider>
   );
 }

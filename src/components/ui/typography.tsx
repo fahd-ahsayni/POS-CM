@@ -98,7 +98,7 @@ export function TypographySmall({
   className?: string;
 }) {
   return (
-    <p className={cn("text-sm", className)}>
+    <p className={cn("text-[0.8rem]", className)}>
       {children}
     </p>
   );

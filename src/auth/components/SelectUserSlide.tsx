@@ -38,35 +38,47 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
 
   const processedUsers = useMemo(() => {
     const originalUsers = users[userType as keyof typeof users] || [];
-    if (originalUsers.length > 1 && originalUsers.length < 4) {
-      return [...originalUsers, ...originalUsers];
-    }
     return originalUsers;
   }, [users, userType]);
 
-  const currentIndex = useMemo(
-    () => processedUsers.findIndex((user) => user._id === selectedUser?._id),
-    [processedUsers, selectedUser]
+  const initialSlideIndex = useMemo(() => {
+    if (!selectedUser || processedUsers.length === 0) return 0;
+    const index = processedUsers.findIndex(
+      (user) => user._id === selectedUser._id
+    );
+    return index >= 0 ? index : 0;
+  }, [processedUsers, selectedUser]);
+
+  const swiperConfig = useMemo(
+    () => ({
+      slidesPerView: 3,
+      centeredSlides: true,
+      initialSlide: initialSlideIndex,
+      spaceBetween: 30,
+      loop: true,
+      watchSlidesProgress: true,
+      updateOnWindowResize: true,
+      observer: true,
+      observeParents: true,
+    }),
+    [initialSlideIndex]
   );
 
   useEffect(() => {
     if (processedUsers.length > 0) {
-      const centerIndex = Math.floor(processedUsers.length / 2);
-      const centerUser = processedUsers[centerIndex];
-      dispatch(setSelectedUser(centerUser));
+      dispatch(setSelectedUser(processedUsers[0]));
       setSwiperKey((prev) => prev + 1);
     }
-  }, [userType]);
+  }, [userType, processedUsers, dispatch]);
 
   const handleSlideChange = (swiper: any) => {
     const realIndex = swiper.realIndex;
-    const actualIndex =
-      processedUsers.length > 3
-        ? realIndex % (processedUsers.length / 2)
-        : realIndex;
+    const newSelectedUser = processedUsers[realIndex];
 
-    const newSelectedUser = processedUsers[actualIndex];
-    if (newSelectedUser?._id !== selectedUser?._id) {
+    if (
+      newSelectedUser &&
+      (!selectedUser || newSelectedUser._id !== selectedUser._id)
+    ) {
       dispatch(setSelectedUser(newSelectedUser));
     }
   };
@@ -85,7 +97,7 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
 
   if (error) {
     return (
-      <div className="w-full p-4 text-center text-red-500">
+      <div className="w-full p-4 text-center text-primary-red">
         <p>Error loading users. Please try again later.</p>
       </div>
     );
@@ -101,41 +113,45 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
 
   return (
     <div className="slider-container w-full custom-slider overflow-hidden mt-2 relative">
-      <Swiper
-        key={swiperKey}
-        slidesPerView={3}
-        centeredSlides={true}
-        initialSlide={currentIndex !== -1 ? currentIndex : 0}
-        spaceBetween={30}
-        loop={processedUsers.length > 1}
-        onSlideChange={handleSlideChange}
-        className="mySwiper relative"
-        watchSlidesProgress={true}
-        updateOnWindowResize={true}
-        observer={true}
-        observeParents={true}
-      >
-        {processedUsers.map((user, index) => (
-          <SwiperSlide
-            key={`${user._id}-${index}-${userType}`}
-            virtualIndex={index}
-          >
-            {({ isActive }) => (
-              <UserCard
-                user={user}
-                isActive={user._id === selectedUser?._id}
-                className={
-                  isActive
-                    ? "scale-110 transition-transform"
-                    : "scale-90 transition-transform"
-                }
-              />
-            )}
-          </SwiperSlide>
-        ))}
-        <NavigationButton direction="prev" />
-        <NavigationButton direction="next" />
-      </Swiper>
+      {loading ? (
+        <div className="flex justify-center space-x-4">
+          {[1, 2, 3].map((n) => (
+            <UserCardSkeleton key={n} />
+          ))}
+        </div>
+      ) : processedUsers.length === 0 ? (
+        <div className="w-full p-4 text-center text-primary-black">
+          <p>No users available</p>
+        </div>
+      ) : (
+        <Swiper
+          key={swiperKey}
+          {...swiperConfig}
+          onSlideChange={handleSlideChange}
+          className="mySwiper relative"
+        >
+          {processedUsers.map((user, index) => (
+            <SwiperSlide
+              key={`${user._id}-${index}-${userType}`}
+              virtualIndex={index}
+            >
+              {({ isActive }) => (
+                <UserCard
+                  user={user}
+                  isActive={user._id === selectedUser?._id}
+                  className={isActive ? "scale-110" : "scale-90"}
+                />
+              )}
+            </SwiperSlide>
+          ))}
+          {processedUsers.length > 3 && (
+            <>
+              <NavigationButton direction="prev" />
+              <NavigationButton direction="next" />
+            </>
+          )}
+        </Swiper>
+      )}
     </div>
   );
 };

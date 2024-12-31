@@ -81,6 +81,5 @@ export const useWaitingOrdersManagement = () => {
 export const handleWaitingOrderSelect = (
   order: WaitingOrder,
   setSelectedProducts: React.Dispatch<React.SetStateAction<ProductSelected[]>>,
-  setCustomerIndex: (index: number) => void,
-  setSelectedCustomer: (index: number) => void
+  setCustomerIndex: (index: number) => void
 ) => {};

@@ -7,25 +7,25 @@ import { v4 as uuidv4 } from "uuid";
 interface UseProductSelectionProps {
   selectedProducts: ProductSelected[];
   setSelectedProducts: React.Dispatch<React.SetStateAction<ProductSelected[]>>;
-  selectedCustomer: number;
+  customerIndex: number;
   orderType: string | null;
 }
 
 export const useProductSelection = ({
   selectedProducts,
   setSelectedProducts,
-  selectedCustomer,
+  customerIndex,
   orderType,
 }: UseProductSelectionProps) => {
   const findVariant = useCallback(
-    (product: Product, variantId: string): Variant | undefined => {
-      return product.variants.find((v) => v._id === variantId);
+    (product: any, variantId: string): Variant | undefined => {
+      return product.variants.find((v: any) => v._id === variantId);
     },
     []
   );
 
   const createNewProduct = useCallback(
-    (product: Product, variant: Variant, price?: number): ProductSelected => {
+    (product: any, variant: Variant, price?: number): ProductSelected => {
       return {
         ...product,
         id: uuidv4(),
@@ -33,7 +33,7 @@ export const useProductSelection = ({
         product_variant_id: variant._id,
         quantity: 1,
         price: price || variant.price_ttc,
-        customer_index: selectedCustomer,
+        customer_index: customerIndex,
         order_type_id: orderType || "",
         uom_id: variant.uom_id ? variant.uom_id._id : "",
         notes: [],
@@ -42,7 +42,7 @@ export const useProductSelection = ({
         suite_commande: false,
       };
     },
-    [selectedCustomer, orderType]
+    [customerIndex, orderType]
   );
 
   const updateExistingProduct = useCallback(
@@ -51,9 +51,9 @@ export const useProductSelection = ({
       variantId: string,
       price?: number
     ): ProductSelected[] => {
-      return prevProducts.map((p) =>
+      return prevProducts.map((p: any) =>
         p.product_variant_id === variantId &&
-        p.customer_index === selectedCustomer
+        p.customer_index === customerIndex
           ? {
               ...p,
               quantity: p.quantity + 1,
@@ -63,7 +63,7 @@ export const useProductSelection = ({
           : p
       );
     },
-    [selectedCustomer, orderType]
+    [customerIndex, orderType]
   );
 
   const addOrUpdateProduct = useCallback(
@@ -83,9 +83,9 @@ export const useProductSelection = ({
         }
 
         const existingProduct = prevSelected.find(
-          (p) =>
+          (p: any) =>
             p.product_variant_id === variantId &&
-            p.customer_index === selectedCustomer
+            p.customer_index === customerIndex
         );
 
         if (existingProduct) {
@@ -95,7 +95,7 @@ export const useProductSelection = ({
         return [...prevSelected, createNewProduct(product, variant, price)];
       });
     },
-    [findVariant, createNewProduct, updateExistingProduct, selectedCustomer]
+    [findVariant, createNewProduct, updateExistingProduct, customerIndex]
   );
 
   return { addOrUpdateProduct };

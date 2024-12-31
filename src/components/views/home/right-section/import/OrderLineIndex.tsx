@@ -26,7 +26,8 @@ const OrderLineIndex = ({
   isExpanded,
   onToggle,
 }: OrderLineIndexProps) => {
-  const { selectedCustomer, setSelectedCustomer } = useRightViewContext();
+  const { customerIndex: contextCustomerIndex, setCustomerIndex } =
+    useRightViewContext();
 
   const totalItems = useMemo(
     () => products.reduce((sum, product) => sum + product.quantity, 0),
@@ -42,19 +43,25 @@ const OrderLineIndex = ({
     [products]
   );
 
-  const handleDelete = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    deleteCustomer(customerIndex);
-  }, [customerIndex, deleteCustomer]);
+  const handleDelete = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      deleteCustomer(customerIndex);
+    },
+    [customerIndex, deleteCustomer]
+  );
 
-  const handleToggle = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    onToggle();
-  }, [onToggle]);
+  const handleToggle = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      onToggle();
+    },
+    [onToggle]
+  );
 
   const handleCustomerSelect = useCallback(() => {
-    setSelectedCustomer(customerIndex);
-  }, [customerIndex, setSelectedCustomer]);
+    setCustomerIndex(customerIndex);
+  }, [customerIndex, setCustomerIndex]);
 
   return (
     <>
@@ -64,11 +71,11 @@ const OrderLineIndex = ({
         role="button"
         tabIndex={0}
         aria-expanded={isExpanded}
-        onKeyDown={(e) => e.key === 'Enter' && handleCustomerSelect()}
+        onKeyDown={(e) => e.key === "Enter" && handleCustomerSelect()}
       >
-        <Button 
-          size="icon" 
-          variant="link" 
+        <Button
+          size="icon"
+          variant="link"
           onClick={handleDelete}
           aria-label={`Delete customer ${customerIndex}`}
         >
@@ -77,7 +84,7 @@ const OrderLineIndex = ({
         <div
           className={`flex items-center justify-between gap-x-2 flex-1 bg-white dark:bg-secondary-black rounded px-2 shadow
             ${
-              selectedCustomer === customerIndex
+              customerIndex === contextCustomerIndex
                 ? "ring-2 ring-primary-red"
                 : ""
             }`}
@@ -116,7 +123,7 @@ const OrderLineIndex = ({
 
       {isExpanded && (
         <div className="flex flex-col gap-2">
-          {products.map((product) => (
+          {products.map((product: any) => (
             <OrderLine
               key={product.id}
               item={product}

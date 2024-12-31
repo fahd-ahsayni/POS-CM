@@ -101,20 +101,57 @@ export interface Product {
   quantity?: number;
 }
 
-export interface ProductSelected extends Product {
-  product_variant_id: string;
+// Common types for order items
+interface OrderItemBase {
+  notes: string[];
   quantity: number;
+  suite_commande: boolean;
+  order_type_id: string;
+}
+
+// Type for combo sub-items (products and supplements)
+interface ComboItem {
+  variants: Array<{
+    _id: string;
+    name: string;
+    quantity: number;
+    customer_index: number;
+    order_type_id: string;
+  }>;
+  supplements: Array<{
+    _id: string;
+    name: string;
+    quantity: number;
+    price_ttc: number;
+    customer_index: number;
+    order_type_id: string;
+  }>;
+}
+
+// Type for product variants
+interface ProductVariantInfo {
+  name: string;
+  uom_id?: { _id: string };
+  price_ttc?: number;
+}
+
+// Main product type
+export interface ProductSelected extends OrderItemBase {
+  _id: string;
+  name: string;
+  quantity: number;
+  price: number;
+  variants: any[];
   customer_index: number;
   order_type_id: string;
-  uom_id: string | null;
-  id: string;
-  is_paid: boolean | false;
-  is_ordred: boolean | false;
-  suite_commande: boolean | false;
-  combo_prod_ids?: string[] | null;
-  compo_supp_ids?: string[] | null;
-  notes?: string[] | null;
+  is_combo?: boolean;
+  combo_items?: ComboItem;
 }
+
+// Type guard for combo products
+export const isComboProduct = (product: ProductSelected): product is ProductSelected & { is_combo: true } => {
+  return product.is_combo === true;
+};
 
 export interface FilterCriteria {
   employee: string;

@@ -12,6 +12,7 @@ import { useLeftViewContext } from "../contexts/leftViewContext";
 import { useProductSelection } from "../hooks/useProductSelection";
 import { cn } from "@/lib/utils";
 import { Variant } from "@/types";
+import { useVariantSelection } from "../hooks/useVariantSelection";
 
 interface VariantCardProps {
   variant: Variant;
@@ -30,121 +31,44 @@ export default function ProductsVariants() {
     setSelectedProducts,
   } = useLeftViewContext();
 
-  const { selectedCustomer, setViews, orderType } = useRightViewContext();
-  const dispatch = useDispatch();
+  const { customerIndex, setViews, orderType } = useRightViewContext();
 
   const { addOrUpdateProduct } = useProductSelection({
     selectedProducts,
     setSelectedProducts,
-    selectedCustomer,
+    customerIndex,
     orderType,
   });
 
-  useEffect(() => {
-    if (selectedProduct) {
-      setSelectedProducts((prev) => {
-        const productsWithoutCurrent = prev.filter(
-          (p) =>
-            p._id !== selectedProduct._id ||
-            p.customer_index !== selectedCustomer
-        );
-
-        const variantsForNewCustomer = prev.filter(
-          (p) =>
-            p._id === selectedProduct._id &&
-            p.customer_index === selectedCustomer
-        );
-
-        return [...productsWithoutCurrent, ...variantsForNewCustomer];
-      });
-    }
-  }, [selectedCustomer, selectedProduct]);
-
-  const handleSelectVariant = useCallback(
-    (id: string, price: number) => {
-      if (!selectedProduct) {
-        console.warn("No selected product. Cannot select a variant.");
-        return;
-      }
-
-      const existingVariant = selectedProducts.find(
-        (p) =>
-          p.product_variant_id === id && p.customer_index === selectedCustomer
-      );
-
-      if (!existingVariant) {
-        addOrUpdateProduct(selectedProduct, id, price);
-      }
-    },
-    [selectedProduct, addOrUpdateProduct, selectedProducts, selectedCustomer]
-  );
-
-  const handleQuantityChange = useCallback(
-    (variantId: string, increment: boolean) => {
-      setSelectedProducts((prev) =>
-        prev.map((product) =>
-          product.product_variant_id === variantId &&
-          product.customer_index === selectedCustomer
-            ? {
-                ...product,
-                quantity: increment
-                  ? product.quantity + 1
-                  : Math.max(1, product.quantity - 1),
-              }
-            : product
-        )
-      );
-    },
-    [selectedCustomer]
-  );
+  const { handleSelectVariant, handleQuantityChange } = useVariantSelection({
+    selectedProduct,
+    selectedProducts,
+    setSelectedProducts,
+    customerIndex,
+    orderType,
+    addOrUpdateProduct,
+  });
 
   const handleConfirm = useCallback(() => {
     setOpenDrawerVariants(false);
     setViews(ORDER_SUMMARY_VIEW);
   }, [setOpenDrawerVariants, setViews]);
 
-  const orderlineData = useMemo(
-    () =>
-      selectedProducts.map((p) => ({
-        price: p.price * p.quantity,
-        product_variant_id: p.product_variant_id,
-        uom_id: p.variants[0].uom_id._id || null,
-        customer_index: p.customer_index,
-        notes: p.notes,
-        quantity: p.quantity,
-        suite_commande: p.suite_commande,
-        order_type_id: orderType,
-        suite_ordred: false,
-        is_paid: p.is_paid,
-        is_ordred: p.is_ordred,
-        combo_prod_ids: [],
-        combo_supp_ids: [],
-      })),
-    [selectedProducts, orderType]
-  );
-
-  useEffect(() => {
-    dispatch(addOrderLine(selectedProducts.length > 0 ? orderlineData : []));
-  }, [dispatch, orderlineData, selectedProducts.length]);
-
   const variantCards = useMemo(
     () =>
       selectedProduct?.variants.map((variant, index) => {
         const selectedVariant = selectedProducts.find(
-          (p) =>
+          (p: any) =>
             p.product_variant_id === variant._id &&
-            p.customer_index === selectedCustomer
+            p.customer_index === customerIndex
         );
-
-        const isSelected = !!selectedVariant;
-        const quantity = selectedVariant?.quantity || 0;
 
         return (
           <VariantCard
-            key={`${variant._id}-${selectedCustomer}-${index}`}
+            key={`${variant._id}-${customerIndex}-${index}`}
             variant={variant}
-            isSelected={isSelected}
-            quantity={quantity}
+            isSelected={!!selectedVariant}
+            quantity={selectedVariant?.quantity || 0}
             onSelect={() => handleSelectVariant(variant._id, variant.price_ttc)}
             onQuantityChange={handleQuantityChange}
           />
@@ -153,7 +77,7 @@ export default function ProductsVariants() {
     [
       selectedProduct,
       selectedProducts,
-      selectedCustomer,
+      customerIndex,
       handleSelectVariant,
       handleQuantityChange,
     ]
@@ -193,7 +117,7 @@ const VariantCard = memo<VariantCardProps>(
       <Card
         className={cn(
           "w-full h-full px-4 py-2 rounded-lg dark:!bg-zinc-950",
-          isSelected && "!border-2 !border-primary"
+          isSelected && "!border-2 !border-primary-red"
         )}
       >
         <div className="flex items-center justify-between mb-4">

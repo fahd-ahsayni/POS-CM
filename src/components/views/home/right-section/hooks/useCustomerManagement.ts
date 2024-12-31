@@ -1,11 +1,11 @@
 import { useCallback } from "react";
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/leftViewContext";
 import { useRightViewContext } from "@/components/views/home/right-section/contexts/rightViewContext";
+import { getMaxCustomerIndex } from "@/functions/getMaxCustomerIndex";
 
 export const useCustomerManagement = () => {
   const { selectedProducts, setSelectedProducts } = useLeftViewContext();
-  const { customerIndex, setCustomerIndex, setSelectedCustomer } =
-    useRightViewContext();
+  const { customerIndex, setCustomerIndex } = useRightViewContext();
 
   const deleteCustomer = useCallback(
     (customerIndexToDelete: number) => {
@@ -23,10 +23,9 @@ export const useCustomerManagement = () => {
 
       if (customerIndex > 1) {
         setCustomerIndex(customerIndex - 1);
-        setSelectedCustomer(customerIndex - 1);
       }
     },
-    [customerIndex, setCustomerIndex, setSelectedCustomer, setSelectedProducts]
+    [customerIndex, setCustomerIndex, setSelectedProducts]
   );
 
   const addCustomer = useCallback(() => {
@@ -35,13 +34,23 @@ export const useCustomerManagement = () => {
     );
 
     if (selectedProducts.length > 0 && lastCustomerHasProducts) {
-      setCustomerIndex(customerIndex + 1);
-      setSelectedCustomer(customerIndex + 1);
+      setCustomerIndex(getMaxCustomerIndex(selectedProducts) + 1);
     }
-  }, [customerIndex, selectedProducts, setCustomerIndex, setSelectedCustomer]);
+  }, [customerIndex, selectedProducts, setCustomerIndex]);
+
+  const resetCustomerIndex = useCallback(() => {
+    setCustomerIndex(1);
+  }, [setCustomerIndex]);
+
+  const handlePaymentComplete = useCallback(() => {
+    setSelectedProducts([]);
+    resetCustomerIndex();
+  }, [setSelectedProducts, resetCustomerIndex]);
 
   return {
     deleteCustomer,
     addCustomer,
+    handlePaymentComplete,
+    resetCustomerIndex
   };
 };

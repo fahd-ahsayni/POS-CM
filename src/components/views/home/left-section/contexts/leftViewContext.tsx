@@ -53,13 +53,14 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
    */
   const [openDrawerCombo, setOpenDrawerCombo] = useState(false);
   const [selectedCombo, setSelectedCombo] = useState<any | null>(null);
+  const [comboOrderLine, setComboOrderLine] = useState<any | null>(null);
 
   const dispatch = useDispatch();
 
   const updateOrderTotal = useCallback(() => {
     dispatch(
       updateOrder({
-        total_amount: calculateSelectedProductsTotal(selectedProducts),
+        total_amount: calculateSelectedProductsTotal(selectedProducts as any),
       })
     );
   }, [dispatch, selectedProducts]);

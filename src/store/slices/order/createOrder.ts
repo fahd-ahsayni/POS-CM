@@ -5,7 +5,7 @@ interface OrderState {
   waiter_id: number | null;
   coaster_call: boolean | null;
   urgent: boolean | false;
-  shift_id: string | null;
+  shift_id: string;
   table_id: string | null;
   delivery_guy_id: string | null;
   discount: any | null;
@@ -28,7 +28,7 @@ const initialOrderState: OrderState = {
   waiter_id: null,
   coaster_call: null,
   urgent: false,
-  shift_id: null,
+  shift_id: localStorage.getItem("shift_id") || "",
   table_id: null,
   delivery_guy_id: null,
   discount: null,
@@ -92,7 +92,7 @@ const orderSlice = createSlice({
     setCoasterCall: (state, action: PayloadAction<boolean | null>) => {
       state.data.coaster_call = action.payload;
     },
-    setShiftId: (state, action: PayloadAction<string | null>) => {
+    setShiftId: (state, action: PayloadAction<string>) => {
       state.data.shift_id = action.payload;
     },
     setTableId: (state, action: PayloadAction<string | null>) => {

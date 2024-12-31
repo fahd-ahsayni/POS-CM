@@ -9,7 +9,7 @@ import { TYPE_OF_ORDER_VIEW } from "@/components/views/home/right-section/consta
 import { createToast } from "@/components/global/Toasters";
 import { currency } from "@/preferences";
 import { createOrder, createPaymentDiscount } from "@/api/services";
-import { Item } from "@radix-ui/react-dropdown-menu";
+import { useCustomerManagement } from "@/components/views/home/right-section/hooks/useCustomerManagement";
 
 /**
  * Represents a payment method with its properties
@@ -39,9 +39,9 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [activePaymentIndex, setActivePaymentIndex] = useState<number>(-1);
 
-
-  const { setViews: setViewsRight, setCustomerIndex, setSelectedCustomer } = useRightViewContext();
-  const { setViews: setViewsLeft, setSelectedProducts } = useLeftViewContext();
+  const { handlePaymentComplete } = useCustomerManagement();
+  const { setViews: setViewsRight } = useRightViewContext();
+  const { setViews: setViewsLeft } = useLeftViewContext();
 
   const order = useSelector(selectOrder);
 
@@ -210,29 +210,39 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
   );
 
   const handleComplete = useCallback(async () => {
+    if (isProcessing) return;
+
     setIsProcessing(true);
 
     try {
+      // 1. Process the payment
       const validPaymentData = selectedPayments.map((item) => ({
         payment_method_id: item.originalId,
         amount_given: item.amount,
       }));
 
-      const response = await createPaymentDiscount({
+      await createPaymentDiscount({
         order: order,
         shift_id: order.shift_id,
         payments: validPaymentData,
       });
 
+      // 2. Call the onComplete callback if provided
       await onComplete?.(selectedPayments);
+
+      // 3. Reset payment-related state
       setSelectedPayments([]);
       setCurrentAmount("");
       setActivePaymentIndex(-1);
-      setSelectedProducts([]);
-      setSelectedCustomer(1);
-      setCustomerIndex(1);
+
+      // 4. Reset customer and order state using the customer management hook
+      handlePaymentComplete();
+
+      // 5. Reset views to initial state
       setViewsLeft(ALL_CATEGORIES_VIEW);
       setViewsRight(TYPE_OF_ORDER_VIEW);
+
+      // 6. Show success message
       toast.success(
         createToast(
           "Payment completed successfully",
@@ -254,11 +264,14 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
       setIsProcessing(false);
     }
   }, [
+    isProcessing,
     selectedPayments,
     onComplete,
-    order.total_amount,
+    handlePaymentComplete,
+    setViewsLeft,
+    setViewsRight,
     getTotalPaidAmount,
-    getRemainingAmount,
+    order,
   ]);
 
   const resetPayments = useCallback(() => {

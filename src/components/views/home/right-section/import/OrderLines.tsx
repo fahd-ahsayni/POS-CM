@@ -7,6 +7,7 @@ import { useRightViewContext } from "../contexts/rightViewContext";
 import { useProductQuantity } from "../hooks/useProductQuantity";
 import { useCustomerManagement } from "../hooks/useCustomerManagement";
 import OrderLineIndex from "./OrderLineIndex";
+import { getMaxCustomerIndex } from "@/functions/getMaxCustomerIndex";
 
 export default function OrderLines() {
   const { selectedProducts } = useLeftViewContext();
@@ -52,7 +53,12 @@ export default function OrderLines() {
   return (
     <div className="z-10 h-full w-full">
       <div className="space-y-4 w-full">
-        {Array.from({ length: customerIndex }).map((_, index) => (
+        {Array.from({
+          length: Math.max(
+            customerIndex,
+            getMaxCustomerIndex(selectedProducts)
+          ),
+        }).map((_, index) => (
           <div key={index}>
             <OrderLineIndex
               customerIndex={index + 1}

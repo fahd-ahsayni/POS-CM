@@ -12,11 +12,19 @@ interface SidebarItemProps {
   };
   pathname: string;
   theme: string;
+  onClick?: () => void;
 }
 
-const SidebarItem: React.FC<SidebarItemProps> = ({ item, pathname, theme }) => (
-  <Link to={item.route} key={item.name}>
+const SidebarItem: React.FC<SidebarItemProps> = ({
+  item,
+  pathname,
+  theme,
+  onClick,
+}) => (
+  <>
     <Card
+      onClick={onClick}
+      key={item.name}
       className={cn(
         pathname === item.route
           ? "!bg-primary-red text-white !border-interactive-vivid-red"
@@ -36,7 +44,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, pathname, theme }) => (
       />
       <span className="mt-2 text-center">{item.name}</span>
     </Card>
-  </Link>
+  </>
 );
 
 export default function Sidebar() {
@@ -46,13 +54,50 @@ export default function Sidebar() {
   return (
     <div className="hidden w-ful h-screen overflow-y-auto md:block z-10">
       <div className="flex w-full flex-col h-full items-center">
-        <div className="w-full flex-1 flex flex-col justify-evenly px-2">
-          {sidebarPagesLink.map((item) => (
-            <SidebarItem item={item} pathname={pathname} theme={theme} />
-          ))}
-          {sidebarNavigation.map((item) => (
-            <SidebarItem item={item} pathname={pathname} theme={theme} />
-          ))}
+        <div className="w-full flex-1 flex flex-col justify-around px-2">
+          {/* Pages Links */}
+          <SidebarItem
+            item={sidebarPagesLink[0]}
+            pathname={pathname}
+            theme={theme}
+          />
+          <SidebarItem
+            item={sidebarPagesLink[1]}
+            pathname={pathname}
+            theme={theme}
+          />
+          <SidebarItem
+            item={sidebarPagesLink[2]}
+            pathname={pathname}
+            theme={theme}
+          />
+
+          {/* Navigation Items */}
+          <SidebarItem
+            item={sidebarNavigation[0]}
+            pathname={pathname}
+            theme={theme}
+          />
+          <SidebarItem
+            item={sidebarNavigation[1]}
+            pathname={pathname}
+            theme={theme}
+          />
+          <SidebarItem
+            item={sidebarNavigation[2]}
+            pathname={pathname}
+            theme={theme}
+          />
+          <SidebarItem
+            item={sidebarNavigation[3]}
+            pathname={pathname}
+            theme={theme}
+          />
+          <SidebarItem
+            item={sidebarNavigation[4]}
+            pathname={pathname}
+            theme={theme}
+          />
         </div>
       </div>
     </div>

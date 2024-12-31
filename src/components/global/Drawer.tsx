@@ -24,7 +24,7 @@ export default function Drawer({
   children,
   open,
   setOpen,
-  title,
+  title="",
   classNames = "max-w-md",
   position = 'right',
 }: DrawerProps) {
@@ -67,8 +67,8 @@ export default function Drawer({
                   >
                     <motion.div layout className="">
                       <div className="flex items-start justify-between px-4 sm:px-6">
-                        <DialogTitle className="font-medium dark:text-white text-primary-black">
-                          {title}
+                        <DialogTitle className="font-medium dark:text-white text-primary-black capitalize">
+                          {title.toLowerCase()}
                         </DialogTitle>
                         <div className="ml-3 flex h-7 items-center">
                           <Button

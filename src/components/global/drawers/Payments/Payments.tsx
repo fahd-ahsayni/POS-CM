@@ -285,7 +285,7 @@ export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
               disabled={isProcessing}
               onClick={handleComplete}
             >
-              {isProcessing ? "Processing..." : "Continue"}
+              {isProcessing ? "Processing..." : "Complete Payment"}
             </Button>
           </div>
         </div>

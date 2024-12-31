@@ -17,7 +17,7 @@ export const useProductsByCategory = () => {
     setSelectedCombo,
   } = useLeftViewContext();
 
-  const { orderType, selectedCustomer } = useRightViewContext();
+  const { orderType, customerIndex } = useRightViewContext();
 
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>(category?.products ?? []);
@@ -31,7 +31,7 @@ export const useProductsByCategory = () => {
   const { addOrUpdateProduct } = useProductSelection({
     selectedProducts,
     setSelectedProducts,
-    selectedCustomer,
+    customerIndex,
     orderType,
   });
 

@@ -20,12 +20,12 @@ export const useProducts = (initialProducts?: Product[]) => {
     setSelectedCombo,
   } = useLeftViewContext();
 
-  const { orderType, selectedCustomer } = useRightViewContext();
+  const { orderType, customerIndex } = useRightViewContext();
 
   const { addOrUpdateProduct } = useProductSelection({
     selectedProducts,
     setSelectedProducts,
-    selectedCustomer,
+    customerIndex,
     orderType,
   });
 

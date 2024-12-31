@@ -15,6 +15,7 @@ export default function SelectUser() {
   const [activeTab, setActiveTab] = useState("cashiers");
   const [rfidInput, setRfidInput] = useState("");
   const [isScanning, setIsScanning] = useState(false);
+  
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 

@@ -25,8 +25,7 @@ const HEADERS = [
 const WaitingOrdersTable = ({ data }: { data: WaitingOrder[] }) => {
   const { sortedData, sortConfig, handleSort } = useWaitingOrders({ data });
   const { setSelectedProducts } = useLeftViewContext();
-  const { setCustomerIndex, setSelectedCustomer, setViews } =
-    useRightViewContext();
+  const { setCustomerIndex, setViews } = useRightViewContext();
   const navigate = useNavigate();
 
   const handleOrderClick = (displayItem: any) => {
@@ -37,7 +36,6 @@ const WaitingOrdersTable = ({ data }: { data: WaitingOrder[] }) => {
       originalOrder,
       setSelectedProducts,
       setCustomerIndex,
-      setSelectedCustomer
     );
     navigate("/");
     setViews(ORDER_SUMMARY_VIEW);

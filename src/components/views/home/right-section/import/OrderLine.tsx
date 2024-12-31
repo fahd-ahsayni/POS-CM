@@ -3,9 +3,11 @@ import { Button } from "@/components/ui/button";
 import { TypographyP } from "@/components/ui/typography";
 import { motion } from "framer-motion";
 import { Minus, Plus } from "lucide-react";
-import { memo, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import OderLineAddComments from "../ui/OderLineAddComments";
 import OrderLineOtherActions from "../ui/OrderLineOtherActions";
+import { Card } from "@/components/ui/card";
+import { currency } from "@/preferences";
 
 interface OrderLineProps {
   item: {
@@ -13,12 +15,18 @@ interface OrderLineProps {
     variants: Array<{ name: string }>;
     quantity: number;
     price: number;
+    name: string;
+    is_combo: boolean;
+    combo_items: {
+      variants: Array<{ name: string; quantity: number }>;
+      supplements: Array<{ name: string; quantity: number }>;
+    };
   };
   increment: () => void;
   decrement: () => void;
 }
 
-const OrderLine = ({ item, increment, decrement }: OrderLineProps) => {
+export function OrderLine({ item, increment, decrement }: OrderLineProps) {
   const [isSuitCamand, setIsSuitCamand] = useState(false);
   const [launched, setLaunched] = useState(false);
 
@@ -48,91 +56,95 @@ const OrderLine = ({ item, increment, decrement }: OrderLineProps) => {
   };
 
   return (
-    <motion.div
-      initial="initial"
-      animate="animate"
-      variants={itemVariants}
-      key={item._id}
-      className="flex items-center bg-white shadow-sm dark:bg-secondary-black rounded-md h-full relative overflow-hidden"
-    >
-      {isSuitCamand ? (
-        launched ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.15 }}
-            className="h-24 w-20 bg-[#6A7B9D] flex items-center justify-center"
-          >
-            <TypographyP className="text-center rotate-[-90deg] font-medium">
-              Launched
-            </TypographyP>
-          </motion.div>
-        ) : (
-          <motion.div
-            initial={{ x: -50, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.15 }}
-            className="h-24 w-20 bg-interactive-vivid-red dark:bg-interactive-dark-red flex items-center justify-center"
-          >
-            <TypographyP className="text-center rotate-[-90deg] font-medium">
-              Launch
-            </TypographyP>
-          </motion.div>
-        )
-      ) : (
-        <div className="h-24 w-1.5 bg-red-700 dark:bg-red-800 "></div>
-      )}
-      <div className="pr-4 pl-2 h-24 py-2 flex flex-col justify-between w-full relative">
-        <div className="flex items-center justify-between gap-x-2 w-full">
+    <motion.div className="flex cursor-pointer items-center justify-start h-full w-full">
+      <Card
+        className={`flex flex-col w-full py-2 px-2 gap-y-2 ${
+          item.quantity > 0 ? "!ring-2 !ring-red-600" : ""
+        }`}
+      >
+        <div className="flex items-center gap-x-4">
           <TypographyP className="font-medium capitalize">
-            {item.variants[0].name.toLowerCase()}
+            {item.name.toLowerCase()}
           </TypographyP>
-          {isSuitCamand ? (
-            <div className="flex items-center">
-              <TypographyP className="px-1.5 font-medium">
-                {item.quantity}
-              </TypographyP>
-              <DishIcon className="!w-5 !h-auto !fill-secondary-black dark:!fill-secondary-white" />
-            </div>
-          ) : (
-            <div className="flex items-center gap-x-2">
-              <Button
-                slot="decrement"
-                className="-ms-px h-7 w-7 rounded bg-accent-white/10 hover:bg-accent-white/20"
-                size="icon"
-                onClick={handleDecrement}
-              >
-                <Minus
-                  size={16}
-                  strokeWidth={2}
-                  aria-hidden="true"
-                  className="text-primary-black dark:text-white"
-                />
-              </Button>
-              <TypographyP className="px-1.5 font-medium">
-                {item.quantity}
-              </TypographyP>
-              <Button
-                slot="increment"
-                className="-ms-px h-7 w-7 rounded bg-accent-white/10 hover:bg-accent-white/20"
-                size="icon"
-                onClick={handleIncrement}
-              >
-                <Plus
-                  size={16}
-                  strokeWidth={2}
-                  aria-hidden="true"
-                  className="text-primary-black dark:text-white"
-                />
-              </Button>
-            </div>
-          )}
+          <div className="flex items-center gap-x-2">
+            {isSuitCamand ? (
+              <div className="flex items-center">
+                <TypographyP className="px-1.5 font-medium">
+                  {item.quantity}
+                </TypographyP>
+                <DishIcon className="!w-5 !h-auto !fill-secondary-black dark:!fill-secondary-white" />
+              </div>
+            ) : (
+              <div className="flex items-center gap-x-2">
+                <Button
+                  slot="decrement"
+                  className="-ms-px h-7 w-7 rounded bg-accent-white/10 hover:bg-accent-white/20"
+                  size="icon"
+                  onClick={handleDecrement}
+                >
+                  <Minus
+                    size={16}
+                    strokeWidth={2}
+                    aria-hidden="true"
+                    className="text-primary-black dark:text-white"
+                  />
+                </Button>
+                <TypographyP className="px-1.5 font-medium">
+                  {item.quantity}
+                </TypographyP>
+                <Button
+                  slot="increment"
+                  className="-ms-px h-7 w-7 rounded bg-accent-white/10 hover:bg-accent-white/20"
+                  size="icon"
+                  onClick={handleIncrement}
+                >
+                  <Plus
+                    size={16}
+                    strokeWidth={2}
+                    aria-hidden="true"
+                    className="text-primary-black dark:text-white"
+                  />
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="flex items-end justify-between w-full">
-          <TypographyP className="font-medium text-neutral-dark-grey">
-            {item.price} Dhs
+
+        {item.is_combo && item.combo_items && (
+          <div className="mt-2 pl-4 border-l-2 border-gray-200 dark:border-gray-700">
+            {item.combo_items.variants.map((variant, idx) => (
+              <div
+                key={`${variant._id}-${idx}`}
+                className="text-sm text-neutral-dark-grey"
+              >
+                <TypographyP className="text-xs">
+                  {variant.name} x{variant.quantity}
+                </TypographyP>
+              </div>
+            ))}
+
+            {item.combo_items.supplements.length > 0 && (
+              <div className="mt-1">
+                {item.combo_items.supplements.map((supp, idx) => (
+                  <div
+                    key={`${supp._id}-${idx}`}
+                    className="text-sm text-neutral-dark-grey"
+                  >
+                    <TypographyP className="text-xs text-red-600">
+                      +{supp.name} x{supp.quantity}
+                    </TypographyP>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="flex items-center justify-between w-full mt-2">
+          <TypographyP className="text-sm font-medium text-neutral-dark-grey">
+            {item.price} {currency.currency}
           </TypographyP>
-          <div className="flex items-center gap-x-3">
+          <div className="flex items-center gap-x-2">
             {config?.value !== "restaurant" && (
               <button onClick={() => setIsSuitCamand(!isSuitCamand)}>
                 suite_command
@@ -142,9 +154,9 @@ const OrderLine = ({ item, increment, decrement }: OrderLineProps) => {
             <OderLineAddComments />
           </div>
         </div>
-      </div>
+      </Card>
     </motion.div>
   );
-};
+}
 
 export default memo(OrderLine);

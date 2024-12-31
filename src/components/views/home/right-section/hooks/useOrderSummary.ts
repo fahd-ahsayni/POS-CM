@@ -1,8 +1,10 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { setCustomerCount } from '@/store/slices/order/createOrder';
-import { useLeftViewContext } from '../../left-section/contexts/leftViewContext';
-import { useOrderLines } from '../contexts/orderLinesContext';
+import { useState, useCallback, useMemo, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { setCustomerCount } from "@/store/slices/order/createOrder";
+import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
+import { useOrderLines } from "../contexts/orderLinesContext";
+import { updateOrder } from "@/functions/updateOrder";
+import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
 
 interface OrderSummaryState {
   openModalConfirmHoldOrder: boolean;
@@ -18,43 +20,56 @@ export const useOrderSummary = () => {
   });
 
   const dispatch = useDispatch();
+
   const { selectedProducts } = useLeftViewContext();
   const { expandedCustomers, toggleAllCustomers } = useOrderLines();
+  const { customerIndex } = useRightViewContext();
 
-  const isActionsDisabled = useMemo(() => 
-    selectedProducts.length === 0, 
+  const isActionsDisabled = useMemo(
+    () => selectedProducts.length === 0,
     [selectedProducts.length]
   );
 
-  const updateState = useCallback((key: keyof OrderSummaryState, value: boolean) => {
-    setState(prev => ({ ...prev, [key]: value }));
-  }, []);
+  const updateState = useCallback(
+    (key: keyof OrderSummaryState, value: boolean) => {
+      setState((prev) => ({ ...prev, [key]: value }));
+    },
+    []
+  );
 
-  const handlers = useMemo(() => ({
-    handleToggleAll: () => {
-      if (selectedProducts.length > 0) {
-        toggleAllCustomers();
-      }
-    },
-    handleProceedOrder: () => updateState('openDrawerPayments', true),
-    handleShowTicket: () => {
-      if (selectedProducts.length > 0) {
-        updateState('showTicket', !state.showTicket);
-      }
-    },
-    handleHoldOrder: () => updateState('openModalConfirmHoldOrder', true),
-    setOpenModalConfirmHoldOrder: (value: boolean) => 
-      updateState('openModalConfirmHoldOrder', value),
-    setOpenDrawerPayments: (value: boolean) => 
-      updateState('openDrawerPayments', value),
-  }), [selectedProducts.length, toggleAllCustomers, updateState, state.showTicket]);
+  const handlers = useMemo(
+    () => ({
+      handleToggleAll: () => {
+        if (selectedProducts.length > 0) {
+          toggleAllCustomers();
+        }
+      },
+      handleProceedOrder: () => {
+        if (selectedProducts.length > 0) {
+          updateState("openDrawerPayments", true);
+          dispatch(setCustomerCount(customerIndex));
+        }
+      },
+      handleShowTicket: () => {
+        if (selectedProducts.length > 0) {
+          updateState("showTicket", !state.showTicket);
+        }
+      },
+      handleHoldOrder: () => updateState("openModalConfirmHoldOrder", true),
+      setOpenModalConfirmHoldOrder: (value: boolean) =>
+        updateState("openModalConfirmHoldOrder", value),
+      setOpenDrawerPayments: (value: boolean) =>
+        updateState("openDrawerPayments", value),
+    }),
+    [selectedProducts.length, toggleAllCustomers, updateState, state.showTicket]
+  );
 
   return {
     state: {
       ...state,
       isActionsDisabled,
-      expandedCustomers
+      expandedCustomers,
     },
-    actions: handlers
+    actions: handlers,
   };
 };

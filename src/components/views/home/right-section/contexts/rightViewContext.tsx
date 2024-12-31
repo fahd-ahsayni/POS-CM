@@ -8,7 +8,6 @@ interface RightViewState {
   customerIndex: number;
   tableNumber: string;
   orderType: string | null;
-  selectedCustomer: number;
 }
 
 interface RightViewContextType extends RightViewState {
@@ -17,7 +16,6 @@ interface RightViewContextType extends RightViewState {
   setCustomerIndex: (index: number) => void;
   setTableNumber: (number: string) => void;
   setOrderType: (type: string | null) => void;
-  setSelectedCustomer: (customer: number) => void;
 }
 
 const RightViewContext = createContext<RightViewContextType>({} as RightViewContextType);
@@ -29,7 +27,6 @@ export const RightViewProvider = ({ children }: { children: ReactNode }) => {
     customerIndex: 1,
     tableNumber: "",
     orderType: TYPE_OF_ORDER_VIEW,
-    selectedCustomer: 1
   });
 
   const updateState = useCallback(<K extends keyof RightViewState>(
@@ -45,7 +42,6 @@ export const RightViewProvider = ({ children }: { children: ReactNode }) => {
     setCustomerIndex: (index: number) => updateState('customerIndex', index),
     setTableNumber: (number: string) => updateState('tableNumber', number),
     setOrderType: (type: string | null) => updateState('orderType', type),
-    setSelectedCustomer: (customer: number) => updateState('selectedCustomer', customer),
   }), [updateState]);
 
   useEffect(() => {

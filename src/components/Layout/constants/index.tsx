@@ -29,29 +29,32 @@ export const sidebarPagesLink = [
     name: "Home",
     route: "/",
     icon: HomeIcon,
+    onClick: () => console.log("Home clicked"),
   },
   {
     name: "Orders",
     route: "/orders",
     icon: OrdersIcon,
+    onClick: () => console.log("Orders clicked"),
   },
   {
-    name: "Waiting orders",
+    name: "Waiting",
     route: "/waiting-orders",
     icon: WaitingOrdersIcon,
+    onClick: () => console.log("Waiting clicked"),
   },
 ];
 
 export const sidebarNavigation = [
   {
-    name: "Open Drawer",
+    name: "Drawer",
     route: "#",
     icon: OpenDrawerIcon,
     onClick: handleOpenCashDrawer,
     current: false,
   },
   {
-    name: "Add client",
+    name: "Clients",
     route: "#",
     icon: AddClientIcon,
     onClick: () => console.log("Add client clicked"),
