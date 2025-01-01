@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion'
-import { useWaitingOrdersManagement } from '@/components/views/orders/hooks/useWaitingOrdersManagement'
+import { useWaitingOrders } from '@/components/views/orders/hooks/useWaitingOrders'
 import WaitingOrdersTable from '@/components/views/orders/components/WaitingOrdersTable'
 import { BeatLoader } from 'react-spinners'
 import Header from './components/Header'
 import Footer from './components/Footer'
 
 export default function WaitingOrders() {
-  const { holdOrders, loading, loadWaitingOrders } = useWaitingOrdersManagement()
+  const { tableData, loading, loadWaitingOrders } = useWaitingOrders();
 
   return (
     <motion.div
@@ -22,10 +22,10 @@ export default function WaitingOrders() {
             <BeatLoader color="#fb0000" size={10} />
           </div>
         ) : (
-          <WaitingOrdersTable data={holdOrders} />
+          <WaitingOrdersTable />
         )}
       </main>
-      <Footer ordersLength={holdOrders.length} />
+      <Footer ordersLength={tableData?.length || 0} />
     </motion.div>
   )
 }

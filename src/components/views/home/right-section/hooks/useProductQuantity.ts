@@ -8,9 +8,13 @@ export const useProductQuantity = () => {
   const incrementQuantity = useCallback((product: ProductSelected) => {
     setSelectedProducts((prevProducts) =>
       prevProducts.map((item) =>
-        item._id === product._id &&
+        item.product_variant_id === product.product_variant_id &&
         item.customer_index === product.customer_index
-          ? { ...item, quantity: item.quantity + 1 }
+          ? { 
+              ...item, 
+              quantity: item.quantity + 1,
+              price: (item.price / item.quantity) * (item.quantity + 1) // Update total price
+            }
           : item
       )
     );
@@ -20,9 +24,13 @@ export const useProductQuantity = () => {
     setSelectedProducts((prevProducts) =>
       prevProducts
         .map((item) =>
-          item._id === product._id &&
+          item.product_variant_id === product.product_variant_id &&
           item.customer_index === product.customer_index
-            ? { ...item, quantity: item.quantity - 1 }
+            ? { 
+                ...item, 
+                quantity: item.quantity - 1,
+                price: (item.price / item.quantity) * (item.quantity - 1) // Update total price
+              }
             : item
         )
         .filter((item) => item.quantity > 0)

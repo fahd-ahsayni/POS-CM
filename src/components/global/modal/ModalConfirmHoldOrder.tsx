@@ -1,16 +1,14 @@
-import { useLeftViewContext } from "@/components/views/home/left-section/contexts/leftViewContext";
-import { useRightViewContext } from "@/components/views/home/right-section/contexts/rightViewContext";
-import { resetOrder, selectOrder } from "@/store/slices/order/createOrder";
-import { Order } from "@/types/getDataByDay";
-import { BsExclamation } from "react-icons/bs";
-import { useDispatch, useSelector } from "react-redux";
-import { v4 as uuidv4 } from "uuid";
-import { createToast } from "../Toasters";
-import { toast } from "react-toastify";
-import BaseModal from "./Layout/BaseModal";
 import { ALL_CATEGORIES_VIEW } from "@/components/views/home/left-section/constants";
+import { useLeftViewContext } from "@/components/views/home/left-section/contexts/leftViewContext";
 import { TYPE_OF_ORDER_VIEW } from "@/components/views/home/right-section/constants";
+import { useRightViewContext } from "@/components/views/home/right-section/contexts/rightViewContext";
 import { updateOrder } from "@/functions/updateOrder";
+import { holdOrder, resetOrder } from "@/store/slices/order/createOrder";
+import { BsExclamation } from "react-icons/bs";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
+import { createToast } from "../Toasters";
+import BaseModal from "./Layout/BaseModal";
 
 interface ModalConfirmHoldOrderProps {
   open: boolean;
@@ -22,34 +20,19 @@ export default function ModalConfirmHoldOrder({
   setOpen,
 }: ModalConfirmHoldOrderProps) {
   const dispatch = useDispatch();
-  const { setSelectedCustomer, setCustomerIndex } = useRightViewContext();
-  const { setSelectedProducts } = useLeftViewContext();
-  const order = useSelector(selectOrder);
 
-  const { setViews: setViewsLeft } = useLeftViewContext();
-  const { setViews: setViewsRight } = useRightViewContext();
+  const { setViews: setViewsLeft, setSelectedProducts } = useLeftViewContext();
+  const { setViews: setViewsRight, setCustomerIndex } = useRightViewContext();
 
   const handleConfirmHoldOrder = () => {
-    const holdOrder = { ...(order as unknown as Order), _id: uuidv4() };
-    saveHoldOrder(holdOrder);
+    dispatch(holdOrder());
     resetState();
     showSuccessToast();
-  };
-
-  const saveHoldOrder = (holdOrder: Order) => {
-    const existingOrders = JSON.parse(
-      localStorage.getItem("holdOrders") || "[]"
-    );
-    localStorage.setItem(
-      "holdOrders",
-      JSON.stringify([...existingOrders, holdOrder])
-    );
   };
 
   const resetState = () => {
     const shiftId = localStorage.getItem("shiftId");
 
-    setSelectedCustomer(1);
     setCustomerIndex(1);
     setSelectedProducts([]);
     setOpen(false);

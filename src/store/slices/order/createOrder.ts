@@ -119,10 +119,26 @@ const orderSlice = createSlice({
     setDiscount: (state, action: PayloadAction<any | null>) => {
       state.data.discount = action.payload;
     },
+    holdOrder: (state, action: PayloadAction<void>) => {
+      const holdOrders = JSON.parse(localStorage.getItem("holdOrders") || "[]");
+      const newHoldOrder = {
+        ...state.data,
+        id: Date.now(), // unique identifier
+        createdAt: new Date().toISOString(),
+        status: "waiting",
+      };
+
+      holdOrders.push(newHoldOrder);
+      localStorage.setItem("holdOrders", JSON.stringify(holdOrders));
+
+      // Reset the current order
+      state.data = initialState.data;
+    },
   },
 });
 
 export const {
+  holdOrder,
   setOrderData,
   resetOrder,
   updateOrderLine,

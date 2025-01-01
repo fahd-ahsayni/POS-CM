@@ -88,10 +88,13 @@ export const useVariantSelection = ({
   const orderlineData = useMemo(
     () =>
       selectedProducts.map((p) => {
+        // Ensure we have valid variant data
+        const variant = p.variants?.[0] || p.product_variant_id;
+
         const baseOrderLine = {
           price: p.price * p.quantity,
-          product_variant_id: p.product_variant_id || p.variants[0]._id,
-          uom_id: p.variants[0].uom_id._id || null,
+          product_variant_id: p.product_variant_id || variant?._id || null,
+          uom_id: variant?.uom_id?._id || null,
           customer_index: p.customer_index,
           notes: p.notes || "",
           quantity: p.quantity,

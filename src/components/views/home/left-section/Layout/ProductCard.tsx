@@ -18,11 +18,11 @@ export function ProductCard({
   onProductClick,
 }: ProductCardProps) {
   const selectedProductVariants = selectedProducts.filter(
-    (p) => p._id === product._id
+    (p) => p.product_variant_id === product.variants[0]._id
   );
 
   const totalQuantity = selectedProductVariants.reduce(
-    (sum, p) => sum + p.quantity,
+    (sum, p) => sum + (p.quantity || 0),
     0
   );
 

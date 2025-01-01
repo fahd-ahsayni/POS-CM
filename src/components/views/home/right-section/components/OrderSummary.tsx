@@ -5,7 +5,7 @@ import ModalConfirmHoldOrder from "@/components/global/modal/ModalConfirmHoldOrd
 import { Button } from "@/components/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 import { LucideMaximize } from "lucide-react";
-import { memo } from "react";
+import { memo, useEffect } from "react";
 import OrderLines from "../import/OrderLines";
 import OtherActionsOrderLines from "../ui/OtherActionsOrderLines";
 import Ticket from "../layouts/Ticket";
@@ -39,6 +39,18 @@ const OrderSummary = () => {
   } = useOrderSummary();
 
   const { orderType } = useRightViewContext();
+
+  useEffect(() => {
+    // Check for a selected order when component mounts
+    const selectedOrder = localStorage.getItem('selectedOrder');
+    if (selectedOrder) {
+      // Restore the order state here
+      const order = JSON.parse(selectedOrder);
+      // Dispatch actions to restore order state
+      // Clear the selected order from localStorage
+      localStorage.removeItem('selectedOrder');
+    }
+  }, []);
 
   return (
     <>
