@@ -1,13 +1,23 @@
-import { TypographyH4, TypographyP } from "@/components/ui/typography";
+import { TypographyP } from "@/components/ui/typography";
 import { calculateSelectedProductsTotal } from "@/functions/calculateSelectedProductsTotal";
+import { currency } from "@/preferences";
 import { motion } from "framer-motion";
 import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
-import { currency } from "@/preferences";
+import { RootState } from "@/store";
+import { useSelector } from "react-redux";
 
 export default function Ticket() {
   const { selectedProducts } = useLeftViewContext();
+
+  const order = useSelector((state: RootState) => state.createOrder);
+  const discount = order.data.discount?.discount_id
+    ? JSON.parse(localStorage.getItem("generalData") || "{}")?.discount?.find(
+        (d: any) => d._id === order.data.discount.discount_id
+      )
+    : null;
+
   const { subtotal, discountAmount, tax, total } =
-    calculateSelectedProductsTotal(selectedProducts as any);
+    calculateSelectedProductsTotal(selectedProducts as any, discount);
 
   const { toFixed, currency: currencySymbol } = currency;
 

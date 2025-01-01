@@ -1,5 +1,5 @@
 import { logoWithoutText } from "@/assets";
-import { AddUserIcon, ExpandListIcon } from "@/assets/figma-icons";
+import { AddUserIcon, BillIcon, ExpandListIcon } from "@/assets/figma-icons";
 import Payments from "@/components/global/drawers/Payments/Payments";
 import ModalConfirmHoldOrder from "@/components/global/modal/ModalConfirmHoldOrder";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import { useLeftViewContext } from "../../left-section/contexts/leftViewContext"
 import { TypographyP } from "@/components/ui/typography";
 import { useRightViewContext } from "../contexts/rightViewContext";
 import getOrderTypeData from "@/functions/getOrderTypeData";
+import { cn } from "@/lib/utils";
 
 const OrderSummary = () => {
   const { selectedProducts } = useLeftViewContext();
@@ -108,7 +109,7 @@ const OrderSummary = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between space-x-4">
+        <div className="flex items-center justify-between space-x-2.5 pl-3">
           <Button
             className="flex-1"
             variant="secondary"
@@ -129,7 +130,12 @@ const OrderSummary = () => {
             disabled={isActionsDisabled}
             onClick={handleShowTicket}
           >
-            <LucideMaximize size={16} />
+            <BillIcon
+              className={cn(
+                "w-[1.2rem] h-auto -mr-1.5 mt-0.5",
+                isActionsDisabled ? "!fill-primary-red" : "fill-white"
+              )}
+            />
             <span className="sr-only">Show Ticket</span>
           </Button>
         </div>

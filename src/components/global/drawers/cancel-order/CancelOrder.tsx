@@ -1,9 +1,9 @@
 import { useState, memo } from "react";
 import Drawer from "../../Drawer";
 import Authorization from "../auth/Authorization";
-import ApplyDiscountInfo from "./views/ApplyDiscountInfo";
+import CancelOrderReason from "./views/CancelOrderReason";
 
-const ApplyDiscount = memo(
+const CancelOrder = memo(
   ({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) => {
     const [authorization, setAuthorization] = useState(false);
     const [admin, setAdmin] = useState<any>({});
@@ -12,11 +12,11 @@ const ApplyDiscount = memo(
       <Drawer
         open={open}
         setOpen={setOpen}
-        title="Authorize discount"
+        title="Cancel order"
         classNames="max-w-lg"
       >
         {authorization ? (
-          <ApplyDiscountInfo admin={admin} setOpen={setOpen} />
+          <CancelOrderReason admin={admin} setOpen={setOpen} />
         ) : (
           <Authorization
             setAuthorization={setAuthorization}
@@ -28,4 +28,4 @@ const ApplyDiscount = memo(
   }
 );
 
-export default ApplyDiscount;
+export default CancelOrder;

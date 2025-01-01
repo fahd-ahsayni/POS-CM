@@ -21,7 +21,7 @@ const NumberButton = memo(
         "font-medium border h-14 w-14 flex items-center justify-center dark:border-white/5 border-primary-black/5 rounded-lg shadow-sm shadow-black/5 hover:dark:bg-neutral-800 hover:bg-white hover:dark:text-white hover:text-primary-black",
         !fixLightDark
           ? "dark:bg-secondary-black bg-secondary-white dark:text-secondary-white"
-          : "dark:bg-primary-black bg-white dark:text-white text-primary-black hover:dark:bg-primary-black/60 hover:bg-white/60 hover:dark:text-white hover:text-primary-black"
+          : "dark:bg-primary-black bg-neutral-bright-grey dark:text-white text-primary-black hover:dark:bg-primary-black/60 hover:bg-white/60 hover:dark:text-white hover:text-primary-black"
       )}
       {...props}
     />

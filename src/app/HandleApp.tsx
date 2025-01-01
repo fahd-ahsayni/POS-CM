@@ -1,8 +1,8 @@
 import SelectPosPage from "@/auth/SelectPosPage";
 import Layout from "@/components/Layout/Layout";
 import { useTheme } from "@/providers/themeProvider";
-import { AppDispatch, RootState } from "@/store";
-import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { useSelector } from "react-redux";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { Bounce, ToastContainer } from "react-toastify";
 import LogInPage from "../auth/LogInPage";
@@ -26,11 +26,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 export default function HandleApp() {
   const { theme } = useTheme();
-  const dispatch = useDispatch<AppDispatch>();
-
-  // useEffect(() => {
-  //   dispatch(fetchOrders());
-  // }, []);
 
   return (
     <>

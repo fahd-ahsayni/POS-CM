@@ -6,8 +6,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { FilterIcon, CheckIcon } from "lucide-react";
+import { CheckIcon } from "lucide-react";
 import { useState, useMemo, useCallback } from "react";
+import { FilterIcon } from "@/assets/figma-icons";
 
 interface FilterCriteria {
   employee: string;

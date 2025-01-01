@@ -1,18 +1,17 @@
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 
-export default function SwitchDemo() {
+export default function CheckboxDemo() {
   return (
     <div
-      className="inline-flex items-center gap-2"
+      className="flex items-center gap-2"
       style={
-        { "--primary": "238.7 83.5% 66.7%", "--ring": "238.7 83.5% 66.7%" } as React.CSSProperties
+        {
+          "--primary": "238.7 83.5% 66.7%",
+          "--ring": "238.7 83.5% 66.7%",
+        } as React.CSSProperties
       }
     >
-      <Switch id="switch-03" defaultChecked />
-      <Label htmlFor="switch-03" className="sr-only">
-        Colored switch
-      </Label>
+      <Checkbox defaultChecked />
     </div>
   );
 }

@@ -69,36 +69,40 @@ export const getOrdersByDay = async () => {
   return api.get("/order/by-day");
 };
 
-export const printOrder = async (orderId: string) => {
+export const printOrder = async (
+  orderId: string,
+  orderlines: string[] = []
+) => {
   try {
     const posId = localStorage.getItem("posId");
     if (!posId) {
       throw new Error("POS ID not found in local storage");
     }
 
-    const response = await api.post("/order/printer", {
+    const requestData = {
       order_id: orderId,
       pos_id: posId,
-    });
+      ...(orderlines.length > 0 && { orderlines_ids: orderlines }),
+    };
 
-    if (response.status === 200) {
-      toast.success(
-        createToast(
-          "Order printed successfully",
-          "The order has been sent to the printer",
-          "success"
-        )
-      );
-    } else {
-      toast.error(
-        createToast(
-          "Failed to print order",
-          "Please check the printer connection and try again",
-          "error"
-        )
-      );
-    }
+    const response = await api.post("/order/printer", requestData);
 
+    const message =
+      response.status === 200
+        ? ([
+            "Order printed successfully",
+            "The order has been sent to the printer",
+            "success",
+          ] as const)
+        : ([
+            "Failed to print order",
+            "Please check the printer connection and try again",
+            "error",
+          ] as const);
+
+    toast[message[2] as "success" | "error"](
+      createToast(message[0], message[1], message[2])
+    );
     return response;
   } catch (error) {
     toast.error(
@@ -132,6 +136,16 @@ export const logoutService = async () => {
   try {
     localStorage.clear();
   } catch (error) {
-    console.error("Error logging out:", error);
+    toast.error(
+      createToast(
+        "Error logging out",
+        "An unexpected error occurred while trying to log out",
+        "error"
+      )
+    );
   }
+};
+
+export const cancelOrder = async (data: any) => {
+  return api.post("/order/cancel", data);
 };

@@ -16,10 +16,10 @@ interface SalesCalculation {
 
 export const calculateSelectedProductsTotal = (
   selectedProducts: ProductSelected[],
-  discount?: Discount,
+  discount?: Discount | null,
   taxRate: number = 10
 ): SalesCalculation => {
-  const total = selectedProducts.reduce((sum, product) => {
+  const rawTotal = selectedProducts.reduce((sum, product) => {
     const basePrice = product.price * (product.quantity || 0);
 
     const supplementsTotal = product.is_combo
@@ -32,21 +32,21 @@ export const calculateSelectedProductsTotal = (
     return sum + basePrice + supplementsTotal;
   }, 0);
 
-  // Work backwards to get subtotal
-  const tax = (total * taxRate) / (100 + taxRate);
-  const subtotalWithDiscount = total - tax;
+  const tax = (rawTotal * taxRate) / (100 + taxRate);
+  const subtotal = rawTotal - tax;
 
-  let subtotal = subtotalWithDiscount;
+  let discountAmount = 0;
   if (discount) {
-    subtotal =
-      discount.type === "percentage"
-        ? subtotalWithDiscount / (1 - discount.value / 100)
-        : subtotalWithDiscount + discount.value;
+    discountAmount = discount.type === "percentage"
+      ? (rawTotal * Number(discount.value)) / 100
+      : Number(discount.value);
   }
+
+  const total = subtotal + tax - discountAmount;
 
   return {
     subtotal,
-    discountAmount: subtotal - subtotalWithDiscount,
+    discountAmount,
     tax,
     total,
   };

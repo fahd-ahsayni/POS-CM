@@ -30,9 +30,9 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
       key={item.name}
       className={cn(
         isActive
-          ? "!bg-primary-red text-white !border-interactive-vivid-red"
-          : "",
-        "group w-full p-2 rounded-md flex flex-col items-center text-xs font-medium"
+          ? "!bg-primary-red text-white !border-interactive-vivid-red shadow-xl shadow-primary-red/60 dark:shadow-primary-red/50"
+          : "shadow-md shadow-primary-black/20 dark:shadow-black/70",
+        "group w-full p-2 rounded-md flex flex-col items-center text-xs font-medium transition-all duration-150"
       )}
     >
       <item.icon
@@ -55,7 +55,7 @@ export default function Sidebar() {
   const { pathname } = useLocation();
 
   return (
-    <div className="hidden w-ful h-screen overflow-y-auto md:block z-10">
+    <div className="hidden w-ful h-screen md:block z-10">
       <div className="flex w-full flex-col h-full items-center">
         <div className="w-full flex-1 flex flex-col justify-around px-2">
           {/* Pages Links */}
