@@ -15,7 +15,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
-import type { Swiper as SwiperType } from 'swiper';
+import type { Swiper as SwiperType } from "swiper";
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Drawer from "../../Drawer";
@@ -64,7 +64,11 @@ export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
   }, [open]);
 
   useEffect(() => {
-    if (swiperRef.current && selectedPayments.length > 0 && !isManualSwipe.current) {
+    if (
+      swiperRef.current &&
+      selectedPayments.length > 0 &&
+      !isManualSwipe.current
+    ) {
       swiperRef.current.slideTo(selectedPayments.length - 1, 0);
     }
     // Reset the manual swipe flag
@@ -197,7 +201,7 @@ export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
             </div>
           </div>
 
-          <div className="h-[30%] overflow-y-auto flex flex-col items-center justify-center mt-4">
+          <div className="h-[30%] overflow-y-auto flex flex-col items-center justify-center mt-2 py-1">
             {selectedPayments.length > 0 ? (
               <AnimatePresence>
                 <Swiper
@@ -205,7 +209,7 @@ export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
                   slidesPerView={3}
                   spaceBetween={8}
                   modules={[Pagination]}
-                  className="w-full h-full px-2 py-1"
+                  className="w-full h-full"
                   onSwiper={(swiper) => {
                     swiperRef.current = swiper;
                   }}
@@ -220,11 +224,11 @@ export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
-                        className="w-full"
+                        className="w-full px-2 py-1"
                       >
                         <Card
                           className={cn(
-                            "p-3 h-12 mb-2",
+                            "p-2.5 h-12 mb-2",
                             "dark:!bg-primary-black bg-neutral-bright-grey rounded-md",
                             "flex items-center justify-between px-4",
                             "dark:!border-neutral-dark-grey/30",

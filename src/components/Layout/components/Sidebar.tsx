@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { sidebarNavigation, sidebarPagesLink } from "../constants";
 import { useTheme } from "@/providers/themeProvider";
 
@@ -8,7 +8,7 @@ interface SidebarItemProps {
   item: {
     name: string;
     route: string;
-    icon: React.ComponentType<{ className: string }>;
+    icon: React.ComponentType<{ className?: string }>;
   };
   pathname: string;
   theme: string;
@@ -20,13 +20,16 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
   pathname,
   theme,
   onClick,
-}) => (
-  <>
+}) => {
+  const navigate = useNavigate();
+  const isActive = pathname === item.route;
+
+  return (
     <Card
-      onClick={onClick}
+      onClick={pathname ? () => navigate(item.route) : onClick}
       key={item.name}
       className={cn(
-        pathname === item.route
+        isActive
           ? "!bg-primary-red text-white !border-interactive-vivid-red"
           : "",
         "group w-full p-2 rounded-md flex flex-col items-center text-xs font-medium"
@@ -35,17 +38,17 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
       <item.icon
         className={cn(
           "h-5 w-5",
-          pathname === item.route
-            ? "!fill-white"
+          isActive
+            ? "text-white"
             : theme === "dark"
-            ? "!fill-white"
-            : "!fill-black"
+            ? "text-white"
+            : "text-black"
         )}
       />
       <span className="mt-2 text-center">{item.name}</span>
     </Card>
-  </>
-);
+  );
+};
 
 export default function Sidebar() {
   const { theme } = useTheme();

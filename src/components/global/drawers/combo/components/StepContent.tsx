@@ -7,8 +7,7 @@ interface StepContentProps {
 }
 
 export function StepContent({ step }: StepContentProps) {
-  const { currentStep, selections, handleSelect, handleQuantityChange } =
-    useCombo();
+  const { selections, handleSelect, handleQuantityChange } = useCombo();
 
   const currentSelections = {
     variants: selections.variants || [],

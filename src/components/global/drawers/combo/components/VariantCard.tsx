@@ -1,12 +1,11 @@
-import { ProductVariant } from "@/types/comboTypes";
-import { Card } from "@/components/ui/card";
+import { DishIcon } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
-import { Minus, Plus } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { currency } from "@/preferences";
-import { Step } from "@/types/comboTypes";
-import { TypographyP, TypographySmall } from "@/components/ui/typography";
-import { DishIcon } from "@/assets/figma-icons";
+import { ProductVariant, Step } from "@/types/comboTypes";
+import { Minus, Plus } from "lucide-react";
 
 interface VariantCardProps {
   variant: ProductVariant;
@@ -39,13 +38,13 @@ export function VariantCard({
     <Card
       className={cn(
         "px-3  py-2 h-[5.5rem] cursor-pointer transition-colors dark:!bg-primary-black !bg-neutral-bright-grey",
-        isSelected ? "ring-2 ring-primary-red" : ""
+        isSelected ? "ring-1 ring-primary-red" : ""
       )}
       onClick={isRequired ? undefined : onClick}
     >
       <div className="flex justify-between items-center h-full">
         <div className="flex flex-col gap-1 justify-between h-full">
-          <TypographyP className="font-medium capitalize">
+          <TypographyP className="font-medium capitalize text-sm">
             {variant.name.toLowerCase()}
           </TypographyP>
           {step.is_supplement && (

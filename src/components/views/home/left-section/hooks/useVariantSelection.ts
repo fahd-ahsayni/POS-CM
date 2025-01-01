@@ -1,7 +1,7 @@
-import { useCallback, useMemo, useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { addOrderLine } from "@/store/slices/order/createOrder";
-import { ProductSelected, Product } from "@/types";
+import { Product, ProductSelected } from "@/types";
+import { useCallback, useEffect, useMemo } from "react";
+import { useDispatch } from "react-redux";
 
 interface UseVariantSelectionProps {
   selectedProduct: Product | null;
@@ -43,17 +43,43 @@ export const useVariantSelection = ({
   const handleQuantityChange = useCallback(
     (variantId: string, increment: boolean) => {
       setSelectedProducts((prev) =>
-        prev.map((product) =>
-          product.product_variant_id === variantId &&
-          product.customer_index === customerIndex
-            ? {
+        prev.map((product) => {
+          if (
+            product.product_variant_id === variantId &&
+            product.customer_index === customerIndex
+          ) {
+            const newQuantity = increment
+              ? product.quantity + 1
+              : Math.max(1, product.quantity - 1);
+
+            // Handle combo products
+            if (product.is_combo && product.combo_items) {
+              return {
                 ...product,
-                quantity: increment
-                  ? product.quantity + 1
-                  : Math.max(1, product.quantity - 1),
-              }
-            : product
-        )
+                quantity: newQuantity,
+                combo_items: {
+                  variants: product.combo_items.variants.map((v: any) => ({
+                    ...v,
+                    quantity: v.quantity * newQuantity,
+                  })),
+                  supplements: product.combo_items.supplements.map(
+                    (s: any) => ({
+                      ...s,
+                      quantity: s.quantity * newQuantity,
+                    })
+                  ),
+                },
+              };
+            }
+
+            // Handle regular products
+            return {
+              ...product,
+              quantity: newQuantity,
+            };
+          }
+          return product;
+        })
       );
     },
     [customerIndex, setSelectedProducts]
@@ -61,21 +87,42 @@ export const useVariantSelection = ({
 
   const orderlineData = useMemo(
     () =>
-      selectedProducts.map((p) => ({
-        price: p.price * p.quantity,
-        product_variant_id: p.product_variant_id,
-        uom_id: p.variants[0].uom_id._id || null,
-        customer_index: p.customer_index,
-        notes: p.notes,
-        quantity: p.quantity,
-        suite_commande: p.suite_commande,
-        order_type_id: orderType,
-        suite_ordred: false,
-        is_paid: p.is_paid,
-        is_ordred: p.is_ordred,
-        combo_prod_ids: [],
-        combo_supp_ids: [],
-      })),
+      selectedProducts.map((p) => {
+        const baseOrderLine = {
+          price: p.price * p.quantity,
+          product_variant_id: p.product_variant_id || p.variants[0]._id,
+          uom_id: p.variants[0].uom_id._id || null,
+          customer_index: p.customer_index,
+          notes: p.notes || "",
+          quantity: p.quantity,
+          suite_commande: p.suite_commande || false,
+          order_type_id: orderType,
+          is_ordred: p.is_ordred || false,
+          is_paid: p.is_paid || false,
+        };
+
+        // Handle combo products
+        if (p.is_combo && p.combo_items) {
+          return {
+            ...baseOrderLine,
+            combo_prod_ids: p.combo_items.variants.map((v: any) => ({
+              product_variant_id: v._id,
+              quantity: v.quantity,
+            })),
+            combo_supp_ids: p.combo_items.supplements.map((s: any) => ({
+              product_variant_id: s._id,
+              quantity: s.quantity,
+            })),
+          };
+        }
+
+        // Handle regular products
+        return {
+          ...baseOrderLine,
+          combo_prod_ids: [],
+          combo_supp_ids: [],
+        };
+      }),
     [selectedProducts, orderType]
   );
 

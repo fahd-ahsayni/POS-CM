@@ -123,9 +123,9 @@ const OrderLineIndex = ({
 
       {isExpanded && (
         <div className="flex flex-col gap-2">
-          {products.map((product: any) => (
+          {products.map((product: any, index: number) => (
             <OrderLine
-              key={product.id}
+              key={index}
               item={product}
               increment={() => incrementQuantity(product)}
               decrement={() => decrementQuantity(product)}

@@ -1,10 +1,9 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { setCustomerCount } from "@/store/slices/order/createOrder";
+import { useCallback, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
-import { useOrderLines } from "../contexts/orderLinesContext";
-import { updateOrder } from "@/functions/updateOrder";
 import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
+import { useOrderLines } from "../contexts/orderLinesContext";
 
 interface OrderSummaryState {
   openModalConfirmHoldOrder: boolean;

@@ -29,7 +29,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 0 0% 92%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
@@ -92,6 +92,7 @@
     @apply bg-background text-foreground;
   }
 }
+
 .last-pos-card {
   box-shadow: 3px -1px 21px 1px rgba(251, 0, 0, 0.62);
   -webkit-box-shadow: 3px -1px 21px 1px rgba(251, 0, 0, 0.62);

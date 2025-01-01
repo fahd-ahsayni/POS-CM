@@ -1,10 +1,9 @@
-import { useLeftViewContext } from "@/components/views/home/left-section/contexts/leftViewContext";
 import { Button } from "@/components/ui/button";
 import { TypographySmall } from "@/components/ui/typography";
+import { useLeftViewContext } from "@/components/views/home/left-section/contexts/leftViewContext";
 import Drawer from "../../Drawer";
 import { StepContent } from "./components/StepContent";
-import { ComboProvider } from "./context/ComboContext";
-import { useCombo } from "./context/ComboContext";
+import { ComboProvider, useCombo } from "./context/ComboContext";
 import { useComboLogic } from "./hooks/useComboLogic";
 
 function ComboContent() {
@@ -40,13 +39,16 @@ function ComboContent() {
       <header className="mb-4">
         <TypographySmall className="text-neutral-dark-grey">
           Step{" "}
-          <span className="font-semibold text-white">{currentStep + 1}</span> of{" "}
-          <span className="font-semibold text-white">
+          <span className="font-semibold dark:text-white text-primary-black">
+            {currentStep + 1}
+          </span>{" "}
+          of{" "}
+          <span className="font-semibold dark:text-white text-primary-black">
             {selectedCombo.steps.length}
           </span>
         </TypographySmall>
       </header>
-      <TypographySmall className="mb-4">
+      <TypographySmall className="mb-4 font-medium">
         {getStepDescription(currentStepData)}
       </TypographySmall>
       <main className="flex-1 overflow-auto">

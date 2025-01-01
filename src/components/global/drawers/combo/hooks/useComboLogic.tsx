@@ -3,7 +3,6 @@ import { useRightViewContext } from "@/components/views/home/right-section/conte
 import { Step } from "@/types/comboTypes";
 import { useCallback, useEffect } from "react";
 import { useCombo } from "../context/ComboContext";
-import { ProductSelected } from "@/types";
 
 export function useComboLogic(currentStep: number, selectedStep?: Step) {
   const {
@@ -28,8 +27,11 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
       price: selectedCombo.price_ttc,
       variants: [selectedCombo],
       customer_index: customerIndex,
+      product_vaiant_id: selectedCombo._id,
       order_type_id: orderType?._id || "",
       is_combo: true,
+      is_ordered: false,
+      is_paid: false,
       combo_items: {
         variants: selections.variants.map((v) => ({
           ...v,
@@ -38,6 +40,7 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
         })),
         supplements: selections.supplements.map((s) => ({
           ...s,
+          price_ttc: s.price_ttc,
           customer_index: customerIndex,
           order_type_id: orderType?._id || "",
         })),

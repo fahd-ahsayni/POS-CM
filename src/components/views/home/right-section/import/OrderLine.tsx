@@ -1,9 +1,9 @@
 import { DishIcon } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
-import { TypographyP } from "@/components/ui/typography";
+import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { motion } from "framer-motion";
 import { Minus, Plus } from "lucide-react";
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import OderLineAddComments from "../ui/OderLineAddComments";
 import OrderLineOtherActions from "../ui/OrderLineOtherActions";
 import { Card } from "@/components/ui/card";
@@ -19,7 +19,11 @@ interface OrderLineProps {
     is_combo: boolean;
     combo_items: {
       variants: Array<{ name: string; quantity: number }>;
-      supplements: Array<{ name: string; quantity: number }>;
+      supplements: Array<{
+        name: string;
+        quantity: number;
+        price_ttc: number;
+      }>;
     };
   };
   increment: () => void;
@@ -28,7 +32,6 @@ interface OrderLineProps {
 
 export function OrderLine({ item, increment, decrement }: OrderLineProps) {
   const [isSuitCamand, setIsSuitCamand] = useState(false);
-  const [launched, setLaunched] = useState(false);
 
   const config = JSON.parse(localStorage.getItem("generalData") || "{}")
     .configs[0];
@@ -56,13 +59,10 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
   };
 
   return (
-    <motion.div className="flex cursor-pointer items-center justify-start h-full w-full">
-      <Card
-        className={`flex flex-col w-full py-2 px-2 gap-y-2 ${
-          item.quantity > 0 ? "!ring-2 !ring-red-600" : ""
-        }`}
-      >
-        <div className="flex items-center gap-x-4">
+    <motion.div className="flex relative cursor-pointer items-center justify-start h-full w-full rounded-lg overflow-hidden">
+      <div className="absolute h-full w-1.5 left-0 top-0 bg-interactive-dark-red" />
+      <Card className="flex flex-col w-full py-2 pr-2 pl-4 gap-y-2">
+        <div className="flex items-center justify-between gap-x-4">
           <TypographyP className="font-medium capitalize">
             {item.name.toLowerCase()}
           </TypographyP>
@@ -75,7 +75,7 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
                 <DishIcon className="!w-5 !h-auto !fill-secondary-black dark:!fill-secondary-white" />
               </div>
             ) : (
-              <div className="flex items-center gap-x-2">
+              <div className="flex items-center justify-end gap-x-2">
                 <Button
                   slot="decrement"
                   className="-ms-px h-7 w-7 rounded bg-accent-white/10 hover:bg-accent-white/20"
@@ -111,37 +111,45 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
         </div>
 
         {item.is_combo && item.combo_items && (
-          <div className="mt-2 pl-4 border-l-2 border-gray-200 dark:border-gray-700">
+          <div className="mt-2 pl-4 border-l-2 border-neutral-dark-grey/50 space-y-2">
             {item.combo_items.variants.map((variant, idx) => (
-              <div
+              <TypographySmall
                 key={`${variant.name}-${idx}`}
-                className="text-sm text-neutral-dark-grey"
+                className="text-sm space-x-2"
               >
-                <TypographyP className="text-xs">
-                  {variant.name} x{variant.quantity}
-                </TypographyP>
-              </div>
+                <span className="font-semibold">x{variant.quantity}</span>
+                <span className="capitalize first-letter:uppercase text-neutral-bright-grey/90">
+                  {variant.name.toLowerCase()}
+                </span>
+              </TypographySmall>
             ))}
 
             {item.combo_items.supplements.length > 0 && (
               <div className="mt-1">
-                {item.combo_items.supplements.map((supp, idx) => (
-                  <div
-                    key={`${supp.name}-${idx}`}
-                    className="text-sm text-neutral-dark-grey"
-                  >
-                    <TypographyP className="text-xs text-red-600">
-                      +{supp.name} x{supp.quantity}
-                    </TypographyP>
-                  </div>
-                ))}
+                {item.combo_items.supplements.map((supp, idx) => {
+                  const price = supp.price_ttc * supp.quantity;
+                  return (
+                    <div key={`${supp.name}-${idx}`}>
+                      <TypographySmall className="text-sm space-x-2">
+                        <span className="font-semibold">x{supp.quantity}</span>
+                        <span className="capitalize first-letter:uppercase text-neutral-bright-grey/90">
+                          {supp.name.toLowerCase()}
+                        </span>
+                      </TypographySmall>
+                      <TypographySmall className="text-white font-semibold">
+                        +{price.toFixed(currency.toFixed || 2)}{" "}
+                        {currency.currency}
+                      </TypographySmall>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
         )}
 
-        <div className="flex items-center justify-between w-full mt-2">
-          <TypographyP className="text-sm font-medium text-neutral-dark-grey">
+        <div className="flex items-center justify-between w-full mt-4">
+          <TypographyP className="text-sm font-medium">
             {item.price} {currency.currency}
           </TypographyP>
           <div className="flex items-center gap-x-2">

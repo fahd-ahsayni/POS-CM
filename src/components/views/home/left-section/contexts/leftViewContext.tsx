@@ -10,6 +10,7 @@ import {
   useCallback,
   useEffect,
 } from "react";
+import { BsXLg } from "react-icons/bs";
 import { useDispatch } from "react-redux";
 
 interface LeftViewContextType {
@@ -40,12 +41,14 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
   const [selectedProducts, setSelectedProducts] = useState<ProductSelected[]>(
     []
   );
+  
+  console.log(selectedProducts);
+
   const [openDrawerVariants, setOpenDrawerVariants] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [quantityPerVariant, setQuantityPerVariant] = useState<number>(0);
   const [category, setCategory] = useState<Category | null>(null);
   const [subCategory, setSubCategory] = useState<Category | null>(null);
-
 
   /**
    * @Combo
@@ -60,7 +63,8 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
   const updateOrderTotal = useCallback(() => {
     dispatch(
       updateOrder({
-        total_amount: calculateSelectedProductsTotal(selectedProducts as any),
+        total_amount: calculateSelectedProductsTotal(selectedProducts as any)
+          .total,
       })
     );
   }, [dispatch, selectedProducts]);

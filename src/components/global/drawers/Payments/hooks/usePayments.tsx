@@ -1,15 +1,15 @@
-import { useState, useEffect, useCallback } from "react";
-import { useSelector } from "react-redux";
-import { selectOrder } from "@/store/slices/order/createOrder";
-import { toast } from "react-toastify";
-import { useLeftViewContext } from "@/components/views/home/left-section/contexts/leftViewContext";
-import { useRightViewContext } from "@/components/views/home/right-section/contexts/rightViewContext";
-import { ALL_CATEGORIES_VIEW } from "@/components/views/home/left-section/constants";
-import { TYPE_OF_ORDER_VIEW } from "@/components/views/home/right-section/constants";
+import { createPaymentDiscount } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
-import { currency } from "@/preferences";
-import { createOrder, createPaymentDiscount } from "@/api/services";
+import { ALL_CATEGORIES_VIEW } from "@/components/views/home/left-section/constants";
+import { useLeftViewContext } from "@/components/views/home/left-section/contexts/leftViewContext";
+import { TYPE_OF_ORDER_VIEW } from "@/components/views/home/right-section/constants";
+import { useRightViewContext } from "@/components/views/home/right-section/contexts/rightViewContext";
 import { useCustomerManagement } from "@/components/views/home/right-section/hooks/useCustomerManagement";
+import { currency } from "@/preferences";
+import { selectOrder } from "@/store/slices/order/createOrder";
+import { useCallback, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 /**
  * Represents a payment method with its properties
