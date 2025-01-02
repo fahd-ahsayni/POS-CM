@@ -1,4 +1,4 @@
-import { DishIcon } from "@/assets/figma-icons";
+import { DishIcon, SuiteCommandIcon } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { motion } from "framer-motion";
@@ -10,33 +10,37 @@ import { Card } from "@/components/ui/card";
 import { currency } from "@/preferences";
 import { useDispatch } from "react-redux";
 import { updateOrderLine } from "@/store/slices/order/createOrder";
+import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
+import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
 
 interface OrderLineProps {
   item: {
     _id: string;
-    variants: Array<{ name: string }>;
+    variants: any[];
     quantity: number;
     price: number;
     name: string;
     is_combo: boolean;
     combo_items: {
-      variants: Array<{ name: string; quantity: number }>;
-      supplements: Array<{
-        name: string;
-        quantity: number;
-        price_ttc: number;
-      }>;
+      variants: any[];
+      supplements: any[];
     };
+    suite_commande: boolean;
+    customer_index: number;
+    notes?: string[];
+    high_priority?: boolean;
   };
   increment: () => void;
   decrement: () => void;
 }
 
 export function OrderLine({ item, increment, decrement }: OrderLineProps) {
-  const [isSuitCamand, setIsSuitCamand] = useState(false);
-
-  const config = JSON.parse(localStorage.getItem("generalData") || "{}")
-    .configs[0];
+  const [isSuitCamand, setIsSuitCamand] = useState(
+    item.suite_commande || false
+  );
+  const dispatch = useDispatch();
+  const { customerIndex } = useRightViewContext();
+  const { selectedProducts, setSelectedProducts } = useLeftViewContext();
 
   const itemVariants = useMemo(
     () => ({
@@ -60,20 +64,71 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
     decrement();
   };
 
-  const dispatch = useDispatch();
-
-  console.log(item)
-
   const handleUpdateNotes = (productId: string, notes: string[]) => {
-    dispatch(updateOrderLine({ 
-      _id: productId, 
-      orderLine: { 
-        ...item, 
-        notes, 
-        customer_index: item.customer_index
-      } 
-    }));
+    dispatch(
+      updateOrderLine({
+        _id: productId,
+        customerIndex: item.customer_index || customerIndex,
+        orderLine: {
+          ...item,
+          notes,
+          customer_index: item.customer_index || customerIndex,
+        },
+      })
+    );
+
+    const updatedProducts = selectedProducts.map((product) => {
+      if (
+        product._id === productId &&
+        product.customer_index === (item.customer_index || customerIndex)
+      ) {
+        return {
+          ...product,
+          notes,
+        };
+      }
+      return product;
+    });
+    setSelectedProducts(updatedProducts);
   };
+
+  const handleSuiteCommandeToggle = () => {
+    const currentCustomerIndex = item.customer_index || customerIndex;
+
+    const updatedOrderLine = {
+      ...item,
+      suite_commande: !isSuitCamand,
+      high_priority: !isSuitCamand ? false : item.high_priority,
+      customer_index: currentCustomerIndex,
+    };
+
+    dispatch(
+      updateOrderLine({
+        _id: item._id,
+        customerIndex: currentCustomerIndex,
+        orderLine: updatedOrderLine,
+      })
+    );
+
+    const updatedProducts = selectedProducts.map((product) => {
+      if (
+        product._id === item._id &&
+        product.customer_index === currentCustomerIndex
+      ) {
+        return {
+          ...product,
+          suite_commande: !isSuitCamand,
+          high_priority: !isSuitCamand ? false : product.high_priority,
+        };
+      }
+      return product;
+    });
+    setSelectedProducts(updatedProducts);
+
+    setIsSuitCamand(!isSuitCamand);
+  };
+
+  console.log(item);
 
   return (
     <motion.div className="flex relative cursor-pointer items-center justify-start h-full w-full rounded-lg overflow-hidden">
@@ -170,16 +225,20 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
             {item.price} {currency.currency}
           </TypographyP>
           <div className="flex items-center gap-x-2">
-            {config?.value !== "restaurant" && (
-              <button onClick={() => setIsSuitCamand(!isSuitCamand)}>
-                suite_command
-              </button>
-            )}
-            <OrderLineOtherActions />
-            <OderLineAddComments 
-              productId={item._id} 
-              initialNotes={item.notes || []} 
-              onUpdateNotes={handleUpdateNotes} 
+            <Button
+              size="icon"
+              variant="ghost"
+              className="-ms-px rounded h-7 w-7 bg-accent-white/10 hover:bg-accent-white/20"
+              onClick={handleSuiteCommandeToggle}
+            >
+              <SuiteCommandIcon className="fill-primary-black dark:fill-white h-4 w-4" />
+            </Button>
+
+            <OrderLineOtherActions item={item} />
+            <OderLineAddComments
+              productId={item._id}
+              customerIndex={item.customer_index || customerIndex}
+              initialNotes={item.notes || []}
             />
           </div>
         </div>

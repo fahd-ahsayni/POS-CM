@@ -19,11 +19,8 @@ export interface OrdersState {
 export default function OrdersPage() {
   const dispatch = useDispatch<AppDispatch>();
   const [loading, setLoading] = useState(false);
-  const {
-    orders,
-    status: orderStatus,
-    error,
-  } = useSelector((state: RootState) => state.orders);
+  const { orders } = useSelector((state: RootState) => state.orders);
+
   const [filterCriteria, setFilterCriteria] = useState<FilterCriteria>({
     employee: "",
     orderType: "",
@@ -44,15 +41,6 @@ export default function OrdersPage() {
   const handleFilterChange = (filters: FilterCriteria) => {
     setFilterCriteria(filters);
   };
-
-  console.log(
-    "Orders in component:",
-    orders,
-    "Status:",
-    orderStatus,
-    "Error:",
-    error
-  );
 
   return (
     <>

@@ -45,24 +45,30 @@ Toggle.displayName = TogglePrimitive.Root.displayName;
 
 export { Toggle, toggleVariants };
 
-export function SwitchToggle({
-  enabled,
-  setEnabled,
-  className,
-}: {
+interface SwitchToggleProps {
   enabled: boolean;
   setEnabled: (enabled: boolean) => void;
   className?: string;
-}) {
+  disabled?: boolean;
+}
+
+export function SwitchToggle({ 
+  enabled, 
+  setEnabled, 
+  className,
+  disabled = false
+}: SwitchToggleProps) {
   return (
     <Switch
       checked={enabled}
-      onChange={setEnabled}
+      onChange={disabled ? undefined : setEnabled}
       className={cn(
         enabled ? "bg-primary-red" : "dark:bg-white/10 bg-primary-black/10",
         "relative inline-flex h-4 w-8 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-red focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-primary-black",
+        disabled && "opacity-50 cursor-not-allowed",
         className
       )}
+      disabled={disabled}
     >
       <span className="sr-only">Use setting</span>
       <span

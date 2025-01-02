@@ -18,15 +18,17 @@ import { useProductSelection } from "../../left-section/hooks/useProductSelectio
 
 interface OderLineAddCommentsProps {
   productId: string;
+  customerIndex: number;
   initialNotes?: string[];
 }
 
 export default function OderLineAddComments({
   productId,
+  customerIndex,
   initialNotes = [],
 }: OderLineAddCommentsProps) {
   const { selectedProducts, setSelectedProducts } = useLeftViewContext();
-  const { orderType, customerIndex } = useRightViewContext();
+  const { orderType } = useRightViewContext();
   const { updateProductNotes } = useProductSelection({
     selectedProducts,
     setSelectedProducts,
@@ -68,11 +70,15 @@ export default function OderLineAddComments({
     const filteredComments = newComments.filter((c) => c !== "");
     setComments(filteredComments);
     
-    // Update both Redux and context state
-    updateProductNotes(productId, filteredComments);
+    // Update both Redux and context state with customer_index
+    updateProductNotes(productId, filteredComments, customerIndex);
     dispatch(updateOrderLine({
       _id: productId,
-      orderLine: { notes: filteredComments }
+      customerIndex,
+      orderLine: { 
+        notes: filteredComments,
+        customer_index: customerIndex
+      }
     }));
   };
 
@@ -83,7 +89,10 @@ export default function OderLineAddComments({
       dispatch(updateOrderLine({
         _id: productId,
         customerIndex,
-        orderLine: { notes: newComments }
+        orderLine: { 
+          notes: newComments,
+          customer_index: customerIndex
+        }
       }));
     }
   };

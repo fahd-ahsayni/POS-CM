@@ -47,6 +47,12 @@ const initialState: OrderSliceState = {
   error: null,
 };
 
+interface UpdateOrderLinePayload {
+  _id: string;
+  customerIndex: number;
+  orderLine: any;
+}
+
 const orderSlice = createSlice({
   name: "order",
   initialState,
@@ -59,15 +65,14 @@ const orderSlice = createSlice({
     },
     updateOrderLine: (
       state,
-      action: PayloadAction<{
-        _id: string;
-        customerIndex: number;
-        orderLine: any;
-      }>
+      action: PayloadAction<UpdateOrderLinePayload>
     ) => {
       const orderLineIndex = state.data.orderlines.findIndex(
-        (ol) => ol._id === action.payload._id && ol.customer_index === action.payload.customerIndex
+        (ol) => 
+          ol._id === action.payload._id && 
+          ol.customer_index === action.payload.customerIndex
       );
+      
       if (orderLineIndex !== -1) {
         state.data.orderlines[orderLineIndex] = {
           ...state.data.orderlines[orderLineIndex],

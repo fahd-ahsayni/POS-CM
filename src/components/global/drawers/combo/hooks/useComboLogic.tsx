@@ -37,20 +37,60 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
           ...v,
           customer_index: customerIndex,
           order_type_id: orderType?._id || "",
+          suite_commande: false,
+          high_priority: false,
         })),
         supplements: selections.supplements.map((s) => ({
           ...s,
           price_ttc: s.price_ttc,
           customer_index: customerIndex,
           order_type_id: orderType?._id || "",
+          suite_commande: false,
+          high_priority: false,
         })),
       },
       notes: [],
       suite_commande: false,
+      high_priority: false,
     };
 
     // Add to selected products
-    setSelectedProducts((prev) => [...prev, comboProduct]);
+    setSelectedProducts((prev) => {
+      // Check for existing combo with same ID and customer index
+      const existingComboIndex = prev.findIndex(
+        (p) => p._id === comboProduct._id && p.customer_index === customerIndex
+      );
+
+      if (existingComboIndex !== -1) {
+        // If exists, preserve the existing flags
+        const existingCombo = prev[existingComboIndex];
+        comboProduct.suite_commande = existingCombo.suite_commande;
+        comboProduct.high_priority = existingCombo.high_priority;
+
+        // Also preserve flags for variants and supplements
+        comboProduct.combo_items.variants =
+          comboProduct.combo_items.variants.map((v: any) => ({
+            ...v,
+            suite_commande: existingCombo.suite_commande,
+            high_priority: existingCombo.high_priority,
+          }));
+
+        comboProduct.combo_items.supplements =
+          comboProduct.combo_items.supplements.map((s: any) => ({
+            ...s,
+            suite_commande: existingCombo.suite_commande,
+            high_priority: existingCombo.high_priority,
+          }));
+
+        // Replace the existing combo
+        const newProducts = [...prev];
+        newProducts[existingComboIndex] = comboProduct;
+        return newProducts;
+      }
+
+      // If it's a new combo, add it to the array
+      return [...prev, comboProduct];
+    });
 
     // Reset combo state
     setSelections({ variants: [], supplements: [] });

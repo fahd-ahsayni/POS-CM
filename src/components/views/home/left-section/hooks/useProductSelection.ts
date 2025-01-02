@@ -40,6 +40,7 @@ export const useProductSelection = ({
         is_paid: false,
         is_ordred: false,
         suite_commande: false,
+        high_priority: false,
       };
     },
     [customerIndex, orderType]
@@ -53,8 +54,7 @@ export const useProductSelection = ({
       notes?: string[]
     ): ProductSelected[] => {
       return prevProducts.map((p: any) =>
-        p.product_variant_id === variantId &&
-        p.customer_index === customerIndex
+        p.product_variant_id === variantId && p.customer_index === customerIndex
           ? {
               ...p,
               quantity: p.quantity + 1,
@@ -69,10 +69,10 @@ export const useProductSelection = ({
   );
 
   const updateProductNotes = useCallback(
-    (productId: string, notes: string[]) => {
+    (productId: string, notes: string[], customerIndex: number) => {
       setSelectedProducts((prevSelected) =>
         prevSelected.map((p) =>
-          p._id === productId
+          p._id === productId && p.customer_index === customerIndex
             ? {
                 ...p,
                 notes,
@@ -116,5 +116,12 @@ export const useProductSelection = ({
     [findVariant, createNewProduct, updateExistingProduct, customerIndex]
   );
 
-  return { addOrUpdateProduct, updateProductNotes };
+  return {
+    addOrUpdateProduct,
+    updateProductNotes: (
+      productId: string,
+      notes: string[],
+      customerIndex: number
+    ) => updateProductNotes(productId, notes, customerIndex),
+  };
 };

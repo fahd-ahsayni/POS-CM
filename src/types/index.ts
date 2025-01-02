@@ -136,21 +136,24 @@ interface ProductVariantInfo {
 }
 
 // Main product type
-export interface ProductSelected extends OrderItemBase {
-  _id: string;
-  name: string;
+export interface ProductSelected extends Product {
+  id: string;
+  product_variant_id: string;
   quantity: number;
   price: number;
-  variants: any[];
   customer_index: number;
   order_type_id: string;
-  product_variant_id?: string;
-  is_combo?: boolean;
-  combo_items?: ComboItem;
+  uom_id: string;
   notes: string[];
-  suite_commande: boolean | false;
-  is_paid: boolean | false;
-  is_ordred: boolean | false;
+  is_paid: boolean;
+  is_ordred: boolean;
+  suite_commande: boolean;
+  high_priority: boolean;
+  is_combo?: boolean;
+  combo_items?: {
+    variants: any[];
+    supplements: any[];
+  };
 }
 
 // Type guard for combo products
