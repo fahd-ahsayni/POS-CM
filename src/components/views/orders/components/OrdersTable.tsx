@@ -1,4 +1,4 @@
-import { printOrder } from "@/api/services";
+import { printOrder, getOrderById } from "@/api/services";
 import { PrinterIcon } from "@/assets/figma-icons";
 import { useOrder } from "@/components/global/drawers/order-details/context/OrderContext";
 import { Button } from "@/components/ui/button";
@@ -107,7 +107,7 @@ export default function DataTable({
               printOrder(row._id);
             }}
           >
-            <PrinterIcon className="h-5 w-5 dark:fill-white fill-primary-black" />
+            <PrinterIcon className="h-5 w-5 dark:text-white text-primary-black" />
           </Button>
         )}
       </>
@@ -137,13 +137,21 @@ export default function DataTable({
     );
   };
 
-  const handleRowClick = (row: any) => {
-    setSelectedOrder({
-      ...row,
-      orderLines: row.orderline_ids || [],
-      id: row._id,
-    });
-    setOpenOrderDetails(true);
+  const handleRowClick = async (row: any) => {
+    console.log("row", row._id);
+    try {
+      const response = await getOrderById(row._id);
+      if (response.data) {
+        setSelectedOrder({
+          ...response.data,
+          id: row._id,
+        });
+        setOpenOrderDetails(true);
+      }
+    } catch (error) {
+      console.error("Error fetching order details:", error);
+      // Optionally add error handling (toast notification, etc.)
+    }
   };
 
   return (

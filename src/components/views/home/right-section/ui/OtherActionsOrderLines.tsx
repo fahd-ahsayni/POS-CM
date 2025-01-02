@@ -14,11 +14,11 @@ import { updateOrder } from "@/functions/updateOrder";
 import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch } from "react-redux";
+import { setUrgent, setOneTime } from "@/store/slices/order/createOrder";
 
 export default function OtherActionsOrderLines() {
   const dispatch = useDispatch();
   const [openModalOrderComments, setOpenModalOrderComments] = useState(false);
-  useState(false);
   const [openModalChangeOrderType, setOpenModalChangeOrderType] =
     useState(false);
   const [openModalApplyDiscount, setOpenModalApplyDiscount] = useState(false);
@@ -28,11 +28,13 @@ export default function OtherActionsOrderLines() {
   const handleUrgentToggle = (value: boolean) => {
     setIsUrgent(value);
     dispatch(updateOrder({ urgent: value }));
+    dispatch(setUrgent(value));
   };
 
   const handleOneTimeToggle = (value: boolean) => {
     setIsOneTime(value);
     dispatch(updateOrder({ one_time: value }));
+    dispatch(setOneTime(value));
   };
 
   return (

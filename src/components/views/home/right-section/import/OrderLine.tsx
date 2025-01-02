@@ -12,6 +12,7 @@ import { useDispatch } from "react-redux";
 import { updateOrderLine } from "@/store/slices/order/createOrder";
 import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
 import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
+import { toTitleCase } from "@/functions/string-transforms";
 
 interface OrderLineProps {
   item: {
@@ -191,7 +192,7 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
               >
                 <span className="font-semibold">x{variant.quantity}</span>
                 <span className="capitalize first-letter:uppercase text-neutral-bright-grey/90">
-                  {variant.name.toLowerCase()}
+                  {toTitleCase(variant.name)}
                 </span>
               </TypographySmall>
             ))}
@@ -205,7 +206,7 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
                       <TypographySmall className="text-sm space-x-2">
                         <span className="font-semibold">x{supp.quantity}</span>
                         <span className="capitalize first-letter:uppercase text-neutral-bright-grey/90">
-                          {supp.name.toLowerCase()}
+                          {toTitleCase(supp.name)}
                         </span>
                       </TypographySmall>
                       <TypographySmall className="text-white font-semibold">
@@ -224,22 +225,22 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
           <TypographyP className="text-sm font-medium">
             {item.price} {currency.currency}
           </TypographyP>
-          <div className="flex items-center gap-x-2">
+          <div className="flex items-center gap-x-3">
+            <OderLineAddComments
+              productId={item._id}
+              customerIndex={item.customer_index || customerIndex}
+              initialNotes={item.notes || []}
+            />
             <Button
               size="icon"
               variant="ghost"
               className="-ms-px rounded h-7 w-7 bg-accent-white/10 hover:bg-accent-white/20"
               onClick={handleSuiteCommandeToggle}
             >
-              <SuiteCommandIcon className="fill-primary-black dark:fill-white h-4 w-4" />
+              <SuiteCommandIcon className="!text-primary-black dark:!text-white h-4 w-4" />
             </Button>
 
             <OrderLineOtherActions item={item} />
-            <OderLineAddComments
-              productId={item._id}
-              customerIndex={item.customer_index || customerIndex}
-              initialNotes={item.notes || []}
-            />
           </div>
         </div>
       </Card>

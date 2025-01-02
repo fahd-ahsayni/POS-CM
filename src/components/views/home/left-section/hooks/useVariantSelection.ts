@@ -113,8 +113,8 @@ export const useVariantSelection = ({
               product_variant_id: v._id,
               quantity: v.quantity,
               notes: Array.isArray(v.notes) ? v.notes : [],
-              suite_commande: v.suite_commande || false,
-              high_priority: v.high_priority || false,
+              // suite_commande: v.suite_commande || false,
+              // high_priority: v.high_priority || false,
               order_type_id: orderType || "",
             })),
             combo_supp_ids: p.combo_items.supplements.map((s: any) => ({
@@ -122,7 +122,7 @@ export const useVariantSelection = ({
               quantity: s.quantity,
               notes: Array.isArray(s.notes) ? s.notes : [],
               suite_commande: s.suite_commande || false,
-              high_priority: s.high_priority || false,
+              // high_priority: s.high_priority || false,
               order_type_id: orderType || "",
             })),
           };

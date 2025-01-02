@@ -1,4 +1,4 @@
-import { createContext, useContext, ReactNode, useState, useEffect } from "react";
+import { createContext, useContext, ReactNode, useState } from "react";
 import { Order, OrderLine } from "@/types/getDataByDay";
 
 interface OrderContextType {
@@ -17,16 +17,6 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   const [openOrderDetails, setOpenOrderDetails] = useState(false);
   const [orderLines, setOrderLines] = useState<OrderLine[]>([]);
 
-  // Update orderLines whenever selectedOrder changes
-  useEffect(() => {
-    if (selectedOrder?.orderline_ids) {
-      // Type assertion since we know orderline_ids contains OrderLine objects
-      setOrderLines(selectedOrder.orderline_ids as OrderLine[]);
-    } else {
-      setOrderLines([]);
-    }
-  }, [selectedOrder]);
-
   const value = {
     selectedOrder,
     openOrderDetails,
@@ -37,9 +27,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <OrderContext.Provider value={value}>
-      {children}
-    </OrderContext.Provider>
+    <OrderContext.Provider value={value}>{children}</OrderContext.Provider>
   );
 }
 

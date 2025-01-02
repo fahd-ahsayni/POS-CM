@@ -149,3 +149,7 @@ export const logoutService = async () => {
 export const cancelOrder = async (data: any) => {
   return api.post("/order/cancel", data);
 };
+
+export const getOrderById = async (orderId: string) => {
+  return api.get(`/order/${orderId}`);
+};

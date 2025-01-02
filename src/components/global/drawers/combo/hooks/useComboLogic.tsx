@@ -38,7 +38,7 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
           customer_index: customerIndex,
           order_type_id: orderType?._id || "",
           suite_commande: false,
-          high_priority: false,
+          // high_priority: false,
         })),
         supplements: selections.supplements.map((s) => ({
           ...s,
@@ -46,7 +46,7 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
           customer_index: customerIndex,
           order_type_id: orderType?._id || "",
           suite_commande: false,
-          high_priority: false,
+          // high_priority: false,
         })),
       },
       notes: [],
@@ -72,14 +72,14 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
           comboProduct.combo_items.variants.map((v: any) => ({
             ...v,
             suite_commande: existingCombo.suite_commande,
-            high_priority: existingCombo.high_priority,
+            // high_priority: existingCombo.high_priority,
           }));
 
         comboProduct.combo_items.supplements =
           comboProduct.combo_items.supplements.map((s: any) => ({
             ...s,
             suite_commande: existingCombo.suite_commande,
-            high_priority: existingCombo.high_priority,
+            // high_priority: existingCombo.high_priority,
           }));
 
         // Replace the existing combo
