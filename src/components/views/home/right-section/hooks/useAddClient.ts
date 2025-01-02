@@ -1,0 +1,173 @@
+import { DELIVERY_VIEW, ORDER_SUMMARY_VIEW } from "./../constants/index";
+import { useState, useEffect } from "react";
+import { createClient, getClients } from "@/api/services";
+import { toast } from "react-toastify";
+import { z } from "zod";
+import { createToast } from "@/components/global/Toasters";
+import { useDispatch } from "react-redux";
+import { setClientId } from "@/store/slices/order/createOrder";
+import { Client } from "@/types/clients";
+import { useRightViewContext } from "../contexts/rightViewContext";
+
+const clientSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  phone: z
+    .string()
+    .min(1, "Phone is required")
+    .regex(/^[0-9+\s-()]{8,}$/, "Invalid phone number format"),
+  address: z.string().min(1, "Address is required"),
+  email: z.string().optional(),
+  ice: z.string().optional(),
+});
+
+type ClientFormData = z.infer<typeof clientSchema>;
+
+export const useAddClient = (onSuccess?: () => void) => {
+  const [clients, setClients] = useState<Client[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
+  const dispatch = useDispatch();
+
+  const { setViews } = useRightViewContext();
+
+  const [formData, setFormData] = useState<ClientFormData>({
+    name: "",
+    phone: "",
+    address: "",
+    email: "",
+    ice: "",
+  });
+  const [errors, setErrors] = useState<Partial<ClientFormData>>({});
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const res = await getClients();
+        setClients(res.data);
+      } catch (error) {
+        toast.error("Failed to fetch clients");
+      } finally {
+        setIsFetching(false);
+      }
+    };
+    fetchClients();
+  }, []);
+
+  const validateForm = (): boolean => {
+    try {
+      clientSchema.parse(formData);
+      setErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors = error.errors.reduce(
+          (acc, curr) => ({
+            ...acc,
+            [curr.path[0]]: curr.message,
+          }),
+          {}
+        );
+        setErrors(newErrors);
+      }
+      return false;
+    }
+  };
+
+  const handleInputChange =
+    (field: keyof ClientFormData) => (value: string | number | null) => {
+      setFormData((prev) => ({ ...prev, [field]: value?.toString() || "" }));
+      if (errors[field]) {
+        setErrors((prev) => ({ ...prev, [field]: undefined }));
+      }
+    };
+
+  const handlePhoneSelect = (selectedClient: Client | null) => {
+    if (selectedClient) {
+      setFormData({
+        name: selectedClient.name,
+        phone: selectedClient.phone,
+        address: selectedClient.address || "",
+        email: selectedClient.email || "",
+        ice: selectedClient.ice || "",
+      });
+      setErrors({});
+    }
+  };
+
+  const handleClose = () => {
+    setViews(DELIVERY_VIEW);
+    setFormData({
+      name: "",
+      phone: "",
+      address: "",
+      email: "",
+      ice: "",
+    });
+    setErrors({});
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      toast.warning(
+        createToast(
+          "Fields required",
+          "Please fill in all required fields",
+          "warning"
+        )
+      );
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const existingClient = clients.find((c) => c.phone === formData.phone);
+      if (existingClient) {
+        dispatch(setClientId(existingClient._id));
+        toast.info(
+          createToast(
+            "Client exists",
+            "Already existing client selected",
+            "info"
+          )
+        );
+        setViews(ORDER_SUMMARY_VIEW);
+      } else {
+        const response = await createClient(formData);
+        dispatch(setClientId(response.data._id));
+        toast.success(
+          createToast(
+            "Client created",
+            "Client created successfully",
+            "success"
+          )
+        );
+        setViews(ORDER_SUMMARY_VIEW);
+      }
+    } catch (error) {
+      toast.error(
+        createToast(
+          "Client creation failed",
+          "Failed to process client",
+          "error"
+        )
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return {
+    clients,
+    isOpen,
+    setIsOpen,
+    isLoading,
+    isFetching,
+    formData,
+    errors,
+    handleInputChange,
+    handlePhoneSelect,
+    handleSubmit,
+    handleClose,
+  };
+};

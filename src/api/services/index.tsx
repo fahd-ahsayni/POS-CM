@@ -153,3 +153,11 @@ export const cancelOrder = async (data: any) => {
 export const getOrderById = async (orderId: string) => {
   return api.get(`/order/${orderId}`);
 };
+
+export const getClients = async () => {
+  return api.get("/clients");
+};
+
+export const createClient = async (data: any) => {
+  return api.post("/clients", data);
+};

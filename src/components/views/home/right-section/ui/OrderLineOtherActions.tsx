@@ -17,7 +17,9 @@ interface OrderLineOtherActionsProps {
   item: any; // Add proper typing based on your item structure
 }
 
-export default function OrderLineOtherActions({ item }: OrderLineOtherActionsProps) {
+export default function OrderLineOtherActions({
+  item,
+}: OrderLineOtherActionsProps) {
   const dispatch = useDispatch();
   const { selectedProducts, setSelectedProducts } = useLeftViewContext();
   const { customerIndex } = useRightViewContext();
@@ -30,23 +32,28 @@ export default function OrderLineOtherActions({ item }: OrderLineOtherActionsPro
       ...item,
       high_priority: enabled,
       suite_commande: enabled ? false : item.suite_commande, // Force suite_commande to false if high_priority is true
-      customer_index: currentCustomerIndex
+      customer_index: currentCustomerIndex,
     };
 
     // Update Redux store
-    dispatch(updateOrderLine({ 
-      _id: item._id,
-      customerIndex: currentCustomerIndex,
-      orderLine: updatedOrderLine
-    }));
+    dispatch(
+      updateOrderLine({
+        _id: item._id,
+        customerIndex: currentCustomerIndex,
+        orderLine: updatedOrderLine,
+      })
+    );
 
     // Update selected products in LeftViewContext
-    const updatedProducts = selectedProducts.map(product => {
-      if (product._id === item._id && product.customer_index === currentCustomerIndex) {
+    const updatedProducts = selectedProducts.map((product) => {
+      if (
+        product._id === item._id &&
+        product.customer_index === currentCustomerIndex
+      ) {
         return {
           ...product,
           high_priority: enabled,
-          suite_commande: enabled ? false : product.suite_commande // Force suite_commande to false if high_priority is true
+          suite_commande: enabled ? false : product.suite_commande, // Force suite_commande to false if high_priority is true
         };
       }
       return product;
@@ -70,9 +77,9 @@ export default function OrderLineOtherActions({ item }: OrderLineOtherActionsPro
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="mt-2 -ml-36 min-w-52">
-        <DropdownMenuItem>
+        {/* <DropdownMenuItem>
           <span className="text-sm">Change Order Line Type</span>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
         <DropdownMenuItem>
           <span className="text-sm">Apply Discount</span>
         </DropdownMenuItem>
@@ -80,8 +87,8 @@ export default function OrderLineOtherActions({ item }: OrderLineOtherActionsPro
         <DropdownMenuItem>
           <span className="text-sm flex items-center w-full justify-between space-x-4">
             <span>Mark as Urgent</span>
-            <SwitchToggle 
-              enabled={item.high_priority || false} 
+            <SwitchToggle
+              enabled={item.high_priority || false}
               setEnabled={handleUrgentToggle}
               disabled={isUrgentDisabled} // Add disabled prop to SwitchToggle
             />

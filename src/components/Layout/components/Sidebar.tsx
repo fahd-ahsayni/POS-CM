@@ -3,6 +3,8 @@ import { cn } from "@/lib/utils";
 import { useLocation, useNavigate } from "react-router-dom";
 import { sidebarNavigation, sidebarPagesLink } from "../constants";
 import { useTheme } from "@/providers/themeProvider";
+import AddClient from "@/components/global/drawers/add-client/AddClient";
+import { useState } from "react";
 
 interface SidebarItemProps {
   item: {
@@ -13,6 +15,7 @@ interface SidebarItemProps {
   pathname: string;
   theme: string;
   onClick?: () => void;
+  isActive?: boolean;
 }
 
 const SidebarItem: React.FC<SidebarItemProps> = ({
@@ -20,13 +23,16 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
   pathname,
   theme,
   onClick,
+  isActive: forcedActive,
 }) => {
   const navigate = useNavigate();
-  const isActive = pathname === item.route;
+  const isActive = forcedActive || pathname === item.route;
 
   return (
     <Card
-      onClick={pathname ? () => navigate(item.route) : onClick}
+      onClick={
+        onClick || (item.route !== "#" ? () => navigate(item.route) : undefined)
+      }
       key={item.name}
       className={cn(
         isActive
@@ -53,54 +59,39 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
 export default function Sidebar() {
   const { theme } = useTheme();
   const { pathname } = useLocation();
+  const [openClientDrawer, setOpenClientDrawer] = useState(false);
+
+  const handleClientClick = () => {
+    setOpenClientDrawer(true);
+  };
 
   return (
-    <div className="hidden w-ful h-screen md:block z-10">
+    <div className="hidden w-full h-screen md:block z-10">
+      <AddClient open={openClientDrawer} setOpen={setOpenClientDrawer} />
       <div className="flex w-full flex-col h-full items-center">
         <div className="w-full flex-1 flex flex-col justify-around px-2">
           {/* Pages Links */}
-          <SidebarItem
-            item={sidebarPagesLink[0]}
-            pathname={pathname}
-            theme={theme}
-          />
-          <SidebarItem
-            item={sidebarPagesLink[1]}
-            pathname={pathname}
-            theme={theme}
-          />
-          <SidebarItem
-            item={sidebarPagesLink[2]}
-            pathname={pathname}
-            theme={theme}
-          />
+          {sidebarPagesLink.map((item) => (
+            <SidebarItem
+              key={item.name}
+              item={item}
+              pathname={pathname}
+              theme={theme}
+            />
+          ))}
 
           {/* Navigation Items */}
-          <SidebarItem
-            item={sidebarNavigation[0]}
-            pathname={pathname}
-            theme={theme}
-          />
-          <SidebarItem
-            item={sidebarNavigation[1]}
-            pathname={pathname}
-            theme={theme}
-          />
-          <SidebarItem
-            item={sidebarNavigation[2]}
-            pathname={pathname}
-            theme={theme}
-          />
-          <SidebarItem
-            item={sidebarNavigation[3]}
-            pathname={pathname}
-            theme={theme}
-          />
-          <SidebarItem
-            item={sidebarNavigation[4]}
-            pathname={pathname}
-            theme={theme}
-          />
+          {sidebarNavigation.map((item) => (
+            <SidebarItem
+              key={item.name}
+              item={item}
+              pathname={pathname}
+              theme={theme}
+              onClick={
+                item.name === "Clients" ? handleClientClick : item.onClick
+              }
+            />
+          ))}
         </div>
       </div>
     </div>

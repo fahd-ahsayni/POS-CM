@@ -67,7 +67,7 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
           {required && <span className="text-destructive">*</span>}
         </Label>
         {optionalText && (
-          <span className="text-xs text-neutral-dark-grey">{optionalText}</span>
+          <span className="text-[0.65rem] text-neutral-dark-grey">{optionalText}</span>
         )}
       </div>
 
@@ -81,7 +81,7 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
         <Input
           className={cn(
             "w-full",
-            hasError && "!ring-[1.25px] !ring-primary-red",
+            hasError && "border-primary-red",
             startIcon && "ps-9",
             suffix && "pe-9",
             isPasswordToggleable && "pe-9",

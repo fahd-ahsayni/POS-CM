@@ -69,31 +69,35 @@ export default function OderLineAddComments({
 
     const filteredComments = newComments.filter((c) => c !== "");
     setComments(filteredComments);
-    
+
     // Update both Redux and context state with customer_index
     updateProductNotes(productId, filteredComments, customerIndex);
-    dispatch(updateOrderLine({
-      _id: productId,
-      customerIndex,
-      orderLine: { 
-        notes: filteredComments,
-        customer_index: customerIndex
-      }
-    }));
+    dispatch(
+      updateOrderLine({
+        _id: productId,
+        customerIndex,
+        orderLine: {
+          notes: filteredComments,
+          customer_index: customerIndex,
+        },
+      })
+    );
   };
 
   const handleDelete = (index: number) => {
     if (comments.length > 0) {
       const newComments = comments.filter((_, i) => i !== index);
       setComments(newComments);
-      dispatch(updateOrderLine({
-        _id: productId,
-        customerIndex,
-        orderLine: { 
-          notes: newComments,
-          customer_index: customerIndex
-        }
-      }));
+      dispatch(
+        updateOrderLine({
+          _id: productId,
+          customerIndex,
+          orderLine: {
+            notes: newComments,
+            customer_index: customerIndex,
+          },
+        })
+      );
     }
   };
 

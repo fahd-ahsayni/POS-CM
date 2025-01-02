@@ -23,6 +23,7 @@ interface ComboboxSelectOnChangeProps<T> {
     selected: boolean
   ) => React.ReactElement;
   placeholder?: string;
+  required?: boolean;
 }
 
 export default function ComboboxSelectOnChange<T>({
@@ -34,6 +35,7 @@ export default function ComboboxSelectOnChange<T>({
   filterFunction,
   renderOption,
   placeholder = "Select an option...",
+  required = false,
 }: ComboboxSelectOnChangeProps<T>) {
   const [query, setQuery] = useState("");
 
@@ -50,10 +52,15 @@ export default function ComboboxSelectOnChange<T>({
     <Combobox className="w-full" as="div" value={value} onChange={onChange}>
       {({ open }) => (
         <>
-          {label && <Label className="pl-1">{label}</Label>}
+          {label && (
+            <Label className="pl-1">
+              {label}
+              {required && <span className="text-destructive">*</span>}
+            </Label>
+          )}
           <div className="relative mt-0.5">
             <ComboboxInput
-              className="w-full h-9 rounded-lg border border-input dark:bg-white/5 bg-primary-black/5 px-3 py-2 text-[.8rem] text-foreground shadow-sm shadow-black/5 transition-shadow placeholder:text-muted-foreground/70 dark:focus-visible:border-white/80 focus-visible:border-primary-black/10 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/20 disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-full h-9 rounded-lg border border-input dark:bg-white/5 bg-primary-black/5 px-3 py-2 text-[.8rem] text-foreground shadow-sm shadow-black/5 transition-shadow placeholder:text-muted-foreground/70 dark:focus-visible:border-white/80 focus-visible:border-primary-black/40 focus-visible:outline-none focus-visible:ring-[3px] dark:focus-visible:ring-ring/20 focus-visible:ring-ring/10 disabled:cursor-not-allowed disabled:opacity-50"
               onChange={handleInputChange}
               displayValue={(item: any) => {
                 if (typeof item === "string") return item;
