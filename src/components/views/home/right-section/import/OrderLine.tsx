@@ -8,6 +8,8 @@ import OderLineAddComments from "../ui/OderLineAddComments";
 import OrderLineOtherActions from "../ui/OrderLineOtherActions";
 import { Card } from "@/components/ui/card";
 import { currency } from "@/preferences";
+import { useDispatch } from "react-redux";
+import { updateOrderLine } from "@/store/slices/order/createOrder";
 
 interface OrderLineProps {
   item: {
@@ -56,6 +58,21 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
   const handleDecrement = (e: React.MouseEvent) => {
     e.stopPropagation();
     decrement();
+  };
+
+  const dispatch = useDispatch();
+
+  console.log(item)
+
+  const handleUpdateNotes = (productId: string, notes: string[]) => {
+    dispatch(updateOrderLine({ 
+      _id: productId, 
+      orderLine: { 
+        ...item, 
+        notes, 
+        customer_index: item.customer_index
+      } 
+    }));
   };
 
   return (
@@ -159,7 +176,11 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
               </button>
             )}
             <OrderLineOtherActions />
-            <OderLineAddComments />
+            <OderLineAddComments 
+              productId={item._id} 
+              initialNotes={item.notes || []} 
+              onUpdateNotes={handleUpdateNotes} 
+            />
           </div>
         </div>
       </Card>

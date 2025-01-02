@@ -59,17 +59,20 @@ const orderSlice = createSlice({
     },
     updateOrderLine: (
       state,
-      action: PayloadAction<{ id: number; orderLine: any }>
+      action: PayloadAction<{
+        _id: string;
+        customerIndex: number;
+        orderLine: any;
+      }>
     ) => {
       const orderLineIndex = state.data.orderlines.findIndex(
-        (ol) => ol.id === action.payload.id
+        (ol) => ol._id === action.payload._id && ol.customer_index === action.payload.customerIndex
       );
       if (orderLineIndex !== -1) {
-        console.log(
-          `Order line ${action.payload.id} updated:`,
-          action.payload.orderLine
-        );
-        state.data.orderlines[orderLineIndex] = action.payload.orderLine;
+        state.data.orderlines[orderLineIndex] = {
+          ...state.data.orderlines[orderLineIndex],
+          ...action.payload.orderLine,
+        };
       }
     },
     addOrderLine: (state, action: PayloadAction<any[]>) => {

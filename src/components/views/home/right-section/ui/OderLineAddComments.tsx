@@ -10,14 +10,36 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { CheckIcon } from "lucide-react";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { updateOrderLine } from "@/store/slices/order/createOrder";
+import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
+import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
+import { useProductSelection } from "../../left-section/hooks/useProductSelection";
 
-export default function OderLineAddComments() {
+interface OderLineAddCommentsProps {
+  productId: string;
+  initialNotes?: string[];
+}
+
+export default function OderLineAddComments({
+  productId,
+  initialNotes = [],
+}: OderLineAddCommentsProps) {
+  const { selectedProducts, setSelectedProducts } = useLeftViewContext();
+  const { orderType, customerIndex } = useRightViewContext();
+  const { updateProductNotes } = useProductSelection({
+    selectedProducts,
+    setSelectedProducts,
+    customerIndex,
+    orderType,
+  });
+
+  const dispatch = useDispatch();
   const generalData = JSON.parse(localStorage.getItem("generalData") || "{}");
   const defineComments = generalData.defineNote.filter(
     (item: any) => item.type === "pos"
   );
-
-  const [comments, setComments] = useState<string[]>([]);
+  const [comments, setComments] = useState<string[]>(initialNotes);
 
   const displayValue = (item: any) => (item ? item.text || "" : "");
 
@@ -43,18 +65,26 @@ export default function OderLineAddComments() {
       newComments.push("");
     }
 
-    setComments(newComments.filter((c) => c !== ""));
-    console.log(
-      "All comments:",
-      newComments.filter((c) => c !== "")
-    );
+    const filteredComments = newComments.filter((c) => c !== "");
+    setComments(filteredComments);
+    
+    // Update both Redux and context state
+    updateProductNotes(productId, filteredComments);
+    dispatch(updateOrderLine({
+      _id: productId,
+      orderLine: { notes: filteredComments }
+    }));
   };
 
   const handleDelete = (index: number) => {
     if (comments.length > 0) {
       const newComments = comments.filter((_, i) => i !== index);
       setComments(newComments);
-      console.log("All comments after delete:", newComments);
+      dispatch(updateOrderLine({
+        _id: productId,
+        customerIndex,
+        orderLine: { notes: newComments }
+      }));
     }
   };
 
@@ -87,14 +117,17 @@ export default function OderLineAddComments() {
               animate={{ opacity: comment ? 1 : 0, x: comment ? 0 : -10 }}
               transition={{ duration: 0.15 }}
               className={cn(comment ? "cursor-pointer" : "cursor-not-allowed")}
-
             >
               <Button
                 size="icon"
                 variant="link"
                 onClick={() => handleDelete(index)}
               >
-                <DeleteCommentIcon className={cn(comment ? "fill-error-color" : "fill-neutral-dark-grey")} />
+                <DeleteCommentIcon
+                  className={cn(
+                    comment ? "fill-error-color" : "fill-neutral-dark-grey"
+                  )}
+                />
                 <span className="sr-only">Delete</span>
               </Button>
             </motion.span>
