@@ -51,7 +51,7 @@ export default function OderLineAddComments({
       : false;
   };
 
-  const renderOption = (item: any, _, selected: boolean) => (
+  const renderOption = (item: any, _:any, selected: boolean) => (
     <div className="flex items-center justify-between">
       <span>{item.text}</span>
       {selected && <CheckIcon className="h-4 w-4 text-primary-red" />}

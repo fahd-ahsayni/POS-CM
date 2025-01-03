@@ -11,12 +11,11 @@ import {
   setShiftId,
   setTableId,
   setWaiterId,
-  updateOrderLine,
   updateTotalAmount,
   setNotes,
   setUrgent,
   setDiscount,
-} from "../store/slices/order/createOrder"; // Adjust path as needed
+} from "../store/slices/order/createOrder";
 
 /**
  * Represents the possible operations that can be performed on order lines

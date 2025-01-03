@@ -15,12 +15,12 @@ export default function SelectUser() {
   const [activeTab, setActiveTab] = useState("cashiers");
   const [rfidInput, setRfidInput] = useState("");
   const [isScanning, setIsScanning] = useState(false);
-  
+
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
   // Get loading and error states from Redux
-  const { loading, error } = useSelector((state: RootState) => state.auth);
+  const { loading } = useSelector((state: RootState) => state.auth);
 
   // Reset RFID input buffer
   const resetRfidBuffer = useCallback(() => {

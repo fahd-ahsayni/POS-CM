@@ -55,7 +55,7 @@ export default function SelectPosPage() {
     if (!findPos) return;
 
     const isAuthorizedUser =
-      findPos.shift?.user_id._id === userAuthenticated?.id ||
+      findPos.shift?.user_id._id === userAuthenticated?._id ||
       userAuthenticated?.position === "Manager";
 
     if (checkDay) {

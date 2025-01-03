@@ -1,13 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { TypographyH4, TypographyP } from "@/components/ui/typography";
-import ModalLayout from "./Layout";
-import { useEffect, useState } from "react";
-import { updateOrder } from "@/functions/updateOrder";
-import { useDispatch } from "react-redux";
-import { setNotes } from "@/store/slices/order/createOrder";
-import { useSelector } from "react-redux";
 import { RootState } from "@/store";
+import { setNotes } from "@/store/slices/order/createOrder";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import ModalLayout from "./Layout";
 
 interface ModalOrderCommentsProps {
   isOpen: boolean;

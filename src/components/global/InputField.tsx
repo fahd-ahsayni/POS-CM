@@ -43,7 +43,6 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
     value,
     setValue,
     suffix,
-    isFocused = false,
     onFocus,
     onBlur,
   } = config;

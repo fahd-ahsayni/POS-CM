@@ -1,7 +1,5 @@
-import getOrderTypeData from "@/functions/getOrderTypeData";
-import Drawer from "../../Drawer";
-import { Card } from "@/components/ui/card";
 import { OrderCard } from "@/components/views/home/right-section/components/SelectTypeOfOrder";
+import Drawer from "../../Drawer";
 
 export default function ChangeOrderType({
   open,
@@ -21,9 +19,8 @@ export default function ChangeOrderType({
           {orderTypes.map((orderType: any) => (
             <OrderCard
               key={orderType._id}
-              type={orderType}
+              orderType={orderType}
               onSelect={() => {}}
-              isFixedLightDark={true}
             />
           ))}
         </div>

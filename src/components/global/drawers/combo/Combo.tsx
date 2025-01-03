@@ -16,6 +16,9 @@ function ComboContent() {
     selectedCombo?.steps[currentStep]
   );
 
+  console.log("currentStep", currentStep);
+  console.log("selections", selections);
+
   const { getStepDescription } = useComboLogic(
     currentStep,
     selectedCombo?.steps[currentStep]

@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { useRightViewContext } from "../contexts/RightViewContext";
-import { useOrderLines } from "../contexts/orderLinesContext";
+import { useOrderLines } from "../contexts/OrderLinesContext";
 
 interface OrderSummaryState {
   openModalConfirmHoldOrder: boolean;

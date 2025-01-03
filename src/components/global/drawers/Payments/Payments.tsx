@@ -37,11 +37,9 @@ export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
   const {
     paymentMethods,
     selectedPayments,
-    currentAmount,
     isProcessing,
     activePaymentIndex,
     getTotalPaidAmount,
-    getRemainingAmount,
     setActivePaymentIndex,
     setCurrentAmount,
     handlePaymentMethodSelect,

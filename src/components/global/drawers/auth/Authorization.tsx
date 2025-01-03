@@ -15,7 +15,6 @@ export default function Authorization({
   setAdmin: (admin: any) => void;
 }) {
   const [passcode, setPasscode] = useState("");
-  const [incorrectPasscode, setIncorrectPasscode] = useState(false);
 
   const shuffledNumbers = useMemo(
     () =>
@@ -61,7 +60,6 @@ export default function Authorization({
       <div className="flex-1 pt-12 flex items-center justify-center flex-col space-y-8">
         <CirclesAnimation
           currentLength={passcode.length}
-          incorrectPasscode={incorrectPasscode}
           isFixedLightDark={true}
         />
         <NumberPad

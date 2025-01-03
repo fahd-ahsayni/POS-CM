@@ -21,7 +21,7 @@ export function BlurImage({
   const [error, setError] = useState(false);
 
   return (
-    <div className="relative overflow-hidden w-full h-full">
+    <div {...props} className="relative overflow-hidden w-full h-full">
       <AnimatePresence>
         {isLoading && (
           <motion.div

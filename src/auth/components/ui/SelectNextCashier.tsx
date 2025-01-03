@@ -24,7 +24,7 @@ export default function SelectNextCashier({
       filterFunction={(query, user) =>
         user.name.toLowerCase().includes(query.toLowerCase())
       }
-      renderOption={(user, active, selected) => (
+      renderOption={(user, _, selected) => (
         <>
           <div className="flex items-center">
             <img

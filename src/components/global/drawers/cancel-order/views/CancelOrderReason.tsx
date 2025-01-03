@@ -89,7 +89,7 @@ export default function CancelOrderReason({
           filterFunction={(query, item) =>
             item.label.toLowerCase().includes(query.toLowerCase())
           }
-          renderOption={(item, active, selected) => (
+          renderOption={(item, _, selected) => (
             <div className="flex items-center justify-between">
               <span>{item.label}</span>
               {selected && <CheckIcon className="h-4 w-4 text-primary-red" />}
