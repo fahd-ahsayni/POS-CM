@@ -105,7 +105,7 @@ export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
         <div className="w-5/12 h-full pr-3 flex flex-col gap-3">
           <AnimatePresence>
             {paymentMethods.length > 0 ? (
-              paymentMethods.map((method, index) => (
+              paymentMethods.map((method) => (
                 <div key={method._id}>
                   <Card
                     onClick={() => handlePaymentMethodSelect(method)}

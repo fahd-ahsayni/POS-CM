@@ -21,7 +21,6 @@ interface VariantCardProps {
 export function VariantCard({
   variant,
   isSelected,
-  isSupplement,
   isRequired,
   quantity = 0,
   onClick,

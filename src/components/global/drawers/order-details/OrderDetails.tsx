@@ -50,10 +50,7 @@ export default function OrderDetails() {
       return groups;
     }, {}) || {};
 
-  const handleCustomerGroupSelection = (
-    customerIndex: string,
-    lines: any[]
-  ) => {
+  const handleCustomerGroupSelection = (_: any, lines: any[]) => {
     const lineIds = lines.map((line) => line._id);
     const allSelected = lineIds.every((id) => selectedOrderlines.includes(id));
 
