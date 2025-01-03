@@ -1,9 +1,6 @@
-version: '3.8'
-
 services:
   pos-front:
     build:
       context: .
       dockerfile: DockerfileBuild
-    image: fahdbouaicha/pos-front:v0.0.1
-    container_name: pos-front-build
+    image: fahdbouaicha/pos_front:v0.0.1
