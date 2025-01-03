@@ -1,8 +1,8 @@
 import { extractProducts } from "@/functions/extractProducts";
 import { Product } from "@/types";
 import { useCallback, useState } from "react";
-import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
-import { useLeftViewContext } from "../contexts/leftViewContext";
+import { useRightViewContext } from "../../right-section/contexts/RightViewContext";
+import { useLeftViewContext } from "../contexts/LeftViewContext";
 import { useProductSelection } from "./useProductSelection";
 
 export const useProducts = (initialProducts?: Product[]) => {

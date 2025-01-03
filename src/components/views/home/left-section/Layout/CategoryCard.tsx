@@ -26,7 +26,7 @@ export const CategoryCard = memo(function CategoryCard({
         )}
       >
         <BlurImage
-          src={`${import.meta.env.VITE_BASE_URL}${category.image}` ?? ""}
+          src={`${import.meta.env.VITE_BASE_URL}${category.image}`}
           alt={category.name}
           crossOrigin="anonymous"
           className={cn(

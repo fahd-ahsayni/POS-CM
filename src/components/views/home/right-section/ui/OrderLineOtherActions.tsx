@@ -10,8 +10,8 @@ import { SwitchToggle } from "@/components/ui/toggle";
 import { updateOrderLine } from "@/store/slices/order/createOrder";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch } from "react-redux";
-import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
-import { useRightViewContext } from "../contexts/rightViewContext";
+import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
+import { useRightViewContext } from "../contexts/RightViewContext";
 
 interface OrderLineOtherActionsProps {
   item: any; // Add proper typing based on your item structure

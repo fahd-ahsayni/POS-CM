@@ -1,7 +1,7 @@
 import { ALL_CATEGORIES_VIEW } from "@/components/views/home/left-section/constants";
-import { useLeftViewContext } from "@/components/views/home/left-section/contexts/leftViewContext";
+import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 import { TYPE_OF_ORDER_VIEW } from "@/components/views/home/right-section/constants";
-import { useRightViewContext } from "@/components/views/home/right-section/contexts/rightViewContext";
+import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
 import { updateOrder } from "@/functions/updateOrder";
 import { holdOrder, resetOrder } from "@/store/slices/order/createOrder";
 import { BsExclamation } from "react-icons/bs";

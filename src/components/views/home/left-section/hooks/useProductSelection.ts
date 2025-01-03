@@ -12,7 +12,6 @@ interface UseProductSelectionProps {
 }
 
 export const useProductSelection = ({
-  selectedProducts,
   setSelectedProducts,
   customerIndex,
   orderType,

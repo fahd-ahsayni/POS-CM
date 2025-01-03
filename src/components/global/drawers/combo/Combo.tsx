@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { TypographySmall } from "@/components/ui/typography";
-import { useLeftViewContext } from "@/components/views/home/left-section/contexts/leftViewContext";
+import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 import Drawer from "../../Drawer";
 import { StepContent } from "./components/StepContent";
 import { ComboProvider, useCombo } from "./context/ComboContext";

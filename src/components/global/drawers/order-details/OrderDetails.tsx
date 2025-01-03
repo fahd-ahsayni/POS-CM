@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
+import { toTitleCase } from "@/functions/string-transforms";
 import { cn } from "@/lib/utils";
 import { currency } from "@/preferences";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Drawer from "../../Drawer";
-import { useOrder } from "./context/OrderContext";
 import CancelOrder from "../cancel-order/CancelOrder";
-import { toTitleCase } from "@/functions/string-transforms";
+import { useOrder } from "./context/OrderContext";
 
 export default function OrderDetails() {
   const { selectedOrder, openOrderDetails, setOpenOrderDetails } = useOrder();

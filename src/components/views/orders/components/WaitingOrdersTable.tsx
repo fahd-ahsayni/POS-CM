@@ -9,8 +9,8 @@ import {
 import { useWaitingOrders } from "../hooks/useWaitingOrders";
 import { useNavigate } from "react-router-dom";
 import { ORDER_SUMMARY_VIEW } from "@/components/views/home/right-section/constants";
-import { useRightViewContext } from "@/components/views/home/right-section/contexts/rightViewContext";
-import { useLeftViewContext } from "@/components/views/home/left-section/contexts/leftViewContext";
+import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
+import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 import { useDispatch } from "react-redux";
 import { setOrderData } from "@/store/slices/order/createOrder";
 

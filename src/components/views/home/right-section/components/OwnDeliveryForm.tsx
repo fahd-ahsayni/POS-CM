@@ -1,15 +1,70 @@
+import { Button } from "@/components/ui/button";
 import { TypographyH3 } from "@/components/ui/typography";
+import { BeatLoader } from "react-spinners";
+import { DELIVERY_VIEW } from "../constants";
+import { useRightViewContext } from "../contexts/RightViewContext";
+import { useAddClient } from "../hooks/useAddClient";
 import ClientForm from "../layouts/ClientForm";
 
 export default function NumberOfTabel() {
+  const {
+    handleSubmit,
+    isLoading,
+    formData,
+    errors,
+    handleInputChange,
+    handlePhoneSelect,
+    clients,
+    isFetching,
+    setFormData,
+  } = useAddClient();
+
+  const { setViews } = useRightViewContext();
+
+  const handleCancel = () => {
+    setViews(DELIVERY_VIEW);
+    setFormData({
+      name: "",
+      phone: "",
+      address: "",
+      email: "",
+      ice: "",
+    });
+  };
 
   return (
-    <div className="flex flex-col justify-evenly h-full">
+    <div className="flex flex-col justify-start h-full">
       <TypographyH3 className="font-medium max-w-xs">
         Enter the table number to start the order:
       </TypographyH3>
-      <div className="flex flex-col justify-center items-center gap-y-4 px-1">
-        <ClientForm onClose={() => {}} />
+      <div className="flex flex-col justify-center items-center px-1 relative h-full">
+        <div className="-mt-20 w-full">
+          <ClientForm
+            formData={formData}
+            errors={errors}
+            handleInputChange={handleInputChange}
+            handlePhoneSelect={handlePhoneSelect}
+            clients={clients}
+            isFetching={isFetching}
+          />
+        </div>
+        <div className="flex gap-x-2 w-full pb-2 absolute bottom-0">
+          <Button
+            variant="secondary"
+            className="flex-1 border border-border"
+            onClick={handleCancel}
+            disabled={isLoading}
+          >
+            Cancel
+          </Button>
+          <Button
+            className="flex-1"
+            onClick={handleSubmit}
+            disabled={isLoading}
+          >
+            {isLoading ? <BeatLoader color="#fff" size={10} /> : "Confirm"}
+          </Button>
+        </div>
       </div>
     </div>
   );

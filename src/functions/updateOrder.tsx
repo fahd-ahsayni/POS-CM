@@ -66,8 +66,7 @@ export const updateOrder = (params: OrderUpdateParams): any => {
           dispatch(setCoasterCall(value as boolean | null));
           break;
         case "shift_id":
-          console.log("value", value);
-          dispatch(setShiftId(value as string | null));
+          dispatch(setShiftId(value as string));
           break;
         case "table_id":
           dispatch(setTableId(value as string | null));
@@ -97,19 +96,6 @@ export const updateOrder = (params: OrderUpdateParams): any => {
                 case "add":
                   if (orderlineOp.data) {
                     dispatch(addOrderLine([orderlineOp.data]));
-                  }
-                  break;
-                case "update":
-                  if (
-                    typeof orderlineOp !== "string" &&
-                    orderlineOp.id !== undefined
-                  ) {
-                    dispatch(
-                      updateOrderLine({
-                        id: parseInt(orderlineOp.id),
-                        orderLine: orderlineOp.data,
-                      })
-                    );
                   }
                   break;
                 case "remove":

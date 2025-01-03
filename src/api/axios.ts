@@ -36,3 +36,6 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// Export a function to create the API instance
+export const createApiInstance = () => api;

@@ -12,8 +12,8 @@ import { CheckIcon } from "lucide-react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { updateOrderLine } from "@/store/slices/order/createOrder";
-import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
-import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
+import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
+import { useRightViewContext } from "../contexts/RightViewContext";
 import { useProductSelection } from "../../left-section/hooks/useProductSelection";
 
 interface OderLineAddCommentsProps {
@@ -51,7 +51,7 @@ export default function OderLineAddComments({
       : false;
   };
 
-  const renderOption = (item: any, active: boolean, selected: boolean) => (
+  const renderOption = (item: any, _, selected: boolean) => (
     <div className="flex items-center justify-between">
       <span>{item.text}</span>
       {selected && <CheckIcon className="h-4 w-4 text-primary-red" />}

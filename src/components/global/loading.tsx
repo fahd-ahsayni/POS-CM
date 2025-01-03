@@ -2,8 +2,6 @@ import { logoLightMode } from "@/assets";
 import { logoDarkMode } from "@/assets";
 import { useTheme } from "@/providers/themeProvider";
 
-
-
 export function LoadingFullScreen() {
   const theme = useTheme();
   return (

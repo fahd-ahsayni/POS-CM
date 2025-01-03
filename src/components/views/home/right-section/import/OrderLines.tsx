@@ -1,9 +1,9 @@
 import { UserIcon } from "@/assets/figma-icons";
 import { TypographySmall } from "@/components/ui/typography";
 import { useEffect, useMemo } from "react";
-import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
+import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { useOrderLines } from "../contexts/orderLinesContext";
-import { useRightViewContext } from "../contexts/rightViewContext";
+import { useRightViewContext } from "../contexts/RightViewContext";
 import { useProductQuantity } from "../hooks/useProductQuantity";
 import { useCustomerManagement } from "../hooks/useCustomerManagement";
 import OrderLineIndex from "./OrderLineIndex";

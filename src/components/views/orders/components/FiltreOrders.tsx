@@ -120,7 +120,7 @@ export default function FiltreOrders({
                 filterFunction={(query, item) => 
                   item.label.toLowerCase().includes(query.toLowerCase())
                 }
-                renderOption={(item, active, selected) => (
+                renderOption={(item, _, selected) => (
                   <div className="flex items-center justify-between">
                     <span>{item.label}</span>
                     {selected && <CheckIcon className="h-4 w-4 text-primary-red" />}
@@ -148,7 +148,7 @@ export default function FiltreOrders({
                 filterFunction={(query, item) => 
                   item.label.toLowerCase().includes(query.toLowerCase())
                 }
-                renderOption={(item, active, selected) => (
+                renderOption={(item, _, selected) => (
                   <div className="flex items-center justify-between">
                     <span>{item.label}</span>
                     {selected && <CheckIcon className="h-4 w-4 text-primary-red" />}
@@ -176,7 +176,7 @@ export default function FiltreOrders({
                 filterFunction={(query, item) => 
                   item.label.toLowerCase().includes(query.toLowerCase())
                 }
-                renderOption={(item, active, selected) => (
+                renderOption={(item, _, selected) => (
                   <div className="flex items-center justify-between">
                     <span>{item.label}</span>
                     {selected && <CheckIcon className="h-4 w-4 text-primary-red" />}
@@ -186,7 +186,7 @@ export default function FiltreOrders({
             </div>
           </form>
           <div className="flex justify-end gap-x-2 mt-6">
-            <Button variant="secondary" onClick={handleReset}>
+            <Button variant="secondary" className="dark:bg-white/10 bg-white border border-border" onClick={handleReset}>
               Reset
             </Button>
             <Button onClick={handleApplyFilter}>Apply Filter</Button>

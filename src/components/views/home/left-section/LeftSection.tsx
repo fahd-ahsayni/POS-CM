@@ -3,7 +3,7 @@ import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { TypographyP } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { tabsConfig } from "./constants";
-import { useLeftViewContext } from "./contexts/leftViewContext";
+import { useLeftViewContext } from "./contexts/LeftViewContext";
 
 export default function LeftSection() {
   const { views } = useLeftViewContext();

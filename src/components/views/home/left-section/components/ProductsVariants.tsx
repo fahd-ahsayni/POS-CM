@@ -2,16 +2,14 @@ import Drawer from "@/components/global/Drawer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
-import { addOrderLine } from "@/store/slices/order/createOrder";
-import { Minus, Plus } from "lucide-react";
-import { useEffect, useCallback, useMemo, memo } from "react";
-import { useDispatch } from "react-redux";
-import { ORDER_SUMMARY_VIEW } from "../../right-section/constants";
-import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
-import { useLeftViewContext } from "../contexts/leftViewContext";
-import { useProductSelection } from "../hooks/useProductSelection";
 import { cn } from "@/lib/utils";
 import { Variant } from "@/types";
+import { Minus, Plus } from "lucide-react";
+import { memo, useCallback, useMemo } from "react";
+import { ORDER_SUMMARY_VIEW } from "../../right-section/constants";
+import { useRightViewContext } from "../../right-section/contexts/RightViewContext";
+import { useLeftViewContext } from "../contexts/LeftViewContext";
+import { useProductSelection } from "../hooks/useProductSelection";
 import { useVariantSelection } from "../hooks/useVariantSelection";
 
 interface VariantCardProps {

@@ -2,18 +2,16 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyH4, TypographyP } from "@/components/ui/typography";
 import { updateOrder } from "@/functions/updateOrder";
-import { cn } from "@/lib/utils";
 import { OrderType } from "@/types";
 import { ChevronRightIcon } from "lucide-react";
 import { memo, useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import {
-  DELIVERY_VIEW,
-  NUMBER_OF_TABLE_VIEW,
-  ORDER_SUMMARY_VIEW,
-} from "../constants";
-import { useRightViewContext } from "../contexts/rightViewContext";
 import { TypeOfOrderDescription, TypeOfOrderIcon } from "../ui/TypeOfOrderIcon";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ChevronLeftIcon } from "lucide-react";
+import { useRightViewContext } from "../contexts/RightViewContext";
+import { ORDER_SUMMARY_VIEW } from "../constants";
 
 export const OrderCardSkeleton = () => (
   <Card className="w-full rounded-md h-24 px-8 py-4 dark:!bg-secondary-black bg-white flex space-x-4 items-center justify-between">
@@ -30,46 +28,63 @@ export const OrderCardSkeleton = () => (
 // Memoized OrderCard component
 export const OrderCard = memo(
   ({
-    type,
+    orderType,
     onSelect,
-    isFixedLightDark = false,
+    isSelected,
   }: {
-    type: OrderType;
+    orderType: OrderType;
     onSelect: (orderType: OrderType) => void;
-    isFixedLightDark?: boolean;
-  }) => (
-    <Card
-      className={cn(
-        "w-full rounded-md h-24 px-8 py-6 flex space-x-4 items-center justify-between cursor-pointer",
-        isFixedLightDark
-          ? "dark:!bg-primary-black bg-neutral-bright-grey"
-          : "dark:bg-secondary-black bg-white"
-      )}
-      onClick={() => onSelect(type)}
-    >
-      <div className="flex items-center gap-x-4">
-        <TypeOfOrderIcon type={type.type.toLowerCase()} />
-        <div>
-          <TypographyH4 className="font-medium first-letter:capitalize">
-            {type.type}
-          </TypographyH4>
-          <TypographyP className="text-xs text-neutral-dark-grey">
-            {TypeOfOrderDescription({ type: type.type.toLowerCase() })}
-          </TypographyP>
+    isSelected?: boolean;
+  }) => {
+    const iconType = orderType.type.toLowerCase();
+    const isDeliveryChild = orderType.parent_id && iconType === "delivery";
+    const showDescription = !orderType.parent_id; // Only show description for root items
+
+    return (
+      <Card
+        className={cn(
+          "w-full rounded-md h-24 px-8 py-6 flex space-x-4 items-center justify-between cursor-pointer dark:bg-secondary-black bg-white",
+          isSelected && "ring-2 ring-primary-red"
+        )}
+        onClick={() => onSelect(orderType)}
+      >
+        <div className="flex items-center gap-x-4">
+          {orderType.image || isDeliveryChild ? (
+            <img
+              src={orderType.image || "/path/to/delivery-image.png"} // Add your delivery image path
+              alt={orderType.name}
+              className="w-7 h-7"
+            />
+          ) : (
+            <TypeOfOrderIcon type={iconType} />
+          )}
+          <div>
+            <TypographyH4 className="font-medium">
+              {orderType.name}
+            </TypographyH4>
+            {showDescription && (
+              <TypographyP className="text-xs text-neutral-dark-grey">
+                {TypeOfOrderDescription({ type: iconType })}
+              </TypographyP>
+            )}
+          </div>
         </div>
-      </div>
-      <ChevronRightIcon className="w-6 h-6 text-primary-black dark:text-white" />
-    </Card>
-  )
+        {orderType.children.length > 0 && (
+          <ChevronRightIcon className="w-6 h-6 text-primary-black dark:text-white" />
+        )}
+      </Card>
+    );
+  }
 );
 
 OrderCard.displayName = "OrderCard";
 
 function SelectTypeOfOrder() {
-  const [orderTypes, setOrderTypes] = useState<OrderType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const { setViews, setOrderType } = useRightViewContext();
   const dispatch = useDispatch();
+  const [orderTypes, setOrderTypes] = useState<OrderType[]>([]);
+  const [selectedType, setSelectedType] = useState<OrderType | null>(null);
+  const [displayedTypes, setDisplayedTypes] = useState<OrderType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadOrderTypes = () => {
@@ -77,10 +92,11 @@ function SelectTypeOfOrder() {
       const storedGeneralData = localStorage.getItem("generalData");
       if (storedGeneralData) {
         const parsedData = JSON.parse(storedGeneralData);
-        const sortedOrderTypes = parsedData.orderTypes.sort(
-          (a: OrderType, b: OrderType) => a.sequence - b.sequence
+        const rootOrderTypes = parsedData.orderTypes.filter(
+          (type: OrderType) => !type.parent_id
         );
-        setOrderTypes(sortedOrderTypes);
+        setOrderTypes(rootOrderTypes);
+        setDisplayedTypes(rootOrderTypes);
       }
       setIsLoading(false);
     };
@@ -88,46 +104,57 @@ function SelectTypeOfOrder() {
     loadOrderTypes();
   }, []);
 
+  const { setViews } = useRightViewContext();
+
   const handleOrderTypeSelect = useCallback(
     (orderType: OrderType) => {
-      const orderTypeLC = orderType.type.toLowerCase();
+      setSelectedType(orderType);
 
-      if (orderTypeLC === "takeaway") {
-        setViews(ORDER_SUMMARY_VIEW);
-      } else if (orderTypeLC === "delivery") {
-        setViews(DELIVERY_VIEW);
+      if (orderType.children.length > 0) {
+        setDisplayedTypes(orderType.children);
       } else {
-        setViews(NUMBER_OF_TABLE_VIEW);
+        dispatch(updateOrder({ order_type_id: orderType._id }));
+        localStorage.setItem("orderType", JSON.stringify(orderType));
+        setViews(ORDER_SUMMARY_VIEW);
       }
-
-      setOrderType(orderType._id);
-      dispatch(updateOrder({ order_type_id: orderType._id }));
-      localStorage.setItem("orderType", JSON.stringify(orderType));
     },
-    [dispatch, setViews, setOrderType]
+    [dispatch, setViews]
   );
+
+  const handleBack = useCallback(() => {
+    setSelectedType(null);
+    setDisplayedTypes(orderTypes);
+  }, [orderTypes]);
 
   return (
     <div className="flex flex-col h-full">
-      <TypographyH4 className="font-medium">
-        What type of order would you like to process?
-      </TypographyH4>
-      <div className="flex-1 flex flex-col gap-y-8 pt-10">
-        {isLoading ? (
-          <>
-            <OrderCardSkeleton />
-            <OrderCardSkeleton />
-            <OrderCardSkeleton />
-          </>
-        ) : (
-          orderTypes.map((type) => (
-            <OrderCard
-              key={type._id}
-              type={type}
-              onSelect={handleOrderTypeSelect}
-            />
-          ))
+      <div className="flex items-center gap-x-2">
+        {selectedType && (
+          <Button variant="secondary" size="icon" onClick={handleBack}>
+            <ChevronLeftIcon className="h-6 w-6" />
+          </Button>
         )}
+        <TypographyH4 className="font-medium">
+          {selectedType
+            ? selectedType.name
+            : "What type of order would you like to process?"}
+        </TypographyH4>
+      </div>
+      <div className="flex-1 flex h-full items-center justify-center">
+        <div className="w-full space-y-10 -mt-20">
+          {isLoading ? (
+            <OrderCardSkeleton />
+          ) : (
+            displayedTypes.map((type) => (
+              <OrderCard
+                key={type._id}
+                orderType={type}
+                onSelect={handleOrderTypeSelect}
+                isSelected={selectedType?._id === type._id}
+              />
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

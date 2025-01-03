@@ -3,19 +3,18 @@ import { AddUserIcon, BillIcon, ExpandListIcon } from "@/assets/figma-icons";
 import Payments from "@/components/global/drawers/Payments/Payments";
 import ModalConfirmHoldOrder from "@/components/global/modal/ModalConfirmHoldOrder";
 import { Button } from "@/components/ui/button";
-import { AnimatePresence, motion } from "framer-motion";
-import { LucideMaximize } from "lucide-react";
-import { memo, useEffect } from "react";
-import OrderLines from "../import/OrderLines";
-import OtherActionsOrderLines from "../ui/OtherActionsOrderLines";
-import Ticket from "../layouts/Ticket";
-import { useCustomerManagement } from "../hooks/useCustomerManagement";
-import { useOrderSummary } from "../hooks/useOrderSummary";
-import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
 import { TypographyP } from "@/components/ui/typography";
-import { useRightViewContext } from "../contexts/rightViewContext";
 import getOrderTypeData from "@/functions/getOrderTypeData";
 import { cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "framer-motion";
+import { memo } from "react";
+import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
+import { useRightViewContext } from "../contexts/RightViewContext";
+import { useCustomerManagement } from "../hooks/useCustomerManagement";
+import { useOrderSummary } from "../hooks/useOrderSummary";
+import OrderLines from "../import/OrderLines";
+import Ticket from "../layouts/Ticket";
+import OtherActionsOrderLines from "../ui/OtherActionsOrderLines";
 
 const OrderSummary = () => {
   const { selectedProducts } = useLeftViewContext();
@@ -39,18 +38,6 @@ const OrderSummary = () => {
   } = useOrderSummary();
 
   const { orderType } = useRightViewContext();
-
-  useEffect(() => {
-    // Check for a selected order when component mounts
-    const selectedOrder = localStorage.getItem('selectedOrder');
-    if (selectedOrder) {
-      // Restore the order state here
-      const order = JSON.parse(selectedOrder);
-      // Dispatch actions to restore order state
-      // Clear the selected order from localStorage
-      localStorage.removeItem('selectedOrder');
-    }
-  }, []);
 
   return (
     <>
@@ -121,7 +108,7 @@ const OrderSummary = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between space-x-2.5 pl-3">
+        <div className="flex items-center justify-between space-x-2.5 pb-4">
           <Button
             className="flex-1"
             variant="secondary"

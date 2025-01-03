@@ -7,8 +7,11 @@ interface OrderActionsProps {
 }
 
 export default function OrderActions({ order }: OrderActionsProps) {
+  const handleDeleteOrder = () => {
+    console.log("delete order", order);
+  };
   return (
-    <Button variant="link" size="icon">
+    <Button variant="link" size="icon" onClick={handleDeleteOrder}>
       <TrashIcon className="w-5 h-5 fill-primary-red" />
     </Button>
   );

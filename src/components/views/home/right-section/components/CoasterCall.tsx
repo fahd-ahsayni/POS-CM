@@ -4,7 +4,7 @@ import { TypographyH1, TypographyH4 } from "@/components/ui/typography";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { ORDER_SUMMARY_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
-import { useRightViewContext } from "../contexts/rightViewContext";
+import { useRightViewContext } from "../contexts/RightViewContext";
 
 export default function CoasterCall() {
   const [peopleCount, setPeopleCount] = useState("");

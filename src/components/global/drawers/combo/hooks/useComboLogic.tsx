@@ -1,5 +1,5 @@
-import { useLeftViewContext } from "@/components/views/home/left-section/contexts/leftViewContext";
-import { useRightViewContext } from "@/components/views/home/right-section/contexts/rightViewContext";
+import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
+import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
 import { Step } from "@/types/comboTypes";
 import { useCallback, useEffect } from "react";
 import { useCombo } from "../context/ComboContext";

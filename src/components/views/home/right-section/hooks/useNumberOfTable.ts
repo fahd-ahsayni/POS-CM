@@ -3,7 +3,7 @@ import { updateOrder } from "@/functions/updateOrder";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { ORDER_SUMMARY_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
-import { useRightViewContext } from "../contexts/rightViewContext";
+import { useRightViewContext } from "../contexts/RightViewContext";
 
 type TableValidState = "valid" | "invalid" | "not-found";
 

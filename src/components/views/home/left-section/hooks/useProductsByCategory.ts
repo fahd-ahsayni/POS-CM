@@ -1,7 +1,7 @@
 import { Category, Product } from "@/types";
 import { useState, useCallback, useEffect } from "react";
-import { useLeftViewContext } from "../contexts/leftViewContext";
-import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
+import { useLeftViewContext } from "../contexts/LeftViewContext";
+import { useRightViewContext } from "../../right-section/contexts/RightViewContext";
 import { useProductSelection } from "./useProductSelection";
 
 export const useProductsByCategory = () => {
@@ -19,7 +19,6 @@ export const useProductsByCategory = () => {
 
   const { orderType, customerIndex } = useRightViewContext();
 
-  const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>(category?.products ?? []);
   const [subCategories, setSubCategories] = useState<Category[]>(
     category?.children ?? []
@@ -108,7 +107,6 @@ export const useProductsByCategory = () => {
 
   return {
     products,
-    loading,
     subCategories,
     breadcrumbs,
     selectedProducts,

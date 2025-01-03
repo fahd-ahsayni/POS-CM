@@ -1,9 +1,9 @@
 import { createPaymentDiscount } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
 import { ALL_CATEGORIES_VIEW } from "@/components/views/home/left-section/constants";
-import { useLeftViewContext } from "@/components/views/home/left-section/contexts/leftViewContext";
+import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 import { TYPE_OF_ORDER_VIEW } from "@/components/views/home/right-section/constants";
-import { useRightViewContext } from "@/components/views/home/right-section/contexts/rightViewContext";
+import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
 import { useCustomerManagement } from "@/components/views/home/right-section/hooks/useCustomerManagement";
 import { currency } from "@/preferences";
 import { selectOrder } from "@/store/slices/order/createOrder";

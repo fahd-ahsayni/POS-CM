@@ -1,29 +1,28 @@
-import { Client } from "@/types/clients";
 import ComboboxSelectOnChange from "@/components/global/ComboboxSelectOnChange";
 import InputComponent from "@/components/global/InputField";
 import InputLikeTextarea from "@/components/global/InputLikeTextarea";
-import { Button } from "@/components/ui/button";
-import { useAddClient } from "@/components/views/home/right-section/hooks/useAddClient";
+import { Client, ClientFormData } from "@/types/clients";
 import { BeatLoader } from "react-spinners";
 
 interface ClientFormProps {
-  onClose: () => void;
+  formData: ClientFormData;
+  errors: Partial<ClientFormData>;
+  handleInputChange: (
+    field: keyof ClientFormData
+  ) => (value: string | number | null) => void;
+  handlePhoneSelect: (selectedClient: Client | null) => void;
+  clients: Client[];
+  isFetching: boolean;
 }
 
-export default function ClientForm({ onClose }: ClientFormProps) {
-  const {
-    clients,
-    isLoading,
-    isFetching,
-    formData,
-    errors,
-    handleInputChange,
-    handlePhoneSelect,
-    handleSubmit,
-  } = useAddClient(onClose);
-
-  console.log(formData);
-
+export default function ClientForm({
+  formData,
+  errors,
+  handleInputChange,
+  handlePhoneSelect,
+  clients,
+  isFetching,
+}: ClientFormProps) {
   if (isFetching) {
     return (
       <div className="w-full h-full flex items-center justify-center">
@@ -32,8 +31,9 @@ export default function ClientForm({ onClose }: ClientFormProps) {
     );
   }
 
+  console.log(formData);
   return (
-    <div className="space-y-4">
+    <div className="space-y-8 w-full">
       <ComboboxSelectOnChange<Client>
         label="Phone Number"
         placeholder="Enter phone number"
@@ -73,12 +73,10 @@ export default function ClientForm({ onClose }: ClientFormProps) {
       <InputLikeTextarea
         label="Address"
         placeholder="Enter your address"
-        rows={2}
-        value={formData.address}
+        value={formData.address || ""}
         setValue={handleInputChange("address")}
         error={errors.address}
         required
-        maxLength={200}
       />
 
       <InputComponent
@@ -87,11 +85,11 @@ export default function ClientForm({ onClose }: ClientFormProps) {
           placeholder: "e.g. example@gmail.com",
           type: "email",
           required: false,
-          value: formData.email,
+          value: formData.email || "",
           setValue: handleInputChange("email"),
           errorMessage: errors.email,
           hasError: !!errors.email,
-          optionalText: "(Optional)",
+          optionalText: "Optional",
         }}
       />
 
@@ -101,27 +99,13 @@ export default function ClientForm({ onClose }: ClientFormProps) {
           placeholder: "Enter 14-digit company ICE",
           type: "text",
           required: false,
-          value: formData.ice,
+          value: formData.ice || "",
           setValue: handleInputChange("ice"),
           errorMessage: errors.ice,
           hasError: !!errors.ice,
-          optionalText: "(Optional)",
+          optionalText: "Optional",
         }}
       />
-
-      <div className="flex gap-x-1.5 w-full mt-6">
-        <Button
-          variant="secondary"
-          className="flex-1 border border-border"
-          onClick={onClose}
-          disabled={isLoading}
-        >
-          Cancel
-        </Button>
-        <Button className="flex-1" onClick={handleSubmit} disabled={isLoading}>
-          {isLoading ? <BeatLoader color="#fff" size={10} /> : "Confirm"}
-        </Button>
-      </div>
     </div>
   );
 }

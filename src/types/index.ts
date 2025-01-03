@@ -18,7 +18,6 @@ export interface GeneralDataState {
 
 export interface User {
   _id?: string;
-  id?: string;
   name: string;
   position: string;
   image: string | null;
@@ -99,40 +98,6 @@ export interface Product {
   active: boolean;
   variants: Variant[];
   quantity?: number;
-}
-
-// Common types for order items
-interface OrderItemBase {
-  notes: string[];
-  quantity: number;
-  suite_commande: boolean;
-  order_type_id: string;
-}
-
-// Type for combo sub-items (products and supplements)
-interface ComboItem {
-  variants: Array<{
-    _id: string;
-    name: string;
-    quantity: number;
-    customer_index: number;
-    order_type_id: string;
-  }>;
-  supplements: Array<{
-    _id: string;
-    name: string;
-    quantity: number;
-    price_ttc: number;
-    customer_index: number;
-    order_type_id: string;
-  }>;
-}
-
-// Type for product variants
-interface ProductVariantInfo {
-  name: string;
-  uom_id?: { _id: string };
-  price_ttc?: number;
 }
 
 // Main product type

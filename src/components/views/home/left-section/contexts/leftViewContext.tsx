@@ -4,13 +4,12 @@ import { Category, Product, ProductSelected } from "@/types";
 import {
   createContext,
   ReactNode,
-  useContext,
-  useState,
-  useMemo,
   useCallback,
+  useContext,
   useEffect,
+  useMemo,
+  useState,
 } from "react";
-import { BsXLg } from "react-icons/bs";
 import { useDispatch } from "react-redux";
 
 interface LeftViewContextType {
@@ -56,7 +55,6 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
    */
   const [openDrawerCombo, setOpenDrawerCombo] = useState(false);
   const [selectedCombo, setSelectedCombo] = useState<any | null>(null);
-  const [comboOrderLine, setComboOrderLine] = useState<any | null>(null);
 
   const dispatch = useDispatch();
 

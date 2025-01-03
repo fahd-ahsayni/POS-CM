@@ -1,7 +1,7 @@
 import { Category } from "@/types";
 import { useCallback, useMemo } from "react";
-import { useLeftViewContext } from "../contexts/leftViewContext";
-import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
+import { useLeftViewContext } from "../contexts/LeftViewContext";
+import { useRightViewContext } from "../../right-section/contexts/RightViewContext";
 import { ALL_PRODUCTS_VIEW, PRODUCTS_BY_CATEGORY_VIEW } from "../constants";
 import { ORDER_SUMMARY_VIEW } from "../../right-section/constants";
 

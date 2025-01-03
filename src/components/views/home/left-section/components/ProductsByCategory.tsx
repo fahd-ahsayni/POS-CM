@@ -18,7 +18,6 @@ import Header from "./Header";
 export default memo(function ProductsByCategory() {
   const {
     products,
-    loading,
     subCategories,
     breadcrumbs,
     selectedProducts,

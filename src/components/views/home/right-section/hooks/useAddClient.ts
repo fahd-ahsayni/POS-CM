@@ -7,7 +7,7 @@ import { createToast } from "@/components/global/Toasters";
 import { useDispatch } from "react-redux";
 import { setClientId } from "@/store/slices/order/createOrder";
 import { Client } from "@/types/clients";
-import { useRightViewContext } from "../contexts/rightViewContext";
+import { useRightViewContext } from "../contexts/RightViewContext";
 
 const clientSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -143,6 +143,7 @@ export const useAddClient = (onSuccess?: () => void) => {
           )
         );
         setViews(ORDER_SUMMARY_VIEW);
+        onSuccess?.();
       }
     } catch (error) {
       toast.error(
@@ -164,6 +165,7 @@ export const useAddClient = (onSuccess?: () => void) => {
     isLoading,
     isFetching,
     formData,
+    setFormData,
     errors,
     handleInputChange,
     handlePhoneSelect,

@@ -67,7 +67,9 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
           {required && <span className="text-destructive">*</span>}
         </Label>
         {optionalText && (
-          <span className="text-[0.65rem] text-neutral-dark-grey">{optionalText}</span>
+          <span className="text-[0.65rem] text-neutral-dark-grey">
+            {optionalText}
+          </span>
         )}
       </div>
 

@@ -1,6 +1,6 @@
 // src/store/slices/data/userSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { createApiInstance } from "@/api/axiosInstance";
+import { createApiInstance } from "@/api/axios";
 import axios from "axios";
 import { User } from "@/types";
 
@@ -29,7 +29,7 @@ const initialState: UserState = {
 export const fetchUsers = createAsyncThunk(
   "users/fetchUsers",
   async (_, { rejectWithValue }) => {
-    const apiInstance = createApiInstance("", true);
+    const apiInstance = createApiInstance();
     try {
       const [cashiersResponse, managersResponse] = await Promise.all([
         apiInstance.get<User[]>(
@@ -84,9 +84,9 @@ const userSlice = createSlice({
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.loading = false;
         state.users = action.payload;
-        
+
         // Save users to local storage
-        localStorage.setItem('users', JSON.stringify(action.payload));
+        localStorage.setItem("users", JSON.stringify(action.payload));
       })
       .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false;

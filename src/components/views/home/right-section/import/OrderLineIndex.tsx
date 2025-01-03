@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { TypographySmall } from "@/components/ui/typography";
 import { ChevronDown } from "lucide-react";
 import { memo, useMemo, useCallback } from "react";
-import { useRightViewContext } from "../contexts/rightViewContext";
+import { useRightViewContext } from "../contexts/RightViewContext";
 import OrderLine from "./OrderLine";
 import { ProductSelected } from "@/types";
 

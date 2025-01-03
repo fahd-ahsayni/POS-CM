@@ -127,7 +127,7 @@ const orderSlice = createSlice({
     setDiscount: (state, action: PayloadAction<any | null>) => {
       state.data.discount = action.payload;
     },
-    holdOrder: (state, action: PayloadAction<void>) => {
+    holdOrder: (state) => {
       const holdOrders = JSON.parse(localStorage.getItem("holdOrders") || "[]");
       const newHoldOrder = {
         ...state.data,

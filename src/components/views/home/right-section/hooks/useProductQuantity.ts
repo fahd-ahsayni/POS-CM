@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useLeftViewContext } from '@/components/views/home/left-section/contexts/leftViewContext';
+import { useLeftViewContext } from '@/components/views/home/left-section/contexts/LeftViewContext';
 import { ProductSelected } from '@/types';
 
 export const useProductQuantity = () => {

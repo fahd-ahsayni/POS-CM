@@ -2,7 +2,7 @@ import { memo } from "react";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { tabsConfig } from "./constants";
-import { useRightViewContext } from "./contexts/rightViewContext";
+import { useRightViewContext } from "./contexts/RightViewContext";
 
 const RightSection = () => {
   const { views } = useRightViewContext();

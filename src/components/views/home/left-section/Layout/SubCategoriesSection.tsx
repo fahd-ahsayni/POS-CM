@@ -12,10 +12,7 @@ interface SubCategoriesSectionProps {
 
 export const SubCategoriesSection = memo(function SubCategoriesSection({
   subCategories,
-  breadcrumbs,
-  handleBack,
   handleCategoryClick,
-  setSubCategory,
 }: SubCategoriesSectionProps) {
   return (
     <div className="grid grid-cols-3 gap-3 mt-4">

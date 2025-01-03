@@ -10,8 +10,8 @@ import { Card } from "@/components/ui/card";
 import { currency } from "@/preferences";
 import { useDispatch } from "react-redux";
 import { updateOrderLine } from "@/store/slices/order/createOrder";
-import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
-import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
+import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
+import { useRightViewContext } from "../contexts/RightViewContext";
 import { toTitleCase } from "@/functions/string-transforms";
 
 interface OrderLineProps {
@@ -65,34 +65,6 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
     decrement();
   };
 
-  const handleUpdateNotes = (productId: string, notes: string[]) => {
-    dispatch(
-      updateOrderLine({
-        _id: productId,
-        customerIndex: item.customer_index || customerIndex,
-        orderLine: {
-          ...item,
-          notes,
-          customer_index: item.customer_index || customerIndex,
-        },
-      })
-    );
-
-    const updatedProducts = selectedProducts.map((product) => {
-      if (
-        product._id === productId &&
-        product.customer_index === (item.customer_index || customerIndex)
-      ) {
-        return {
-          ...product,
-          notes,
-        };
-      }
-      return product;
-    });
-    setSelectedProducts(updatedProducts);
-  };
-
   const handleSuiteCommandeToggle = () => {
     const currentCustomerIndex = item.customer_index || customerIndex;
 
@@ -132,7 +104,10 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
   console.log(item);
 
   return (
-    <motion.div className="flex relative cursor-pointer items-center justify-start h-full w-full rounded-lg overflow-hidden">
+    <motion.div
+      variants={itemVariants}
+      className="flex relative cursor-pointer items-center justify-start h-full w-full rounded-lg overflow-hidden"
+    >
       <div className="absolute h-full w-1.5 left-0 top-0 bg-interactive-dark-red" />
       <Card className="flex flex-col w-full py-2 pr-2 pl-4 gap-y-2">
         <div className="flex items-center justify-between gap-x-4">

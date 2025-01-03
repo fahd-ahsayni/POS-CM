@@ -1,6 +1,6 @@
 // Import required modules
 import { extractProducts } from "@/functions/extractProducts";
-import { Category, GeneralData, GeneralDataState, Product } from "@/types";
+import { GeneralData, GeneralDataState } from "@/types";
 import {
   createAsyncThunk,
   createSelector,
@@ -14,7 +14,7 @@ export const fetchGeneralData = createAsyncThunk<
   GeneralData,
   string,
   { rejectValue: string }
->("generalData/fetchGeneralData", async (id, { rejectWithValue, dispatch }) => {
+>("generalData/fetchGeneralData", async (id, { rejectWithValue}) => {
   try {
     const token = localStorage.getItem("token");
     const response = await axios.get(

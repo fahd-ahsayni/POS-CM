@@ -1,5 +1,8 @@
 // src/store/slices/auth/authSlice.ts
-import { login as loginService, loginWithRfid as loginWithRfidService } from "@/api/services";
+import {
+  login as loginService,
+  loginWithRfid as loginWithRfidService,
+} from "@/api/services";
 import { User } from "@/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
@@ -34,7 +37,10 @@ export const login = createAsyncThunk<LoginResponse, LoginCredentials>(
   "auth/login",
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await loginService(credentials._id, credentials.password);
+      const response = await loginService(
+        credentials._id,
+        credentials.password
+      );
       return response;
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
@@ -46,14 +52,11 @@ export const login = createAsyncThunk<LoginResponse, LoginCredentials>(
   }
 );
 
-export const logout = createAsyncThunk(
-  "auth/logout",
-  async (_, { dispatch }) => {
-    localStorage.removeItem("token");
-    delete axios.defaults.headers.common["Authorization"];
-    return;
-  }
-);
+export const logout = createAsyncThunk("auth/logout", async (_) => {
+  localStorage.removeItem("token");
+  delete axios.defaults.headers.common["Authorization"];
+  return;
+});
 
 export const loginWithRfid = createAsyncThunk<LoginResponse, string>(
   "auth/loginWithRfid",

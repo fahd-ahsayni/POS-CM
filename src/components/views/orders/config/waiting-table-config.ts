@@ -1,5 +1,5 @@
-import { WaitingOrder } from "@/types/waitingOrders";
 import { OrderType, ProductSelected } from "@/types";
+import { WaitingOrder } from "@/types/waitingOrders";
 
 interface WaitingTableHeader {
   key: keyof WaitingTableData;
@@ -108,14 +108,13 @@ export const handleRowClick = (
         is_ordred: line.is_ordred || false,
         suite_commande: line.suite_commande || false,
         order_type_id: "",
-        uom_id: null,
+        uom_id: "",
         id: product._id,
         category: product.category || "",
         description: product.description || null,
         active: product.active || false,
+        high_priority: false,
       };
-
-      console.log(selectedOrder);
 
       return selectedOrder;
     })

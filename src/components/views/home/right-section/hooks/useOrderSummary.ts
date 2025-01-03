@@ -1,8 +1,8 @@
 import { setCustomerCount } from "@/store/slices/order/createOrder";
 import { useCallback, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useLeftViewContext } from "../../left-section/contexts/leftViewContext";
-import { useRightViewContext } from "../../right-section/contexts/rightViewContext";
+import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
+import { useRightViewContext } from "../contexts/RightViewContext";
 import { useOrderLines } from "../contexts/orderLinesContext";
 
 interface OrderSummaryState {
