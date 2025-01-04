@@ -2,9 +2,12 @@ import NumberPad from "@/components/global/NumberPad";
 import { TypographyH1 } from "@/components/ui/typography";
 import { useCoasterCall } from "@/components/views/home/right-section/hooks/useCoasterCall";
 import { motion } from "framer-motion";
+import { useSelector } from "react-redux";
+import { selectOrder } from "@/store/slices/order/createOrder";
 
 export default function CoasterCallNumberDisplay() {
   const { number, handleNumberClick } = useCoasterCall();
+  const orderState = useSelector(selectOrder);
 
   return (
     <motion.div
@@ -14,7 +17,7 @@ export default function CoasterCallNumberDisplay() {
       className="flex flex-col justify-center items-center"
     >
       <TypographyH1 className="text-center font-medium tracking-wider mb-6">
-        {number || "0"}
+        {orderState.coaster_call || number || "0"}
       </TypographyH1>
 
       <NumberPad onNumberClick={handleNumberClick} />

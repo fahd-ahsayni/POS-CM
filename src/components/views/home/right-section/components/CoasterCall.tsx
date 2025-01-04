@@ -2,16 +2,21 @@ import { Button } from "@/components/ui/button";
 import { TypographyH3 } from "@/components/ui/typography";
 import { useCoasterCall } from "@/components/views/home/right-section/hooks/useCoasterCall";
 import CoasterCallNumberDisplay from "@/components/views/home/right-section/layouts/CoasterCallNumberDisplay";
-import { ORDER_SUMMARY_VIEW } from "../constants";
+import { selectOrder } from "@/store/slices/order/createOrder";
+import { useSelector } from "react-redux";
+import { ORDER_SUMMARY_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
 import { useRightViewContext } from "../contexts/RightViewContext";
 
 export default function CoasterCall() {
-  const { handleSubmit } = useCoasterCall();
   const { setViews } = useRightViewContext();
+  const order = useSelector(selectOrder);
 
   const handleConfirm = () => {
-    handleSubmit();
-    setViews(ORDER_SUMMARY_VIEW);
+    if (order.coaster_call !== null) setViews(ORDER_SUMMARY_VIEW);
+  };
+
+  const handleCancel = () => {
+    setViews(TYPE_OF_ORDER_VIEW);
   };
 
   return (
@@ -25,11 +30,11 @@ export default function CoasterCall() {
           <Button
             className="flex-1"
             variant="secondary"
-            onClick={() => handleSubmit()}
+            onClick={() => handleCancel()}
           >
             Cancel
           </Button>
-          <Button className="flex-1" onClick={handleConfirm}>
+          <Button className="flex-1" onClick={handleConfirm} disabled={order.coaster_call === null}>
             Confirm
           </Button>
         </div>

@@ -10,7 +10,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { memo } from "react";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { useRightViewContext } from "../contexts/RightViewContext";
-import { useCustomerManagement } from "../hooks/useCustomerManagement";
 import { useOrderSummary } from "../hooks/useOrderSummary";
 import OrderLines from "../import/OrderLines";
 import Ticket from "../layouts/Ticket";
@@ -18,7 +17,6 @@ import OtherActionsOrderLines from "../ui/OtherActionsOrderLines";
 
 const OrderSummary = () => {
   const { selectedProducts } = useLeftViewContext();
-  const { addCustomer } = useCustomerManagement();
   const {
     state: {
       openModalConfirmHoldOrder,

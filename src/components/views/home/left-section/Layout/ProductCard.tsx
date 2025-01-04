@@ -2,7 +2,6 @@ import { unknownProduct } from "@/assets";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyP } from "@/components/ui/typography";
-import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
 import { currency } from "@/preferences";
 import { Product, ProductSelected } from "@/types";
 import { motion } from "framer-motion";

@@ -1,39 +1,31 @@
+import { selectOrder, setCoasterCall } from "@/store/slices/order/createOrder";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { setCoasterCall } from "@/store/slices/order/createOrder";
-import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
-import { ORDER_SUMMARY_VIEW } from "@/components/views/home/right-section/constants";
+import { useDispatch, useSelector } from "react-redux";
 
 export const useCoasterCall = () => {
-  const [number, setNumber] = useState("");
   const dispatch = useDispatch();
-  const { setViews } = useRightViewContext();
+  const orderState = useSelector(selectOrder);
+  const [number, setNumber] = useState(orderState.coaster_call || "");
 
   const handleNumberClick = (value: string) => {
     if (value === "C") {
       setNumber("");
+      dispatch(setCoasterCall(null));
     } else if (value === "delete") {
-      setNumber((prev) => prev.slice(0, -1));
+      const newValue = number.slice(0, -1);
+      setNumber(newValue);
+      dispatch(setCoasterCall(newValue || null));
     } else {
-      setNumber((prev) => {
-        const newValue = prev + value;
-        if (parseInt(newValue) <= 999999) {
-          return newValue;
-        }
-        return prev;
-      });
-    }
-  };
-
-  const handleSubmit = () => {
-    if (number) {
-      dispatch(setCoasterCall(number));
+      const newValue = number + value;
+      if (parseInt(newValue) <= 999999) {
+        setNumber(newValue);
+        dispatch(setCoasterCall(newValue));
+      }
     }
   };
 
   return {
     number,
     handleNumberClick,
-    handleSubmit,
   };
 };

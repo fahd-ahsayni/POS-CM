@@ -1,5 +1,10 @@
 import { printOrder } from "@/api/services";
-import { BillIcon, DishIcon, PrinterIcon, UserIcon } from "@/assets/figma-icons";
+import {
+  BillIcon,
+  DishIcon,
+  PrinterIcon,
+  UserIcon,
+} from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -145,7 +150,9 @@ export default function OrderDetails() {
                   <div className="w-full h-8 flex justify-between items-center px-4 bg-neutral-bright-grey dark:bg-white/10 rounded shadow">
                     <TypographySmall className="text-primary-black font-medium dark:text-white flex items-center justify-center w-full space-x-1">
                       <UserIcon className="w-4 h-4 dark:fill-white fill-primary-black leading-3" />
-                      <span className="-mb-0.5">Customer {Number(customerIndex)}</span>
+                      <span className="-mb-0.5">
+                        Customer {Number(customerIndex)}
+                      </span>
                     </TypographySmall>
                   </div>
                 </div>
