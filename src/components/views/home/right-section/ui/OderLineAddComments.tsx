@@ -51,7 +51,7 @@ export default function OderLineAddComments({
       : false;
   };
 
-  const renderOption = (item: any, _:any, selected: boolean) => (
+  const renderOption = (item: any, _: any, selected: boolean) => (
     <div className="flex items-center justify-between">
       <span>{item.text}</span>
       {selected && <CheckIcon className="h-4 w-4 text-primary-red" />}
@@ -104,13 +104,18 @@ export default function OderLineAddComments({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          size="icon"
-          variant="ghost"
-          className="-ms-px rounded h-7 w-7 bg-accent-white/10 hover:bg-accent-white/20"
-        >
-          <CommentIcon className="fill-primary-black dark:fill-white h-4 w-4" />
-          <span className="sr-only">Comments</span>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="-ms-px rounded h-7 w-7 bg-accent-white/10 hover:bg-accent-white/20 relative"
+          >
+            <CommentIcon className="fill-primary-black dark:fill-white h-4 w-4" />
+            <span className="sr-only">Comments</span>
+            {comments.length > 0 && (
+              <span className="absolute -top-1 -right-1 bg-error-color text-white text-[0.6rem] rounded-full h-3 w-3 flex items-center justify-center shadow-md shadow-error-color/50">
+                {comments.length}
+              </span>
+            )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="-ml-52 space-y-2 py-2">
@@ -126,10 +131,16 @@ export default function OderLineAddComments({
               placeholder="Add a comment"
             />
             <motion.span
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: comment ? 1 : 0, x: comment ? 0 : -10 }}
+              initial={{ opacity: 0, width: 0 }}
+              animate={{
+                opacity: comment ? 1 : 0,
+                width: comment ? "auto" : 0,
+              }}
               transition={{ duration: 0.15 }}
-              className={cn(comment ? "cursor-pointer" : "cursor-not-allowed")}
+              className={cn(
+                comment ? "cursor-pointer" : "cursor-not-allowed",
+                "flex items-center"
+              )}
             >
               <Button
                 size="icon"
@@ -138,7 +149,8 @@ export default function OderLineAddComments({
               >
                 <DeleteCommentIcon
                   className={cn(
-                    comment ? "fill-error-color" : "fill-neutral-dark-grey"
+                    comment ? "fill-error-color" : "fill-neutral-dark-grey",
+                    "w-5 h-5"
                   )}
                 />
                 <span className="sr-only">Delete</span>

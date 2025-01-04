@@ -64,6 +64,18 @@ export default function OrderLineOtherActions({
   // Disable the urgent toggle if suite_commande is true
   const isUrgentDisabled = item.suite_commande;
 
+  const handleRemoveOrderLine = () => {
+    setSelectedProducts(
+      selectedProducts.filter(
+        (product) =>
+          !(
+            product._id === item._id &&
+            product.customer_index === item.customer_index
+          )
+      )
+    );
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -77,9 +89,9 @@ export default function OrderLineOtherActions({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="mt-2 -ml-36 min-w-52">
-        {/* <DropdownMenuItem>
-          <span className="text-sm">Change Order Line Type</span>
-        </DropdownMenuItem> */}
+        <DropdownMenuItem onClick={handleRemoveOrderLine}>
+          <span className="text-sm">Remove Order Line</span>
+        </DropdownMenuItem>
         <DropdownMenuItem>
           <span className="text-sm">Apply Discount</span>
         </DropdownMenuItem>

@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
 import { getMaxCustomerIndex } from "@/functions/getMaxCustomerIndex";
@@ -7,10 +7,16 @@ export const useCustomerManagement = () => {
   const { selectedProducts, setSelectedProducts } = useLeftViewContext();
   const { customerIndex, setCustomerIndex } = useRightViewContext();
 
+  useEffect(() => {
+    if (selectedProducts.length === 0) {
+      setCustomerIndex(1);
+    }
+  }, [selectedProducts, setCustomerIndex]);
+
   const deleteCustomer = useCallback(
     (customerIndexToDelete: number) => {
-      setSelectedProducts((prevProducts) =>
-        prevProducts
+      setSelectedProducts((prevProducts) => {
+        const newProducts = prevProducts
           .filter((product) => product.customer_index !== customerIndexToDelete)
           .map((product) => ({
             ...product,
@@ -18,12 +24,16 @@ export const useCustomerManagement = () => {
               product.customer_index > customerIndexToDelete
                 ? product.customer_index - 1
                 : product.customer_index,
-          }))
-      );
+          }));
 
-      if (customerIndex > 1) {
-        setCustomerIndex(customerIndex - 1);
-      }
+        if (newProducts.length === 0) {
+          setCustomerIndex(1);
+        } else if (customerIndex > 1) {
+          setCustomerIndex(customerIndex - 1);
+        }
+
+        return newProducts;
+      });
     },
     [customerIndex, setCustomerIndex, setSelectedProducts]
   );

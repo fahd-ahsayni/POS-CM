@@ -17,7 +17,6 @@ export const useVariantSelection = ({
   selectedProducts,
   setSelectedProducts,
   customerIndex,
-  orderType,
   addOrUpdateProduct,
 }: UseVariantSelectionProps) => {
   const dispatch = useDispatch();
@@ -34,7 +33,6 @@ export const useVariantSelection = ({
       );
 
       if (!existingVariant) {
-        const initialQuantity = 1;
         addOrUpdateProduct(selectedProduct, id, price);
       } else {
         setSelectedProducts((prev) =>
@@ -50,7 +48,13 @@ export const useVariantSelection = ({
         );
       }
     },
-    [selectedProduct, addOrUpdateProduct, selectedProducts, customerIndex, setSelectedProducts]
+    [
+      selectedProduct,
+      addOrUpdateProduct,
+      selectedProducts,
+      customerIndex,
+      setSelectedProducts,
+    ]
   );
 
   const handleQuantityChange = useCallback(
@@ -61,7 +65,8 @@ export const useVariantSelection = ({
             product.product_variant_id === variantId &&
             product.customer_index === customerIndex
           ) {
-            const basePrice = product.variants[0].price_ttc || product.price / product.quantity;
+            const basePrice =
+              product.variants[0].price_ttc || product.price / product.quantity;
             const newQuantity = increment
               ? product.quantity + 1
               : Math.max(1, product.quantity - 1);
@@ -77,10 +82,12 @@ export const useVariantSelection = ({
                     ...v,
                     quantity: v.quantity * (newQuantity / product.quantity),
                   })),
-                  supplements: product.combo_items.supplements.map((s: any) => ({
-                    ...s,
-                    quantity: s.quantity * (newQuantity / product.quantity),
-                  })),
+                  supplements: product.combo_items.supplements.map(
+                    (s: any) => ({
+                      ...s,
+                      quantity: s.quantity * (newQuantity / product.quantity),
+                    })
+                  ),
                 },
               };
             }
@@ -113,7 +120,8 @@ export const useVariantSelection = ({
           quantity: p.quantity,
           suite_commande: p.suite_commande || false,
           high_priority: p.high_priority || false,
-          order_type_id: orderType,
+          order_type_id: JSON.parse(localStorage.getItem("orderType") || "{}")
+            ._id,
           is_ordred: p.is_ordred || false,
           is_paid: p.is_paid || false,
         };
@@ -127,7 +135,9 @@ export const useVariantSelection = ({
               notes: Array.isArray(v.notes) ? v.notes : [],
               // suite_commande: v.suite_commande || false,
               // high_priority: v.high_priority || false,
-              order_type_id: orderType || "",
+              order_type_id: JSON.parse(
+                localStorage.getItem("orderType") || "{}"
+              )._id,
             })),
             combo_supp_ids: p.combo_items.supplements.map((s: any) => ({
               product_variant_id: s._id,
@@ -135,7 +145,9 @@ export const useVariantSelection = ({
               notes: Array.isArray(s.notes) ? s.notes : [],
               suite_commande: s.suite_commande || false,
               // high_priority: s.high_priority || false,
-              order_type_id: orderType || "",
+              order_type_id: JSON.parse(
+                localStorage.getItem("orderType") || "{}"
+              )._id,
             })),
           };
         }
@@ -146,7 +158,7 @@ export const useVariantSelection = ({
           combo_supp_ids: [],
         };
       }),
-    [selectedProducts, orderType]
+    [selectedProducts]
   );
 
   useEffect(() => {

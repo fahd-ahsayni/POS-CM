@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { motion } from "framer-motion";
 import { Minus, Plus } from "lucide-react";
-import { memo, useMemo, useState } from "react";
+import { memo, useMemo, useState, useCallback } from "react";
 import OderLineAddComments from "../ui/OderLineAddComments";
 import OrderLineOtherActions from "../ui/OrderLineOtherActions";
 import { Card } from "@/components/ui/card";
@@ -40,7 +40,7 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
     item.suite_commande || false
   );
   const dispatch = useDispatch();
-  const { customerIndex } = useRightViewContext();
+  const { customerIndex, setCustomerIndex } = useRightViewContext();
   const { selectedProducts, setSelectedProducts } = useLeftViewContext();
 
   const unitPrice = item.variants[0]?.price_ttc || item.price / item.quantity;
@@ -58,17 +58,26 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
     []
   );
 
+  const selectCustomer = useCallback(() => {
+    if (item.customer_index && item.customer_index !== customerIndex) {
+      setCustomerIndex(item.customer_index);
+    }
+  }, [item.customer_index, customerIndex, setCustomerIndex]);
+
   const handleIncrement = (e: React.MouseEvent) => {
     e.stopPropagation();
+    selectCustomer();
     increment();
   };
 
   const handleDecrement = (e: React.MouseEvent) => {
     e.stopPropagation();
+    selectCustomer();
     decrement();
   };
 
   const handleSuiteCommandeToggle = () => {
+    selectCustomer();
     const currentCustomerIndex = item.customer_index || customerIndex;
 
     const updatedOrderLine = {
@@ -110,6 +119,7 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
     <motion.div
       variants={itemVariants}
       className="flex relative cursor-pointer items-center justify-start h-full w-full rounded-lg overflow-hidden"
+      onClick={selectCustomer}
     >
       <div className="absolute h-full w-1.5 left-0 top-0 bg-interactive-dark-red" />
       <Card className="flex flex-col w-full py-2 pr-2 pl-4 gap-y-2">
