@@ -9,12 +9,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { SwitchToggle } from "@/components/ui/toggle";
+import { Switch } from "@/components/ui/switch";
 import { updateOrder } from "@/functions/updateOrder";
+import { setOneTime, setUrgent } from "@/store/slices/order/createOrder";
 import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch } from "react-redux";
-import { setUrgent, setOneTime } from "@/store/slices/order/createOrder";
 
 export default function OtherActionsOrderLines() {
   const dispatch = useDispatch();
@@ -76,18 +76,20 @@ export default function OtherActionsOrderLines() {
           <DropdownMenuItem>
             <span className="text-sm flex items-center w-full justify-between space-x-4">
               <span>Order Immediately</span>
-              <SwitchToggle
-                enabled={isOneTime}
-                setEnabled={handleOneTimeToggle}
+              <Switch
+                color="red"
+                checked={isOneTime}
+                onChange={handleOneTimeToggle}
               />
             </span>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <span className="text-sm flex items-center w-full justify-between space-x-4">
               <span>Mark as Urgent</span>
-              <SwitchToggle
-                enabled={isUrgent}
-                setEnabled={handleUrgentToggle}
+              <Switch
+                color="red"
+                checked={isUrgent}
+                onChange={handleUrgentToggle}
               />
             </span>
           </DropdownMenuItem>

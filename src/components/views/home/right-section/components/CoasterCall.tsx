@@ -21,7 +21,7 @@ export default function CoasterCall() {
       </TypographyH3>
       <div className="flex flex-col justify-center -mt-20 h-full relative">
         <CoasterCallNumberDisplay />
-        <div className="flex gap-x-4 w-full mt-6">
+        <div className="flex gap-x-4 w-full absolute bottom-6">
           <Button
             className="flex-1"
             variant="secondary"

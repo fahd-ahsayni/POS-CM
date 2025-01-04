@@ -31,6 +31,7 @@ const OrderSummary = () => {
       setOpenModalConfirmHoldOrder,
       setOpenDrawerPayments,
       handleToggleAll,
+      handleAddCustomer,
       handleProceedOrder,
       handleShowTicket,
       handleHoldOrder,
@@ -66,7 +67,7 @@ const OrderSummary = () => {
                 />
                 <span className="sr-only">Toggle Customers</span>
               </Button>
-              <Button onClick={addCustomer} size="icon">
+              <Button onClick={handleAddCustomer} size="icon">
                 <AddUserIcon className="w-[1.2rem] h-auto fill-white" />
                 <span className="sr-only">add customer</span>
               </Button>

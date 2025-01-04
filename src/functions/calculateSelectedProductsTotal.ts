@@ -17,20 +17,18 @@ interface SalesCalculation {
 export const calculateSelectedProductsTotal = (
   selectedProducts: ProductSelected[],
   discount?: Discount | null,
-  taxRate: number = 10
+  taxRate: number = 20
 ): SalesCalculation => {
   const rawTotal = selectedProducts.reduce((sum, product) => {
-    const unitPrice = product.variants[0]?.price_ttc || product.price / product.quantity;
+    const unitPrice =
+      product.variants[0]?.price_ttc || product.price / product.quantity;
     const basePrice = unitPrice * (product.quantity || 0);
 
     const supplementsTotal = product.is_combo
-      ? product.combo_items?.supplements?.reduce(
-          (suppTotal, supp) => {
-            const suppUnitPrice = supp.price_ttc;
-            return suppTotal + (suppUnitPrice * supp.quantity);
-          },
-          0
-        ) || 0
+      ? product.combo_items?.supplements?.reduce((suppTotal, supp) => {
+          const suppUnitPrice = supp.price_ttc;
+          return suppTotal + suppUnitPrice * supp.quantity;
+        }, 0) || 0
       : 0;
 
     return sum + basePrice + supplementsTotal;
@@ -41,9 +39,10 @@ export const calculateSelectedProductsTotal = (
 
   let discountAmount = 0;
   if (discount) {
-    discountAmount = discount.type === "percentage"
-      ? (rawTotal * Number(discount.value)) / 100
-      : Number(discount.value);
+    discountAmount =
+      discount.type === "percentage"
+        ? (rawTotal * Number(discount.value)) / 100
+        : Number(discount.value);
   }
 
   const total = subtotal + tax - discountAmount;

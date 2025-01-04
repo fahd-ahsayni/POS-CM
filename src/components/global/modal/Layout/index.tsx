@@ -36,7 +36,7 @@ export default function ModalLayout({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 dark:bg-white/30 bg-primary-black/90 transition-opacity" />
+          <div className="fixed inset-0 bg-primary-black/50 backdrop-blur-[2px] transform-gpu transition-opacity" />
         </TransitionChild>
 
         <div className="fixed inset-0 z-10 overflow-y-auto">
@@ -50,7 +50,7 @@ export default function ModalLayout({
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-90"
             >
-              <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white dark:bg-primary-black px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:py-6 sm:px-14">
+              <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white dark:bg-primary-black px-4 pt-5 pb-4 text-left shadow transition-all sm:my-8 sm:w-full sm:max-w-lg sm:py-6 sm:px-14">
                 {children}
               </DialogPanel>
             </TransitionChild>

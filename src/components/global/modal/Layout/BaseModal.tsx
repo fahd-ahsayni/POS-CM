@@ -12,16 +12,17 @@ interface BaseModalProps {
   cancelText?: string;
   onConfirm: () => void;
   onCancel: () => void;
-  variant?: "warning" | "success" | "danger";
+  variant?: "warning" | "success" | "danger" | "default";
 }
 
 const getIconContainerClass = (variant: BaseModalProps["variant"]) => {
   const classes = {
     warning: "bg-warning-color",
-    success: "bg-green-100",
-    danger: "bg-red-100",
+    success: "bg-green-100/50",
+    danger: "bg-red-100/50",
+    default: "dark:bg-secondary-black bg-neutral-bright-grey",
   };
-  return classes[variant || "success"];
+  return classes[variant || "default"];
 };
 
 export default function BaseModal({
@@ -34,7 +35,7 @@ export default function BaseModal({
   cancelText = "Cancel",
   onConfirm,
   onCancel,
-  variant = "success",
+  variant = "default",
 }: BaseModalProps) {
   return (
     <ModalLayout isOpen={isOpen} closeModal={closeModal}>
@@ -48,14 +49,14 @@ export default function BaseModal({
             {icon}
           </div>
         )}
-        <div className="mt-3 text-center sm:mt-5">
+        <div className="mt-1 text-center sm:mt-3">
           <DialogTitle
             as="h3"
-            className="text-lg font-semibold leading-6 dark:text-white text-primary-black"
+            className="text-xl font-semibold leading-6 dark:text-white text-primary-black"
           >
             {title}
           </DialogTitle>
-          <div className="mt-6">
+          <div className="mt-4">
             <p className="text-[0.8rem] dark:text-secondary-white/90 text-secondary-black/90">
               {description}
             </p>

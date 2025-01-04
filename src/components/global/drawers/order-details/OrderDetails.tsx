@@ -1,5 +1,5 @@
 import { printOrder } from "@/api/services";
-import { BillIcon, DishIcon, PrinterIcon } from "@/assets/figma-icons";
+import { BillIcon, DishIcon, PrinterIcon, UserIcon } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -11,6 +11,7 @@ import { useState } from "react";
 import Drawer from "../../Drawer";
 import CancelOrder from "../cancel-order/CancelOrder";
 import { useOrder } from "./context/OrderContext";
+import { Checkbox as HeadlessUICheckbox } from "@headlessui/react";
 
 export default function OrderDetails() {
   const { selectedOrder, openOrderDetails, setOpenOrderDetails } = useOrder();
@@ -108,21 +109,43 @@ export default function OrderDetails() {
             {Object.entries(groupedOrderLines).map(([customerIndex, lines]) => (
               <div key={customerIndex} className="mb-8">
                 <div className="flex items-center gap-2 mb-2">
-                  <Checkbox
-                    className="h-6 w-6 bg-background"
+                  <HeadlessUICheckbox
                     checked={(lines as any[]).every((line) =>
                       selectedOrderlines.includes(line._id)
                     )}
-                    onCheckedChange={() =>
+                    onChange={() =>
                       handleCustomerGroupSelection(
                         customerIndex,
                         lines as any[]
                       )
                     }
-                  />
-                  <div className="w-full h-7 flex justify-between items-center px-4 bg-neutral-bright-grey dark:bg-white/10 rounded shadow">
-                    <TypographySmall className="text-primary-black font-medium dark:text-white flex items-center justify-center w-full">
-                      Customer {Number(customerIndex)}
+                    className={({ checked }) => `
+                      group block size-6 rounded border 
+                      ${
+                        checked
+                          ? "bg-primary-red border-primary-red"
+                          : "bg-white dark:bg-primary-black border-gray-300 dark:border-gray-600"
+                      }
+                      transition-colors duration-200
+                    `}
+                  >
+                    <svg
+                      className="stroke-white opacity-0 group-data-[checked]:opacity-100"
+                      viewBox="0 0 14 14"
+                      fill="none"
+                    >
+                      <path
+                        d="M3 8L6 11L11 3.5"
+                        strokeWidth={2}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </HeadlessUICheckbox>
+                  <div className="w-full h-8 flex justify-between items-center px-4 bg-neutral-bright-grey dark:bg-white/10 rounded shadow">
+                    <TypographySmall className="text-primary-black font-medium dark:text-white flex items-center justify-center w-full space-x-1">
+                      <UserIcon className="w-4 h-4 dark:fill-white fill-primary-black leading-3" />
+                      <span className="-mb-0.5">Customer {Number(customerIndex)}</span>
                     </TypographySmall>
                   </div>
                 </div>

@@ -1,3 +1,5 @@
+import { TrashRegularIcon } from "@/assets/figma-icons";
+import BaseModal from "@/components/global/modal/Layout/BaseModal";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -6,8 +8,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { SwitchToggle } from "@/components/ui/toggle";
+import { Switch } from "@/components/ui/switch";
 import { updateOrderLine } from "@/store/slices/order/createOrder";
+import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch } from "react-redux";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
@@ -23,6 +26,7 @@ export default function OrderLineOtherActions({
   const dispatch = useDispatch();
   const { selectedProducts, setSelectedProducts } = useLeftViewContext();
   const { customerIndex } = useRightViewContext();
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   const handleUrgentToggle = (enabled: boolean) => {
     const currentCustomerIndex = item.customer_index || customerIndex;
@@ -65,6 +69,10 @@ export default function OrderLineOtherActions({
   const isUrgentDisabled = item.suite_commande;
 
   const handleRemoveOrderLine = () => {
+    setIsConfirmModalOpen(true); // Open confirmation modal instead of direct removal
+  };
+
+  const confirmRemove = () => {
     setSelectedProducts(
       selectedProducts.filter(
         (product) =>
@@ -74,39 +82,55 @@ export default function OrderLineOtherActions({
           )
       )
     );
+    setIsConfirmModalOpen(false);
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          size="icon"
-          variant="ghost"
-          className="-ms-px rounded h-7 w-7 bg-accent-white/10 hover:bg-accent-white/20"
-          aria-label="Open edit menu"
-        >
-          <BsThreeDotsVertical className="text-primary-black dark:text-white" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="mt-2 -ml-36 min-w-52">
-        <DropdownMenuItem onClick={handleRemoveOrderLine}>
-          <span className="text-sm">Remove Order Line</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <span className="text-sm">Apply Discount</span>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <span className="text-sm flex items-center w-full justify-between space-x-4">
-            <span>Mark as Urgent</span>
-            <SwitchToggle
-              enabled={item.high_priority || false}
-              setEnabled={handleUrgentToggle}
-              disabled={isUrgentDisabled} // Add disabled prop to SwitchToggle
-            />
-          </span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <>
+      <BaseModal
+        isOpen={isConfirmModalOpen}
+        closeModal={() => setIsConfirmModalOpen(false)}
+        title="Remove Order Line"
+        description="Are you sure you want to remove this order line?"
+        onConfirm={confirmRemove}
+        onCancel={() => setIsConfirmModalOpen(false)}
+        icon={<TrashRegularIcon className="h-7 w-7 text-error-color" />}
+        confirmText="Yes, Remove order line"
+        cancelText="Cancel"
+      />
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="-ms-px rounded h-7 w-7 bg-accent-white/10 hover:bg-accent-white/20"
+            aria-label="Open edit menu"
+          >
+            <BsThreeDotsVertical className="text-primary-black dark:text-white" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="mt-2 -ml-36 min-w-52">
+          <DropdownMenuItem onClick={handleRemoveOrderLine}>
+            <span className="text-sm">Remove Order Line</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <span className="text-sm">Apply Discount</span>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
+            <span className="text-sm flex items-center w-full justify-between space-x-4">
+              <span>Mark as Urgent</span>
+              <Switch
+                color="red"
+                checked={item.high_priority || false}
+                onChange={handleUrgentToggle}
+                disabled={isUrgentDisabled} // Add disabled prop to SwitchToggle
+              />
+            </span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
   );
 }

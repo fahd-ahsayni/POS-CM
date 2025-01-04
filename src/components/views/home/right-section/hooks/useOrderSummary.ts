@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { useRightViewContext } from "../contexts/RightViewContext";
 import { useOrderLines } from "../contexts/OrderLinesContext";
+import { useCustomerManagement } from "../hooks/useCustomerManagement";
 
 interface OrderSummaryState {
   openModalConfirmHoldOrder: boolean;
@@ -23,6 +24,7 @@ export const useOrderSummary = () => {
   const { selectedProducts } = useLeftViewContext();
   const { expandedCustomers, toggleAllCustomers } = useOrderLines();
   const { customerIndex } = useRightViewContext();
+  const { addCustomer } = useCustomerManagement();
 
   const isActionsDisabled = useMemo(
     () => selectedProducts.length === 0,
@@ -59,8 +61,14 @@ export const useOrderSummary = () => {
         updateState("openModalConfirmHoldOrder", value),
       setOpenDrawerPayments: (value: boolean) =>
         updateState("openDrawerPayments", value),
+      handleAddCustomer: () => {
+        if (selectedProducts.length > 0) {
+          addCustomer();
+          toggleAllCustomers();
+        }
+      },
     }),
-    [selectedProducts.length, toggleAllCustomers, updateState, state.showTicket]
+    [selectedProducts.length, toggleAllCustomers, updateState, state.showTicket, addCustomer]
   );
 
   return {
