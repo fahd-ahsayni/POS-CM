@@ -61,7 +61,8 @@ function ComboContent() {
       <footer className="flex gap-2 mt-4">
         {currentStep > 0 && (
           <Button
-            variant="outline"
+            variant="secondary"
+            className="flex-1 bg-white dark:bg-white/10 shadow border border-border"
             onClick={() => handleNavigation("previous")}
           >
             Previous

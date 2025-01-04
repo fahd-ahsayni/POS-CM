@@ -1,3 +1,4 @@
+import { checkProductAvailability } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
 import { Product, ProductSelected, Variant } from "@/types";
 import { useCallback } from "react";
@@ -86,33 +87,62 @@ export const useProductSelection = ({
   );
 
   const addOrUpdateProduct = useCallback(
-    (product: Product, variantId: string, price?: number, notes?: string[]) => {
-      setSelectedProducts((prevSelected) => {
-        const variant = findVariant(product, variantId);
+    async (
+      product: Product,
+      variantId: string,
+      price?: number,
+      notes?: string[]
+    ) => {
+      try {
+        // Check availability before adding
+        const response = await checkProductAvailability(variantId);
 
-        if (!variant) {
-          toast.warning(
+        if (response.status !== 200) {
+          toast.error(
             createToast(
-              "Variant not found",
-              "Choose another variant",
-              "warning"
+              "Product Unavailable",
+              "This product is currently not available",
+              "error"
             )
           );
-          return prevSelected;
+          return;
         }
 
-        const existingProduct = prevSelected.find(
-          (p: any) =>
-            p.product_variant_id === variantId &&
-            p.customer_index === customerIndex
+        setSelectedProducts((prevSelected) => {
+          const variant = findVariant(product, variantId);
+
+          if (!variant) {
+            toast.warning(
+              createToast(
+                "Variant not found",
+                "Choose another variant",
+                "warning"
+              )
+            );
+            return prevSelected;
+          }
+
+          const existingProduct = prevSelected.find(
+            (p: any) =>
+              p.product_variant_id === variantId &&
+              p.customer_index === customerIndex
+          );
+
+          if (existingProduct) {
+            return updateExistingProduct(prevSelected, variantId, price, notes);
+          }
+
+          return [...prevSelected, createNewProduct(product, variant, price)];
+        });
+      } catch (error) {
+        toast.error(
+          createToast(
+            "Availability Check Failed",
+            "Unable to verify product availability",
+            "error"
+          )
         );
-
-        if (existingProduct) {
-          return updateExistingProduct(prevSelected, variantId, price, notes);
-        }
-
-        return [...prevSelected, createNewProduct(product, variant, price)];
-      });
+      }
     },
     [findVariant, createNewProduct, updateExistingProduct, customerIndex]
   );

@@ -124,8 +124,8 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
       <div className="absolute h-full w-1.5 left-0 top-0 bg-interactive-dark-red" />
       <Card className="flex flex-col w-full py-2 pr-2 pl-4 gap-y-2">
         <div className="flex items-center justify-between gap-x-4">
-          <TypographyP className="font-medium capitalize">
-            {item.name.toLowerCase()}
+          <TypographyP className="font-medium">
+            {toTitleCase(item.name.toLowerCase())}
           </TypographyP>
           <div className="flex items-center gap-x-2">
             {isSuitCamand ? (
@@ -179,7 +179,7 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
                 className="text-sm space-x-2"
               >
                 <span className="font-semibold">x{variant.quantity}</span>
-                <span className="capitalize first-letter:uppercase text-neutral-bright-grey/90">
+                <span className="capitalize first-letter:uppercase dark:text-neutral-bright-grey/90 text-primary-black/90">
                   {toTitleCase(variant.name)}
                 </span>
               </TypographySmall>
@@ -193,11 +193,11 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
                     <div key={`${supp.name}-${idx}`}>
                       <TypographySmall className="text-sm space-x-2">
                         <span className="font-semibold">x{supp.quantity}</span>
-                        <span className="capitalize first-letter:uppercase text-neutral-bright-grey/90">
+                        <span className="capitalize first-letter:uppercase dark:text-neutral-bright-grey/90 text-primary-black/90">
                           {toTitleCase(supp.name)}
                         </span>
                       </TypographySmall>
-                      <TypographySmall className="text-white font-semibold">
+                      <TypographySmall className="font-semibold">
                         +{price.toFixed(currency.toFixed || 2)}{" "}
                         {currency.currency}
                       </TypographySmall>

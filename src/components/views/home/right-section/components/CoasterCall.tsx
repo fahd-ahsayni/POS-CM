@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { TypographyH3 } from "@/components/ui/typography";
-import { useCoasterCall } from "@/components/views/home/right-section/hooks/useCoasterCall";
 import CoasterCallNumberDisplay from "@/components/views/home/right-section/layouts/CoasterCallNumberDisplay";
 import { selectOrder } from "@/store/slices/order/createOrder";
 import { useSelector } from "react-redux";

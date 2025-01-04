@@ -2,6 +2,9 @@ import { addOrderLine } from "@/store/slices/order/createOrder";
 import { Product, ProductSelected } from "@/types";
 import { useCallback, useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
+import { checkProductAvailability } from "@/api/services";
+import { createToast } from "@/components/global/Toasters";
+import { toast } from "react-toastify";
 
 interface UseVariantSelectionProps {
   selectedProduct: Product | null;
@@ -22,30 +25,50 @@ export const useVariantSelection = ({
   const dispatch = useDispatch();
 
   const handleSelectVariant = useCallback(
-    (id: string, price: number) => {
+    async (id: string, price: number) => {
       if (!selectedProduct) {
         console.warn("No selected product. Cannot select a variant.");
         return;
       }
 
-      const existingVariant = selectedProducts.find(
-        (p) => p.product_variant_id === id && p.customer_index === customerIndex
-      );
+      try {
+        // Check availability before selecting
+        const response = await checkProductAvailability(id);
+        
+        if (response.status !== 200) {
+          toast.error(createToast(
+            "Product Unavailable",
+            "This product is currently not available",
+            "error"
+          ));
+          return;
+        }
 
-      if (!existingVariant) {
-        addOrUpdateProduct(selectedProduct, id, price);
-      } else {
-        setSelectedProducts((prev) =>
-          prev.map((p) =>
-            p.product_variant_id === id && p.customer_index === customerIndex
-              ? {
-                  ...p,
-                  quantity: p.quantity + 1,
-                  price: price * (p.quantity + 1),
-                }
-              : p
-          )
+        const existingVariant = selectedProducts.find(
+          (p) => p.product_variant_id === id && p.customer_index === customerIndex
         );
+
+        if (!existingVariant) {
+          addOrUpdateProduct(selectedProduct, id, price);
+        } else {
+          setSelectedProducts((prev) =>
+            prev.map((p) =>
+              p.product_variant_id === id && p.customer_index === customerIndex
+                ? {
+                    ...p,
+                    quantity: p.quantity + 1,
+                    price: price * (p.quantity + 1),
+                  }
+                : p
+            )
+          );
+        }
+      } catch (error) {
+        toast.error(createToast(
+          "Availability Check Failed",
+          "Unable to verify variant availability",
+          "error"
+        ));
       }
     },
     [

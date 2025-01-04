@@ -1,6 +1,6 @@
 import { Category } from "@/types";
 import { memo } from "react";
-import { CategoryCard } from "../Layout/CategoryCard";
+import { CategoryCard } from "./CategoryCard";
 
 interface SubCategoriesSectionProps {
   subCategories: Category[];

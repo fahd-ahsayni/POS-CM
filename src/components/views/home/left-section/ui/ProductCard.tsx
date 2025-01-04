@@ -2,6 +2,8 @@ import { unknownProduct } from "@/assets";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyP } from "@/components/ui/typography";
+import { toTitleCase } from "@/functions/string-transforms";
+import { truncateName } from "@/lib/utils";
 import { currency } from "@/preferences";
 import { Product, ProductSelected } from "@/types";
 import { motion } from "framer-motion";
@@ -67,8 +69,8 @@ export function ProductCard({
           )}
         </div>
         <div className="flex flex-col items-start justify-between flex-1 h-full w-full pr-2">
-          <TypographyP className="font-medium text-sm capitalize">
-            {product.name.toLowerCase()}
+          <TypographyP className="font-medium text-sm">
+            {toTitleCase(truncateName(product.name.toLowerCase(), 25))}
           </TypographyP>
           <div className="flex items-center justify-between w-full">
             <TypographyP className="text-sm font-medium text-neutral-dark-grey">

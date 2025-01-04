@@ -20,12 +20,14 @@ interface OderLineAddCommentsProps {
   productId: string;
   customerIndex: number;
   initialNotes?: string[];
+  onNotesUpdate?: (notes: string[]) => void;
 }
 
 export default function OderLineAddComments({
   productId,
   customerIndex,
   initialNotes = [],
+  onNotesUpdate,
 }: OderLineAddCommentsProps) {
   const { selectedProducts, setSelectedProducts } = useLeftViewContext();
   const { orderType } = useRightViewContext();
@@ -70,18 +72,23 @@ export default function OderLineAddComments({
     const filteredComments = newComments.filter((c) => c !== "");
     setComments(filteredComments);
 
-    // Update both Redux and context state with customer_index
-    updateProductNotes(productId, filteredComments, customerIndex);
-    dispatch(
-      updateOrderLine({
-        _id: productId,
-        customerIndex,
-        orderLine: {
-          notes: filteredComments,
-          customer_index: customerIndex,
-        },
-      })
-    );
+    // Call both the original update and the new callback
+    if (onNotesUpdate) {
+      onNotesUpdate(filteredComments);
+    } else {
+      // Original update logic
+      updateProductNotes(productId, filteredComments, customerIndex);
+      dispatch(
+        updateOrderLine({
+          _id: productId,
+          customerIndex,
+          orderLine: {
+            notes: filteredComments,
+            customer_index: customerIndex,
+          },
+        })
+      );
+    }
   };
 
   const handleDelete = (index: number) => {

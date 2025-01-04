@@ -209,6 +209,12 @@ export const filterOrderById = async (orderId: string) => {
   return api.get(`/order/${orderId}`);
 };
 
-export const filterOrderByTableNumber = async (tableNumber: string | number) => {
+export const filterOrderByTableNumber = async (
+  tableNumber: string | number
+) => {
   return api.get(`/order/by-table-name/${tableNumber}`);
+};
+
+export const checkProductAvailability = async (productId: string) => {
+  return api.get(`/product/check-availability/${productId}`);
 };

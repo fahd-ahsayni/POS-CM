@@ -7,5 +7,11 @@ export function cn(...inputs: ClassValue[]) {
 
 export const formatAddress = (address: string): string => {
   // Replace occurrences of "\n" with a space and trim whitespace
-  return address.replace(/\n/g, ' ').trim();
+  return address.replace(/\n/g, " ").trim();
+};
+
+export const truncateName = (name: string, maxLength: number = 18) => {
+  return name.length > maxLength
+    ? `${name.toLowerCase().slice(0, maxLength)}...`
+    : name.toLowerCase();
 };

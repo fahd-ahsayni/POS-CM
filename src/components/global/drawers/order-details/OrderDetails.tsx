@@ -7,16 +7,15 @@ import {
 } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { toTitleCase } from "@/functions/string-transforms";
 import { cn } from "@/lib/utils";
 import { currency } from "@/preferences";
+import { Checkbox as HeadlessUICheckbox } from "@headlessui/react";
 import { useState } from "react";
 import Drawer from "../../Drawer";
 import CancelOrder from "../cancel-order/CancelOrder";
 import { useOrder } from "./context/OrderContext";
-import { Checkbox as HeadlessUICheckbox } from "@headlessui/react";
 
 export default function OrderDetails() {
   const { selectedOrder, openOrderDetails, setOpenOrderDetails } = useOrder();

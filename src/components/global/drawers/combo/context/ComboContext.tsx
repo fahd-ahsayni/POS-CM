@@ -1,5 +1,5 @@
-import { createContext, useContext, useState } from "react";
 import { ProductVariant, Step } from "@/types/comboTypes";
+import { createContext, useCallback, useContext, useState } from "react";
 
 interface SelectionState {
   variants: SelectedVariant[];
@@ -26,10 +26,20 @@ interface ComboContextType {
     step: Step
   ) => void;
   handleNavigation: (direction: "next" | "previous") => void;
+  updateVariantNotes: (
+    variantId: string,
+    notes: string[],
+    isSupplement: boolean
+  ) => void;
+  updateVariantSuiteCommande: (
+    variantId: string,
+    value: boolean,
+    isSupplement: boolean
+  ) => void;
   setCurrentStep: (step: number) => void;
+  setSelections: React.Dispatch<React.SetStateAction<SelectionState>>;
   totalSupplementsPrice: number;
   setTotalSupplementsPrice: (price: number) => void;
-  setSelections: React.Dispatch<React.SetStateAction<SelectionState>>;
 }
 
 const ComboContext = createContext<ComboContextType | undefined>(undefined);
@@ -63,7 +73,10 @@ export function ComboProvider({ children }: { children: React.ReactNode }) {
             ? prev.supplements.filter(
                 (v) => !(v._id === variant._id && v.stepIndex === currentStep)
               )
-            : [...prev.supplements, { ...variant, quantity: 1, stepIndex: currentStep }],
+            : [
+                ...prev.supplements,
+                { ...variant, quantity: 1, stepIndex: currentStep },
+              ],
         };
       }
 
@@ -83,7 +96,9 @@ export function ComboProvider({ children }: { children: React.ReactNode }) {
 
       // Handle new selections
       if (!isRequired && maxProducts) {
-        const stepVariants = prev.variants.filter(v => v.stepIndex === currentStep);
+        const stepVariants = prev.variants.filter(
+          (v) => v.stepIndex === currentStep
+        );
         const totalQuantity = stepVariants.reduce(
           (sum, v) => sum + (v.quantity || 1),
           0
@@ -92,7 +107,10 @@ export function ComboProvider({ children }: { children: React.ReactNode }) {
         if (totalQuantity < maxProducts) {
           return {
             ...prev,
-            variants: [...prev.variants, { ...variant, quantity: 1, stepIndex: currentStep }],
+            variants: [
+              ...prev.variants,
+              { ...variant, quantity: 1, stepIndex: currentStep },
+            ],
           };
         }
       }
@@ -128,7 +146,10 @@ export function ComboProvider({ children }: { children: React.ReactNode }) {
             ...prev,
             supplements: prev.supplements.map((supp) =>
               supp._id === variantId && supp.stepIndex === currentStep
-                ? { ...supp, quantity: increment ? supp.quantity + 1 : supp.quantity - 1 }
+                ? {
+                    ...supp,
+                    quantity: increment ? supp.quantity + 1 : supp.quantity - 1,
+                  }
                 : supp
             ),
           };
@@ -153,9 +174,11 @@ export function ComboProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Calculate total quantity for current step
-      const stepVariants = prev.variants.filter(v => v.stepIndex === currentStep);
+      const stepVariants = prev.variants.filter(
+        (v) => v.stepIndex === currentStep
+      );
       const otherVariantsQuantity = stepVariants
-        .filter(v => v._id !== variantId)
+        .filter((v) => v._id !== variantId)
         .reduce((sum, v) => sum + (v.quantity || 1), 0);
 
       const newQuantity = increment
@@ -196,6 +219,32 @@ export function ComboProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateVariantNotes = useCallback(
+    (variantId: string, notes: string[], isSupplement: boolean) => {
+      setSelections((prev) => ({
+        ...prev,
+        [isSupplement ? "supplements" : "variants"]: prev[
+          isSupplement ? "supplements" : "variants"
+        ].map((item) => (item._id === variantId ? { ...item, notes } : item)),
+      }));
+    },
+    []
+  );
+
+  const updateVariantSuiteCommande = useCallback(
+    (variantId: string, value: boolean, isSupplement: boolean) => {
+      setSelections((prev) => ({
+        ...prev,
+        [isSupplement ? "supplements" : "variants"]: prev[
+          isSupplement ? "supplements" : "variants"
+        ].map((item) =>
+          item._id === variantId ? { ...item, suite_commande: value } : item
+        ),
+      }));
+    },
+    []
+  );
+
   return (
     <ComboContext.Provider
       value={{
@@ -208,6 +257,8 @@ export function ComboProvider({ children }: { children: React.ReactNode }) {
         setSelections,
         totalSupplementsPrice,
         setTotalSupplementsPrice,
+        updateVariantNotes,
+        updateVariantSuiteCommande,
       }}
     >
       {children}

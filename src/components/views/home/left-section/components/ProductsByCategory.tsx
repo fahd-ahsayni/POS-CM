@@ -8,11 +8,11 @@ import { ArrowLeft } from "lucide-react";
 import { memo } from "react";
 import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { CustomBreadcrumb } from "../Layout/Bredcrump";
+import { CustomBreadcrumb } from "../ui/Bredcrump";
 import { useProductsByCategory } from "../hooks/useProductsByCategory";
 import Combo from "@/components/global/drawers/combo/Combo";
 import ProductsVariants from "./ProductsVariants";
-import { ProductCard } from "../Layout/ProductCard";
+import { ProductCard } from "../ui/ProductCard";
 import Header from "./Header";
 
 export default memo(function ProductsByCategory() {
@@ -122,7 +122,7 @@ export default memo(function ProductsByCategory() {
               transition={{ duration: 0.35 }}
               className="w-full flex-1 pb-16"
             >
-              <div className="w-full grid grid-cols-3 gap-3">
+              <div className="w-full grid grid-cols-2 lg:grid-cols-3 gap-3">
                 {products.map((product) => (
                   <ProductCard
                     key={product._id}

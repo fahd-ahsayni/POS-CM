@@ -71,11 +71,67 @@ const orderSlice = createSlice({
       );
 
       if (orderLineIndex !== -1) {
-        state.data.orderlines[orderLineIndex] = {
-          ...state.data.orderlines[orderLineIndex],
-          ...action.payload.orderLine,
-        };
+        const orderLine = state.data.orderlines[orderLineIndex];
+        
+        // If this is a combo product
+        if (orderLine.is_combo && orderLine.combo_items) {
+          // Update the main combo product
+          state.data.orderlines[orderLineIndex] = {
+            ...orderLine,
+            ...action.payload.orderLine,
+            combo_items: {
+              variants: orderLine.combo_items.variants.map((variant: any) => ({
+                ...variant,
+                notes: action.payload.orderLine.notes || variant.notes,
+                suite_commande: action.payload.orderLine.suite_commande ?? variant.suite_commande,
+              })),
+              supplements: orderLine.combo_items.supplements.map((supplement: any) => ({
+                ...supplement,
+                notes: action.payload.orderLine.notes || supplement.notes,
+                suite_commande: action.payload.orderLine.suite_commande ?? supplement.suite_commande,
+              })),
+            },
+          };
+        } else {
+          // Regular product update
+          state.data.orderlines[orderLineIndex] = {
+            ...orderLine,
+            ...action.payload.orderLine,
+          };
+        }
       }
+
+      // Handle updates for variants within combos
+      state.data.orderlines = state.data.orderlines.map(orderLine => {
+        if (orderLine.is_combo && orderLine.combo_items) {
+          return {
+            ...orderLine,
+            combo_items: {
+              variants: orderLine.combo_items.variants.map((variant: any) => {
+                if (variant._id === action.payload._id && 
+                    orderLine.customer_index === action.payload.customerIndex) {
+                  return {
+                    ...variant,
+                    ...action.payload.orderLine,
+                  };
+                }
+                return variant;
+              }),
+              supplements: orderLine.combo_items.supplements.map((supplement: any) => {
+                if (supplement._id === action.payload._id && 
+                    orderLine.customer_index === action.payload.customerIndex) {
+                  return {
+                    ...supplement,
+                    ...action.payload.orderLine,
+                  };
+                }
+                return supplement;
+              }),
+            },
+          };
+        }
+        return orderLine;
+      });
     },
     addOrderLine: (state, action: PayloadAction<any[]>) => {
       state.data.orderlines = action.payload;

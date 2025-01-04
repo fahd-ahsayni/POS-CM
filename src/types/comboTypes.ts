@@ -20,7 +20,9 @@ export interface ProductVariant {
   reference: string;
   is_menu: boolean;
   is_quantity_check: boolean;
+  notes: string[];
   product_id: string;
+  suite_commande: boolean;
   tax_id: Tax;
   uom_id: UOM;
   stages_timing: any[]; // Define the type if `stages_timing` has a specific structure

@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { memo } from "react";
 import { useCategories } from "../hooks/useCategories";
-import { CategoryCard } from "../Layout/CategoryCard";
+import { CategoryCard } from "../ui/CategoryCard";
 import { Category } from "@/types";
 
 export default memo(function AllCategories() {
