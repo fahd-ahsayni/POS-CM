@@ -15,6 +15,7 @@ import { FilterCriteria } from "@/types";
 import { Order } from "@/types/getDataByDay";
 import { ArrowDownAZ, ArrowUpAZ, SortDesc } from "lucide-react";
 import { useSelector } from "react-redux";
+import { format, parseISO } from "date-fns";
 
 interface DataTableProps {
   headers: {
@@ -41,16 +42,17 @@ export default function DataTable({
   const currentPage = useSelector((state: any) => state.orders.currentPage);
   const pageSize = useSelector((state: any) => state.orders.pageSize);
 
-  // Slice the data based on currentPage and pageSize
-  const paginatedData = data.slice(
+  // Apply filters to the entire dataset
+  const { sortedData, sortConfig, handleSort } = useTableOrders({
+    data,
+    filterCriteria,
+  });
+
+  // Slice the filtered and sorted data based on currentPage and pageSize
+  const paginatedData = sortedData.slice(
     currentPage * pageSize,
     (currentPage + 1) * pageSize
   );
-
-  const { sortedData, sortConfig, handleSort } = useTableOrders({
-    data: paginatedData,
-    filterCriteria,
-  });
 
   const renderSortIcon = (headerKey: string) => {
     if (sortConfig?.key !== headerKey) {
@@ -78,25 +80,36 @@ export default function DataTable({
       ? getValue(row, header.key, header.defaultValue)
       : row[header.key] || header.defaultValue || "-";
 
+    // Format date if the header key is a date field
+    let formattedValue = cellValue;
+    if (header.key === "createdAt" && cellValue) {
+      try {
+        const date = parseISO(cellValue); // Use parseISO if the date is in ISO format
+        formattedValue = format(date, "dd.MM.yyyy - hh:mm a"); // Desired format
+      } catch (error) {
+        console.error("Date formatting error:", error);
+      }
+    }
+
     // Add status-specific styling
     const getStatusStyle = (status: string) => {
       switch (status.toLowerCase()) {
-        case 'paid':
-          return 'text-green-500 dark:text-green-400';
-        case 'canceled':
-          return 'text-error-color';
+        case "paid":
+          return "text-green-500 dark:text-green-400";
+        case "canceled":
+          return "text-error-color";
         default:
-          return '';
+          return "";
       }
     };
 
     const cellContent = header.isPrice ? (
       <>
         <span>
-          {typeof cellValue === 'number' 
-            ? cellValue.toFixed(2) 
-            : Number(cellValue || 0).toFixed(2)
-          } Dhs
+          {typeof formattedValue === "number"
+            ? formattedValue.toFixed(2)
+            : Number(formattedValue || 0).toFixed(2)}{" "}
+          Dhs
         </span>
         {withPrintButton && header.hasPrintButton && (
           <Button
@@ -111,12 +124,10 @@ export default function DataTable({
           </Button>
         )}
       </>
-    ) : header.key === 'status' ? (
-      <span className={getStatusStyle(cellValue)}>
-        {cellValue}
-      </span>
+    ) : header.key === "status" ? (
+      <span className={getStatusStyle(formattedValue)}>{formattedValue}</span>
     ) : (
-      cellValue
+      formattedValue
     );
 
     return (
@@ -174,8 +185,8 @@ export default function DataTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedData.length > 0 ? (
-            sortedData.map((row, index) => (
+          {paginatedData.length > 0 ? (
+            paginatedData.map((row, index) => (
               <TableRow
                 key={row._id || index}
                 onClick={() => handleRowClick(row)}

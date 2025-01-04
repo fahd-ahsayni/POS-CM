@@ -26,16 +26,27 @@ import { toast } from "react-toastify";
 import { createToast } from "@/components/global/Toasters";
 import { logout } from "@/store/slices/authentication/authSlice";
 import { TypographyH2, TypographySmall } from "@/components/ui/typography";
+import { useShift } from "@/auth/context/ShiftContext";
+
+const DAY_NOT_OPEN_WARNING = "Day is not open";
+const UNAUTHORIZED_ERROR = "Unauthorized";
+const WELCOME_BACK_SUCCESS = "Welcome back";
 
 export default function SelectPosPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const isDayOpen = useSelector((state: RootState) => state.dayStatus.isOpen);
+  const { isOpen: isDayOpen } = useSelector(
+    (state: RootState) => state.dayStatus
+  );
   const data = useSelector(selectPosData);
   const loading = useSelector(selectPosLoading);
   const error = useSelector(selectPosError);
   const [checkDay, setCheckDay] = useState(false);
   const [open, setOpen] = useState(false);
+  const [reOpen, setReOpen] = useState(false);
+  const { shiftId, setShiftId } = useShift();
+
+  console.log(data.pos);
 
   // Get authenticated user from localStorage
   const userAuthenticated: User | null = JSON.parse(
@@ -48,48 +59,78 @@ export default function SelectPosPage() {
     dispatch(openDay());
   }, [dispatch]);
 
-  const handleChoisePos = (id: string) => {
-    localStorage.setItem("posId", id);
+  const handleSelectPos = useCallback(
+    (id: string) => {
+      const findPos = data.pos?.find((pos) => pos._id === id);
+      localStorage.setItem("posId", id);
 
-    const findPos = data.pos?.find((pos) => pos._id === id);
-    if (!findPos) return;
+      if (!findPos) return;
 
-    console.log(userAuthenticated)
-    console.log(findPos.shift?.user_id._id)
+      const isAuthorizedUser =
+        findPos.shift?.user_id._id === userAuthenticated?.id ||
+        userAuthenticated?.position === "Manager";
 
-    const isAuthorizedUser =
-      findPos.shift?.user_id._id === userAuthenticated?.id ||
-      userAuthenticated?.position === "Manager";
+      if (!checkDay) {
+        toast.warning(
+          createToast(
+            DAY_NOT_OPEN_WARNING,
+            "Please open the day first",
+            "warning"
+          )
+        );
+        return;
+      }
 
-    if (checkDay) {
       if (isAuthorizedUser) {
+        setShiftId(findPos.shift?._id || undefined);
         toast.success(
           createToast(
-            "Welcome back",
+            WELCOME_BACK_SUCCESS,
             "You are authorized to use this POS",
             "success"
           )
         );
-        navigate("/");
-      } else if (!isAuthorizedUser && findPos.shift !== null) {
+        if (findPos.shift?.status !== "opening_control") {
+          navigate("/");
+        } else {
+          setOpen(true);
+          setReOpen(true);
+        }
+        return;
+      }
+
+      if (findPos.shift !== null && !isAuthorizedUser) {
         toast.error(
           createToast(
-            "Unauthorized",
+            UNAUTHORIZED_ERROR,
             "You are not authorized to use this POS",
             "error"
           )
         );
+        return;
+      }
+
+      if (findPos.shift?.status === "opening_control") {
+        toast.info(
+          createToast(
+            `Welcome back ${userAuthenticated?.name}`,
+            "Please open the shift first",
+            "info"
+          )
+        );
+        setOpen(true);
+        setReOpen(true);
+        return;
       }
 
       if (findPos.shift === null) {
         setOpen(true);
+        setReOpen(false);
+        return;
       }
-    } else {
-      toast.warning(
-        createToast("Day is not open", "Please open the day first", "warning")
-      );
-    }
-  };
+    },
+    [data.pos, userAuthenticated, checkDay, navigate, setShiftId]
+  );
 
   // Effects
   useEffect(() => {
@@ -114,6 +155,8 @@ export default function SelectPosPage() {
         open={open}
         setOpen={setOpen}
         posId={localStorage.getItem("posId") || ""}
+        reOpen={reOpen}
+        shiftId={shiftId}
       />
       {/* Left Section */}
       <aside className="w-3/12 h-full bg-secondary-white relative">
@@ -161,7 +204,7 @@ export default function SelectPosPage() {
 
           <div className="grid grid-cols-2 gap-4 mt-10 w-11/12">
             {data.pos?.map((pos: PosData) => (
-              <PosCard key={pos._id} pos={pos} onClick={handleChoisePos} />
+              <PosCard key={pos._id} pos={pos} onClick={handleSelectPos} />
             ))}
           </div>
         </motion.div>

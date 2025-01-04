@@ -34,7 +34,7 @@ export const TABLE_CONFIG = {
     pageSizeOptions: [5, 10, 20, 50],
   },
   sorting: {
-    defaultKey: "dateTime",
+    defaultKey: "createdAt",
     defaultDirection: "descending" as const,
   },
   status: {

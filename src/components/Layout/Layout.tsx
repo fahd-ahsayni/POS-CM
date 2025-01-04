@@ -13,11 +13,9 @@ import { extractProducts } from "@/functions/extractProducts";
 import { LoadingFullScreen } from "../global/loading";
 
 const Layout = () => {
-  // Hooks
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  // Use useMemo for selectors to prevent unnecessary re-renders
   const generalStatus = useSelector(
     (state: RootState) => state.generalData.status,
     shallowEqual
@@ -27,10 +25,8 @@ const Layout = () => {
     shallowEqual
   );
 
-  // Add loading state ref
   const [isLoading, setIsLoading] = useState(true);
 
-  // Combine related effects
   useEffect(() => {
     const posId = localStorage.getItem("posId");
     if (posId) {
@@ -39,17 +35,15 @@ const Layout = () => {
     } else {
       navigate("/select-pos");
     }
-  }, []); // Add dispatch and navigate to deps if needed for strict mode
+  }, [dispatch, navigate]);
 
   useEffect(() => {
     const generalData = localStorage.getItem("generalData");
     if (generalData) {
       const parsedData = JSON.parse(generalData);
 
-      // Save variants
       localStorage.setItem("variants", JSON.stringify(getAllVariants()));
 
-      // Save products only if categories exist
       if (parsedData?.categories) {
         localStorage.setItem(
           "products",
@@ -57,7 +51,7 @@ const Layout = () => {
         );
       }
     }
-  }, [localStorage.getItem("generalData")]);
+  }, []);
 
   useEffect(() => {
     if (generalStatus === "failed") {
@@ -65,17 +59,15 @@ const Layout = () => {
     }
   }, [generalStatus, navigate]);
 
-  // Memoize the updateOrder callback
   const handleUpdateOrder = useCallback(() => {
     const shiftId = localStorage.getItem("shiftId");
 
-    // Only dispatch if shiftId exists
     if (shiftId) {
       setTimeout(() => {
         dispatch(updateOrder({ shift_id: shiftId }));
       }, 1000);
     }
-  }, [dispatch, localStorage.getItem("shiftId")]);
+  }, [dispatch]);
 
   useEffect(() => {
     handleUpdateOrder();
@@ -85,7 +77,6 @@ const Layout = () => {
     const isFirstRender = localStorage.getItem("firstRender");
 
     if (!isFirstRender) {
-      // Set 2 second delay for first render
       setTimeout(() => {
         localStorage.setItem("firstRender", "true");
         setIsLoading(false);
@@ -95,7 +86,6 @@ const Layout = () => {
     }
   }, []);
 
-  // Memoize the content to prevent unnecessary re-renders
   const content = useMemo(
     () => (
       <div className="flex relative w-screen h-screen overflow-hidden">
@@ -114,10 +104,10 @@ const Layout = () => {
       </div>
     ),
     []
-  ); // Add dependencies if needed
+  );
 
   if (isLoading) {
-    return <LoadingFullScreen />; // You can replace this with a loading component
+    return <LoadingFullScreen />;
   }
 
   if (generalError) {
@@ -127,5 +117,4 @@ const Layout = () => {
   return content;
 };
 
-// Memoize the entire component
 export default memo(Layout);

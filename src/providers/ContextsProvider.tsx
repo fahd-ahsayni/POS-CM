@@ -1,3 +1,4 @@
+import { ShiftProvider } from "@/auth/context/ShiftContext";
 import { OrderProvider } from "@/components/global/drawers/order-details/context/OrderContext";
 import { LeftViewProvider } from "@/components/views/home/left-section/contexts/LeftViewContext";
 import { OrderLinesProvider } from "@/components/views/home/right-section/contexts/OrderLinesContext";
@@ -10,12 +11,14 @@ export default function ContextsProvider({
   children: ReactNode;
 }) {
   return (
-    <OrderLinesProvider>
-      <RightViewProvider>
-        <LeftViewProvider>
-          <OrderProvider>{children}</OrderProvider>
-        </LeftViewProvider>
-      </RightViewProvider>
-    </OrderLinesProvider>
+    <ShiftProvider>
+      <OrderLinesProvider>
+        <RightViewProvider>
+          <LeftViewProvider>
+            <OrderProvider>{children}</OrderProvider>
+          </LeftViewProvider>
+        </RightViewProvider>
+      </OrderLinesProvider>
+    </ShiftProvider>
   );
 }

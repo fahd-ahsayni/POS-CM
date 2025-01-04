@@ -1,4 +1,4 @@
-import { openShift } from "@/api/services";
+import { openShift, updateShift } from "@/api/services";
 import Drawer from "@/components/global/Drawer";
 import NumberPad from "@/components/global/NumberPad";
 import { createToast } from "@/components/global/Toasters";
@@ -8,14 +8,18 @@ import { currency } from "@/preferences";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useShift } from "@/auth/context/ShiftContext";
 
 interface OpenShiftProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   posId: string;
+  reOpen?: boolean;
+  shiftId?: string;
 }
 
-export default function OpenShift({ open, setOpen, posId }: OpenShiftProps) {
+export default function OpenShift({ open, setOpen, posId, reOpen, shiftId }: OpenShiftProps) {
+  const { setShiftId } = useShift();
   const [amount, setAmount] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -35,19 +39,25 @@ export default function OpenShift({ open, setOpen, posId }: OpenShiftProps) {
 
     try {
       setIsLoading(true);
-      await openShift(amount, posId);
+      if (reOpen) {
+        const res = await openShift(amount, posId);
+        if (res.status === 200) {
+          setShiftId(res.data.shift._id);
+        }
+      } else if (shiftId) {
+        await updateShift({ starting_balance: amount }, shiftId);
+      }
       toast.success(
         createToast("Shift opened", "You can now start selling", "success")
       );
       navigate("/");
-
-      setOpen(false);
     } catch (error) {
       toast.error(
         createToast("Failed to open shift", "Please try again", "error")
       );
     } finally {
       setIsLoading(false);
+      setOpen(false);
     }
   };
 
@@ -55,7 +65,9 @@ export default function OpenShift({ open, setOpen, posId }: OpenShiftProps) {
     <Drawer open={open} setOpen={setOpen} title="Open Shift">
       <section className="overflow-hidden h-full flex flex-col items-center gap-8 relative">
         <div className="flex-1 pt-12 flex items-center justify-center flex-col space-y-8">
-          <TypographyH2 className="font-medium">{amount || "0"} {currency.currency}</TypographyH2>
+          <TypographyH2 className="font-medium">
+            {amount || "0"} {currency.currency}
+          </TypographyH2>
           <div>
             <NumberPad onNumberClick={handleNumberClick} fixLightDark />
           </div>

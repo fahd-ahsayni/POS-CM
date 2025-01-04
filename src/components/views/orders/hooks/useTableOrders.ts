@@ -65,7 +65,13 @@ export function useTableOrders<T>({
         const filterStatus = normalizeStatus(filterCriteria.status);
         const matchesStatus = !filterStatus || itemStatus === filterStatus;
 
-        return matchesEmployee && matchesOrderType && matchesStatus;
+        const matchesOrderId =
+          !filterCriteria.orderId ||
+          getNestedValue(item, "ref")
+            ?.toLowerCase()
+            .includes(filterCriteria.orderId.toLowerCase());
+
+        return matchesEmployee && matchesOrderType && matchesStatus && matchesOrderId;
       });
     }
 

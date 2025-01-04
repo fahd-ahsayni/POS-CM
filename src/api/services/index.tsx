@@ -196,3 +196,19 @@ export const updateClient = async (id: string, data: any) => {
 export const dropCash = async (data: any) => {
   return api.post("/drop", data);
 };
+
+export const checkIsNewOrders = async (shiftId: string) => {
+  return api.get(`/order/check-new-order/${shiftId}`);
+};
+
+export const updateShift = async (data: any, shiftId: string) => {
+  return api.post(`/shift/update/${shiftId}`, data);
+};
+
+export const filterOrderById = async (orderId: string) => {
+  return api.get(`/order/${orderId}`);
+};
+
+export const filterOrderByTableId = async (tableId: string) => {
+  return api.get(`/order/by-table/${tableId}`);
+};

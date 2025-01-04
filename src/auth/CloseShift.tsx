@@ -10,6 +10,12 @@ import { CurrencyQuantityData } from "./constants";
 import { useCloseShift } from "./hooks/useCloseShift";
 import SelectNextCashier from "./components/ui/SelectNextCashier";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { checkIsNewOrders } from "@/api/services";
+import { toast } from "react-toastify";
+import { useShift } from "@/auth/context/ShiftContext";
+import { create } from "domain";
+import { createToast } from "@/components/global/Toasters";
 
 interface CloseShiftProps {
   open: boolean;
@@ -34,6 +40,29 @@ export default function CloseShift({ open, setOpen }: CloseShiftProps) {
     handleReset,
     handleValidate,
   } = useCloseShift();
+  const [isNewOrders, setIsNewOrders] = useState(false);
+
+  const { shiftId } = useShift();
+  console.log(shiftId);
+
+  useEffect(() => {
+    const fetchNewOrders = async () => {
+      if (shiftId) {
+        console.log(shiftId);
+        const res = await checkIsNewOrders(shiftId);
+        if (res.status === 200) {
+          setIsNewOrders(true);
+        } else {
+          setIsNewOrders(false);
+        }
+      } else {
+        toast.warning(
+          createToast("Shift not found", "Please refresh the page", "warning")
+        );
+      }
+    };
+    fetchNewOrders();
+  }, [shiftId]);
 
   return (
     <KeyboardProvider>
@@ -64,7 +93,7 @@ export default function CloseShift({ open, setOpen }: CloseShiftProps) {
                       )}
                     >
                       <div className="space-y-6 h-full relative px-1">
-                        {requiredNextCashier && (
+                        {isNewOrders && (
                           <SelectNextCashier
                             selectedPerson={selectedCashier}
                             setSelectedPerson={setSelectedCashier}
@@ -160,7 +189,7 @@ export default function CloseShift({ open, setOpen }: CloseShiftProps) {
                       <div className="absolute bottom-[4.12rem] left-0 w-full p-4 flex items-center space-x-4 dark:bg-secondary-black bg-secondary-white">
                         <Button
                           variant="secondary"
-                          className="w-full"
+                          className="w-full bg-white dark:bg-accent-white/10"
                           onClick={handleReset}
                         >
                           Reset

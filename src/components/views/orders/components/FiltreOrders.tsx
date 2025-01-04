@@ -9,12 +9,7 @@ import {
 import { CheckIcon } from "lucide-react";
 import { useState, useMemo, useCallback } from "react";
 import { FilterIcon } from "@/assets/figma-icons";
-
-interface FilterCriteria {
-  employee: string;
-  orderType: string;
-  status: string;
-}
+import { FilterCriteria } from "@/types";
 
 export default function FiltreOrders({
   onFilterChange,
@@ -24,24 +19,50 @@ export default function FiltreOrders({
   const [selectedEmployee, setSelectedEmployee] = useState<string>("");
   const [selectedOrderType, setSelectedOrderType] = useState<string>("");
   const [selectedStatus, setSelectedStatus] = useState<string>("");
+  const [selectedOrderId, setSelectedOrderId] = useState<string>("");
 
-  const users = useMemo(() => JSON.parse(localStorage.getItem("users") || "[]").cashiers, []);
-  const employees = useMemo(() => users?.map((user: any) => ({
-    value: user.name,
-    label: user.name,
-  })), [users]);
+  const users = useMemo(
+    () => JSON.parse(localStorage.getItem("users") || "[]").cashiers,
+    []
+  );
+  const employees = useMemo(
+    () =>
+      users?.map((user: any) => ({
+        value: user.name,
+        label: user.name,
+      })),
+    [users]
+  );
 
-  const orderTypesData = useMemo(() => JSON.parse(localStorage.getItem("generalData") || "[]").orderTypes, []);
-  const orderTypes = useMemo(() => orderTypesData?.map((type: any) => ({
-    value: type.type,
-    label: type.name,
-  })), [orderTypesData]);
+  const orderTypesData = useMemo(
+    () => JSON.parse(localStorage.getItem("generalData") || "[]").orderTypes,
+    []
+  );
+  const orderTypes = useMemo(
+    () =>
+      orderTypesData?.map((type: any) => ({
+        value: type.type,
+        label: type.name,
+      })),
+    [orderTypesData]
+  );
 
-  const statuses = useMemo(() => [
-    { value: "new", label: "New" },
-    { value: "paid", label: "Paid" },
-    { value: "cancelled", label: "Cancelled" },
-  ], []);
+  const statuses = useMemo(
+    () => [
+      { value: "new", label: "New" },
+      { value: "paid", label: "Paid" },
+      { value: "cancelled", label: "Cancelled" },
+    ],
+    []
+  );
+
+  const orderIds = useMemo(() => {
+    const orders = JSON.parse(localStorage.getItem("orders") || "[]");
+    return orders.map((order: any) => ({
+      value: order.ref,
+      label: order.ref,
+    }));
+  }, []);
 
   const handleEmployeeSelect = useCallback((value: string) => {
     setSelectedEmployee(value);
@@ -58,25 +79,37 @@ export default function FiltreOrders({
     console.log("Selected status:", value);
   }, []);
 
-  const handleClearFilter = useCallback((filterType: "employee" | "orderType" | "status") => {
-    switch (filterType) {
-      case "employee":
-        setSelectedEmployee("");
-        break;
-      case "orderType":
-        setSelectedOrderType("");
-        break;
-      case "status":
-        setSelectedStatus("");
-        break;
-    }
+  const handleOrderIdSelect = useCallback((value: string) => {
+    setSelectedOrderId(value);
+    console.log("Selected Order ID:", value);
   }, []);
+
+  const handleClearFilter = useCallback(
+    (filterType: "employee" | "orderType" | "status" | "orderId") => {
+      switch (filterType) {
+        case "employee":
+          setSelectedEmployee("");
+          break;
+        case "orderType":
+          setSelectedOrderType("");
+          break;
+        case "status":
+          setSelectedStatus("");
+          break;
+        case "orderId":
+          setSelectedOrderId("");
+          break;
+      }
+    },
+    []
+  );
 
   const handleReset = useCallback(() => {
     setSelectedEmployee("");
     setSelectedOrderType("");
     setSelectedStatus("");
-    onFilterChange({ employee: "", orderType: "", status: "" });
+    setSelectedOrderId("");
+    onFilterChange({ employee: "", orderType: "", status: "", orderId: "" });
   }, [onFilterChange]);
 
   const handleApplyFilter = useCallback(() => {
@@ -84,8 +117,15 @@ export default function FiltreOrders({
       employee: selectedEmployee,
       orderType: selectedOrderType,
       status: selectedStatus,
+      orderId: selectedOrderId,
     });
-  }, [onFilterChange, selectedEmployee, selectedOrderType, selectedStatus]);
+  }, [
+    onFilterChange,
+    selectedEmployee,
+    selectedOrderType,
+    selectedStatus,
+    selectedOrderId,
+  ]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -103,6 +143,38 @@ export default function FiltreOrders({
           <form className="space-y-5">
             <div>
               <div className="mb-0.5 flex items-center justify-between gap-1">
+                <Label className="pl-2">Order ID</Label>
+                <span
+                  className="text-xs font-medium text-error-color cursor-pointer"
+                  onClick={() => handleClearFilter("orderId")}
+                >
+                  Clear
+                </span>
+              </div>
+              <ComboboxSelect
+                items={orderIds}
+                value={
+                  orderIds.find((o: any) => o.value === selectedOrderId) || null
+                }
+                onChange={(item) => handleOrderIdSelect(item?.value || "")}
+                displayValue={(item) => item?.label || ""}
+                placeholder="Select an Order ID"
+                filterFunction={(query, item) =>
+                  item.label.toLowerCase().includes(query.toLowerCase())
+                }
+                renderOption={(item, _, selected) => (
+                  <div className="flex items-center justify-between">
+                    <span>{item.label}</span>
+                    {selected && (
+                      <CheckIcon className="h-4 w-4 text-primary-red" />
+                    )}
+                  </div>
+                )}
+              />
+            </div>
+
+            <div>
+              <div className="mb-0.5 flex items-center justify-between gap-1">
                 <Label className="pl-2">Users</Label>
                 <span
                   className="text-xs font-medium text-error-color cursor-pointer"
@@ -113,17 +185,22 @@ export default function FiltreOrders({
               </div>
               <ComboboxSelect
                 items={employees}
-                value={employees.find((e: any) => e.value === selectedEmployee) || null}
+                value={
+                  employees.find((e: any) => e.value === selectedEmployee) ||
+                  null
+                }
                 onChange={(item) => handleEmployeeSelect(item?.value || "")}
                 displayValue={(item) => item?.label || ""}
                 placeholder="Select an employee"
-                filterFunction={(query, item) => 
+                filterFunction={(query, item) =>
                   item.label.toLowerCase().includes(query.toLowerCase())
                 }
                 renderOption={(item, _, selected) => (
                   <div className="flex items-center justify-between">
                     <span>{item.label}</span>
-                    {selected && <CheckIcon className="h-4 w-4 text-primary-red" />}
+                    {selected && (
+                      <CheckIcon className="h-4 w-4 text-primary-red" />
+                    )}
                   </div>
                 )}
               />
@@ -141,17 +218,22 @@ export default function FiltreOrders({
               </div>
               <ComboboxSelect
                 items={orderTypes}
-                value={orderTypes.find((t: any) => t.value === selectedOrderType) || null}
+                value={
+                  orderTypes.find((t: any) => t.value === selectedOrderType) ||
+                  null
+                }
                 onChange={(item) => handleOrderTypeSelect(item?.value || "")}
                 displayValue={(item) => item?.label || ""}
                 placeholder="Select an order type"
-                filterFunction={(query, item) => 
+                filterFunction={(query, item) =>
                   item.label.toLowerCase().includes(query.toLowerCase())
                 }
                 renderOption={(item, _, selected) => (
                   <div className="flex items-center justify-between">
                     <span>{item.label}</span>
-                    {selected && <CheckIcon className="h-4 w-4 text-primary-red" />}
+                    {selected && (
+                      <CheckIcon className="h-4 w-4 text-primary-red" />
+                    )}
                   </div>
                 )}
               />
@@ -169,24 +251,30 @@ export default function FiltreOrders({
               </div>
               <ComboboxSelect
                 items={statuses}
-                value={statuses.find(s => s.value === selectedStatus) || null}
+                value={statuses.find((s) => s.value === selectedStatus) || null}
                 onChange={(item) => handleStatusSelect(item?.value || "")}
                 displayValue={(item) => item?.label || ""}
                 placeholder="Select a status"
-                filterFunction={(query, item) => 
+                filterFunction={(query, item) =>
                   item.label.toLowerCase().includes(query.toLowerCase())
                 }
                 renderOption={(item, _, selected) => (
                   <div className="flex items-center justify-between">
                     <span>{item.label}</span>
-                    {selected && <CheckIcon className="h-4 w-4 text-primary-red" />}
+                    {selected && (
+                      <CheckIcon className="h-4 w-4 text-primary-red" />
+                    )}
                   </div>
                 )}
               />
             </div>
           </form>
           <div className="flex justify-end gap-x-2 mt-6">
-            <Button variant="secondary" className="dark:bg-white/10 bg-white border border-border" onClick={handleReset}>
+            <Button
+              variant="secondary"
+              className="dark:bg-white/10 bg-white border border-border"
+              onClick={handleReset}
+            >
               Reset
             </Button>
             <Button onClick={handleApplyFilter}>Apply Filter</Button>
