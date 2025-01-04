@@ -1,4 +1,12 @@
-export function TypeOfOrderIcon({ type }: { type: string }) {
+import { cn } from "@/lib/utils";
+
+export function TypeOfOrderIcon({
+  type,
+  className,
+}: {
+  type: string;
+  className?: string;
+}) {
   const generalData = JSON.parse(localStorage.getItem("generalData") || "{}");
   const orderTypes = generalData.orderTypes || [];
   const typeOfOrder = orderTypes.find(
@@ -13,7 +21,7 @@ export function TypeOfOrderIcon({ type }: { type: string }) {
         <svg
           width="16"
           height="20"
-          className="w-6 h-auto"
+          className={cn("w-7 h-auto", className)}
           viewBox="0 0 16 20"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -29,7 +37,7 @@ export function TypeOfOrderIcon({ type }: { type: string }) {
         <svg
           width="16"
           height="18"
-          className="w-6 h-auto"
+          className={cn("w-7 h-auto", className)}
           viewBox="0 0 16 18"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -45,7 +53,7 @@ export function TypeOfOrderIcon({ type }: { type: string }) {
         <svg
           width="16"
           height="20"
-          className="w-6 h-auto"
+          className={cn("w-7 h-auto", className)}
           viewBox="0 0 16 20"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"

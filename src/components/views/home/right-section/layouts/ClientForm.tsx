@@ -72,7 +72,7 @@ export default function ClientForm({
 
       <InputLikeTextarea
         label="Address"
-        placeholder="Enter your address"
+        placeholder="e.g. 123 Main street, Apartment, City"
         value={formData.address || ""}
         setValue={handleInputChange("address")}
         error={errors.address}

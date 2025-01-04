@@ -17,6 +17,7 @@ export interface GeneralDataState {
 }
 
 export interface User {
+  id?: string;
   _id?: string;
   name: string;
   position: string;

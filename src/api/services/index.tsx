@@ -1,6 +1,33 @@
 import { api } from "@/api/axios";
 import { createToast } from "@/components/global/Toasters";
+import { User } from "@/types";
 import { toast } from "react-toastify";
+
+export const fetchCashiers = async (): Promise<User[]> => {
+  const response = await api.get<User[]>(
+    `${import.meta.env.VITE_BASE_URL}/users?position=Cashier`,
+    {
+      timeout: 5000,
+      headers: {
+        Authorization: `Api-Key ${import.meta.env.VITE_API_KEY}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+export const fetchManagers = async (): Promise<User[]> => {
+  const response = await api.get<User[]>(
+    `${import.meta.env.VITE_BASE_URL}/users?position=Manager`,
+    {
+      timeout: 5000,
+      headers: {
+        Authorization: `Api-Key ${import.meta.env.VITE_API_KEY}`,
+      },
+    }
+  );
+  return response.data;
+};
 
 export const login = async (id: string, password: string) => {
   try {
@@ -160,4 +187,12 @@ export const getClients = async () => {
 
 export const createClient = async (data: any) => {
   return api.post("/clients", data);
+};
+
+export const updateClient = async (id: string, data: any) => {
+  return api.put(`/clients/${id}`, data);
+};
+
+export const dropCash = async (data: any) => {
+  return api.post("/drop", data);
 };

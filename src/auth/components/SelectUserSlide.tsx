@@ -83,6 +83,7 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
     }
   };
 
+
   if (loading) {
     return (
       <div className="slider-container w-full custom-slider overflow-hidden mt-2 relative">
@@ -110,6 +111,8 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
       </div>
     );
   }
+
+  console.log(selectedUser)
 
   return (
     <div className="slider-container w-full custom-slider overflow-hidden mt-2 relative">

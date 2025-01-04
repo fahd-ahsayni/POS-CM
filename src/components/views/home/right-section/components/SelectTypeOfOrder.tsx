@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TypographyH4, TypographyP } from "@/components/ui/typography";
+import { TypographyH3, TypographyH4, TypographyP } from "@/components/ui/typography";
 import { updateOrder } from "@/functions/updateOrder";
 import { OrderType } from "@/types";
 import { ChevronRightIcon } from "lucide-react";
@@ -11,7 +11,12 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon } from "lucide-react";
 import { useRightViewContext } from "../contexts/RightViewContext";
-import { ORDER_SUMMARY_VIEW } from "../constants";
+import {
+  COASTER_CALL_VIEW,
+  NUMBER_OF_TABLE_VIEW,
+  ORDER_SUMMARY_VIEW,
+  OWN_DELIVERY_FORM_VIEW,
+} from "../constants";
 
 export const OrderCardSkeleton = () => (
   <Card className="w-full rounded-md h-24 px-8 py-4 dark:!bg-secondary-black bg-white flex space-x-4 items-center justify-between">
@@ -43,7 +48,7 @@ export const OrderCard = memo(
     return (
       <Card
         className={cn(
-          "w-full rounded-md h-24 px-8 py-6 flex space-x-4 items-center justify-between cursor-pointer dark:bg-secondary-black bg-white",
+          "w-full rounded-md h-24 px-6 py-6 flex space-x-4 items-center justify-between cursor-pointer dark:bg-secondary-black bg-white",
           isSelected && "ring-2 ring-primary-red"
         )}
         onClick={() => onSelect(orderType)}
@@ -115,7 +120,16 @@ function SelectTypeOfOrder() {
       } else {
         dispatch(updateOrder({ order_type_id: orderType._id }));
         localStorage.setItem("orderType", JSON.stringify(orderType));
-        setViews(ORDER_SUMMARY_VIEW);
+
+        if (orderType.select_table) {
+          setViews(NUMBER_OF_TABLE_VIEW);
+        } else if (orderType.select_client) {
+          setViews(OWN_DELIVERY_FORM_VIEW);
+        } else if (orderType.select_coaster_call) {
+          setViews(COASTER_CALL_VIEW);
+        } else {
+          setViews(ORDER_SUMMARY_VIEW);
+        }
       }
     },
     [dispatch, setViews]
@@ -134,11 +148,11 @@ function SelectTypeOfOrder() {
             <ChevronLeftIcon className="h-6 w-6" />
           </Button>
         )}
-        <TypographyH4 className="font-medium">
+        <TypographyH3 className="font-medium">
           {selectedType
             ? selectedType.name
             : "What type of order would you like to process?"}
-        </TypographyH4>
+        </TypographyH3>
       </div>
       <div className="flex-1 flex h-full items-center justify-center">
         <div className="w-full space-y-10 -mt-20">

@@ -63,7 +63,7 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
       <div className="flex items-center justify-between gap-x-1">
         <Label className="pl-1">
           {label}
-          {required && <span className="text-destructive">*</span>}
+          {required && <span className="text-primary-red pl-0.5">*</span>}
         </Label>
         {optionalText && (
           <span className="text-[0.65rem] text-neutral-dark-grey">

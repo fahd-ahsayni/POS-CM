@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { sidebarNavigation, sidebarPagesLink } from "../constants";
 import { useTheme } from "@/providers/themeProvider";
 import AddClient from "@/components/global/drawers/add-client/AddClient";
+import Drop from "@/components/global/drawers/drop/Drop";
 import { useState } from "react";
 
 interface SidebarItemProps {
@@ -60,14 +61,20 @@ export default function Sidebar() {
   const { theme } = useTheme();
   const { pathname } = useLocation();
   const [openClientDrawer, setOpenClientDrawer] = useState(false);
+  const [openDropDrawer, setOpenDropDrawer] = useState(false);
 
   const handleClientClick = () => {
     setOpenClientDrawer(true);
   };
 
+  const handleDropClick = () => {
+    setOpenDropDrawer(true);
+  };
+
   return (
     <div className="hidden w-full h-screen md:block z-10">
       <AddClient open={openClientDrawer} setOpen={setOpenClientDrawer} />
+      <Drop open={openDropDrawer} setOpen={setOpenDropDrawer} />
       <div className="flex w-full flex-col h-full items-center">
         <div className="w-full flex-1 flex flex-col justify-around px-2">
           {/* Pages Links */}
@@ -88,7 +95,11 @@ export default function Sidebar() {
               pathname={pathname}
               theme={theme}
               onClick={
-                item.name === "Clients" ? handleClientClick : item.onClick
+                item.name === "Clients"
+                  ? handleClientClick
+                  : item.name === "Drop"
+                  ? handleDropClick
+                  : item.onClick
               }
             />
           ))}

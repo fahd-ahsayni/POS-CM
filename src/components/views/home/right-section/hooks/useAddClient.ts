@@ -1,6 +1,6 @@
-import { DELIVERY_VIEW, ORDER_SUMMARY_VIEW } from "./../constants/index";
+import { ORDER_SUMMARY_VIEW, TYPE_OF_ORDER_VIEW } from "./../constants/index";
 import { useState, useEffect } from "react";
-import { createClient, getClients } from "@/api/services";
+import { createClient, getClients, updateClient } from "@/api/services";
 import { toast } from "react-toastify";
 import { z } from "zod";
 import { createToast } from "@/components/global/Toasters";
@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { setClientId } from "@/store/slices/order/createOrder";
 import { Client } from "@/types/clients";
 import { useRightViewContext } from "../contexts/RightViewContext";
+import { formatAddress } from "@/lib/utils";
 
 const clientSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -87,7 +88,7 @@ export const useAddClient = (onSuccess?: () => void) => {
       setFormData({
         name: selectedClient.name,
         phone: selectedClient.phone,
-        address: selectedClient.address || "",
+        address: formatAddress(selectedClient.address || ""),
         email: selectedClient.email || "",
         ice: selectedClient.ice || "",
       });
@@ -96,7 +97,7 @@ export const useAddClient = (onSuccess?: () => void) => {
   };
 
   const handleClose = () => {
-    setViews(DELIVERY_VIEW);
+    handleBack();
     setFormData({
       name: "",
       phone: "",
@@ -105,6 +106,10 @@ export const useAddClient = (onSuccess?: () => void) => {
       ice: "",
     });
     setErrors({});
+  };
+
+  const handleBack = () => {
+    setViews(TYPE_OF_ORDER_VIEW);
   };
 
   const handleSubmit = async () => {
@@ -123,15 +128,32 @@ export const useAddClient = (onSuccess?: () => void) => {
     try {
       const existingClient = clients.find((c) => c.phone === formData.phone);
       if (existingClient) {
+        const isDataChanged =
+          existingClient.name !== formData.name ||
+          formatAddress(existingClient.address || "") !==
+            formatAddress(formData.address || "") ||
+          existingClient.email !== formData.email ||
+          existingClient.ice !== formData.ice;
+
+        if (isDataChanged) {
+          await updateClient(existingClient._id, formData);
+          toast.info(
+            createToast(
+              "Client updated",
+              "Client information updated successfully",
+              "info"
+            )
+          );
+        } else {
+          toast.success(
+            createToast(
+              "Client selected",
+              "Client selected successfully",
+              "success"
+            )
+          );
+        }
         dispatch(setClientId(existingClient._id));
-        toast.info(
-          createToast(
-            "Client exists",
-            "Already existing client selected",
-            "info"
-          )
-        );
-        setViews(ORDER_SUMMARY_VIEW);
       } else {
         const response = await createClient(formData);
         dispatch(setClientId(response.data._id));
@@ -142,13 +164,13 @@ export const useAddClient = (onSuccess?: () => void) => {
             "success"
           )
         );
-        setViews(ORDER_SUMMARY_VIEW);
-        onSuccess?.();
       }
+      setViews(ORDER_SUMMARY_VIEW);
+      onSuccess?.();
     } catch (error) {
       toast.error(
         createToast(
-          "Client creation failed",
+          "Client processing failed",
           "Failed to process client",
           "error"
         )

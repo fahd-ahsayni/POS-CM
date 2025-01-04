@@ -1,8 +1,8 @@
 // src/store/slices/data/userSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { createApiInstance } from "@/api/axios";
 import axios from "axios";
 import { User } from "@/types";
+import { fetchCashiers, fetchManagers } from "@/api/services";
 
 interface UserState {
   users: {
@@ -29,26 +29,15 @@ const initialState: UserState = {
 export const fetchUsers = createAsyncThunk(
   "users/fetchUsers",
   async (_, { rejectWithValue }) => {
-    const apiInstance = createApiInstance();
     try {
-      const [cashiersResponse, managersResponse] = await Promise.all([
-        apiInstance.get<User[]>(
-          `${import.meta.env.VITE_BASE_URL}/users?position=Cashier`,
-          { timeout: 5000 }
-        ),
-        apiInstance.get<User[]>(
-          `${import.meta.env.VITE_BASE_URL}/users?position=Manager`,
-          { timeout: 5000 }
-        ),
+      const [cashiers, managers] = await Promise.all([
+        fetchCashiers(),
+        fetchManagers(),
       ]);
 
-      if (!cashiersResponse.data || !managersResponse.data) {
-        throw new Error("Invalid response data received");
-      }
-
       return {
-        cashiers: cashiersResponse.data,
-        managers: managersResponse.data,
+        cashiers,
+        managers,
       };
     } catch (error) {
       if (axios.isAxiosError(error)) {

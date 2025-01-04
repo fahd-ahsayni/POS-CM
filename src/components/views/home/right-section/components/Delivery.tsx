@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { TypographyH4 } from "@/components/ui/typography";
+import { TypographyH3, TypographyH4 } from "@/components/ui/typography";
 
 import { glovo, kaalix, ownDelivery, yassir } from "@/assets";
 import { motion } from "framer-motion";
@@ -54,10 +54,10 @@ export default function SelectDeliveryType() {
 
   return (
     <div className="flex flex-col h-full">
-      <TypographyH4 className="font-medium max-w-xs">
-        Enter the table number to start the order:
-      </TypographyH4>
-      <div className="h-full flex items-center justify-center bg-black relative">
+      <TypographyH3 className="font-medium max-w-xs">
+        Select the delivery app to start the order:
+      </TypographyH3>
+      <div className="h-full flex items-center justify-center = relative">
         <div className="w-full space-y-10 -mt-20">
           {deliveryApps.map((app, index) => (
             <motion.div

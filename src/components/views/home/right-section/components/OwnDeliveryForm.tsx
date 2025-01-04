@@ -1,8 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { TypographyH3 } from "@/components/ui/typography";
 import { BeatLoader } from "react-spinners";
-import { DELIVERY_VIEW } from "../constants";
-import { useRightViewContext } from "../contexts/RightViewContext";
 import { useAddClient } from "../hooks/useAddClient";
 import ClientForm from "../layouts/ClientForm";
 
@@ -16,21 +14,8 @@ export default function NumberOfTabel() {
     handlePhoneSelect,
     clients,
     isFetching,
-    setFormData,
+    handleClose,
   } = useAddClient();
-
-  const { setViews } = useRightViewContext();
-
-  const handleCancel = () => {
-    setViews(DELIVERY_VIEW);
-    setFormData({
-      name: "",
-      phone: "",
-      address: "",
-      email: "",
-      ice: "",
-    });
-  };
 
   return (
     <div className="flex flex-col justify-start h-full">
@@ -52,7 +37,7 @@ export default function NumberOfTabel() {
           <Button
             variant="secondary"
             className="flex-1 border border-border"
-            onClick={handleCancel}
+            onClick={handleClose}
             disabled={isLoading}
           >
             Cancel

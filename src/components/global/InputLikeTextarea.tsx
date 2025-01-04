@@ -60,7 +60,7 @@ export default function InputLikeTextarea({
       <div className="flex justify-between items-center">
         <Label>
           {label}
-          {required && <span className="text-destructive">*</span>}
+          {required && <span className="text-primary-red pl-0.5">*</span>}
         </Label>
         {maxLength && (
           <span className="text-xs text-muted-foreground">
