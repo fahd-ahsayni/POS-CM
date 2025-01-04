@@ -1,25 +1,31 @@
+import { FilterIcon } from "@/assets/figma-icons";
 import ComboboxSelect from "@/components/global/ComboboxSelect";
+import InputComponent from "@/components/global/InputField";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
 } from "@/components/ui/popover";
-import { CheckIcon } from "lucide-react";
-import { useState, useMemo, useCallback } from "react";
-import { FilterIcon } from "@/assets/figma-icons";
 import { FilterCriteria } from "@/types";
+import { CheckIcon } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 
-export default function FiltreOrders({
-  onFilterChange,
-}: {
+interface FilterOrdersProps {
   onFilterChange: (filters: FilterCriteria) => void;
-}) {
+  totalItems: number;
+}
+
+export default function FilterOrders({
+  onFilterChange,
+  totalItems,
+}: FilterOrdersProps) {
   const [selectedEmployee, setSelectedEmployee] = useState<string>("");
   const [selectedOrderType, setSelectedOrderType] = useState<string>("");
   const [selectedStatus, setSelectedStatus] = useState<string>("");
-  const [selectedOrderId, setSelectedOrderId] = useState<string>("");
+  const [orderId, setOrderId] = useState<string>("");
+  const [tableNumber, setTableNumber] = useState<string>("");
 
   const users = useMemo(
     () => JSON.parse(localStorage.getItem("users") || "[]").cashiers,
@@ -56,14 +62,6 @@ export default function FiltreOrders({
     []
   );
 
-  const orderIds = useMemo(() => {
-    const orders = JSON.parse(localStorage.getItem("orders") || "[]");
-    return orders.map((order: any) => ({
-      value: order.ref,
-      label: order.ref,
-    }));
-  }, []);
-
   const handleEmployeeSelect = useCallback((value: string) => {
     setSelectedEmployee(value);
     console.log("Selected employee:", value);
@@ -79,13 +77,26 @@ export default function FiltreOrders({
     console.log("Selected status:", value);
   }, []);
 
-  const handleOrderIdSelect = useCallback((value: string) => {
-    setSelectedOrderId(value);
-    console.log("Selected Order ID:", value);
+  const handleOrderIdChange = useCallback((value: string | number | null) => {
+    setOrderId(value?.toString() || "");
   }, []);
 
+  const handleTableNumberChange = useCallback(
+    (value: string | number | null) => {
+      setTableNumber(value?.toString() || "");
+    },
+    []
+  );
+
   const handleClearFilter = useCallback(
-    (filterType: "employee" | "orderType" | "status" | "orderId") => {
+    (
+      filterType:
+        | "employee"
+        | "orderType"
+        | "status"
+        | "orderId"
+        | "tableNumber"
+    ) => {
       switch (filterType) {
         case "employee":
           setSelectedEmployee("");
@@ -97,7 +108,10 @@ export default function FiltreOrders({
           setSelectedStatus("");
           break;
         case "orderId":
-          setSelectedOrderId("");
+          setOrderId("");
+          break;
+        case "tableNumber":
+          setTableNumber("");
           break;
       }
     },
@@ -108,8 +122,15 @@ export default function FiltreOrders({
     setSelectedEmployee("");
     setSelectedOrderType("");
     setSelectedStatus("");
-    setSelectedOrderId("");
-    onFilterChange({ employee: "", orderType: "", status: "", orderId: "" });
+    setOrderId("");
+    setTableNumber("");
+    onFilterChange({
+      employee: "",
+      orderType: "",
+      status: "",
+      orderId: "",
+      tableNumber: "",
+    });
   }, [onFilterChange]);
 
   const handleApplyFilter = useCallback(() => {
@@ -117,14 +138,16 @@ export default function FiltreOrders({
       employee: selectedEmployee,
       orderType: selectedOrderType,
       status: selectedStatus,
-      orderId: selectedOrderId,
+      orderId: orderId,
+      tableNumber: tableNumber,
     });
   }, [
     onFilterChange,
     selectedEmployee,
     selectedOrderType,
     selectedStatus,
-    selectedOrderId,
+    orderId,
+    tableNumber,
   ]);
 
   return (
@@ -142,7 +165,7 @@ export default function FiltreOrders({
           <h2 className="mb-4 text-sm font-semibold">Filter Orders</h2>
           <form className="space-y-5">
             <div>
-              <div className="mb-0.5 flex items-center justify-between gap-1">
+              <div className="mb-1 flex items-center justify-between gap-1">
                 <Label className="pl-2">Order ID</Label>
                 <span
                   className="text-xs font-medium text-error-color cursor-pointer"
@@ -151,30 +174,38 @@ export default function FiltreOrders({
                   Clear
                 </span>
               </div>
-              <ComboboxSelect
-                items={orderIds}
-                value={
-                  orderIds.find((o: any) => o.value === selectedOrderId) || null
-                }
-                onChange={(item) => handleOrderIdSelect(item?.value || "")}
-                displayValue={(item) => item?.label || ""}
-                placeholder="Select an Order ID"
-                filterFunction={(query, item) =>
-                  item.label.toLowerCase().includes(query.toLowerCase())
-                }
-                renderOption={(item, _, selected) => (
-                  <div className="flex items-center justify-between">
-                    <span>{item.label}</span>
-                    {selected && (
-                      <CheckIcon className="h-4 w-4 text-primary-red" />
-                    )}
-                  </div>
-                )}
+              <InputComponent
+                config={{
+                  type: "text",
+                  placeholder: "Enter Order ID",
+                  value: orderId,
+                  setValue: handleOrderIdChange,
+                }}
               />
             </div>
 
             <div>
-              <div className="mb-0.5 flex items-center justify-between gap-1">
+              <div className="mb-1 flex items-center justify-between gap-1">
+                <Label className="pl-2">Table Number</Label>
+                <span
+                  className="text-xs font-medium text-error-color cursor-pointer"
+                  onClick={() => handleClearFilter("tableNumber")}
+                >
+                  Clear
+                </span>
+              </div>
+              <InputComponent
+                config={{
+                  type: "text",
+                  placeholder: "Enter Table Number",
+                  value: tableNumber,
+                  setValue: handleTableNumberChange,
+                }}
+              />
+            </div>
+
+            <div>
+              <div className="mb-1 flex items-center justify-between gap-1">
                 <Label className="pl-2">Users</Label>
                 <span
                   className="text-xs font-medium text-error-color cursor-pointer"
@@ -207,10 +238,10 @@ export default function FiltreOrders({
             </div>
 
             <div>
-              <div className="mb-0.5 flex items-center justify-between gap-1">
+              <div className="mb-1 flex items-center justify-between gap-1">
                 <Label className="pl-2">Order Type</Label>
                 <span
-                  className="text-xs font-medium text-error-color cursor-pointer"
+                  className="text-xs font- text-error-color cursor-pointer"
                   onClick={() => handleClearFilter("orderType")}
                 >
                   Clear

@@ -134,4 +134,5 @@ export interface FilterCriteria {
   orderType: string;
   status: string;
   orderId: string;
+  tableNumber: number | string;
 }

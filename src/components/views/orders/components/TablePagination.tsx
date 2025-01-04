@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Pagination,
   PaginationContent,
@@ -12,11 +12,25 @@ import { AppDispatch } from "@/store";
 import { setCurrentPage } from "@/store/slices/data/ordersSlice";
 import { useDispatch, useSelector } from "react-redux";
 
-export function TablePagination({ itemsLength }: { itemsLength: number }) {
+export function TablePagination() {
   const dispatch = useDispatch<AppDispatch>();
   const currentPage = useSelector((state: any) => state.orders.currentPage);
   const pageSize = useSelector((state: any) => state.orders.pageSize);
-  const totalPages = Math.ceil(itemsLength / pageSize);
+  const filteredDataLength = useSelector((state: any) => state.orders.filteredDataLength);
+
+  const totalPages = Math.ceil(filteredDataLength / pageSize);
+
+  // Reset to first page when itemsLength changes (i.e., when filters are applied)
+  useEffect(() => {
+    dispatch(setCurrentPage(0));
+  }, [filteredDataLength, dispatch]);
+
+  // Ensure current page is valid when total pages changes
+  useEffect(() => {
+    if (currentPage >= totalPages) {
+      dispatch(setCurrentPage(Math.max(0, totalPages - 1)));
+    }
+  }, [totalPages, currentPage, dispatch]);
 
   const handlePrevious = () => {
     if (currentPage > 0) {
@@ -34,11 +48,19 @@ export function TablePagination({ itemsLength }: { itemsLength: number }) {
     dispatch(setCurrentPage(page));
   };
 
+  // Don't render pagination if there's only one page or no items
+  if (totalPages <= 1) {
+    return null;
+  }
+
   return (
     <Pagination>
       <PaginationContent>
         <PaginationItem>
-          <PaginationPrevious onClick={handlePrevious} />
+          <PaginationPrevious 
+            onClick={handlePrevious}
+            className={currentPage === 0 ? 'pointer-events-none opacity-50' : ''}
+          />
         </PaginationItem>
         {Array.from({ length: totalPages }, (_, index) => {
           if (
@@ -71,7 +93,10 @@ export function TablePagination({ itemsLength }: { itemsLength: number }) {
           return null;
         })}
         <PaginationItem>
-          <PaginationNext onClick={handleNext} />
+          <PaginationNext 
+            onClick={handleNext}
+            className={currentPage === totalPages - 1 ? 'pointer-events-none opacity-50' : ''}
+          />
         </PaginationItem>
       </PaginationContent>
     </Pagination>

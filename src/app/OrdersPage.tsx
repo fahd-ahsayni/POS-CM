@@ -1,15 +1,20 @@
 import OrdersTable from "@/components/views/orders/components/OrdersTable";
 import { TABLE_HEADERS } from "@/components/views/orders/config/table-config";
 import { AppDispatch, RootState } from "@/store";
-import { fetchOrders, refreshOrders } from "@/store/slices/data/ordersSlice";
+import { 
+  fetchOrders, 
+  refreshOrders,
+  setFilteredDataLength 
+} from "@/store/slices/data/ordersSlice";
 import { FilterCriteria } from "@/types";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BeatLoader } from "react-spinners";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import OrderDetails from "@/components/global/drawers/order-details/OrderDetails";
+import { useTableOrders } from "@/components/views/orders/hooks/useTableOrders";
 
 export interface OrdersState {
   orders: any[];
@@ -25,7 +30,24 @@ export default function OrdersPage() {
     employee: "",
     orderType: "",
     status: "",
+    orderId: "",
+    tableNumber: "",
   });
+
+  // Use the hook instead of direct filtering
+  const { sortedData: filteredOrders } = useTableOrders({
+    data: orders,
+    filterCriteria,
+    defaultSort: {
+      key: "createdAt",
+      direction: "descending"
+    }
+  });
+
+  // Update filtered data length in Redux store
+  useEffect(() => {
+    dispatch(setFilteredDataLength(filteredOrders.length));
+  }, [filteredOrders.length, dispatch]);
 
   useEffect(() => {
     dispatch(fetchOrders());
@@ -35,6 +57,13 @@ export default function OrdersPage() {
     setLoading(true);
     await new Promise((resolve) => setTimeout(resolve, 500));
     dispatch(refreshOrders());
+    setFilterCriteria({
+      employee: "",
+      orderType: "",
+      status: "",
+      orderId: "",
+      tableNumber: "",
+    });
     setLoading(false);
   };
 
@@ -56,6 +85,7 @@ export default function OrdersPage() {
           title="Orders"
           withFilter={true}
           onFilterChange={handleFilterChange}
+          totalItems={orders.length}
         />
         <main className="mt-6 flex-1 overflow-hidden">
           {loading ? (
@@ -69,14 +99,14 @@ export default function OrdersPage() {
           ) : (
             <OrdersTable
               headers={TABLE_HEADERS}
-              data={orders}
+              data={filteredOrders}
               caption="A list of your recent orders."
               withPrintButton={true}
               filterCriteria={filterCriteria}
             />
           )}
         </main>
-        <Footer ordersLength={orders.length} />
+        <Footer ordersLength={filteredOrders.length} />
       </motion.div>
     </>
   );

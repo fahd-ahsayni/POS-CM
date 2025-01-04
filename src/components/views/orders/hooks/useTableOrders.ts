@@ -1,5 +1,6 @@
-import { useState, useMemo } from "react";
+import { filterOrderByTableNumber } from "@/api/services";
 import { FilterCriteria } from "@/types";
+import { useEffect, useMemo, useState } from "react";
 
 interface SortConfig {
   key: string;
@@ -20,6 +21,28 @@ export function useTableOrders<T>({
   const [sortConfig, setSortConfig] = useState<SortConfig | null>(
     defaultSort || null
   );
+  const [tableData, setTableData] = useState<T[]>([]);
+
+  // Fetch table data when tableNumber changes
+  useEffect(() => {
+    const fetchTableData = async () => {
+      if (filterCriteria.tableNumber) {
+        try {
+          const response = await filterOrderByTableNumber(
+            filterCriteria.tableNumber
+          );
+          setTableData(response.data);
+        } catch (error) {
+          console.error("Error fetching table data:", error);
+          setTableData([]);
+        }
+      } else {
+        setTableData([]);
+      }
+    };
+
+    fetchTableData();
+  }, [filterCriteria.tableNumber]);
 
   const handleSort = (key: string) => {
     setSortConfig((prev) => ({
@@ -45,9 +68,12 @@ export function useTableOrders<T>({
   };
 
   const sortedData = useMemo(() => {
-    let filtered = [...data];
+    // Ensure we're working with an array
+    let filtered = filterCriteria.tableNumber 
+      ? (Array.isArray(tableData) ? tableData : [])
+      : [...data];
 
-    // Apply filters
+    // Apply other filters
     if (filterCriteria) {
       filtered = filtered.filter((item) => {
         const matchesEmployee =
@@ -71,7 +97,9 @@ export function useTableOrders<T>({
             ?.toLowerCase()
             .includes(filterCriteria.orderId.toLowerCase());
 
-        return matchesEmployee && matchesOrderType && matchesStatus && matchesOrderId;
+        return (
+          matchesEmployee && matchesOrderType && matchesStatus && matchesOrderId
+        );
       });
     }
 
@@ -114,7 +142,7 @@ export function useTableOrders<T>({
     }
 
     return filtered;
-  }, [data, filterCriteria, sortConfig]);
+  }, [data, filterCriteria, sortConfig, tableData]);
 
   return {
     sortedData,

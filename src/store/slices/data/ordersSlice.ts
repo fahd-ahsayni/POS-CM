@@ -8,6 +8,7 @@ interface OrdersState {
   currentPage: number;
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
+  filteredDataLength: number;
 }
 
 const initialState: OrdersState = {
@@ -16,6 +17,7 @@ const initialState: OrdersState = {
   currentPage: 0,
   status: "idle",
   error: null,
+  filteredDataLength: 0,
 };
 
 export const fetchOrders = createAsyncThunk("orders/fetchOrders", async () => {
@@ -51,6 +53,9 @@ const ordersSlice = createSlice({
     resetPagination(state) {
       state.currentPage = 0;
     },
+    setFilteredDataLength(state, action: PayloadAction<number>) {
+      state.filteredDataLength = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -80,6 +85,6 @@ const ordersSlice = createSlice({
   },
 });
 
-export const { setPageSize, setCurrentPage, resetPagination } =
+export const { setPageSize, setCurrentPage, resetPagination, setFilteredDataLength } =
   ordersSlice.actions;
 export default ordersSlice.reducer;
