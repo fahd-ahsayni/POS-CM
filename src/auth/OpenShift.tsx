@@ -1,4 +1,5 @@
 import { openShift, updateShift } from "@/api/services";
+import { useShift } from "@/auth/context/ShiftContext";
 import Drawer from "@/components/global/Drawer";
 import NumberPad from "@/components/global/NumberPad";
 import { createToast } from "@/components/global/Toasters";
@@ -7,8 +8,8 @@ import { TypographyH2 } from "@/components/ui/typography";
 import { currency } from "@/preferences";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { BeatLoader } from "react-spinners";
 import { toast } from "react-toastify";
-import { useShift } from "@/auth/context/ShiftContext";
 
 interface OpenShiftProps {
   open: boolean;
@@ -18,7 +19,13 @@ interface OpenShiftProps {
   shiftId?: string;
 }
 
-export default function OpenShift({ open, setOpen, posId, reOpen, shiftId }: OpenShiftProps) {
+export default function OpenShift({
+  open,
+  setOpen,
+  posId,
+  reOpen,
+  shiftId,
+}: OpenShiftProps) {
   const { setShiftId } = useShift();
   const [amount, setAmount] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -78,7 +85,7 @@ export default function OpenShift({ open, setOpen, posId, reOpen, shiftId }: Ope
             onClick={handleOpenShift}
             disabled={isLoading || !amount}
           >
-            {isLoading ? "Opening..." : "Open Session"}
+            {isLoading ? <BeatLoader color="#fff" size={10} /> : "Open Session"}
           </Button>
         </div>
       </section>

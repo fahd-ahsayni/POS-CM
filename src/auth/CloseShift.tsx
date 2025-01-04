@@ -1,21 +1,21 @@
+import { checkIsNewOrders } from "@/api/services";
 import { CashWithCoinsIcon } from "@/assets/figma-icons";
+import { useShift } from "@/auth/context/ShiftContext";
 import Drawer from "@/components/global/Drawer";
 import InputComponent from "@/components/global/InputField";
 import { KeyboardProvider } from "@/components/global/keyboard/context/KeyboardContext";
+import { createToast } from "@/components/global/Toasters";
 import { Button } from "@/components/ui/button";
-import { TypographyP } from "@/components/ui/typography";
 import { Separator } from "@/components/ui/separator";
+import { TypographyP } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
-import { CurrencyQuantityData } from "./constants";
-import { useCloseShift } from "./hooks/useCloseShift";
-import SelectNextCashier from "./components/ui/SelectNextCashier";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { checkIsNewOrders } from "@/api/services";
+import { BeatLoader } from "react-spinners";
 import { toast } from "react-toastify";
-import { useShift } from "@/auth/context/ShiftContext";
-import { create } from "domain";
-import { createToast } from "@/components/global/Toasters";
+import SelectNextCashier from "./components/ui/SelectNextCashier";
+import { CurrencyQuantityData } from "./constants";
+import { useCloseShift } from "./hooks/useCloseShift";
 
 interface CloseShiftProps {
   open: boolean;
@@ -27,8 +27,8 @@ export default function CloseShift({ open, setOpen }: CloseShiftProps) {
     selectedCashier,
     setSelectedCashier,
     paymentAmounts,
-    requiredNextCashier,
     openCurrencyQuantity,
+    requiredNextCashier,
     currencyQuantities,
     focusedMethod,
     setFocusedMethod,
@@ -39,30 +39,69 @@ export default function CloseShift({ open, setOpen }: CloseShiftProps) {
     handleCloseShift,
     handleReset,
     handleValidate,
+    isLoading,
   } = useCloseShift();
   const [isNewOrders, setIsNewOrders] = useState(false);
-
   const { shiftId } = useShift();
-  console.log(shiftId);
 
   useEffect(() => {
-    const fetchNewOrders = async () => {
-      if (shiftId) {
-        console.log(shiftId);
-        const res = await checkIsNewOrders(shiftId);
-        if (res.status === 200) {
-          setIsNewOrders(true);
-        } else {
-          setIsNewOrders(false);
-        }
-      } else {
+    const checkForNewOrders = async () => {
+      if (!shiftId) {
         toast.warning(
           createToast("Shift not found", "Please refresh the page", "warning")
         );
+        return;
+      }
+
+      try {
+        const res = await checkIsNewOrders(shiftId);
+        setIsNewOrders(res.status === 200);
+      } catch (error) {
+        console.error("Error checking for new orders:", error);
+        setIsNewOrders(false);
       }
     };
-    fetchNewOrders();
+
+    console.log("shiftId", shiftId);
+    checkForNewOrders();
   }, [shiftId]);
+
+  console.log("isNewOrders", isNewOrders);
+  console.log("requiredNextCashier", requiredNextCashier);
+
+  const renderPaymentMethod = (method: any) => (
+    <div
+      key={method._id}
+      className="w-full flex items-center justify-between space-x-2"
+    >
+      <InputComponent
+        config={{
+          label: `${method.name} total amount`,
+          suffix: "MAD",
+          type: "number",
+          placeholder: `Enter ${method.name.toLowerCase()} total amount`,
+          value: paymentAmounts[method._id] || "",
+          setValue: (value: string | number | null) =>
+            handleAmountChange(method._id, value?.toString() || ""),
+          isFocused: focusedMethod === method._id,
+          onFocus: () => setFocusedMethod(method._id),
+          onBlur: () => setFocusedMethod(null),
+        }}
+        className={method.is_cash ? "w-[90%]" : "w-full"}
+      />
+      {method.is_cash && (
+        <div className="w-[10%] mt-6 flex items-center justify-end">
+          <Button
+            variant="link"
+            className="w-full"
+            onClick={handleCurrencyIconClick}
+          >
+            <CashWithCoinsIcon className="w-auto h-6 dark:fill-white fill-primary-black" />
+          </Button>
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <KeyboardProvider>
@@ -93,52 +132,21 @@ export default function CloseShift({ open, setOpen }: CloseShiftProps) {
                       )}
                     >
                       <div className="space-y-6 h-full relative px-1">
-                        {isNewOrders && (
+                        {(isNewOrders || requiredNextCashier) && (
                           <SelectNextCashier
                             selectedPerson={selectedCashier}
                             setSelectedPerson={setSelectedCashier}
                           />
                         )}
 
-                        {paymentMethods.map((method) => (
-                          <div
-                            key={method._id}
-                            className="w-full flex items-center justify-between space-x-2"
-                          >
-                            <InputComponent
-                              config={{
-                                label: `${method.name} total amount`,
-                                suffix: "MAD",
-                                type: "number",
-                                placeholder: `Enter ${method.name.toLowerCase()} total amount`,
-                                value: paymentAmounts[method._id] || "",
-                                setValue: (value: string | number | null) =>
-                                  handleAmountChange(
-                                    method._id,
-                                    value?.toString() || ""
-                                  ),
-                                isFocused: focusedMethod === method._id,
-                                onFocus: () => setFocusedMethod(method._id),
-                                onBlur: () => setFocusedMethod(null),
-                              }}
-                              className={method.is_cash ? "w-[90%]" : "w-full"}
-                            />
-                            {method.is_cash && (
-                              <div className="w-[10%] mt-6 flex items-center justify-end">
-                                <Button
-                                  variant="link"
-                                  className="w-full"
-                                  onClick={handleCurrencyIconClick}
-                                >
-                                  <CashWithCoinsIcon className="w-auto h-6 dark:fill-white fill-primary-black" />
-                                </Button>
-                              </div>
-                            )}
-                          </div>
-                        ))}
+                        {paymentMethods.map(renderPaymentMethod)}
                         <div className="absolute bottom-20 left-0 w-full">
                           <Button className="w-full" onClick={handleCloseShift}>
-                            End Shift
+                            {isLoading ? (
+                              <BeatLoader color="#fff" size={10} />
+                            ) : (
+                              "End Shift"
+                            )}
                           </Button>
                         </div>
                       </div>

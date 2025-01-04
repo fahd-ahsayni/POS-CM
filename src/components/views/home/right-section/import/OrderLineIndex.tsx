@@ -6,6 +6,7 @@ import { memo, useMemo, useCallback } from "react";
 import { useRightViewContext } from "../contexts/RightViewContext";
 import OrderLine from "./OrderLine";
 import { ProductSelected } from "@/types";
+import { currency } from "@/preferences";
 
 interface OrderLineIndexProps {
   customerIndex: number;
@@ -36,10 +37,10 @@ const OrderLineIndex = ({
 
   const totalPrice = useMemo(
     () =>
-      products.reduce(
-        (sum, product) => sum + product.price * product.quantity,
-        0
-      ),
+      products.reduce((sum, product) => {
+        const unitPrice = product.variants[0]?.price_ttc || product.price / product.quantity;
+        return sum + (unitPrice * product.quantity);
+      }, 0),
     [products]
   );
 
@@ -116,7 +117,7 @@ const OrderLineIndex = ({
           </span>
           <span className="flex items-center gap-x-0.5">
             <CashIcon className="w-5 h-auto !fill-secondary-black dark:!fill-secondary-white" />
-            {totalPrice} Dhs
+            {totalPrice.toFixed(2)} {currency.currency}
           </span>
         </div>
       )}

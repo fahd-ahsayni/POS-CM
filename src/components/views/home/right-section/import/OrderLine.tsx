@@ -43,6 +43,9 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
   const { customerIndex } = useRightViewContext();
   const { selectedProducts, setSelectedProducts } = useLeftViewContext();
 
+  const unitPrice = item.variants[0]?.price_ttc || item.price / item.quantity;
+  const totalPrice = unitPrice * item.quantity;
+
   const itemVariants = useMemo(
     () => ({
       initial: { x: 50, opacity: 0 },
@@ -198,7 +201,7 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
 
         <div className="flex items-center justify-between w-full mt-4">
           <TypographyP className="text-sm font-medium">
-            {item.price} {currency.currency}
+            {totalPrice.toFixed(2)} {currency.currency}
           </TypographyP>
           <div className="flex items-center gap-x-3">
             <OderLineAddComments

@@ -20,11 +20,15 @@ export const calculateSelectedProductsTotal = (
   taxRate: number = 10
 ): SalesCalculation => {
   const rawTotal = selectedProducts.reduce((sum, product) => {
-    const basePrice = product.price * (product.quantity || 0);
+    const unitPrice = product.variants[0]?.price_ttc || product.price / product.quantity;
+    const basePrice = unitPrice * (product.quantity || 0);
 
     const supplementsTotal = product.is_combo
       ? product.combo_items?.supplements?.reduce(
-          (suppTotal, supp) => suppTotal + supp.price_ttc * supp.quantity,
+          (suppTotal, supp) => {
+            const suppUnitPrice = supp.price_ttc;
+            return suppTotal + (suppUnitPrice * supp.quantity);
+          },
           0
         ) || 0
       : 0;

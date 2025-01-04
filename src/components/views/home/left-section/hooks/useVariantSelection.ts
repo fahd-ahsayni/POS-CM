@@ -34,10 +34,23 @@ export const useVariantSelection = ({
       );
 
       if (!existingVariant) {
+        const initialQuantity = 1;
         addOrUpdateProduct(selectedProduct, id, price);
+      } else {
+        setSelectedProducts((prev) =>
+          prev.map((p) =>
+            p.product_variant_id === id && p.customer_index === customerIndex
+              ? {
+                  ...p,
+                  quantity: p.quantity + 1,
+                  price: price * (p.quantity + 1),
+                }
+              : p
+          )
+        );
       }
     },
-    [selectedProduct, addOrUpdateProduct, selectedProducts, customerIndex]
+    [selectedProduct, addOrUpdateProduct, selectedProducts, customerIndex, setSelectedProducts]
   );
 
   const handleQuantityChange = useCallback(
@@ -48,6 +61,7 @@ export const useVariantSelection = ({
             product.product_variant_id === variantId &&
             product.customer_index === customerIndex
           ) {
+            const basePrice = product.variants[0].price_ttc || product.price / product.quantity;
             const newQuantity = increment
               ? product.quantity + 1
               : Math.max(1, product.quantity - 1);
@@ -57,17 +71,16 @@ export const useVariantSelection = ({
               return {
                 ...product,
                 quantity: newQuantity,
+                price: basePrice * newQuantity,
                 combo_items: {
                   variants: product.combo_items.variants.map((v: any) => ({
                     ...v,
-                    quantity: v.quantity * newQuantity,
+                    quantity: v.quantity * (newQuantity / product.quantity),
                   })),
-                  supplements: product.combo_items.supplements.map(
-                    (s: any) => ({
-                      ...s,
-                      quantity: s.quantity * newQuantity,
-                    })
-                  ),
+                  supplements: product.combo_items.supplements.map((s: any) => ({
+                    ...s,
+                    quantity: s.quantity * (newQuantity / product.quantity),
+                  })),
                 },
               };
             }
@@ -76,6 +89,7 @@ export const useVariantSelection = ({
             return {
               ...product,
               quantity: newQuantity,
+              price: basePrice * newQuantity,
             };
           }
           return product;
@@ -88,7 +102,6 @@ export const useVariantSelection = ({
   const orderlineData = useMemo(
     () =>
       selectedProducts.map((p) => {
-        // Ensure we have valid variant data
         const variant = p.variants?.[0] || p.product_variant_id;
 
         const baseOrderLine = {
@@ -105,7 +118,6 @@ export const useVariantSelection = ({
           is_paid: p.is_paid || false,
         };
 
-        // Handle combo products
         if (p.is_combo && p.combo_items) {
           return {
             ...baseOrderLine,
@@ -128,7 +140,6 @@ export const useVariantSelection = ({
           };
         }
 
-        // Handle regular products
         return {
           ...baseOrderLine,
           combo_prod_ids: [],
@@ -138,7 +149,6 @@ export const useVariantSelection = ({
     [selectedProducts, orderType]
   );
 
-  // Sync order line data with Redux store
   useEffect(() => {
     dispatch(addOrderLine(selectedProducts.length > 0 ? orderlineData : []));
   }, [dispatch, orderlineData, selectedProducts.length]);

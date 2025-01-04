@@ -25,13 +25,15 @@ export const useProductSelection = ({
 
   const createNewProduct = useCallback(
     (product: any, variant: Variant, price?: number): ProductSelected => {
+      const unitPrice = price || variant.price_ttc;
       return {
         ...product,
         id: uuidv4(),
         variants: [variant],
         product_variant_id: variant._id,
         quantity: 1,
-        price: price || variant.price_ttc,
+        price: unitPrice,
+        unit_price: unitPrice,
         customer_index: customerIndex,
         order_type_id: orderType || "",
         uom_id: variant.uom_id ? variant.uom_id._id : "",

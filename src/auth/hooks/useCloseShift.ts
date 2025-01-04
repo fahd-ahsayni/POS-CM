@@ -1,13 +1,12 @@
 import { closeShift } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
-import { RootState } from "@/store";
+import { AppDispatch, RootState } from "@/store";
+import { logout } from "@/store/slices/authentication/authSlice";
 import { fetchOrders } from "@/store/slices/data/ordersSlice";
 import { User } from "@/types";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { AppDispatch } from "@/store";
-import { logout } from "@/store/slices/authentication/authSlice";
 
 interface PaymentAmount {
   payment_method: string;
@@ -44,6 +43,7 @@ export const useCloseShift = () => {
   );
   const [focusedMethod, setFocusedMethod] = useState<string | null>(null);
   const [savedTotal, setSavedTotal] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const orders = useSelector((state: RootState) => state.orders.orders);
 
@@ -209,5 +209,6 @@ export const useCloseShift = () => {
     handleCloseShift,
     handleReset,
     handleValidate,
+    isLoading,
   } as const;
 };

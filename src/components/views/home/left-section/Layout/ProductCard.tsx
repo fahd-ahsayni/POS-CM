@@ -5,6 +5,7 @@ import { Product, ProductSelected } from "@/types";
 import { motion } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
 import { currency } from "@/preferences";
+import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
 
 interface ProductCardProps {
   product: Product;
@@ -17,10 +18,14 @@ export function ProductCard({
   selectedProducts,
   onProductClick,
 }: ProductCardProps) {
+  const { customerIndex } = useRightViewContext();
+
+  // Get all variants of this product across all customers
   const selectedProductVariants = selectedProducts.filter(
     (p) => p.product_variant_id === product.variants[0]._id
   );
 
+  // Calculate total quantity across all customers
   const totalQuantity = selectedProductVariants.reduce(
     (sum, p) => sum + (p.quantity || 0),
     0

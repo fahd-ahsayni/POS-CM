@@ -1,11 +1,13 @@
-import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import { useLocation, useNavigate } from "react-router-dom";
-import { sidebarNavigation, sidebarPagesLink } from "../constants";
-import { useTheme } from "@/providers/themeProvider";
 import AddClient from "@/components/global/drawers/add-client/AddClient";
 import Drop from "@/components/global/drawers/drop/Drop";
+import { Card } from "@/components/ui/card";
+import { ORDER_SUMMARY_VIEW } from "@/components/views/home/right-section/constants";
+import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
+import { cn } from "@/lib/utils";
+import { useTheme } from "@/providers/themeProvider";
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { sidebarNavigation, sidebarPagesLink } from "../constants";
 
 interface SidebarItemProps {
   item: {
@@ -39,7 +41,10 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
         isActive
           ? "!bg-primary-red text-white !border-interactive-vivid-red shadow-md shadow-primary-red/60 dark:shadow-primary-red/50"
           : "shadow-md shadow-primary-black/20 dark:shadow-black/70",
-        "group w-full p-2 rounded-md flex flex-col items-center text-xs font-medium transition-all duration-150"
+        "group w-full p-2 rounded-md flex flex-col items-center text-xs font-medium transition-all duration-150",
+        item.name === "Clients" &&
+          onClick === undefined &&
+          "opacity-50 cursor-not-allowed"
       )}
     >
       <item.icon
@@ -58,13 +63,16 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
 };
 
 export default function Sidebar() {
+  const { views } = useRightViewContext();
   const { theme } = useTheme();
   const { pathname } = useLocation();
   const [openClientDrawer, setOpenClientDrawer] = useState(false);
   const [openDropDrawer, setOpenDropDrawer] = useState(false);
 
   const handleClientClick = () => {
-    setOpenClientDrawer(true);
+    if (views === ORDER_SUMMARY_VIEW) {
+      setOpenClientDrawer(true);
+    }
   };
 
   const handleDropClick = () => {
@@ -96,7 +104,9 @@ export default function Sidebar() {
               theme={theme}
               onClick={
                 item.name === "Clients"
-                  ? handleClientClick
+                  ? views === ORDER_SUMMARY_VIEW
+                    ? handleClientClick
+                    : undefined
                   : item.name === "Drop"
                   ? handleDropClick
                   : item.onClick

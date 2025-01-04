@@ -3,7 +3,7 @@ import { RootState } from "../../../store";
 
 interface OrderState {
   waiter_id: number | null;
-  coaster_call: boolean | null;
+  coaster_call: string | null;
   urgent: boolean | false;
   shift_id: string;
   table_id: string | null;
@@ -63,16 +63,13 @@ const orderSlice = createSlice({
     resetOrder: (state) => {
       state.data = initialOrderState;
     },
-    updateOrderLine: (
-      state,
-      action: PayloadAction<UpdateOrderLinePayload>
-    ) => {
+    updateOrderLine: (state, action: PayloadAction<UpdateOrderLinePayload>) => {
       const orderLineIndex = state.data.orderlines.findIndex(
-        (ol) => 
-          ol._id === action.payload._id && 
+        (ol) =>
+          ol._id === action.payload._id &&
           ol.customer_index === action.payload.customerIndex
       );
-      
+
       if (orderLineIndex !== -1) {
         state.data.orderlines[orderLineIndex] = {
           ...state.data.orderlines[orderLineIndex],
@@ -97,7 +94,7 @@ const orderSlice = createSlice({
     setWaiterId: (state, action: PayloadAction<number | null>) => {
       state.data.waiter_id = action.payload;
     },
-    setCoasterCall: (state, action: PayloadAction<boolean | null>) => {
+    setCoasterCall: (state, action: PayloadAction<string | null>) => {
       state.data.coaster_call = action.payload;
     },
     setShiftId: (state, action: PayloadAction<string>) => {

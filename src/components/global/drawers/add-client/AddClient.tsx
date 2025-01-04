@@ -34,6 +34,18 @@ export default function AddClient({
     });
   };
 
+  const handleAddComplete = () => {
+    handleSubmit();
+    setOpen(false);
+    setFormData({
+      name: "",
+      phone: "",
+      address: "",
+      email: "",
+      ice: "",
+    });
+  };
+
   return (
     <Drawer open={open} setOpen={setOpen} title="Client">
       <div className="relative h-full">
@@ -54,7 +66,7 @@ export default function AddClient({
           >
             Cancel
           </Button>
-          <Button className="flex-1" onClick={handleSubmit}>
+          <Button className="flex-1" onClick={handleAddComplete}>
             {isLoading ? <BeatLoader color="#fff" size={10} /> : "Save"}
           </Button>
         </div>
