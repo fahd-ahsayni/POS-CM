@@ -3,6 +3,8 @@ import logoLightMode from "./logo-light-mode.svg";
 import logoWithoutText from "./logo-without-text.svg";
 
 import sunset from "./svg/sunset.svg";
+import sunrise from "./svg/sunrise.svg";
+import moon from "./svg/moon.svg";
 
 import glovo from "./deliveryApps/glovo.png";
 import kaalix from "./deliveryApps/kaalix.png";
@@ -26,6 +28,8 @@ export {
   logoLightMode,
   logoWithoutText,
   sunset,
+  sunrise,
+  moon,
   glovo,
   kaalix,
   yassir,

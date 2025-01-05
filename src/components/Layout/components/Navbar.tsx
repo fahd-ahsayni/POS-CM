@@ -1,16 +1,50 @@
-import { logoDarkMode, logoLightMode, sunset } from "@/assets";
+import { logoDarkMode, logoLightMode, sunset, sunrise, moon } from "@/assets";
 import { AlertIcon } from "@/assets/figma-icons";
 import { ModeToggleWithDropdown } from "@/components/global/mode-toggle";
 import Profile from "@/components/global/Profile";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { TextShimmer } from "@/components/ui/text-shimmer";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { useTheme } from "@/providers/themeProvider";
 import { LucideMaximize } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
   const theme = useTheme();
+  const [greeting, setGreeting] = useState("Good Morning");
+  const [timeIcon, setTimeIcon] = useState(sunrise);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
+  useEffect(() => {
+    const updateGreetingAndIcon = () => {
+      const hour = new Date().getHours();
+      if (hour >= 6 && hour < 12) {
+        setGreeting("Good Morning");
+        setTimeIcon(sunrise);
+      } else if (hour >= 12 && hour < 18) {
+        setGreeting("Good Afternoon");
+        setTimeIcon(sunset);
+      } else {
+        setGreeting("Good Evening");
+        setTimeIcon(moon);
+      }
+    };
+
+    updateGreetingAndIcon();
+    const interval = setInterval(updateGreetingAndIcon, 60000); // Update every minute
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const updateTime = () => {
+      setCurrentTime(new Date());
+    };
+
+    updateTime();
+    const interval = setInterval(updateTime, 60000); // Update every minute
+    return () => clearInterval(interval);
+  }, []);
 
   const handleFullScreen = () => {
     if (!document.fullscreenElement) {
@@ -37,13 +71,24 @@ export default function Navbar() {
           <div className="lg:flex flex-col justify-center flex-1 ml-12 hidden">
             <TypographyP className="flex items-center gap-1 text-xs font-medium">
               <span>
-                <img src={sunset} alt="sunset" className="w-5 h-auto" />
+                <img src={timeIcon} alt="time-icon" className="w-4 h-auto" />
               </span>
-              <span>Good MorninG! Let's make today productive.</span>
+              <span>{greeting}! Let's make today productive.</span>
             </TypographyP>
-            <TypographySmall className="text-[0.7rem] leading-3 text-zinc-100 dark:text-zinc-300 pl-6 mt-1">
-              Last updated on July 10, 2024, at 10:00 AM
-            </TypographySmall>
+            <TextShimmer
+              duration={2}
+              className="text-[0.7rem] leading-3 text-zinc-100 dark:text-zinc-300 pl-6 mt-1"
+            >
+              {`Last updated on ${currentTime.toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })}, at ${currentTime.toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true,
+              })}`}
+            </TextShimmer>
           </div>
           <div className="ml-2 flex items-center space-x-2 sm:ml-6 sm:space-x-2">
             <Button size="icon" className="relative">
