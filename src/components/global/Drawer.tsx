@@ -43,7 +43,7 @@ export default function Drawer({
         }}
       >
         <div className="fixed inset-0" />
-        <div className="fixed inset-0 overflow-hidden transform-gpu bg-primary-black/90">
+        <div className="fixed inset-0 overflow-hidden bg-primary-black/50 backdrop-blur-[2px] transform-gpu">
           <div className="absolute inset-0 overflow-hidden">
             <div
               className={`pointer-events-none fixed inset-y-0 ${position}-0 flex max-w-full ${

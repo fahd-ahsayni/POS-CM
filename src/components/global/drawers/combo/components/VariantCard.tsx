@@ -13,7 +13,6 @@ import { useCombo } from "../context/ComboContext";
 interface VariantCardProps {
   variant: ProductVariant;
   isSelected: boolean;
-  isSupplement: boolean;
   isRequired: boolean;
   quantity?: number;
   onClick: () => void;
@@ -25,7 +24,6 @@ interface VariantCardProps {
 export function VariantCard({
   variant,
   isSelected,
-  isSupplement,
   isRequired,
   quantity = 0,
   onClick,

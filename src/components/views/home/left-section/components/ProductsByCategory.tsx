@@ -92,7 +92,7 @@ export default memo(function ProductsByCategory() {
                       className="h-16 w-[230px]"
                     >
                       <Card className="flex overflow-hidden relative cursor-pointer flex-col items-center h-full w-full justify-center !border-2 !border-red-600">
-                        <TypographyP className="text-center relative font-medium text-white">
+                        <TypographyP className="text-center relative font-medium">
                           {breadcrumbs[breadcrumbs.length - 1]?.name}
                         </TypographyP>
                       </Card>

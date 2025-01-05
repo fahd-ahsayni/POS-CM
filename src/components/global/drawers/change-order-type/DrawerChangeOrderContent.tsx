@@ -136,7 +136,7 @@ export default function DrawerChangeOrderContent() {
 
     default:
       return (
-        <div className="flex flex-col gap-y-8 h-full justify-center items-center">
+        <div className="flex flex-col gap-y-8 h-full justify-center items-center px-3">
           {displayedTypes.map((orderType) => (
             <OrderCard
               key={orderType._id}
