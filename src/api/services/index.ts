@@ -202,7 +202,7 @@ export const checkIsNewOrders = async (shiftId: string) => {
 };
 
 export const updateShift = async (data: any, shiftId: string) => {
-  return api.post(`/shift/update/${shiftId}`, data);
+  return api.put(`/shift/update/${shiftId}`, data);
 };
 
 export const filterOrderById = async (orderId: string) => {
