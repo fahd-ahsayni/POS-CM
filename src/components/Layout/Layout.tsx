@@ -1,16 +1,17 @@
+import { extractProducts } from "@/functions/extractProducts";
+import { getAllVariants } from "@/functions/getAllVariants";
 import { updateOrder } from "@/functions/updateOrder";
 import { AppDispatch, RootState } from "@/store";
 import { fetchGeneralData } from "@/store/slices/data/generalDataSlice";
 import { fetchPosData } from "@/store/slices/data/posSlice";
+import { setShiftId } from "@/store/slices/order/createOrder";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
 import Keyboard from "../global/keyboard/Keyboard";
+import { LoadingFullScreen } from "../global/loading";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
-import { getAllVariants } from "@/functions/getAllVariants";
-import { extractProducts } from "@/functions/extractProducts";
-import { LoadingFullScreen } from "../global/loading";
 
 const Layout = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -67,9 +68,16 @@ const Layout = () => {
     if (!shiftId) return;
 
     setIsLoading(true);
-    dispatch(updateOrder({ shift_id: shiftId })).finally(() => {
+    try {
+      dispatch(setShiftId(shiftId));
+      Promise.resolve(dispatch(updateOrder({ shift_id: shiftId })))
+        .catch(error => console.error('Error updating order:', error))
+        .finally(() => {
+          setIsLoading(false);
+        });
+    } catch (error) {
       setIsLoading(false);
-    });
+    }
   }, [dispatch]);
 
   useEffect(() => {
