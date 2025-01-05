@@ -46,7 +46,7 @@ export default function OpenShift({
 
     try {
       setIsLoading(true);
-      if (reOpen) {
+      if (!reOpen) {
         const res = await openShift(amount, posId);
         if (res.status === 200) {
           setShiftId(res.data.shift._id);

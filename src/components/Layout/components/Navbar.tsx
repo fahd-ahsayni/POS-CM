@@ -1,11 +1,11 @@
-import { logoDarkMode, logoLightMode, sunset, sunrise, moon } from "@/assets";
+import { logoDarkMode, logoLightMode, moon, sunrise, sunset } from "@/assets";
 import { AlertIcon } from "@/assets/figma-icons";
 import { ModeToggleWithDropdown } from "@/components/global/mode-toggle";
 import Profile from "@/components/global/Profile";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { TextShimmer } from "@/components/ui/text-shimmer";
-import { TypographyP, TypographySmall } from "@/components/ui/typography";
+import { TypographyP } from "@/components/ui/typography";
 import { useTheme } from "@/providers/themeProvider";
 import { LucideMaximize } from "lucide-react";
 import { useEffect, useState } from "react";
