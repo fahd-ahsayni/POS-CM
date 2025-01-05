@@ -1,17 +1,16 @@
-import { extractProducts } from "@/functions/extractProducts";
-import { getAllVariants } from "@/functions/getAllVariants";
 import { updateOrder } from "@/functions/updateOrder";
 import { AppDispatch, RootState } from "@/store";
 import { fetchGeneralData } from "@/store/slices/data/generalDataSlice";
 import { fetchPosData } from "@/store/slices/data/posSlice";
-import { setShiftId } from "@/store/slices/order/createOrder";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
 import Keyboard from "../global/keyboard/Keyboard";
-import { LoadingFullScreen } from "../global/loading";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
+import { getAllVariants } from "@/functions/getAllVariants";
+import { extractProducts } from "@/functions/extractProducts";
+import { LoadingFullScreen } from "../global/loading";
 
 const Layout = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -27,9 +26,6 @@ const Layout = () => {
   );
 
   const [isLoading, setIsLoading] = useState(true);
-  const [hasShiftId, setHasShiftId] = useState(
-    !!localStorage.getItem("shiftId")
-  );
 
   useEffect(() => {
     const posId = localStorage.getItem("posId");
@@ -65,38 +61,14 @@ const Layout = () => {
 
   const handleUpdateOrder = useCallback(() => {
     const shiftId = localStorage.getItem("shiftId");
-    if (!shiftId) return;
 
-    setIsLoading(true);
-    try {
-      dispatch(setShiftId(shiftId));
-      Promise.resolve(dispatch(updateOrder({ shift_id: shiftId })))
-        .catch(error => console.error('Error updating order:', error))
-        .finally(() => {
-          setIsLoading(false);
-        });
-    } catch (error) {
-      setIsLoading(false);
+    if (shiftId) {
+      dispatch(updateOrder({ shift_id: shiftId }));
     }
   }, [dispatch]);
 
   useEffect(() => {
-    const shiftId = localStorage.getItem("shiftId");
-    if (shiftId) {
-      setHasShiftId(true);
-      handleUpdateOrder();
-    } else {
-      const checkShiftId = setInterval(() => {
-        const newShiftId = localStorage.getItem("shiftId");
-        if (newShiftId) {
-          setHasShiftId(true);
-          handleUpdateOrder();
-          clearInterval(checkShiftId);
-        }
-      }, 1000);
-
-      return () => clearInterval(checkShiftId);
-    }
+    handleUpdateOrder();
   }, [handleUpdateOrder]);
 
   useEffect(() => {
@@ -132,7 +104,7 @@ const Layout = () => {
     []
   );
 
-  if (isLoading || !hasShiftId) {
+  if (isLoading) {
     return <LoadingFullScreen />;
   }
 
