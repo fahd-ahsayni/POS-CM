@@ -7,6 +7,7 @@ interface TableNumberDisplayProps {
   tableValid: "valid" | "invalid" | "not-found";
   getValidationMessage: () => string;
   handleNumberClick: (number: string) => void;
+  fixedLightDark?: boolean;
 }
 
 export function TableNumberDisplay({
@@ -14,6 +15,7 @@ export function TableNumberDisplay({
   tableValid,
   getValidationMessage,
   handleNumberClick,
+  fixedLightDark = false,
 }: TableNumberDisplayProps) {
   return (
     <div className="flex flex-col space-y-1 justify-center items-center mb-6">
@@ -36,7 +38,10 @@ export function TableNumberDisplay({
         {getValidationMessage()}
         <span className="opacity-0">?</span>
       </TypographySmall>
-      <NumberPad onNumberClick={handleNumberClick} />
+      <NumberPad
+        onNumberClick={handleNumberClick}
+        fixLightDark={fixedLightDark}
+      />
     </div>
   );
 }

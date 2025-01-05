@@ -21,7 +21,7 @@ export default memo(function AllCategories() {
       animate={{ opacity: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.35 }}
-      className="grid grid-cols-3 gap-3.5 mt-8 pb-16 px-2"
+      className="grid grid-cols-2 lg:grid-cols-3 gap-3.5 mt-8 pb-16 px-2"
     >
       <Card
         onClick={handleAllProductsClick}

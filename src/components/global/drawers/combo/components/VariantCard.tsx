@@ -34,7 +34,9 @@ export function VariantCard({
   customerIndex,
 }: VariantCardProps) {
   const { updateVariantNotes, updateVariantSuiteCommande } = useCombo();
-  const [suiteCommande, setSuiteCommande] = useState(variant.suite_commande || false);
+  const [suiteCommande, setSuiteCommande] = useState(
+    variant.suite_commande || false
+  );
 
   const handleQuantityChange = (e: React.MouseEvent, increment: boolean) => {
     e.preventDefault();
@@ -75,43 +77,12 @@ export function VariantCard({
           )}
         </div>
 
-        <div className="flex flex-col justify-between items-center h-full">
-          <div className="flex items-center gap-1">
-            {isSelected && (
-              <>
-                <OderLineAddComments
-                  productId={variant._id}
-                  customerIndex={customerIndex}
-                  initialNotes={variant.notes || []}
-                  onNotesUpdate={handleNotesUpdate}
-                />
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className={cn(
-                    "-ms-px rounded h-7 w-7 bg-accent-white/10 hover:bg-accent-white/20",
-                    suiteCommande && "!bg-primary-red"
-                  )}
-                  onClick={handleSuiteCommandeToggle}
-                >
-                  <SuiteCommandIcon 
-                    className={cn(
-                      "h-4 w-4",
-                      suiteCommande 
-                        ? "!text-white" 
-                        : "!text-primary-black dark:!text-white"
-                    )}
-                  />
-                </Button>
-              </>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col justify-between items-end h-full">
+          <div className="flex items-center justify-end gap-2">
             {((step.is_supplement && !step.is_required) ||
               (!step.is_required && !step.is_supplement)) &&
               isSelected && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 h-8">
                   <Button
                     type="button"
                     variant="outline"
@@ -147,10 +118,40 @@ export function VariantCard({
               )}
 
             {!step.is_supplement && step.is_required && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-end gap-2 h-8">
                 <TypographyP className="font-medium">{quantity}</TypographyP>
                 <DishIcon className="!w-5 !h-auto !fill-secondary-black dark:!fill-secondary-white" />
               </div>
+            )}
+          </div>
+          <div className="flex items-center gap-x-4">
+            {isSelected && (
+              <>
+                <OderLineAddComments
+                  productId={variant._id}
+                  customerIndex={customerIndex}
+                  initialNotes={variant.notes || []}
+                  onNotesUpdate={handleNotesUpdate}
+                />
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className={cn(
+                    "-ms-px rounded h-7 w-7 bg-accent-white/10 hover:bg-accent-white/20",
+                    suiteCommande && "!bg-primary-red"
+                  )}
+                  onClick={handleSuiteCommandeToggle}
+                >
+                  <SuiteCommandIcon
+                    className={cn(
+                      "h-4 w-4",
+                      suiteCommande
+                        ? "!text-white"
+                        : "!text-primary-black dark:!text-white"
+                    )}
+                  />
+                </Button>
+              </>
             )}
           </div>
         </div>

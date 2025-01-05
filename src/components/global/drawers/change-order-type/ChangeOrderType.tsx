@@ -12,7 +12,7 @@ function ChangeOrderTypeContent() {
   const { selectedType, showForm, handleBack } = useChangeOrderType();
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full py-2 px-3">
       <div className="flex items-center gap-x-2 mb-4">
         {(selectedType || showForm !== "types") && (
           <Button

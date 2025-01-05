@@ -32,8 +32,6 @@ export default function DrawerChangeOrderContent() {
     isFetching,
   } = useAddClient(() => setOpen(false));
 
-  
-
   const {
     tableNumber,
     tableValid,
@@ -41,6 +39,11 @@ export default function DrawerChangeOrderContent() {
     handleConfirm: handleTableConfirm,
     getValidationMessage,
   } = useNumberOfTable();
+
+  const handleTableNumberConfirm = () => {
+    handleTableConfirm(tableNumber);
+    setOpen(false);
+  };
 
   switch (showForm) {
     case "client":
@@ -77,13 +80,16 @@ export default function DrawerChangeOrderContent() {
 
     case "table":
       return (
-        <div className="flex flex-col h-full relative">
-          <TableNumberDisplay
-            tableNumber={tableNumber}
-            tableValid={tableValid}
-            getValidationMessage={getValidationMessage}
-            handleNumberClick={handleTableNumberClick}
-          />
+        <div className="flex flex-col h-full justify-center items-center relative">
+          <div className="flex flex-col justify-center items-center -mt-20">
+            <TableNumberDisplay
+              tableNumber={tableNumber}
+              tableValid={tableValid}
+              getValidationMessage={getValidationMessage}
+              handleNumberClick={handleTableNumberClick}
+              fixedLightDark={true}
+            />
+          </div>
           <div className="flex gap-x-2 w-full mt-4 absolute bottom-0">
             <Button
               variant="secondary"
@@ -94,7 +100,7 @@ export default function DrawerChangeOrderContent() {
             </Button>
             <Button
               className="flex-1"
-              onClick={() => handleTableConfirm(tableNumber)}
+              onClick={handleTableNumberConfirm}
               disabled={!tableNumber || tableValid !== "valid"}
             >
               Confirm
@@ -105,8 +111,10 @@ export default function DrawerChangeOrderContent() {
 
     case "coaster":
       return (
-        <div className="flex flex-col h-full relative">
-          <CoasterCallNumberDisplay fixedLightDark={true} />
+        <div className="flex flex-col h-full justify-center items-center relative">
+          <div className="flex flex-col justify-center items-center -mt-20">
+            <CoasterCallNumberDisplay fixedLightDark={true} />
+          </div>
           <div className="flex gap-x-2 w-full mt-4 absolute bottom-0">
             <Button
               variant="secondary"
