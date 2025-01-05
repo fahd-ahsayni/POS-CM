@@ -19,7 +19,7 @@ export default function NumberOfTabel() {
 
   return (
     <div className="flex flex-col justify-start h-full">
-      <TypographyH3 className="font-medium max-w-xs">
+      <TypographyH3 className="font-medium">
         Enter the table number to start the order:
       </TypographyH3>
       <div className="flex flex-col justify-center items-center px-1 relative h-full">

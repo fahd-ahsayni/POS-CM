@@ -74,11 +74,11 @@ export const sidebarNavigation = [
     onClick: () => console.log("Drop clicked"),
     current: false,
   },
-  {
-    name: "Prefers",
-    route: "#",
-    icon: PreferencesIcon,
-    onClick: () => console.log("Preferences clicked"),
-    current: false,
-  },
+  // {
+  //   name: "Prefers",
+  //   route: "#",
+  //   icon: PreferencesIcon,
+  //   onClick: () => console.log("Preferences clicked"),
+  //   current: false,
+  // },
 ];

@@ -61,17 +61,8 @@ export default function SelectPosPage() {
 
   const handleSelectPos = useCallback(
     (id: string) => {
-      const findPos = data.pos?.find((pos) => pos._id === id);
-
-      localStorage.setItem("posId", id);
-
-      if (!findPos) return;
-
-      const isAuthorizedUser =
-        findPos.shift?.user_id._id === userAuthenticated?.id ||
-        userAuthenticated?.position === "Manager";
-
-      if (!checkDay) {
+      // Check if day is not open first
+      if (!checkDay || !isDayOpen) {
         toast.warning(
           createToast(
             DAY_NOT_OPEN_WARNING,
@@ -82,8 +73,18 @@ export default function SelectPosPage() {
         return;
       }
 
+      const findPos = data.pos?.find((pos) => pos._id === id);
+      if (!findPos) return;
+
+      localStorage.setItem("posId", id);
+
+      const isAuthorizedUser =
+        findPos.shift?.user_id._id === userAuthenticated?.id ||
+        userAuthenticated?.position === "Manager";
+
       if (isAuthorizedUser) {
         setShiftId(findPos.shift?._id ?? "");
+        localStorage.setItem("shiftID", findPos.shift?._id ?? "");
         toast.success(
           createToast(
             WELCOME_BACK_SUCCESS,
@@ -130,7 +131,7 @@ export default function SelectPosPage() {
         return;
       }
     },
-    [data.pos, userAuthenticated, checkDay, navigate, setShiftId]
+    [data.pos, userAuthenticated, checkDay, isDayOpen, navigate, setShiftId]
   );
 
   // Effects

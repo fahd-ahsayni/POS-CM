@@ -1,6 +1,10 @@
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TypographyH3, TypographyH4, TypographyP } from "@/components/ui/typography";
+import {
+  TypographyH3,
+  TypographyH4,
+  TypographyP,
+} from "@/components/ui/typography";
 import { updateOrder } from "@/functions/updateOrder";
 import { OrderType } from "@/types";
 import { ChevronRightIcon } from "lucide-react";
@@ -51,7 +55,9 @@ export const OrderCard = memo(
       <Card
         className={cn(
           "w-full rounded-md h-24 px-6 py-6 flex space-x-4 items-center justify-between cursor-pointer",
-          fixedLightDark ? "bg-neutral-bright-grey dark:bg-primary-black" : "bg-white dark:bg-secondary-black",
+          fixedLightDark
+            ? "bg-neutral-bright-grey dark:bg-primary-black"
+            : "bg-white dark:bg-secondary-black",
           isSelected && "ring-2 ring-primary-red"
         )}
         onClick={() => onSelect(orderType)}

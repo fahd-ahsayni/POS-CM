@@ -63,9 +63,12 @@ export const useCloseShift = () => {
   }, [orders]);
 
   const handleAmountChange = (methodId: string, value: string) => {
+    const cleanValue = value.replace(/[^\d.]/g, '');
+    const numericValue = cleanValue === '' ? 0 : parseFloat(cleanValue);
+    
     setPaymentAmounts((prev) => ({
       ...prev,
-      [methodId]: Number(value),
+      [methodId]: isNaN(numericValue) ? 0 : numericValue,
     }));
   };
 
@@ -73,7 +76,8 @@ export const useCloseShift = () => {
     denomination: number,
     value: string | number | null
   ) => {
-    const newQuantity = Number(value) || 0;
+    const numericValue = value === null || value === '' ? 0 : Number(value);
+    const newQuantity = isNaN(numericValue) ? 0 : numericValue;
 
     const updatedQuantities = {
       ...currencyQuantities,
@@ -85,7 +89,7 @@ export const useCloseShift = () => {
     if (cashMethod) {
       const newTotal = Object.entries(updatedQuantities).reduce(
         (total, [denom, qty]) => {
-          return total + Number(denom) * Number(qty);
+          return total + (Number(denom) * Number(qty));
         },
         0
       );
@@ -108,13 +112,11 @@ export const useCloseShift = () => {
 
   const getPaymentAmounts = (): PaymentAmount[] => {
     return Object.entries(paymentAmounts)
-      .filter(([_, amount]) => amount !== null && amount !== 0)
-      .map(([_id, amount]) => {
-        return {
-          payment_method: _id,
-          cashier_amount: amount,
-        };
-      });
+      .filter(([_, amount]) => amount !== null && !isNaN(amount))
+      .map(([_id, amount]) => ({
+        payment_method: _id,
+        cashier_amount: Number(amount),
+      }));
   };
 
   const validateForm = (): boolean => {

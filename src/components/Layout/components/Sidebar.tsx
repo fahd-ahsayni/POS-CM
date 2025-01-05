@@ -84,7 +84,7 @@ export default function Sidebar() {
       <AddClient open={openClientDrawer} setOpen={setOpenClientDrawer} />
       <Drop open={openDropDrawer} setOpen={setOpenDropDrawer} />
       <div className="flex w-full flex-col h-full items-center">
-        <div className="w-full flex-1 flex flex-col justify-around px-2">
+        <div className="w-full flex-1 flex flex-col justify-between py-3 px-2">
           {/* Pages Links */}
           {sidebarPagesLink.map((item) => (
             <SidebarItem

@@ -20,7 +20,7 @@ export default function CoasterCall() {
 
   return (
     <div className="flex flex-col justify-start h-full">
-      <TypographyH3 className="font-medium max-w-xs">
+      <TypographyH3 className="font-medium">
         Enter the beeper number to start the order:
       </TypographyH3>
       <div className="flex flex-col justify-center -mt-20 h-full relative">

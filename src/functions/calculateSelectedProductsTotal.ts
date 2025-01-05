@@ -17,7 +17,7 @@ interface SalesCalculation {
 export const calculateSelectedProductsTotal = (
   selectedProducts: ProductSelected[],
   discount?: Discount | null,
-  taxRate: number = 20
+  taxRate: number = 10
 ): SalesCalculation => {
   const rawTotal = selectedProducts.reduce((sum, product) => {
     const unitPrice =
