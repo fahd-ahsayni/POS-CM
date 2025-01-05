@@ -28,7 +28,7 @@ export function TableNumberDisplay({
       </TypographyH1>
       <TypographySmall
         className={cn(
-          "text-center leading-3",
+          "text-center leading-3 pb-6",
           tableValid === "invalid" && "text-warning-color",
           tableValid === "not-found" && "text-error-color"
         )}

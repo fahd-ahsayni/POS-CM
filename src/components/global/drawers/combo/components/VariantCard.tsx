@@ -1,12 +1,12 @@
-import { CommentIcon, DishIcon, SuiteCommandIcon } from "@/assets/figma-icons";
+import { DishIcon, SuiteCommandIcon } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
+import OderLineAddComments from "@/components/views/home/right-section/ui/OderLineAddComments";
 import { cn } from "@/lib/utils";
 import { currency } from "@/preferences";
 import { ProductVariant, Step } from "@/types/comboTypes";
 import { Minus, Plus } from "lucide-react";
-import OderLineAddComments from "@/components/views/home/right-section/ui/OderLineAddComments";
 import { useState } from "react";
 import { useCombo } from "../context/ComboContext";
 

@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import { selectOrder } from "@/store/slices/order/createOrder";
 
-export default function CoasterCallNumberDisplay() {
+export default function CoasterCallNumberDisplay({ fixedLightDark }: { fixedLightDark?: boolean }) {
   const { number, handleNumberClick } = useCoasterCall();
   const orderState = useSelector(selectOrder);
 
@@ -20,7 +20,7 @@ export default function CoasterCallNumberDisplay() {
         {orderState.coaster_call || number || "0"}
       </TypographyH1>
 
-      <NumberPad onNumberClick={handleNumberClick} />
+      <NumberPad onNumberClick={handleNumberClick} fixLightDark={fixedLightDark} />
     </motion.div>
   );
 }

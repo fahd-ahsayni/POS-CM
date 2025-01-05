@@ -36,10 +36,12 @@ export const OrderCard = memo(
     orderType,
     onSelect,
     isSelected,
+    fixedLightDark,
   }: {
     orderType: OrderType;
     onSelect: (orderType: OrderType) => void;
     isSelected?: boolean;
+    fixedLightDark?: boolean;
   }) => {
     const iconType = orderType.type.toLowerCase();
     const isDeliveryChild = orderType.parent_id && iconType === "delivery";
@@ -48,7 +50,8 @@ export const OrderCard = memo(
     return (
       <Card
         className={cn(
-          "w-full rounded-md h-24 px-6 py-6 flex space-x-4 items-center justify-between cursor-pointer dark:bg-secondary-black bg-white",
+          "w-full rounded-md h-24 px-6 py-6 flex space-x-4 items-center justify-between cursor-pointer",
+          fixedLightDark ? "bg-neutral-bright-grey dark:bg-primary-black" : "bg-white dark:bg-secondary-black",
           isSelected && "ring-2 ring-primary-red"
         )}
         onClick={() => onSelect(orderType)}

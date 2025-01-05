@@ -72,7 +72,7 @@ const orderSlice = createSlice({
 
       if (orderLineIndex !== -1) {
         const orderLine = state.data.orderlines[orderLineIndex];
-        
+
         // If this is a combo product
         if (orderLine.is_combo && orderLine.combo_items) {
           // Update the main combo product
@@ -83,13 +83,19 @@ const orderSlice = createSlice({
               variants: orderLine.combo_items.variants.map((variant: any) => ({
                 ...variant,
                 notes: action.payload.orderLine.notes || variant.notes,
-                suite_commande: action.payload.orderLine.suite_commande ?? variant.suite_commande,
+                suite_commande:
+                  action.payload.orderLine.suite_commande ??
+                  variant.suite_commande,
               })),
-              supplements: orderLine.combo_items.supplements.map((supplement: any) => ({
-                ...supplement,
-                notes: action.payload.orderLine.notes || supplement.notes,
-                suite_commande: action.payload.orderLine.suite_commande ?? supplement.suite_commande,
-              })),
+              supplements: orderLine.combo_items.supplements.map(
+                (supplement: any) => ({
+                  ...supplement,
+                  notes: action.payload.orderLine.notes || supplement.notes,
+                  suite_commande:
+                    action.payload.orderLine.suite_commande ??
+                    supplement.suite_commande,
+                })
+              ),
             },
           };
         } else {
@@ -102,14 +108,16 @@ const orderSlice = createSlice({
       }
 
       // Handle updates for variants within combos
-      state.data.orderlines = state.data.orderlines.map(orderLine => {
+      state.data.orderlines = state.data.orderlines.map((orderLine) => {
         if (orderLine.is_combo && orderLine.combo_items) {
           return {
             ...orderLine,
             combo_items: {
               variants: orderLine.combo_items.variants.map((variant: any) => {
-                if (variant._id === action.payload._id && 
-                    orderLine.customer_index === action.payload.customerIndex) {
+                if (
+                  variant._id === action.payload._id &&
+                  orderLine.customer_index === action.payload.customerIndex
+                ) {
                   return {
                     ...variant,
                     ...action.payload.orderLine,
@@ -117,16 +125,20 @@ const orderSlice = createSlice({
                 }
                 return variant;
               }),
-              supplements: orderLine.combo_items.supplements.map((supplement: any) => {
-                if (supplement._id === action.payload._id && 
-                    orderLine.customer_index === action.payload.customerIndex) {
-                  return {
-                    ...supplement,
-                    ...action.payload.orderLine,
-                  };
+              supplements: orderLine.combo_items.supplements.map(
+                (supplement: any) => {
+                  if (
+                    supplement._id === action.payload._id &&
+                    orderLine.customer_index === action.payload.customerIndex
+                  ) {
+                    return {
+                      ...supplement,
+                      ...action.payload.orderLine,
+                    };
+                  }
+                  return supplement;
                 }
-                return supplement;
-              }),
+              ),
             },
           };
         }
@@ -195,6 +207,15 @@ const orderSlice = createSlice({
       // Reset the current order
       state.data = initialState.data;
     },
+    resetCoasterCall: (state) => {
+      state.data.coaster_call = null;
+    },
+    resetTableId: (state) => {
+      state.data.table_id = null;
+    },
+    resetClientId: (state) => {
+      state.data.client_id = null;
+    },
   },
 });
 
@@ -218,6 +239,9 @@ export const {
   setNotes,
   setUrgent,
   setDiscount,
+  resetCoasterCall,
+  resetTableId,
+  resetClientId,
 } = orderSlice.actions;
 
 export default orderSlice.reducer;
