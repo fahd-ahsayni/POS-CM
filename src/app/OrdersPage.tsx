@@ -1,20 +1,20 @@
+import OrderDetails from "@/components/global/drawers/order-details/OrderDetails";
 import OrdersTable from "@/components/views/orders/components/OrdersTable";
 import { TABLE_HEADERS } from "@/components/views/orders/config/table-config";
+import { useTableOrders } from "@/components/views/orders/hooks/useTableOrders";
 import { AppDispatch, RootState } from "@/store";
-import { 
-  fetchOrders, 
+import {
+  fetchOrders,
   refreshOrders,
-  setFilteredDataLength 
+  setFilteredDataLength
 } from "@/store/slices/data/ordersSlice";
 import { FilterCriteria } from "@/types";
 import { motion } from "framer-motion";
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BeatLoader } from "react-spinners";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
-import OrderDetails from "@/components/global/drawers/order-details/OrderDetails";
-import { useTableOrders } from "@/components/views/orders/hooks/useTableOrders";
 
 export interface OrdersState {
   orders: any[];

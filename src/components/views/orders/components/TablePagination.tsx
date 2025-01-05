@@ -1,15 +1,15 @@
-import React, { useEffect } from "react";
 import {
   Pagination,
   PaginationContent,
+  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-  PaginationEllipsis,
 } from "@/components/ui/pagination";
 import { AppDispatch } from "@/store";
 import { setCurrentPage } from "@/store/slices/data/ordersSlice";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 export function TablePagination() {

@@ -13,10 +13,11 @@ import { useCombo } from "../context/ComboContext";
 interface VariantCardProps {
   variant: ProductVariant;
   isSelected: boolean;
+  isSupplement: boolean;
   isRequired: boolean;
-  quantity?: number;
+  quantity: number;
   onClick: () => void;
-  onQuantityChange?: (increment: boolean) => void;
+  onQuantityChange: (increment: boolean) => void;
   step: Step;
   customerIndex: number;
 }

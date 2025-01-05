@@ -4,9 +4,9 @@ import InputComponent from "@/components/global/InputField";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import { FilterCriteria } from "@/types";
 import { CheckIcon } from "lucide-react";
@@ -17,10 +17,7 @@ interface FilterOrdersProps {
   totalItems: number;
 }
 
-export default function FilterOrders({
-  onFilterChange,
-  totalItems,
-}: FilterOrdersProps) {
+export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
   const [selectedEmployee, setSelectedEmployee] = useState<string>("");
   const [selectedOrderType, setSelectedOrderType] = useState<string>("");
   const [selectedStatus, setSelectedStatus] = useState<string>("");

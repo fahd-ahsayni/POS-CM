@@ -8,11 +8,10 @@ function Footer({ ordersLength }: { ordersLength: number }) {
         <SelectNumberOfOrderPerPage itemsLength={ordersLength} />
       </div>
       <div>
-        <TablePagination itemsLength={ordersLength} />
+        <TablePagination />
       </div>
     </div>
   );
 }
 
 export default Footer;
-    

@@ -41,16 +41,18 @@ export default function CloseShift({ open, setOpen }: CloseShiftProps) {
   } = useCloseShift();
   const [isNewOrders, setIsNewOrders] = useState(false);
   const { shiftId } = useShift();
-  const [currentShift, setCurrentShift] = useState(shiftId ? shiftId : localStorage.getItem('shiftId'));
-  
+  const [currentShift, setCurrentShift] = useState(
+    shiftId ? shiftId : localStorage.getItem("shiftId")
+  );
+
   useEffect(() => {
-    setCurrentShift(shiftId ? shiftId : localStorage.getItem('shiftId'));
+    setCurrentShift(shiftId ? shiftId : localStorage.getItem("shiftId"));
   });
 
   useEffect(() => {
     const checkForNewOrders = async () => {
       if (!currentShift) {
-        setCurrentShift(shiftId ? shiftId : localStorage.getItem('shiftId'));
+        setCurrentShift(shiftId ? shiftId : localStorage.getItem("shiftId"));
         return;
       }
 
@@ -133,7 +135,7 @@ export default function CloseShift({ open, setOpen }: CloseShiftProps) {
                       )}
                     >
                       <div className="space-y-6 h-full relative px-1">
-                        {(isNewOrders || requiredNextCashier)  && (
+                        {(isNewOrders || requiredNextCashier) && (
                           <SelectNextCashier
                             selectedPerson={selectedCashier}
                             setSelectedPerson={setSelectedCashier}

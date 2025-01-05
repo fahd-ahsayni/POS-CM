@@ -150,23 +150,36 @@ export const useCloseShift = () => {
   const handleCloseShift = async () => {
     if (!validateForm()) return;
 
-    const data = {
-      next_cashier: selectedCashier?._id,
-      shift_id: localStorage.getItem("shiftId"),
-      closing_amounts: getPaymentAmounts(),
-    };
+    setIsLoading(true);
+    try {
+      const data = {
+        next_cashier: selectedCashier?._id,
+        shift_id: localStorage.getItem("shiftId"),
+        closing_amounts: getPaymentAmounts(),
+      };
 
-    const response = await closeShift(data);
+      const response = await closeShift(data);
 
-    if (response.status === 200) {
-      dispatch(logout());
-      toast.success(
+      if (response.status === 200) {
+        dispatch(logout());
+        toast.success(
+          createToast(
+            "Shift closed successfully",
+            "You have been logged out",
+            "success"
+          )
+        );
+      }
+    } catch (error) {
+      toast.error(
         createToast(
-          "Shift closed successfully",
-          "You have been logged out",
-          "success"
+          "Failed to close shift",
+          "Please try again",
+          "error"
         )
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 

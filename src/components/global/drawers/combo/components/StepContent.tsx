@@ -33,6 +33,7 @@ export function StepContent({ step }: StepContentProps) {
             <VariantCard
               key={variant._id}
               variant={variant}
+              customerIndex={0}
               isSelected={!!selectedVariant}
               isSupplement={step.is_supplement}
               isRequired={step.is_required && !step.is_supplement}

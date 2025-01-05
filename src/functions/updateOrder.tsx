@@ -62,7 +62,7 @@ export const updateOrder = (params: OrderUpdateParams): any => {
           dispatch(setWaiterId(value as number | null));
           break;
         case "coaster_call":
-          dispatch(setCoasterCall(value as boolean | null));
+          dispatch(setCoasterCall(value as string | null));
           break;
         case "shift_id":
           dispatch(setShiftId(value as string));
