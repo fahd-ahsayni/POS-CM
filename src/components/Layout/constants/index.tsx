@@ -1,14 +1,13 @@
 import { openCashDrawer } from "@/api/services";
 
 import {
-  HomeIcon,
-  OrdersIcon,
-  OpenDrawerIcon,
   AddClientIcon,
-  WaitersIcon,
   DropIcon,
-  PreferencesIcon,
-  WaitingOrdersIcon,
+  HomeIcon,
+  OpenDrawerIcon,
+  OrdersIcon,
+  WaitersIcon,
+  WaitingOrdersIcon
 } from "@/assets/sidebar";
 
 const handleOpenCashDrawer = async () => {
