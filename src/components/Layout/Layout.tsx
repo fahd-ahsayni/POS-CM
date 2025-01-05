@@ -26,6 +26,9 @@ const Layout = () => {
   );
 
   const [isLoading, setIsLoading] = useState(true);
+  const [hasShiftId, setHasShiftId] = useState(
+    !!localStorage.getItem("shiftId")
+  );
 
   useEffect(() => {
     const posId = localStorage.getItem("posId");
@@ -61,16 +64,31 @@ const Layout = () => {
 
   const handleUpdateOrder = useCallback(() => {
     const shiftId = localStorage.getItem("shiftId");
+    if (!shiftId) return;
 
-    if (shiftId) {
-      setTimeout(() => {
-        dispatch(updateOrder({ shift_id: shiftId }));
-      }, 1000);
-    }
+    setIsLoading(true);
+    dispatch(updateOrder({ shift_id: shiftId })).finally(() => {
+      setIsLoading(false);
+    });
   }, [dispatch]);
 
   useEffect(() => {
-    handleUpdateOrder();
+    const shiftId = localStorage.getItem("shiftId");
+    if (shiftId) {
+      setHasShiftId(true);
+      handleUpdateOrder();
+    } else {
+      const checkShiftId = setInterval(() => {
+        const newShiftId = localStorage.getItem("shiftId");
+        if (newShiftId) {
+          setHasShiftId(true);
+          handleUpdateOrder();
+          clearInterval(checkShiftId);
+        }
+      }, 1000);
+
+      return () => clearInterval(checkShiftId);
+    }
   }, [handleUpdateOrder]);
 
   useEffect(() => {
@@ -106,7 +124,7 @@ const Layout = () => {
     []
   );
 
-  if (isLoading) {
+  if (isLoading || !hasShiftId) {
     return <LoadingFullScreen />;
   }
 
