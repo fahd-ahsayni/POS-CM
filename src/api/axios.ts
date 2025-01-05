@@ -30,8 +30,8 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 403) {
-      await logoutService();
-      window.location.href = "/login";
+      // await logoutService();
+      // window.location.href = "/login";
     }
     return Promise.reject(error);
   }

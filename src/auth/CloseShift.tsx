@@ -132,7 +132,7 @@ export default function CloseShift({ open, setOpen }: CloseShiftProps) {
                       )}
                     >
                       <div className="space-y-6 h-full relative px-1">
-                        {(isNewOrders || requiredNextCashier) && (
+                        {(isNewOrders || requiredNextCashier)  && (
                           <SelectNextCashier
                             selectedPerson={selectedCashier}
                             setSelectedPerson={setSelectedCashier}
