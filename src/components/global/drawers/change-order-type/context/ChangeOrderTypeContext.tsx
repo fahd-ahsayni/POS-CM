@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useCallback } from "react";
 import { OrderType } from "@/types";
 import { useDispatch } from "react-redux";
-import { updateOrder } from "@/functions/updateOrder";
+import { setOrderTypeId } from "@/store/slices/order/createOrder";
 
 interface ChangeOrderTypeContextType {
   selectedType: OrderType | null;
@@ -41,7 +41,13 @@ export function ChangeOrderTypeProvider({
       if (orderType.children.length > 0) {
         setDisplayedTypes(orderType.children);
       } else {
-        dispatch(updateOrder({ order_type_id: orderType._id }));
+        dispatch(setOrderTypeId({
+          order_type_id: orderType._id,
+          table_id: orderType.select_table ? undefined : null,
+          client_id: orderType.select_client ? undefined : null,
+          coaster_call: orderType.select_coaster_call ? undefined : null
+        }));
+        
         localStorage.setItem("orderType", JSON.stringify(orderType));
 
         if (orderType.select_client) {

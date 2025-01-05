@@ -21,7 +21,10 @@ export function ProductCard({
 }: ProductCardProps) {
   // Get all variants of this product across all customers
   const selectedProductVariants = selectedProducts.filter(
-    (p) => p.product_variant_id === product.variants[0]._id
+    (p) =>
+      product.variants[0].is_menu
+        ? p._id === product.variants[0]._id // For combos
+        : p.product_variant_id === product.variants[0]._id // For regular products
   );
 
   // Calculate total quantity across all customers

@@ -155,7 +155,7 @@ export const checkAuthorization = async (passcode: string) => {
   return api.post("/auth/check-admin-password", { admin_password: passcode });
 };
 
-export const createPaymentDiscount = async (data: any) => {
+export const createPayment = async (data: any) => {
   return api.post("/order/create-with-payment", data);
 };
 

@@ -1,9 +1,13 @@
-import { addOrderLine } from "@/store/slices/order/createOrder";
+import { checkProductAvailability } from "@/api/services";
+import { createToast } from "@/components/global/Toasters";
+import { getAllVariants } from "@/functions/getAllVariants";
+import {
+  addOrderLine,
+  updateOrderLine,
+} from "@/store/slices/order/createOrder";
 import { Product, ProductSelected } from "@/types";
 import { useCallback, useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
-import { checkProductAvailability } from "@/api/services";
-import { createToast } from "@/components/global/Toasters";
 import { toast } from "react-toastify";
 
 interface UseVariantSelectionProps {
@@ -34,18 +38,21 @@ export const useVariantSelection = ({
       try {
         // Check availability before selecting
         const response = await checkProductAvailability(id);
-        
+
         if (response.status !== 200) {
-          toast.error(createToast(
-            "Product Unavailable",
-            "This product is currently not available",
-            "error"
-          ));
+          toast.error(
+            createToast(
+              "Product Unavailable",
+              "This product is currently not available",
+              "error"
+            )
+          );
           return;
         }
 
         const existingVariant = selectedProducts.find(
-          (p) => p.product_variant_id === id && p.customer_index === customerIndex
+          (p) =>
+            p.product_variant_id === id && p.customer_index === customerIndex
         );
 
         if (!existingVariant) {
@@ -64,11 +71,13 @@ export const useVariantSelection = ({
           );
         }
       } catch (error) {
-        toast.error(createToast(
-          "Availability Check Failed",
-          "Unable to verify variant availability",
-          "error"
-        ));
+        toast.error(
+          createToast(
+            "Availability Check Failed",
+            "Unable to verify variant availability",
+            "error"
+          )
+        );
       }
     },
     [
@@ -85,37 +94,56 @@ export const useVariantSelection = ({
       setSelectedProducts((prev) =>
         prev.map((product) => {
           if (
-            product.product_variant_id === variantId &&
+            (product.is_combo
+              ? product.id === variantId
+              : product.product_variant_id === variantId) &&
             product.customer_index === customerIndex
           ) {
-            const basePrice =
-              product.variants[0].price_ttc || product.price / product.quantity;
             const newQuantity = increment
               ? product.quantity + 1
               : Math.max(1, product.quantity - 1);
 
             // Handle combo products
             if (product.is_combo && product.combo_items) {
-              return {
+              // Get unit price from getAllVariants
+              const unitPrice =
+                getAllVariants().find((v) => product._id === v._id)
+                  ?.price_ttc || product.variants[0].price_ttc;
+
+              const newPrice = unitPrice * newQuantity;
+
+              const updatedProduct = {
                 ...product,
                 quantity: newQuantity,
-                price: basePrice * newQuantity,
+                price: newPrice,
                 combo_items: {
                   variants: product.combo_items.variants.map((v: any) => ({
                     ...v,
-                    quantity: v.quantity * (newQuantity / product.quantity),
+                    quantity: (v.quantity / product.quantity) * newQuantity,
                   })),
                   supplements: product.combo_items.supplements.map(
                     (s: any) => ({
                       ...s,
-                      quantity: s.quantity * (newQuantity / product.quantity),
+                      quantity: (s.quantity / product.quantity) * newQuantity,
                     })
                   ),
                 },
               };
+
+              // Dispatch the same values to the store
+              dispatch(
+                updateOrderLine({
+                  _id: product.id,
+                  customerIndex: product.customer_index,
+                  orderLine: updatedProduct,
+                })
+              );
+
+              return updatedProduct;
             }
 
-            // Handle regular products
+            // Handle regular products (unchanged)
+            const basePrice = product.variants[0].price_ttc;
             return {
               ...product,
               quantity: newQuantity,

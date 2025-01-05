@@ -1,4 +1,4 @@
-import { createPaymentDiscount } from "@/api/services";
+import { createPayment } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
 import { ALL_CATEGORIES_VIEW } from "@/components/views/home/left-section/constants";
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
@@ -6,9 +6,9 @@ import { TYPE_OF_ORDER_VIEW } from "@/components/views/home/right-section/consta
 import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
 import { useCustomerManagement } from "@/components/views/home/right-section/hooks/useCustomerManagement";
 import { currency } from "@/preferences";
-import { selectOrder } from "@/store/slices/order/createOrder";
+import { selectOrder, resetOrder } from "@/store/slices/order/createOrder";
 import { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 
 /**
@@ -44,6 +44,7 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
   const { setViews: setViewsLeft } = useLeftViewContext();
 
   const order = useSelector(selectOrder);
+  const dispatch = useDispatch();
 
   // Initialize payment methods
   useEffect(() => {
@@ -220,19 +221,19 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
         payment_method_id: item.originalId,
         amount_given: item.amount,
       }));
-      if(order.shift_id){
-        await createPaymentDiscount({
+      if (order.shift_id) {
+        await createPayment({
           order: order,
           shift_id: order.shift_id,
           payments: validPaymentData,
         });
-      }else{
-        await createPaymentDiscount({
+      } else {
+        await createPayment({
           order: {
             ...order,
             shift_id: localStorage.getItem("shiftId"),
           },
-          shift_id:localStorage.getItem("shiftId"),
+          shift_id: localStorage.getItem("shiftId"),
           payments: validPaymentData,
         });
       }
@@ -248,11 +249,14 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
       // 4. Reset customer and order state using the customer management hook
       handlePaymentComplete();
 
-      // 5. Reset views to initial state
+      // 5. Reset order state but keep shift_id
+      dispatch(resetOrder());
+
+      // 6. Reset views to initial state
       setViewsLeft(ALL_CATEGORIES_VIEW);
       setViewsRight(TYPE_OF_ORDER_VIEW);
 
-      // 6. Show success message
+      // 7. Show success message
       toast.success(
         createToast(
           "Payment completed successfully",
@@ -282,6 +286,7 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
     setViewsRight,
     getTotalPaidAmount,
     order,
+    dispatch
   ]);
 
   const resetPayments = useCallback(() => {
