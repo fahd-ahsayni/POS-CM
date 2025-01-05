@@ -48,3 +48,45 @@ export default tseslint.config({
   },
 })
 ```
+
+//////////// to remove
+
+Development:
+
+bash
+Copier le code
+docker compose up -d
+Build:
+
+bash
+Copier le code
+docker compose -f docker-compose.build.yml build
+
+-- docker tag pos-front fahdbouaicha/pos_front:v0.0.4
+-- docker tag 6dce71f9073c fahdbouaicha/pos_front:v0.0.1
+-- docker compose -f docker-compose.build.yml build --tag fahdbouaicha/pos_front:v0.0.1
+
+docker push fahdbouaicha/pos_front:v0.0.4
+Test:
+
+bash
+Copier le code
+docker pull fahdbouaicha/pos_front:v0.0.4
+docker compose -f docker-compose.test.yml up -d
+docker compose -f docker-compose.test.yml down
+
+
+
+
+
+
+
+
+
+
+docker stop $(docker ps -q)
+docker rm $(docker ps -aq)
+docker container prune -f
+docker image prune -f
+docker network prune -f
+docker image prune -a -f

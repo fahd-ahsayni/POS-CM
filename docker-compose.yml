@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   pos-front:
     build:
@@ -7,10 +5,11 @@ services:
       dockerfile: Dockerfile
     container_name: pos-front-dev
     ports:
-      - "5173:5173"
+      - "5173:5173"  # Vite's default dev server port
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-    environment:
-      - CHOKIDAR_USEPOLLING=true  # Required for live reload in Docker
+    env_file:
+      - .env  # Load environment variables from the .env file
     command: npm run dev
+    restart: always
