@@ -220,12 +220,22 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
         payment_method_id: item.originalId,
         amount_given: item.amount,
       }));
-
-      await createPaymentDiscount({
-        order: order,
-        shift_id: order.shift_id,
-        payments: validPaymentData,
-      });
+      if(order.shift_id){
+        await createPaymentDiscount({
+          order: order,
+          shift_id: order.shift_id,
+          payments: validPaymentData,
+        });
+      }else{
+        await createPaymentDiscount({
+          order: {
+            ...order,
+            shift_id: localStorage.getItem("shiftId"),
+          },
+          shift_id:localStorage.getItem("shiftId"),
+          payments: validPaymentData,
+        });
+      }
 
       // 2. Call the onComplete callback if provided
       await onComplete?.(selectedPayments);

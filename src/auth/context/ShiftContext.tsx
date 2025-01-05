@@ -1,15 +1,15 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface ShiftContextType {
-  shiftId: string | undefined;
-  setShiftId: (id: string | undefined) => void;
+  shiftId: string | null;
+  setShiftId: (id: string | null) => void;
 }
 
-const ShiftContext = createContext<ShiftContextType | undefined>(undefined);
+const ShiftContext = createContext<ShiftContextType | null>(null);
 
 export const ShiftProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [shiftId, setShiftId] = useState<string | undefined>(
-    localStorage.getItem("shiftId") || undefined
+  const [shiftId, setShiftId] = useState<string | null>(
+    localStorage.getItem("shiftId") || null
   );
 
   return (

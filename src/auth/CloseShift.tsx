@@ -43,18 +43,21 @@ export default function CloseShift({ open, setOpen }: CloseShiftProps) {
   } = useCloseShift();
   const [isNewOrders, setIsNewOrders] = useState(false);
   const { shiftId } = useShift();
+  const [currentShift, setCurrentShift] = useState(shiftId ? shiftId : localStorage.getItem('shiftId'));
+  
+  useEffect(() => {
+    setCurrentShift(shiftId ? shiftId : localStorage.getItem('shiftId'));
+  });
 
   useEffect(() => {
     const checkForNewOrders = async () => {
-      if (!shiftId) {
-        toast.warning(
-          createToast("Shift not found", "Please refresh the page", "warning")
-        );
+      if (!currentShift) {
+        setCurrentShift(shiftId ? shiftId : localStorage.getItem('shiftId'));
         return;
       }
 
       try {
-        const res = await checkIsNewOrders(shiftId);
+        const res = await checkIsNewOrders(currentShift);
         setIsNewOrders(res.status === 200);
       } catch (error) {
         console.error("Error checking for new orders:", error);
@@ -64,7 +67,7 @@ export default function CloseShift({ open, setOpen }: CloseShiftProps) {
 
     console.log("shiftId", shiftId);
     checkForNewOrders();
-  }, [shiftId]);
+  }, [shiftId, currentShift, open]);
 
   console.log("isNewOrders", isNewOrders);
   console.log("requiredNextCashier", requiredNextCashier);

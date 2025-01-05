@@ -62,6 +62,7 @@ export default function SelectPosPage() {
   const handleSelectPos = useCallback(
     (id: string) => {
       const findPos = data.pos?.find((pos) => pos._id === id);
+
       localStorage.setItem("posId", id);
 
       if (!findPos) return;
@@ -82,7 +83,7 @@ export default function SelectPosPage() {
       }
 
       if (isAuthorizedUser) {
-        setShiftId(findPos.shift?._id || undefined);
+        setShiftId(findPos.shift?._id ?? "");
         toast.success(
           createToast(
             WELCOME_BACK_SUCCESS,
@@ -156,7 +157,7 @@ export default function SelectPosPage() {
         setOpen={setOpen}
         posId={localStorage.getItem("posId") || ""}
         reOpen={reOpen}
-        shiftId={shiftId}
+        shiftId={shiftId ?? ""}
       />
       {/* Left Section */}
       <aside className="w-3/12 h-full bg-secondary-white relative">
