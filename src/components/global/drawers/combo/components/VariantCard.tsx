@@ -127,12 +127,14 @@ export function VariantCard({
           <div className="flex items-center gap-x-4">
             {isSelected && (
               <>
-                <OderLineAddComments
-                  productId={variant._id}
-                  customerIndex={customerIndex}
-                  initialNotes={variant.notes || []}
-                  onNotesUpdate={handleNotesUpdate}
-                />
+                <div onClick={(e) => e.stopPropagation()}>
+                  <OderLineAddComments
+                    productId={variant._id}
+                    customerIndex={customerIndex}
+                    initialNotes={variant.notes || []}
+                    onNotesUpdate={handleNotesUpdate}
+                  />
+                </div>
                 <Button
                   size="icon"
                   variant="ghost"
