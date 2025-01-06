@@ -78,7 +78,7 @@ export default function Navbar() {
             </TypographyP>
             <TextShimmer
               duration={2}
-              className="text-[0.7rem] leading-3 text-zinc-100 dark:text-zinc-300 pl-6 mt-1"
+              className="text-[0.7rem] leading-3 pl-6 mt-1"
             >
               {`Last updated on ${currentTime.toLocaleDateString("en-US", {
                 month: "long",

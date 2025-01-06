@@ -51,8 +51,6 @@ export const sidebarNavigation: SidebarItem[] = [
     route: "#",
     icon: OpenDrawerIcon,
     onClick: handleOpenCashDrawer,
-    isDisabled: !localStorage.getItem("shiftId"),
-    disabledMessage: "No active shift",
   },
   {
     name: "Clients",

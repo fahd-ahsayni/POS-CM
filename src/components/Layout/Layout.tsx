@@ -87,7 +87,6 @@ const Layout = () => {
   const content = useMemo(
     () => (
       <div className="flex relative w-screen h-screen overflow-hidden">
-        <Keyboard />
         <div
           className="absolute rounded-full -top-52 -right-52 w-[400px] h-[400px] bg-red-600 blur-3xl opacity-30"
           aria-hidden="true"

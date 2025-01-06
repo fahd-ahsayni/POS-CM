@@ -175,3 +175,40 @@
   opacity: 1;
   transform: scale(1);
 }
+
+.keyboard-wrapper {
+  @apply backdrop-blur-sm;
+}
+
+.simple-keyboard {
+  @apply bg-background;
+}
+
+.simple-keyboard .hg-button {
+  @apply bg-card text-foreground border border-border rounded-md 
+         transition-all duration-200 hover:bg-accent/50;
+  height: 50px;
+}
+
+.simple-keyboard .hg-button:active {
+  @apply bg-accent scale-95;
+}
+
+/* Smooth transition for body padding */
+body {
+  @apply transition-[padding] duration-300 ease-in-out;
+}
+
+body.keyboard-visible {
+  padding-bottom: 300px;
+}
+
+/* Match your theme */
+.simple-keyboard.myTheme {
+  @apply bg-background border-border;
+}
+
+.simple-keyboard.myTheme .hg-button {
+  @apply bg-card hover:bg-accent/50 active:bg-accent 
+         text-foreground border-border;
+}

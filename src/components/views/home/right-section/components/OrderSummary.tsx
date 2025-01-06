@@ -107,7 +107,7 @@ const OrderSummary = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between space-x-2.5 pb-4">
+        <div className="flex items-center justify-between space-x-2.5 pb-0.5">
           <Button
             className="flex-1"
             variant="secondary"

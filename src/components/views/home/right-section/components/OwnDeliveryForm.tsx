@@ -33,7 +33,7 @@ export default function NumberOfTabel() {
             isFetching={isFetching}
           />
         </div>
-        <div className="flex gap-x-2 w-full pb-2 absolute bottom-0">
+        <div className="flex gap-x-2 w-full absolute bottom-0">
           <Button
             variant="secondary"
             className="flex-1 border border-border"

@@ -27,7 +27,7 @@ export default function NumberOfTable() {
           tableValid={tableValid}
           handleNumberClick={handleNumberClick}
         />
-        <div className="flex gap-x-4 absolute bottom-0 pb-6 w-full">
+        <div className="flex gap-x-4 absolute bottom-0 w-full">
           <Button className="flex-1" variant="secondary" onClick={handleCancel}>
             Cancel
           </Button>
