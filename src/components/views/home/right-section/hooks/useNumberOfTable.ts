@@ -77,5 +77,6 @@ export const useNumberOfTable = () => {
     handleConfirm,
     handleCancel,
     getValidationMessage,
+    setTableNumber,
   };
 };

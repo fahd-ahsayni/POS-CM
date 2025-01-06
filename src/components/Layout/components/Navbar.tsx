@@ -55,6 +55,7 @@ export default function Navbar() {
   };
 
   const handleResetApp = () => {
+    localStorage.removeItem("orderType");
     window.location.reload();
   };
 

@@ -5,15 +5,22 @@ import { ORDER_SUMMARY_VIEW } from "@/components/views/home/right-section/consta
 import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/providers/themeProvider";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { sidebarNavigation, sidebarPagesLink } from "../constants";
+import {
+  sidebarNavigation,
+  sidebarPagesLink,
+  DISABLED_ITEM_STYLES,
+} from "../constants";
+import { useOrderType } from "@/components/views/home/right-section/hooks/useOrderType";
 
 interface SidebarItemProps {
   item: {
     name: string;
     route: string;
     icon: React.ComponentType<{ className?: string }>;
+    isDisabled?: boolean;
+    disabledMessage?: string;
   };
   pathname: string;
   theme: string;
@@ -34,17 +41,19 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
   return (
     <Card
       onClick={
-        onClick || (item.route !== "#" ? () => navigate(item.route) : undefined)
+        item.isDisabled
+          ? undefined
+          : onClick ||
+            (item.route !== "#" ? () => navigate(item.route) : undefined)
       }
+      title={item.isDisabled ? item.disabledMessage : item.name}
       key={item.name}
       className={cn(
         isActive
           ? "!bg-primary-red text-white !border-interactive-vivid-red shadow-md shadow-primary-red/60 dark:shadow-primary-red/50"
           : "shadow-md shadow-primary-black/20 dark:shadow-black/70",
         "group w-full p-2 rounded-md flex flex-col items-center text-xs font-medium transition-all duration-150",
-        item.name === "Clients" &&
-          onClick === undefined &&
-          "opacity-50 cursor-not-allowed"
+        item.isDisabled && DISABLED_ITEM_STYLES
       )}
     >
       <item.icon
@@ -68,6 +77,21 @@ export default function Sidebar() {
   const { pathname } = useLocation();
   const [openClientDrawer, setOpenClientDrawer] = useState(false);
   const [openDropDrawer, setOpenDropDrawer] = useState(false);
+  // Used to force re-render when orderType changes
+  const [_, setOrderTypeChanged] = useState(0); // eslint-disable-line @typescript-eslint/no-unused-vars
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setOrderTypeChanged((prev) => prev + 1);
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
+  useEffect(() => {
+    setOrderTypeChanged((prev) => prev + 1);
+  }, []);
 
   const handleClientClick = () => {
     if (views === ORDER_SUMMARY_VIEW) {
@@ -99,7 +123,15 @@ export default function Sidebar() {
           {sidebarNavigation.map((item) => (
             <SidebarItem
               key={item.name}
-              item={item}
+              item={{
+                ...item,
+                isDisabled:
+                  item.name === "Clients"
+                    ? views !== ORDER_SUMMARY_VIEW
+                    : item.name === "Waiters" || item.name === "Delivery"
+                    ? useOrderType().isWaitersDisabled()
+                    : item.isDisabled,
+              }}
               pathname={pathname}
               theme={theme}
               onClick={

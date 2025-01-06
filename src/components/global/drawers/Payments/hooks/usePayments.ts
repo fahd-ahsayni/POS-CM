@@ -10,6 +10,8 @@ import { selectOrder, resetOrder } from "@/store/slices/order/createOrder";
 import { useCallback, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
+import { useNumberOfTable } from "@/components/views/home/right-section/hooks/useNumberOfTable";
+import { useCoasterCall } from "@/components/views/home/right-section/hooks/useCoasterCall";
 
 /**
  * Represents a payment method with its properties
@@ -45,6 +47,9 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
 
   const order = useSelector(selectOrder);
   const dispatch = useDispatch();
+
+  const { setTableNumber } = useNumberOfTable();
+  const { setNumber } = useCoasterCall();
 
   // Initialize payment methods
   useEffect(() => {
@@ -245,6 +250,7 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
       setSelectedPayments([]);
       setCurrentAmount("");
       setActivePaymentIndex(-1);
+      localStorage.removeItem("orderType");
 
       // 4. Reset customer and order state using the customer management hook
       handlePaymentComplete();
@@ -266,6 +272,11 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
           "success"
         )
       );
+
+      // Reset table number and coaster call
+      setTableNumber("");
+      setNumber("");
+
     } catch (error) {
       toast.error(
         createToast(
@@ -286,7 +297,9 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
     setViewsRight,
     getTotalPaidAmount,
     order,
-    dispatch
+    dispatch,
+    setTableNumber,
+    setNumber,
   ]);
 
   const resetPayments = useCallback(() => {
