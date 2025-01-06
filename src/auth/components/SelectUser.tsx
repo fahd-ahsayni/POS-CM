@@ -112,17 +112,18 @@ export default function SelectUser() {
               tiltMaxAngleY={10}
               perspective={1000}
               transitionSpeed={2000}
+              className="pt-10 border-t-2 border-neutral-bright-grey"
             >
               <ShineBorder
                 className={cn(
-                  "flex cursor-pointer justify-center items-center gap-4 py-3 px-8",
+                  "flex cursor-pointer justify-center items-center gap-4 py-2 px-8",
                   loading && "opacity-50"
                 )}
                 color="#fff"
                 borderWidth={2}
               >
                 <RiRfidFill
-                  size={20}
+                  size={22}
                   className={cn("text-white", isScanning && "animate-pulse")}
                 />
                 {loading

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface SegmentedControlProps {
   activeTab: string;
@@ -15,42 +15,25 @@ export default function SegmentedControl({
   ];
 
   return (
-    <div className="relative">
-      <div className="relative flex w-[200px] rounded-md py-0.5 bg-primary-black/5 border-primary-black/10">
-        {/* Animated Indicator */}
-        <motion.div
-          aria-hidden="true"
-          className="absolute top-0 left-0 h-full w-[calc(100%/2)] rounded-md bg-primary-red shadow-sm will-change-transform"
-          layout
-          transition={{
-            type: "spring",
-            stiffness: 400,
-            damping: 25,
-            mass: 0.8,
-          }}
-          animate={{
-            x: `${
-              segments.findIndex((segment) => segment.value === activeTab) * 100
-            }%`,
-          }}
-        />
-        {/* Tab Triggers */}
+    <div className="inline-flex h-9 rounded-lg bg-neutral-bright-grey p-0.5">
+      <RadioGroup
+        value={activeTab}
+        onValueChange={onChange}
+        className="group relative inline-grid grid-cols-[1fr_1fr] items-center gap-0 text-sm font-medium after:absolute after:inset-y-0 after:w-1/2 after:rounded-md after:bg-primary-red after:shadow-sm after:shadow-black/5 after:outline-offset-2 after:transition-transform after:duration-300 after:[transition-timing-function:cubic-bezier(0.16,1,0.3,1)] has-[:focus-visible]:after:outline has-[:focus-visible]:after:outline-2 has-[:focus-visible]:after:outline-ring/70 data-[state=cashiers]:after:translate-x-0 data-[state=managers]:after:translate-x-full"
+        data-state={activeTab}
+      >
         {segments.map((segment) => (
-          <button
+          <label
             key={segment.value}
-            onClick={() => onChange(segment.value)}
-            className={`relative z-10 flex-1 flex items-center justify-center h-8 text-sm
-              transition-colors duration-200
-              ${
-                activeTab === segment.value
-                  ? "text-white"
-                  : "text-neutral-dark-grey"
-              }`}
+            className={`relative z-10 inline-flex h-full min-w-8 cursor-pointer select-none items-center justify-center whitespace-nowrap px-4 transition-colors ${
+              activeTab === segment.value ? "text-white" : "text-primary-black"
+            }`}
           >
             {segment.label}
-          </button>
+            <RadioGroupItem value={segment.value} className="sr-only" />
+          </label>
         ))}
-      </div>
+      </RadioGroup>
     </div>
   );
 }

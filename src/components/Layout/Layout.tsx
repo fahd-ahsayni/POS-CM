@@ -1,3 +1,5 @@
+import { extractProducts } from "@/functions/extractProducts";
+import { getAllVariants } from "@/functions/getAllVariants";
 import { updateOrder } from "@/functions/updateOrder";
 import { AppDispatch, RootState } from "@/store";
 import { fetchGeneralData } from "@/store/slices/data/generalDataSlice";
@@ -5,12 +7,9 @@ import { fetchPosData } from "@/store/slices/data/posSlice";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
-import Keyboard from "../global/keyboard/Keyboard";
+import { LoadingFullScreen } from "../global/loading";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
-import { getAllVariants } from "@/functions/getAllVariants";
-import { extractProducts } from "@/functions/extractProducts";
-import { LoadingFullScreen } from "../global/loading";
 
 const Layout = () => {
   const dispatch = useDispatch<AppDispatch>();
