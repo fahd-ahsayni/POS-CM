@@ -16,7 +16,7 @@ export default function SelectNextCashier({
   return (
     <ComboboxSelect
       label="Assigned to"
-      items={users}
+      items={users ?? []}
       value={selectedPerson}
       onChange={setSelectedPerson}
       displayValue={(user: User) => user?.name}
