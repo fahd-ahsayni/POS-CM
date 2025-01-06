@@ -24,10 +24,7 @@ interface SidebarItem {
 }
 
 // Add disabled styles constant
-export const DISABLED_ITEM_STYLES = "opacity-50 cursor-not-allowed";
-
-// Parse orderType from localStorage
-const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
+export const DISABLED_ITEM_STYLES = "opacity-50 cursor-not-allowed shadow-none";
 
 // Update handleOpenCashDrawer with disabled check
 const handleOpenCashDrawer = async () => {
