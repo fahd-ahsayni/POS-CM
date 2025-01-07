@@ -212,3 +212,37 @@ body.keyboard-visible {
   @apply bg-card hover:bg-accent/50 active:bg-accent 
          text-foreground border-border;
 }
+
+/* Existing Swiper styles ... */
+
+.products-swiper {
+  --swiper-pagination-color: #ff0000;
+  --swiper-pagination-bullet-inactive-color: #ffffff2d;
+  --swiper-pagination-bullet-inactive-opacity: 1;
+  --swiper-pagination-bullet-size: 6px;
+  --swiper-pagination-bullet-horizontal-gap: 4px;
+}
+
+.products-swiper .swiper-pagination {
+  left: 0px !important;
+  right: auto !important;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.products-swiper .swiper-pagination-bullet {
+  margin: 0 !important;
+  opacity: 1;
+  width: var(--swiper-pagination-bullet-size) !important;
+  height: var(--swiper-pagination-bullet-size) !important;
+  background: var(--swiper-pagination-bullet-inactive-color) !important;
+  transition: all 0.3s ease;
+}
+
+.products-swiper .swiper-pagination-bullet-active {
+  background: var(--swiper-pagination-color) !important;
+  width: calc(var(--swiper-pagination-bullet-size) + 2px) !important;
+  height: calc(var(--swiper-pagination-bullet-size) + 16px) !important;
+  border-radius: 10px !important;
+}

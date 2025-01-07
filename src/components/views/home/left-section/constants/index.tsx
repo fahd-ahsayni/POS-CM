@@ -28,7 +28,7 @@ export const tabsConfig = [
           </TypographyP>
           <Separator className="dark:bg-zinc-800/60 bg-zinc-50/70" />
         </div>
-        <div className="w-full h-full overflow-auto scrollbar-hide relative pb-52 px-2">
+        <div className="w-full h-full overflow-y-auto scrollbar-hide relative pb-52 px-2">
           <div className="w-full h-8 sticky top-0 left-0 bg-gradient-to-b from-background to-transparent" />
           <AllProducts />
         </div>

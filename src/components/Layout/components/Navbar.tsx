@@ -78,7 +78,7 @@ export default function Navbar() {
             </TypographyP>
             <TextShimmer
               duration={2}
-              className="text-[0.7rem] leading-3 pl-6 mt-1"
+              className="text-[0.7rem] leading-3 mt-1"
             >
               {`Last updated on ${currentTime.toLocaleDateString("en-US", {
                 month: "long",
@@ -91,7 +91,7 @@ export default function Navbar() {
               })}`}
             </TextShimmer>
           </div>
-          <div className="ml-2 flex items-center space-x-2 sm:ml-6 sm:space-x-2">
+          <div className="ml-2 flex items-center space-x-4 sm:ml-6 sm:space-x-3">
             <Button size="icon" className="relative">
               <AlertIcon className="w-[1.2rem] h-auto fill-white" />
               <span className="absolute h-2 w-2 -top-0.5 ring-1 ring-background left-full -translate-x-1/2 bg-red-500 rounded-full" />
@@ -104,7 +104,7 @@ export default function Navbar() {
               <LucideMaximize size={16} />
               <span className="sr-only">Full screen</span>
             </Button>
-            <Separator orientation="vertical" className="h-6" />
+            <Separator orientation="vertical" className="h-6 !bg-neutral-dark-grey/50" />
             <Profile />
           </div>
         </div>

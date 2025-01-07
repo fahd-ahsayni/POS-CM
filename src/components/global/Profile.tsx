@@ -17,6 +17,7 @@ import { ChevronDown, HelpCircle, LogOut, Power, User } from "lucide-react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { TypographySmall } from "../ui/typography";
+import { truncateName } from "@/lib/utils";
 
 const menuItems = [
   { icon: User, label: "My Profile" },
@@ -57,7 +58,7 @@ export default function Profile() {
             </div>
             <div className="ml-3 md:flex hidden flex-col justify-center items-start h-10">
               <TypographySmall className="text-sm font-medium">
-                {user?.name}
+                {truncateName(user?.name, 20)}
               </TypographySmall>
               <TypographySmall className="text-xs text-neutral-dark-grey">
                 {user?.position}
@@ -66,7 +67,7 @@ export default function Profile() {
             <ChevronDown
               size={20}
               strokeWidth={1.5}
-              className="ms-2 opacity-60 mt-2"
+              className="ms-2 opacity-60 mt-0.5"
               aria-hidden="true"
             />
           </button>

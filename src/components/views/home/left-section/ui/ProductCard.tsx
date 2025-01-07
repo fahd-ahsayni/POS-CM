@@ -1,7 +1,7 @@
 import { unknownProduct } from "@/assets";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TypographyP } from "@/components/ui/typography";
+import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { toTitleCase } from "@/functions/string-transforms";
 import { truncateName } from "@/lib/utils";
 import { currency } from "@/preferences";
@@ -34,28 +34,30 @@ export function ProductCard({
   );
 
   return (
-    <motion.div className="flex cursor-pointer items-center justify-start h-full w-full">
+    <motion.div className="flex cursor-pointer items-center justify-start h-[5.5rem] w-full">
       <Card
-        className={`flex items-center justify-start h-full w-full py-2 px-2 gap-x-4 ${
-          totalQuantity > 0 ? "!ring-2 !ring-red-600" : ""
+        className={`flex items-center justify-center h-full w-full py-3 px-3 gap-x-4 ${
+          totalQuantity > 0 ? "!ring-2 !ring-primary-red" : ""
         }`}
         onClick={() => onProductClick(product)}
       >
-        <div className="relative flex items-center justify-center">
-          <img
-            src={
-              product.image
-                ? `${import.meta.env.VITE_BASE_URL}${product.image}`
-                : unknownProduct
-            }
-            alt={product.name}
-            crossOrigin="anonymous"
-            className={`size-16 object-cover !rounded-[0.375rem] ${
-              totalQuantity > 0
-                ? "brightness-50 transition-all duration-500"
-                : ""
-            }`}
-          />
+        <div className="relative h-full flex items-center justify-center">
+          <div className="flex items-center justify-center h-full">
+            <img
+              src={
+                product.image
+                  ? `${import.meta.env.VITE_BASE_URL}${product.image}`
+                  : unknownProduct
+              }
+              alt={product.name}
+              crossOrigin="anonymous"
+              className={`size-16 object-cover !rounded-[0.375rem] ${
+                totalQuantity > 0
+                  ? "brightness-50 transition-all duration-500"
+                  : ""
+              }`}
+            />
+          </div>
           {totalQuantity > 0 && (
             <div className="absolute w-full h-full flex items-center justify-center">
               <motion.div
@@ -72,14 +74,14 @@ export function ProductCard({
           )}
         </div>
         <div className="flex flex-col items-start justify-between flex-1 h-full w-full pr-2">
-          <TypographyP className="font-medium text-sm">
-            {toTitleCase(truncateName(product.name.toLowerCase(), 25))}
-          </TypographyP>
+          <TypographySmall className="font-medium text-sm">
+            {toTitleCase(truncateName(product.name.toLowerCase(), 18))}
+          </TypographySmall>
           <div className="flex items-center justify-between w-full">
-            <TypographyP className="text-sm font-medium text-neutral-dark-grey">
+            <TypographySmall className="font-medium text-neutral-dark-grey">
               {product.price ? product.price : product.variants[0].price_ttc}{" "}
               {currency.symbol}
-            </TypographyP>
+            </TypographySmall>
           </div>
         </div>
       </Card>

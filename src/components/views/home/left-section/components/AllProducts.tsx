@@ -1,12 +1,10 @@
 import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, memo } from "react";
 import { ProductCard, ProductCardSkeleton } from "../ui/ProductCard";
 import ProductsVariants from "./ProductsVariants";
 import Combo from "@/components/global/drawers/combo/Combo";
 import { useProducts } from "../hooks/useProducts";
-import { memo } from "react";
-import { ProductSelected } from "@/types";
-import { Product } from "@/types";
+import { ProductSelected, Product } from "@/types";
 
 interface ProductsGridProps {
   products: Product[];
@@ -14,25 +12,52 @@ interface ProductsGridProps {
   onProductClick: (product: Product) => void;
 }
 
-export const ProductsGrid = memo(({ products, selectedProducts, onProductClick }: ProductsGridProps) => (
-  <motion.div 
-    className="w-full grid grid-cols-2 lg:grid-cols-3 gap-3"
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ duration: 0.35 }}
-  >
-    {products.map((product) =>
-      product.variants.length > 0 && (
-        <ProductCard
-          key={product._id}
-          product={product}
-          selectedProducts={selectedProducts}
-          onProductClick={onProductClick}
-        />
-      )
-    )}
-  </motion.div>
-));
+const LOADING_DELAY = 1000;
+const SKELETON_COUNT = 9;
+
+const animationConfig = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  transition: { duration: 0.35 },
+};
+
+const ProductsGrid = memo(function ProductsGrid({
+  products,
+  selectedProducts,
+  onProductClick,
+}: ProductsGridProps) {
+  return (
+    <motion.div
+      className="w-full grid grid-cols-2 lg:grid-cols-3 gap-3"
+      {...animationConfig}
+    >
+      {products.map(
+        (product) =>
+          product.variants.length > 0 && (
+            <ProductCard
+              key={product._id}
+              product={product}
+              selectedProducts={selectedProducts}
+              onProductClick={onProductClick}
+            />
+          )
+      )}
+    </motion.div>
+  );
+});
+
+export const ProductsLoadingSkeleton = memo(function ProductsLoadingSkeleton() {
+  return (
+    <motion.div
+      className="w-full grid grid-cols-2 lg:grid-cols-3 gap-3 mt-4"
+      {...animationConfig}
+    >
+      {Array.from({ length: SKELETON_COUNT }, (_, index) => (
+        <ProductCardSkeleton key={index} />
+      ))}
+    </motion.div>
+  );
+});
 
 const AllProducts = memo(function AllProducts() {
   const {
@@ -44,7 +69,7 @@ const AllProducts = memo(function AllProducts() {
   } = useProducts();
 
   useEffect(() => {
-    const timer = setTimeout(loadProducts, 1000);
+    const timer = setTimeout(loadProducts, LOADING_DELAY);
     return () => clearTimeout(timer);
   }, [loadProducts]);
 
@@ -53,7 +78,7 @@ const AllProducts = memo(function AllProducts() {
   }
 
   return (
-    <>
+    <div className="space-y-4">
       <Combo />
       <ProductsVariants />
       <ProductsGrid
@@ -61,22 +86,8 @@ const AllProducts = memo(function AllProducts() {
         selectedProducts={selectedProducts}
         onProductClick={handleProductClick}
       />
-    </>
+    </div>
   );
 });
-
-// Separate components for better organization
-const ProductsLoadingSkeleton = memo(() => (
-  <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ duration: 0.35 }}
-    className="w-full grid grid-cols-2 lg:grid-cols-3 gap-3 mt-4"
-  >
-    {[...Array(9)].map((_, index) => (
-      <ProductCardSkeleton key={index} />
-    ))}
-  </motion.div>
-));
 
 export default AllProducts;

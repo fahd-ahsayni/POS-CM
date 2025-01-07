@@ -4,6 +4,7 @@ import {
   TypographyH3,
   TypographyH4,
   TypographyP,
+  TypographySmall,
 } from "@/components/ui/typography";
 import { updateOrder } from "@/functions/updateOrder";
 import { OrderType } from "@/types";
@@ -23,7 +24,7 @@ import {
 } from "../constants";
 
 export const OrderCardSkeleton = () => (
-  <Card className="w-full rounded-md h-24 px-8 py-4 dark:!bg-secondary-black bg-white flex space-x-4 items-center justify-between">
+  <Card className="w-full rounded-lg h-24 px-8 py-4 dark:!bg-secondary-black bg-white flex space-x-4 items-center justify-between">
     <div className="flex items-center gap-x-4 w-full">
       <Skeleton className="h-7 w-7 rounded-full bg-neutral-dark-grey/30" />
       <div className="space-y-2 flex-1">
@@ -73,19 +74,18 @@ export const OrderCard = memo(
             <TypeOfOrderIcon type={iconType} />
           )}
           <div>
-            <TypographyH4 className="font-medium">
+            <TypographyP className="font-medium text-lg">
               {orderType.name}
-            </TypographyH4>
+            </TypographyP>
             {showDescription && (
-              <TypographyP className="text-xs text-neutral-dark-grey">
+              <TypographySmall className="text-xs text-neutral-dark-grey pt-0.5 tracking-tight">
                 {TypeOfOrderDescription({ type: iconType })}
-              </TypographyP>
+              </TypographySmall>
             )}
           </div>
         </div>
-        {orderType.children.length > 0 && (
-          <ChevronRightIcon className="w-6 h-6 text-primary-black dark:text-white" />
-        )}
+
+        <ChevronRightIcon className="w-6 h-6 text-primary-black/50 dark:text-white/50" />
       </Card>
     );
   }

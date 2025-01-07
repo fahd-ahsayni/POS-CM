@@ -9,7 +9,7 @@ export default function LeftSection() {
   const { views } = useLeftViewContext();
 
   return (
-    <div className="w-full h-full mt-6">
+    <div className="w-full h-full mt-4">
       <div className="flex items-center justify-between relative flex-shrink-0">
         <TypographyP className="absolute pr-4 bg-background font-medium text-sm">
           Categories

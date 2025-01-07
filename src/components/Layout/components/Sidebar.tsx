@@ -13,6 +13,8 @@ import {
   DISABLED_ITEM_STYLES,
 } from "../constants";
 import { useOrderType } from "@/components/views/home/right-section/hooks/useOrderType";
+import { RefreshCw, RefreshCwOff } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 interface SidebarItemProps {
   item: {
@@ -109,42 +111,65 @@ export default function Sidebar() {
       <Drop open={openDropDrawer} setOpen={setOpenDropDrawer} />
       <div className="flex w-full flex-col h-full items-center">
         <div className="w-full flex-1 flex flex-col justify-between py-3 px-2">
-          {/* Pages Links */}
-          {sidebarPagesLink.map((item) => (
-            <SidebarItem
-              key={item.name}
-              item={item}
-              pathname={pathname}
-              theme={theme}
-            />
-          ))}
+          <div className="flex flex-col gap-y-6">
+            {/* Pages Links */}
+            {sidebarPagesLink.map((item) => (
+              <SidebarItem
+                key={item.name}
+                item={item}
+                pathname={pathname}
+                theme={theme}
+              />
+            ))}
 
-          {/* Navigation Items */}
-          {sidebarNavigation.map((item) => (
-            <SidebarItem
-              key={item.name}
-              item={{
-                ...item,
-                isDisabled:
+            {/* Navigation Items */}
+            {sidebarNavigation.map((item) => (
+              <SidebarItem
+                key={item.name}
+                item={{
+                  ...item,
+                  isDisabled:
+                    item.name === "Clients"
+                      ? views !== ORDER_SUMMARY_VIEW
+                      : item.name === "Waiters" || item.name === "Delivery"
+                      ? useOrderType().isWaitersDisabled()
+                      : item.isDisabled,
+                }}
+                pathname={pathname}
+                theme={theme}
+                onClick={
                   item.name === "Clients"
-                    ? views !== ORDER_SUMMARY_VIEW
-                    : item.name === "Waiters" || item.name === "Delivery"
-                    ? useOrderType().isWaitersDisabled()
-                    : item.isDisabled,
-              }}
-              pathname={pathname}
-              theme={theme}
-              onClick={
-                item.name === "Clients"
-                  ? views === ORDER_SUMMARY_VIEW
-                    ? handleClientClick
-                    : undefined
-                  : item.name === "Drop"
-                  ? handleDropClick
-                  : item.onClick
-              }
+                    ? views === ORDER_SUMMARY_VIEW
+                      ? handleClientClick
+                      : undefined
+                    : item.name === "Drop"
+                    ? handleDropClick
+                    : item.onClick
+                }
+              />
+            ))}
+          </div>
+
+          <div className="flex flex-col gap-y-4">
+            <Separator
+              orientation="horizontal"
+              className="!bg-neutral-dark-grey/40 max-w-[60%] mx-auto"
             />
-          ))}
+            <Card
+              title="reload"
+              key="reload"
+              className={cn(
+                "group w-full p-2 rounded-lg flex flex-col items-center text-xs font-medium transition-all duration-150",
+                "dark:!bg-white/5 dark:hover:!bg-white",
+                "!bg-white/30 hover:!bg-white"
+              )}
+            >
+              <RefreshCw className="h-5 w-5 group-hover:text-primary-black" />
+              <span className="mt-2 text-center group-hover:text-primary-black">
+                Reload
+              </span>
+            </Card>
+          </div>
         </div>
       </div>
     </div>

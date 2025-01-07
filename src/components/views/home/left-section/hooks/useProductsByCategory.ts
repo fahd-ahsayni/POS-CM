@@ -26,6 +26,7 @@ export const useProductsByCategory = () => {
   const [breadcrumbs, setBreadcrumbs] = useState<Category[]>(
     [category].filter(Boolean) as Category[]
   );
+  const [loading, setLoading] = useState(true);
 
   const { addOrUpdateProduct } = useProductSelection({
     selectedProducts,
@@ -98,10 +99,17 @@ export const useProductsByCategory = () => {
 
   useEffect(() => {
     if (category) {
-      setProducts(category.products ?? []);
-      setSubCategories(category.children ?? []);
-      setBreadcrumbs([category]);
-      setSubCategory(null);
+      setLoading(true);
+      try {
+        setProducts(category.products ?? []);
+        setSubCategories(category.children ?? []);
+        setBreadcrumbs([category]);
+        setSubCategory(null);
+      } catch (error) {
+        console.error('Error loading category data:', error);
+      } finally {
+        setLoading(false);
+      }
     }
   }, [category, setSubCategory]);
 
@@ -119,5 +127,6 @@ export const useProductsByCategory = () => {
     setProducts,
     setSubCategories,
     setBreadcrumbs,
+    loading,
   };
 };

@@ -4,11 +4,12 @@ import { selectOrder } from "@/store/slices/order/createOrder";
 import { useSelector } from "react-redux";
 
 interface OrderType {
-  type: "takeaway" | "delivery" | "onPlace";
+  type: "takeAway" | "delivery" | "onPlace";
   name?: string;
-  select_caoster_call?: boolean;
+  select_coaster_call?: boolean;
   select_table?: boolean;
   select_delivery_boy?: boolean;
+  image?: string;
 }
 
 const OrderBadge: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -30,10 +31,10 @@ const TakeawayOrder: React.FC<{ order: any; orderType: OrderType }> = ({
   orderType,
 }) => {
   const getOrderText = () => {
-    if (order.coaster_call !== null && orderType.select_caoster_call) {
-      return `Coaster Call - N ${order.coaster_call}`;
+    if (order.coaster_call !== null && orderType.select_coaster_call) {
+      return `Coaster Call - N° ${order.coaster_call}`;
     }
-    if (order.coaster_call === null && !orderType.select_caoster_call) {
+    if (order.coaster_call === null && !orderType.select_coaster_call) {
       return "Takeaway";
     }
     if (order.coaster_call === null && orderType.select_table) {
@@ -65,7 +66,17 @@ const DeliveryOrder: React.FC<{ order: any; orderType: OrderType }> = ({
 
   return (
     <OrderContainer>
-      <div className="h-8 w-9 bg-red-500 rounded-md" />
+      {orderType.image && (
+        <div className="h-8 w-9 rounded-md relative overflow-hidden">
+          <img
+            src={orderType.image}
+            alt="order-type-image"
+            loading="lazy"
+            crossOrigin="anonymous"
+            className="absolute w-full h-full object-cover top-0 left-0"
+          />
+        </div>
+      )}
       <OrderBadge>{getDeliveryText()}</OrderBadge>
     </OrderContainer>
   );
@@ -78,7 +89,7 @@ const OrderInfo = () => {
   );
 
   const orderComponents = {
-    takeaway: () => <TakeawayOrder order={order} orderType={orderType} />,
+    takeAway: () => <TakeawayOrder order={order} orderType={orderType} />,
     delivery: () => <DeliveryOrder order={order} orderType={orderType} />,
     onPlace: () => <div>On place</div>,
   };
@@ -87,20 +98,9 @@ const OrderInfo = () => {
 };
 
 export const OrderBannerOnSummary = () => {
-  const order = useSelector(selectOrder);
-
   return (
     <OrderContainer>
       <OrderInfo />
-      {order.one_time && (
-        <div
-          className={cn(
-            "h-8 bg-blue-600 text-white flex items-center justify-center px-2 rounded-md"
-          )}
-        >
-          <TypographySmall className="font-medium">One Time</TypographySmall>
-        </div>
-      )}
     </OrderContainer>
   );
 };

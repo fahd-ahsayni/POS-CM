@@ -1,7 +1,8 @@
 import { BlurImage } from "@/components/global/BlurImage";
 import { Card } from "@/components/ui/card";
 import { TypographyP } from "@/components/ui/typography";
-import { cn } from "@/lib/utils";
+import { toTitleCase } from "@/functions/string-transforms";
+import { cn, truncateName } from "@/lib/utils";
 import { Category } from "@/types";
 import { memo } from "react";
 
@@ -21,7 +22,7 @@ export const CategoryCard = memo(function CategoryCard({
       <Card
         onClick={onClick}
         className={cn(
-          "flex cursor-pointer relative flex-col items-center h-24 overflow-hidden justify-center",
+          "flex cursor-pointer relative flex-col items-center h-20 overflow-hidden justify-center",
           isDisabled && "pointer-events-none"
         )}
       >
@@ -37,8 +38,8 @@ export const CategoryCard = memo(function CategoryCard({
           )}
           loadingClassName="dark:bg-white/5 bg-primary-black/30"
         />
-        <TypographyP className="text-center group text-xl capitalize font-medium absolute text-white">
-          {category.name.toLowerCase()}
+        <TypographyP className="text-center group text-lg font-medium absolute text-white px-6">
+          {toTitleCase(truncateName(category.name.toLowerCase(), 28))}
         </TypographyP>
       </Card>
     </div>

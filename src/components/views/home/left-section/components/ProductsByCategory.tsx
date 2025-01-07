@@ -1,19 +1,109 @@
+import Combo from "@/components/global/drawers/combo/Combo";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { TypographyP } from "@/components/ui/typography";
-import { Category } from "@/types";
+import { Category, Product, ProductSelected } from "@/types";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
-import { memo } from "react";
-import { Navigation } from "swiper/modules";
+import { memo, useEffect, useMemo, useState } from "react";
+import "swiper/css";
+import "swiper/css/grid";
+import "swiper/css/pagination";
+import { Grid, Mousewheel, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { CustomBreadcrumb } from "../ui/Bredcrump";
+import { useProducts } from "../hooks/useProducts";
 import { useProductsByCategory } from "../hooks/useProductsByCategory";
-import Combo from "@/components/global/drawers/combo/Combo";
-import ProductsVariants from "./ProductsVariants";
+import { CustomBreadcrumb } from "../ui/Bredcrump";
 import { ProductCard } from "../ui/ProductCard";
+import { ProductsLoadingSkeleton } from "./AllProducts";
 import Header from "./Header";
+import ProductsVariants from "./ProductsVariants";
+
+interface LoadingConfig {
+  threshold: number;
+  delay: number;
+}
+
+const LOADING_CONFIG: LoadingConfig = {
+  threshold: 18,
+  delay: 1000,
+};
+
+const PRODUCTS_PER_ROW = 3;
+const ROWS_PER_SLIDE = 5;
+
+const ProductGrid = memo(function ProductGrid({
+  products,
+  selectedProducts,
+  handleProductClick,
+}: {
+  products: Product[];
+  selectedProducts: ProductSelected[];
+  handleProductClick: (product: Product) => void;
+}) {
+  const chunkedProducts = useMemo(() => {
+    const productsWithVariants = products.filter((p) => p.variants.length > 0);
+    const chunks: Product[][] = [];
+    const productsPerSlide = PRODUCTS_PER_ROW * ROWS_PER_SLIDE;
+
+    for (let i = 0; i < productsWithVariants.length; i += productsPerSlide) {
+      chunks.push(productsWithVariants.slice(i, i + productsPerSlide));
+    }
+    return chunks;
+  }, [products]);
+
+  if (products.length < 15) {
+    return (
+      <div className="grid grid-cols-3 gap-3 h-full">
+        {products.map((product) => (
+          <ProductCard
+            key={product._id}
+            product={product}
+            selectedProducts={selectedProducts}
+            onProductClick={handleProductClick}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <Swiper
+      direction="vertical"
+      slidesPerView={1}
+      grid={{
+        rows: ROWS_PER_SLIDE,
+        fill: "row",
+      }}
+      mousewheel={true}
+      spaceBetween={24}
+      pagination={{
+        clickable: true,
+        renderBullet: function (_, className) {
+          return `<span class="${className} !w-2 !h-2"></span>`;
+        },
+      }}
+      modules={[Grid, Mousewheel, Pagination]}
+      className="h-[calc(100vh-250px)] products-swiper px-2"
+    >
+      {chunkedProducts.map((chunk, slideIndex) => (
+        <SwiperSlide key={slideIndex}>
+          <div className="grid grid-cols-3 gap-3 h-full pl-4 pr-1 py-2">
+            {chunk.map((product) => (
+              <ProductCard
+                key={product._id}
+                product={product}
+                selectedProducts={selectedProducts}
+                onProductClick={handleProductClick}
+              />
+            ))}
+          </div>
+        </SwiperSlide>
+      ))}
+    </Swiper>
+  );
+});
 
 export default memo(function ProductsByCategory() {
   const {
@@ -28,8 +118,32 @@ export default memo(function ProductsByCategory() {
     category,
   } = useProductsByCategory();
 
+  const { loadProducts } = useProducts();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+
+    const handleLoading = async () => {
+      if (products.length > LOADING_CONFIG.threshold) {
+        setLoading(true);
+        timer = setTimeout(() => {
+          loadProducts().finally(() => setLoading(false));
+        }, LOADING_CONFIG.delay);
+      } else {
+        setLoading(false);
+      }
+    };
+
+    handleLoading();
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [products.length, loadProducts]);
+
   return (
-    <div className="w-full h-full overflow-hidden">
+    <div className="h-full flex flex-col overflow-y-hidden">
       <Header />
       <div className="max-w-full">
         {(category?.children?.length ?? 0) > 0 && (
@@ -104,36 +218,30 @@ export default memo(function ProductsByCategory() {
           </>
         )}
       </div>
-      <div>
-        <div className="flex items-center justify-between relative flex-shrink-0 mt-4">
-          <TypographyP className="pr-4 bg-background font-medium">
-            Products
-          </TypographyP>
-          <Separator />
+      <div className="flex-1 ">
+        <div className="flex-none">
+          <div className="flex items-center justify-between relative flex-shrink-0 mt-4">
+            <TypographyP className="pr-4 bg-background font-medium">
+              Products
+            </TypographyP>
+            <Separator />
+          </div>
         </div>
-        <div className="w-full h-full overflow-auto scrollbar-hide relative pb-52 px-2">
-          <div className="w-full h-8 sticky top-0 left-0 bg-gradient-to-b from-background to-transparent" />
-          <>
+
+        <div className="flex-1 ">
+          <div className="w-full h-full relative px-2 pt-2">
             <Combo />
             <ProductsVariants />
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.35 }}
-              className="w-full flex-1 pb-16"
-            >
-              <div className="w-full grid grid-cols-2 lg:grid-cols-3 gap-3">
-                {products.map((product) => (
-                  <ProductCard
-                    key={product._id}
-                    product={product}
-                    selectedProducts={selectedProducts}
-                    onProductClick={handleProductClick}
-                  />
-                ))}
-              </div>
-            </motion.div>
-          </>
+            {loading ? (
+              <ProductsLoadingSkeleton />
+            ) : (
+              <ProductGrid
+                products={products}
+                selectedProducts={selectedProducts}
+                handleProductClick={handleProductClick}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>
