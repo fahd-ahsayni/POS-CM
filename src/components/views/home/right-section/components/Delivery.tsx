@@ -87,7 +87,7 @@ export default function SelectDeliveryType() {
           ))}
         </div>
         <div className="w-full absolute bottom-0">
-          <div className="flex gap-x-4 w-full pb-10">
+          <div className="flex gap-x-4 w-full pb-3">
             <Button
               variant="secondary"
               className="flex-1"

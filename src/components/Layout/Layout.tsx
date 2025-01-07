@@ -1,5 +1,3 @@
-import { extractProducts } from "@/functions/extractProducts";
-import { getAllVariants } from "@/functions/getAllVariants";
 import { updateOrder } from "@/functions/updateOrder";
 import { AppDispatch, RootState } from "@/store";
 import { fetchGeneralData } from "@/store/slices/data/generalDataSlice";
@@ -37,22 +35,6 @@ const Layout = () => {
   }, [dispatch, navigate]);
 
   useEffect(() => {
-    const generalData = localStorage.getItem("generalData");
-    if (generalData) {
-      const parsedData = JSON.parse(generalData);
-
-      localStorage.setItem("variants", JSON.stringify(getAllVariants()));
-
-      if (parsedData?.categories) {
-        localStorage.setItem(
-          "products",
-          JSON.stringify(extractProducts(parsedData.categories))
-        );
-      }
-    }
-  }, []);
-
-  useEffect(() => {
     if (generalStatus === "failed") {
       navigate("/login");
     }
@@ -77,7 +59,7 @@ const Layout = () => {
       setTimeout(() => {
         localStorage.setItem("firstRender", "true");
         setIsLoading(false);
-      }, 2000);
+      }, 1500);
     } else {
       setIsLoading(false);
     }

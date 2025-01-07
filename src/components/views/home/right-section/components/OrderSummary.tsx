@@ -3,16 +3,14 @@ import { AddUserIcon, BillIcon, ExpandListIcon } from "@/assets/figma-icons";
 import Payments from "@/components/global/drawers/Payments/Payments";
 import ModalConfirmHoldOrder from "@/components/global/modal/ModalConfirmHoldOrder";
 import { Button } from "@/components/ui/button";
-import { TypographyP } from "@/components/ui/typography";
-import getOrderTypeData from "@/functions/getOrderTypeData";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { memo } from "react";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
-import { useRightViewContext } from "../contexts/RightViewContext";
 import { useOrderSummary } from "../hooks/useOrderSummary";
 import OrderLines from "../import/OrderLines";
 import Ticket from "../layouts/Ticket";
+import { OrderBannerOnSummary } from "../ui/OrderInfo";
 import OtherActionsOrderLines from "../ui/OtherActionsOrderLines";
 
 const OrderSummary = () => {
@@ -36,8 +34,6 @@ const OrderSummary = () => {
     },
   } = useOrderSummary();
 
-  const { orderType } = useRightViewContext();
-
   return (
     <>
       <Payments open={openDrawerPayments} setOpen={setOpenDrawerPayments} />
@@ -48,9 +44,7 @@ const OrderSummary = () => {
       <div className="flex flex-col justify-start h-full gap-y-2">
         <div className="flex items-center justify-between p-1">
           <div className="flex items-center gap-2">
-            <TypographyP className="capitalize text-sm font-medium">
-              {getOrderTypeData(orderType).type}
-            </TypographyP>
+            <OrderBannerOnSummary />
           </div>
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">

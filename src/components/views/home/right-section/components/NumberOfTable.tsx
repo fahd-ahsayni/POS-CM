@@ -1,7 +1,5 @@
 import { Button } from "@/components/ui/button";
-import {
-  TypographyH3
-} from "@/components/ui/typography";
+import { TypographyH3 } from "@/components/ui/typography";
 import { useNumberOfTable } from "../hooks/useNumberOfTable";
 import { TableNumberDisplay } from "../layouts/TableNumberDisplay";
 
@@ -27,7 +25,7 @@ export default function NumberOfTable() {
           tableValid={tableValid}
           handleNumberClick={handleNumberClick}
         />
-        <div className="flex gap-x-4 absolute bottom-0 w-full">
+        <div className="flex gap-x-4 absolute bottom-4 w-full">
           <Button className="flex-1" variant="secondary" onClick={handleCancel}>
             Cancel
           </Button>
