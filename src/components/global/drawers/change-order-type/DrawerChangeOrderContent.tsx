@@ -100,7 +100,10 @@ export default function DrawerChangeOrderContent() {
             </Button>
             <Button
               className="flex-1"
-              onClick={handleTableNumberConfirm}
+              onClick={() => {
+                localStorage.setItem("tableNumber", tableNumber);
+                handleTableNumberConfirm();
+              }}
               disabled={!tableNumber || tableValid !== "valid"}
             >
               Confirm

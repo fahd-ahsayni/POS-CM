@@ -57,7 +57,7 @@ export default function Profile() {
               />
             </div>
             <div className="ml-3 md:flex hidden flex-col justify-center items-start h-10">
-              <TypographySmall className="text-sm font-medium">
+              <TypographySmall className="font-medium capitalize">
                 {truncateName(user?.name, 20)}
               </TypographySmall>
               <TypographySmall className="text-xs text-neutral-dark-grey">

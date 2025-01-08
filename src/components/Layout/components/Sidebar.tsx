@@ -1,20 +1,20 @@
 import AddClient from "@/components/global/drawers/add-client/AddClient";
 import Drop from "@/components/global/drawers/drop/Drop";
 import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { ORDER_SUMMARY_VIEW } from "@/components/views/home/right-section/constants";
 import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
+import { useOrderType } from "@/components/views/home/right-section/hooks/useOrderType";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/providers/themeProvider";
-import { useState, useEffect } from "react";
+import { RefreshCw } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
+  DISABLED_ITEM_STYLES,
   sidebarNavigation,
   sidebarPagesLink,
-  DISABLED_ITEM_STYLES,
 } from "../constants";
-import { useOrderType } from "@/components/views/home/right-section/hooks/useOrderType";
-import { RefreshCw, RefreshCwOff } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 
 interface SidebarItemProps {
   item: {
@@ -105,6 +105,11 @@ export default function Sidebar() {
     setOpenDropDrawer(true);
   };
 
+  const handleResetApp = () => {
+    localStorage.removeItem("orderType");
+    window.location.reload();
+  };
+
   return (
     <div className="hidden w-full h-screen md:block z-10">
       <AddClient open={openClientDrawer} setOpen={setOpenClientDrawer} />
@@ -156,6 +161,7 @@ export default function Sidebar() {
               className="!bg-neutral-dark-grey/40 max-w-[60%] mx-auto"
             />
             <Card
+              onClick={handleResetApp}
               title="reload"
               key="reload"
               className={cn(
@@ -164,7 +170,7 @@ export default function Sidebar() {
                 "!bg-white/30 hover:!bg-white"
               )}
             >
-              <RefreshCw className="h-5 w-5 group-hover:text-primary-black" />
+              <RefreshCw className="h-4 w-4 group-hover:text-primary-black transition-all duration-300" />
               <span className="mt-2 text-center group-hover:text-primary-black">
                 Reload
               </span>

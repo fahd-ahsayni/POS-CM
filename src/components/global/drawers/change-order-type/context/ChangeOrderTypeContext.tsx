@@ -41,13 +41,15 @@ export function ChangeOrderTypeProvider({
       if (orderType.children.length > 0) {
         setDisplayedTypes(orderType.children);
       } else {
-        dispatch(setOrderTypeId({
-          order_type_id: orderType._id,
-          table_id: orderType.select_table ? undefined : null,
-          client_id: orderType.select_client ? undefined : null,
-          coaster_call: orderType.select_coaster_call ? undefined : null
-        }));
-        
+        dispatch(
+          setOrderTypeId({
+            order_type_id: orderType._id,
+            table_id: orderType.select_table ? undefined : null,
+            client_id: orderType.select_client ? undefined : null,
+            coaster_call: orderType.select_coaster_call ? undefined : null,
+          })
+        );
+
         localStorage.setItem("orderType", JSON.stringify(orderType));
 
         if (orderType.select_client) {

@@ -1,5 +1,10 @@
+import {
+  Table2Seats,
+  Table4Seats,
+  Table6Seats,
+  Table8Seats,
+} from "@/assets/tables-icons";
 import { TypographySmall } from "@/components/ui/typography";
-import { cn } from "@/lib/utils";
 import { selectOrder } from "@/store/slices/order/createOrder";
 import { useSelector } from "react-redux";
 
@@ -13,10 +18,8 @@ interface OrderType {
 }
 
 const OrderBadge: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="h-8 flex-1 flex items-center justify-center rounded-md bg-white shadow px-5">
-    <TypographySmall className="text-primary-black font-medium">
-      {children}
-    </TypographySmall>
+  <div className="h-8 flex-1 flex items-center justify-center px-5">
+    <TypographySmall className="font-medium">{children}</TypographySmall>
   </div>
 );
 
@@ -67,7 +70,7 @@ const DeliveryOrder: React.FC<{ order: any; orderType: OrderType }> = ({
   return (
     <OrderContainer>
       {orderType.image && (
-        <div className="h-8 w-9 rounded-md relative overflow-hidden">
+        <div className="h-8 w-8 rounded-md relative overflow-hidden">
           <img
             src={orderType.image}
             alt="order-type-image"
@@ -82,6 +85,36 @@ const DeliveryOrder: React.FC<{ order: any; orderType: OrderType }> = ({
   );
 };
 
+const OnPlaceOrder: React.FC<{ order: any; orderType: OrderType }> = ({
+  orderType,
+}) => {
+  const TableNumber = localStorage.getItem("tableNumber");
+
+  const TableIcon =
+    parseInt(TableNumber || "0") > 7
+      ? Table8Seats
+      : parseInt(TableNumber || "0") > 5
+      ? Table6Seats
+      : parseInt(TableNumber || "0") > 3
+      ? Table4Seats
+      : Table2Seats;
+  if (orderType.type === "onPlace") {
+    return (
+      <OrderContainer>
+        <OrderBadge>
+          <div className="flex items-center justify-center space-x-1.5">
+            <TableIcon className="w-8 h-8 text-primary-black dark:text-white/80" />
+            <TypographySmall className="font-medium">
+              Table N° {TableNumber}
+            </TypographySmall>
+          </div>
+        </OrderBadge>
+      </OrderContainer>
+    );
+  }
+  return null;
+};
+
 const OrderInfo = () => {
   const order = useSelector(selectOrder);
   const orderType: OrderType = JSON.parse(
@@ -91,7 +124,7 @@ const OrderInfo = () => {
   const orderComponents = {
     takeAway: () => <TakeawayOrder order={order} orderType={orderType} />,
     delivery: () => <DeliveryOrder order={order} orderType={orderType} />,
-    onPlace: () => <div>On place</div>,
+    onPlace: () => <OnPlaceOrder order={order} orderType={orderType} />,
   };
 
   return orderComponents[orderType.type]?.() || null;

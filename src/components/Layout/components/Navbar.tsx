@@ -54,17 +54,11 @@ export default function Navbar() {
     }
   };
 
-  const handleResetApp = () => {
-    localStorage.removeItem("orderType");
-    window.location.reload();
-  };
-
   return (
     <header className="w-full">
       <div className="relative z-10 flex h-16 flex-shrink-0">
         <div className="flex flex-1 justify-between px-4 sm:px-6">
           <img
-            onClick={handleResetApp}
             src={theme.theme === "dark" ? logoDarkMode : logoLightMode}
             alt="logo"
             className="w-24 h-auto"
@@ -76,10 +70,7 @@ export default function Navbar() {
               </span>
               <span>{greeting}! Let's make today productive.</span>
             </TypographyP>
-            <TextShimmer
-              duration={2}
-              className="text-[0.7rem] leading-3 mt-1"
-            >
+            <TextShimmer duration={2} className="text-[0.7rem] leading-3 mt-1">
               {`Last updated on ${currentTime.toLocaleDateString("en-US", {
                 month: "long",
                 day: "numeric",
@@ -104,7 +95,10 @@ export default function Navbar() {
               <LucideMaximize size={16} />
               <span className="sr-only">Full screen</span>
             </Button>
-            <Separator orientation="vertical" className="h-6 !bg-neutral-dark-grey/50" />
+            <Separator
+              orientation="vertical"
+              className="h-6 !bg-neutral-dark-grey/50"
+            />
             <Profile />
           </div>
         </div>

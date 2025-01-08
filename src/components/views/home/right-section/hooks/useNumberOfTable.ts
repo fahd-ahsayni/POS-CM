@@ -45,6 +45,7 @@ export const useNumberOfTable = () => {
         const tableId = findTableByName(number)?._id;
         dispatch(updateOrder({ table_id: tableId }));
         setTableValid("valid");
+        localStorage.setItem("tableNumber", number);
         setTableNumber(number);
         setViews(ORDER_SUMMARY_VIEW);
       } else if (response.status === 200) {
