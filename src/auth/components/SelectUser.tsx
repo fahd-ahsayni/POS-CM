@@ -1,4 +1,4 @@
-import { logoLightMode } from "@/assets";
+import { logoLightMode, logoWithoutText } from "@/assets";
 import { RiRfidFill } from "react-icons/ri";
 import { useState, useEffect, useCallback } from "react";
 import SegmentedControl from "./SegmentedControl";
@@ -10,6 +10,7 @@ import type { AppDispatch, RootState } from "@/store";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import Tilt from "react-parallax-tilt";
+import { TypographySmall } from "@/components/ui/typography";
 
 export default function SelectUser() {
   const [activeTab, setActiveTab] = useState("cashiers");
@@ -85,12 +86,27 @@ export default function SelectUser() {
 
   return (
     <div className="relative w-1/2 bg-secondary-white hidden flex-1 lg:flex flex-col">
-      <div className="relative z-10 flex h-16 flex-shrink-0">
+      <header className="absolute top-0 left-0 z-10 flex h-16 flex-shrink-0">
         <div className="flex flex-1 justify-between px-4 sm:px-6">
-          <img src={logoLightMode} alt="logo" className="w-24 h-auto" />
+          <div className="flex items-center gap-2">
+            <img
+              // src={theme.theme === "dark" ? logoDarkMode : logoLightMode}
+              src={logoWithoutText}
+              alt="logo"
+              className="w-8 h-auto"
+            />
+            <span>
+              <TypographySmall className="font-semibold leading-[0] text-xs text-primary-black">
+                Caisse
+              </TypographySmall>
+              <TypographySmall className="font-semibold leading-[0] text-xs text-primary-black">
+                Manager
+              </TypographySmall>
+            </span>
+          </div>
         </div>
-      </div>
-      <div className="sm:px-6 px-4">
+      </header>
+      <div className="sm:px-6 px-4 h-full flex flex-col justify-center">
         <div className="mt-6">
           <h2 className="tracking-tight scroll-m-20 text-3xl font-semibold text-zinc-950">
             Authenticate your access
@@ -104,9 +120,9 @@ export default function SelectUser() {
 
           <SegmentedControl activeTab={activeTab} onChange={setActiveTab} />
         </div>
-        <div className="mt-20">
+        <div className="mt-8">
           <SelectUserSlide userType={activeTab} />
-          <div className="flex justify-center items-center mt-6">
+          <div className="flex justify-center items-center mt-4">
             <Tilt
               tiltMaxAngleX={10}
               tiltMaxAngleY={10}

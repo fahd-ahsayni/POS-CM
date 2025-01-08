@@ -1,4 +1,8 @@
-import { logoDarkMode, logoLightMode, moon, sunrise, sunset } from "@/assets";
+import {
+  moon,
+  sunrise,
+  sunset
+} from "@/assets";
 import { AlertIcon } from "@/assets/figma-icons";
 import { ModeToggleWithDropdown } from "@/components/global/mode-toggle";
 import Profile from "@/components/global/Profile";
@@ -6,10 +10,13 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { TextLoop } from "@/components/ui/text-loop";
 import { TextShimmer } from "@/components/ui/text-shimmer";
-import { TypographyP } from "@/components/ui/typography";
+import {
+  TypographyP
+} from "@/components/ui/typography";
 import { useTheme } from "@/providers/themeProvider";
 import { LucideMaximize } from "lucide-react";
 import { useEffect, useState } from "react";
+import Logo from "./Logo";
 
 export default function Navbar() {
   const theme = useTheme();
@@ -67,11 +74,7 @@ export default function Navbar() {
     <header className="w-full">
       <div className="relative z-10 flex h-16 flex-shrink-0">
         <div className="flex flex-1 justify-between px-4 sm:px-6">
-          <img
-            src={theme.theme === "dark" ? logoDarkMode : logoLightMode}
-            alt="logo"
-            className="w-24 h-auto"
-          />
+          <Logo />
           <div className="lg:flex flex-col justify-center flex-1 ml-12 hidden">
             <TypographyP className="flex items-center gap-1 text-xs font-medium py-0.5 overflow-hidden">
               <span>
@@ -86,7 +89,10 @@ export default function Navbar() {
                 </TextLoop>
               </span>
             </TypographyP>
-            <TextShimmer duration={2} className="text-[0.7rem] leading-3 mt-0.5">
+            <TextShimmer
+              duration={2}
+              className="text-[0.7rem] leading-3 mt-0.5"
+            >
               {`Last updated on ${currentTime.toLocaleDateString("en-US", {
                 month: "long",
                 day: "numeric",

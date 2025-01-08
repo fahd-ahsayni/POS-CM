@@ -1,4 +1,4 @@
-import { logoLightMode } from "@/assets";
+import { logoLightMode, logoWithoutText } from "@/assets";
 import { LoadingFullScreen } from "@/components/global/loading";
 import { Button } from "@/components/ui/button";
 import { AppDispatch, RootState } from "@/store";
@@ -148,6 +148,13 @@ export default function SelectPosPage() {
     dispatch(logout());
   };
 
+  useEffect(() => {
+    localStorage.removeItem("posId");
+    localStorage.removeItem("shiftID");
+
+    console.log(data.pos);
+  }, []);
+
   if (loading) return <LoadingFullScreen />;
   if (error) return <div>Error: {error}</div>;
 
@@ -161,13 +168,28 @@ export default function SelectPosPage() {
         shiftId={shiftId ?? ""}
       />
       {/* Left Section */}
-      <aside className="w-3/12 h-full bg-secondary-white relative">
+      <aside className="lg:w-3/12 w-4/12 h-full bg-secondary-white relative">
         <header className="absolute top-0 left-0 z-10 flex h-16 flex-shrink-0">
           <div className="flex flex-1 justify-between px-4 sm:px-6">
-            <img src={logoLightMode} alt="logo" className="w-24 h-auto" />
+            <div className="flex items-center gap-2">
+              <img
+                // src={theme.theme === "dark" ? logoDarkMode : logoLightMode}
+                src={logoWithoutText}
+                alt="logo"
+                className="w-8 h-auto"
+              />
+              <span>
+                <TypographySmall className="font-semibold leading-[0] text-xs text-primary-black">
+                  Caisse
+                </TypographySmall>
+                <TypographySmall className="font-semibold leading-[0] text-xs text-primary-black">
+                  Manager
+                </TypographySmall>
+              </span>
+            </div>
           </div>
         </header>
-        <div className="h-full flex items-center justify-center flex-col">
+        <div className="h-full flex flex-col items-center justify-center">
           <motion.div {...pageAnimations.userCard}>
             {userAuthenticated && (
               <UserCard
@@ -178,17 +200,17 @@ export default function SelectPosPage() {
               />
             )}
           </motion.div>
-          <div className="mt-4">
+          <div className="pt-16">
             <Button onClick={handleChangeAccount}>Change Account</Button>
           </div>
         </div>
       </aside>
 
       {/* Main Content */}
-      <motion.main className="w-9/12 h-full bg-secondary-white">
+      <motion.main className="lg:w-9/12 w-8/12 h-full bg-secondary-white">
         <motion.div
           {...pageAnimations.mainContent}
-          className="bg-primary-black flex flex-col items-start justify-center h-full w-full px-10 sm:px-20 -pt-10"
+          className="bg-primary-black flex flex-col items-start justify-center h-full w-full px-10 lg:px-20 -pt-10"
         >
           <header className="flex justify-between items-start w-full">
             <div>
@@ -204,7 +226,7 @@ export default function SelectPosPage() {
             </Button>
           </header>
 
-          <div className="grid grid-cols-2 gap-4 mt-10 w-11/12">
+          <div className="grid lg:grid-cols-2 gap-10 mt-10 w-11/12">
             {data.pos?.map((pos: PosData) => (
               <PosCard key={pos._id} pos={pos} onClick={handleSelectPos} />
             ))}

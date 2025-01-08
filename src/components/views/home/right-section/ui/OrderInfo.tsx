@@ -4,7 +4,7 @@ import {
   Table6Seats,
   Table8Seats,
 } from "@/assets/tables-icons";
-import { TypographySmall } from "@/components/ui/typography";
+import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { selectOrder } from "@/store/slices/order/createOrder";
 import { useSelector } from "react-redux";
 
@@ -19,7 +19,7 @@ interface OrderType {
 
 const OrderBadge: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="h-8 flex-1 flex items-center justify-center px-5">
-    <TypographySmall className="font-medium">{children}</TypographySmall>
+    <TypographyP className="font-medium text-sm">{children}</TypographyP>
   </div>
 );
 
@@ -103,7 +103,7 @@ const OnPlaceOrder: React.FC<{ order: any; orderType: OrderType }> = ({
       <OrderContainer>
         <OrderBadge>
           <div className="flex items-center justify-center space-x-1.5">
-            <TableIcon className="w-8 h-8 text-primary-black dark:text-white/80" />
+            <TableIcon className="w-auto h-8 text-primary-black dark:text-white/80" />
             <TypographySmall className="font-medium">
               Table N° {TableNumber}
             </TypographySmall>

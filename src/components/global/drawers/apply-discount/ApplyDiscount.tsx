@@ -16,7 +16,7 @@ const ApplyDiscount = memo(
         classNames="max-w-lg"
       >
         {authorization ? (
-          <ApplyDiscountInfo admin={admin} setOpen={setOpen} />
+          <ApplyDiscountInfo admin={admin} setOpen={setOpen} setAuthorization={setAuthorization} />
         ) : (
           <Authorization
             setAuthorization={setAuthorization}

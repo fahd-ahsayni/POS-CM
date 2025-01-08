@@ -11,6 +11,12 @@
   /* font-feature-settings: ; */
 }
 
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
 :root {
   --toastify-color-light: #fff;
   --toastify-color-dark: #121212;

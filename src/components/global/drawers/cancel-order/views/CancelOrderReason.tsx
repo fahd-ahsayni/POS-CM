@@ -20,11 +20,13 @@ interface CancelOrderReasonProps {
     };
   };
   setOpen: (open: boolean) => void;
+  setAuthorization: (authorization: boolean) => void;
 }
 
 export default function CancelOrderReason({
   admin,
   setOpen,
+  setAuthorization,
 }: CancelOrderReasonProps) {
   const { selectedOrder } = useOrder();
   const [selectedReason, setSelectedReason] = useState<string>("");
@@ -62,6 +64,7 @@ export default function CancelOrderReason({
         createToast("Order canceled", "Order canceled successfully", "success")
       );
       setOpen(false);
+      setAuthorization(false);
     } else {
       toast.error(
         createToast(

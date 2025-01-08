@@ -45,9 +45,17 @@ export const useAddClient = (onSuccess?: () => void) => {
     const fetchClients = async () => {
       try {
         const res = await getClients();
-        setClients(res.data);
+        if (res.status === 200) {
+          setClients(res.data);
+        } else {
+          toast.error(
+            createToast("clients error", "Failed to fetch clients", "error")
+          );
+        }
       } catch (error) {
-        toast.error("Failed to fetch clients");
+        toast.error(
+          createToast("clients error", "Failed to fetch clients", "error")
+        );
       } finally {
         setIsFetching(false);
       }

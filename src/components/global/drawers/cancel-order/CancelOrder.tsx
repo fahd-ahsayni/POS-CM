@@ -16,7 +16,7 @@ const CancelOrder = memo(
         classNames="max-w-lg"
       >
         {authorization ? (
-          <CancelOrderReason admin={admin} setOpen={setOpen} />
+          <CancelOrderReason admin={admin} setOpen={setOpen} setAuthorization={setAuthorization} />
         ) : (
           <Authorization
             setAuthorization={setAuthorization}

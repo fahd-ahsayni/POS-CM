@@ -19,9 +19,11 @@ interface DefineNote {
 export default function ApplyDiscountInfo({
   admin,
   setOpen,
+  setAuthorization,
 }: {
   admin: any;
   setOpen: (open: boolean) => void;
+  setAuthorization: (authorization: boolean) => void;
 }) {
   const dispatch = useDispatch();
   const [selectedDiscount, setSelectedDiscount] = useState<string>("");
@@ -59,7 +61,6 @@ export default function ApplyDiscountInfo({
   }, []);
 
   const handleApplyDiscount = useCallback(() => {
-    console.log(admin.user.id);
     dispatch(
       setDiscount({
         discount_id: selectedDiscount,
@@ -68,6 +69,7 @@ export default function ApplyDiscountInfo({
       })
     );
     setOpen(false);
+    setAuthorization(false);
   }, [dispatch, selectedDiscount, selectedReason, admin._id]);
 
   return (

@@ -10,6 +10,7 @@ import CirclesAnimation from "./ui/CirclesAnimation";
 import { toast } from "react-toastify";
 import { createToast } from "@/components/global/Toasters";
 import { BeatLoader } from "react-spinners";
+import { TypographySmall } from "@/components/ui/typography";
 
 export default function Passcode() {
   const [passcode, setPasscode] = useState<string>("");
@@ -110,7 +111,7 @@ export default function Passcode() {
         <h2 className="tracking-tight scroll-m-20 text-3xl font-semibold text-white">
           Enter Passcode
         </h2>
-        <p className="mt-1 text-sm text-neutral-dark-grey">
+        <p className="mt-1 text-sm text-neutral-bright-grey/70">
           Securely authenticate to access the POS system.
         </p>
       </div>
@@ -135,10 +136,18 @@ export default function Passcode() {
             numbers={shuffledNumbers}
           />
         </div>
-        <div className="mt-10">
+        <div className="mt-10 px-4">
           <Button onClick={handleLogin} className="w-full">
             {loading ? <BeatLoader color="white" size={8} /> : "Log In"}
           </Button>
+          <div className="flex justify-between items-center mt-4">
+            <TypographySmall className="text-neutral-bright-grey/70">
+              Having system issues?{" "}
+            </TypographySmall>
+            <TypographySmall className="text-neutral-bright-grey/70">
+              Forgot Passcode?
+            </TypographySmall>
+          </div>
         </div>
       </div>
     </div>
