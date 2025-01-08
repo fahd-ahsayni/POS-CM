@@ -4,6 +4,7 @@ import { ModeToggleWithDropdown } from "@/components/global/mode-toggle";
 import Profile from "@/components/global/Profile";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { TextLoop } from "@/components/ui/text-loop";
 import { TextShimmer } from "@/components/ui/text-shimmer";
 import { TypographyP } from "@/components/ui/typography";
 import { useTheme } from "@/providers/themeProvider";
@@ -54,6 +55,14 @@ export default function Navbar() {
     }
   };
 
+  const motivatedMessages = [
+    "Let's make today productive!",
+    "Stay focused and keep going!",
+    "You can do it!",
+    "Keep pushing forward!",
+    "Believe in yourself!",
+  ];
+
   return (
     <header className="w-full">
       <div className="relative z-10 flex h-16 flex-shrink-0">
@@ -64,13 +73,20 @@ export default function Navbar() {
             className="w-24 h-auto"
           />
           <div className="lg:flex flex-col justify-center flex-1 ml-12 hidden">
-            <TypographyP className="flex items-center gap-1 text-xs font-medium">
+            <TypographyP className="flex items-center gap-1 text-xs font-medium py-0.5 overflow-hidden">
               <span>
                 <img src={timeIcon} alt="time-icon" className="w-4 h-auto" />
               </span>
-              <span>{greeting}! Let's make today productive.</span>
+              <span>
+                {greeting}!{" "}
+                <TextLoop transition={{ duration: 0.25 }} interval={3}>
+                  {motivatedMessages.map((message) => (
+                    <span key={message}>{message}</span>
+                  ))}
+                </TextLoop>
+              </span>
             </TypographyP>
-            <TextShimmer duration={2} className="text-[0.7rem] leading-3 mt-1">
+            <TextShimmer duration={2} className="text-[0.7rem] leading-3 mt-0.5">
               {`Last updated on ${currentTime.toLocaleDateString("en-US", {
                 month: "long",
                 day: "numeric",
