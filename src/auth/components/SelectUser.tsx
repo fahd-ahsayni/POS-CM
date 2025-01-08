@@ -1,16 +1,16 @@
-import { logoLightMode, logoWithoutText } from "@/assets";
+import { logoWithoutText } from "@/assets";
+import ShineBorder from "@/components/ui/shine-border";
+import { TypographySmall } from "@/components/ui/typography";
+import { cn } from "@/lib/utils";
+import type { AppDispatch, RootState } from "@/store";
+import { loginWithRfid } from "@/store/slices/authentication/authSlice";
+import { useCallback, useEffect, useState } from "react";
 import { RiRfidFill } from "react-icons/ri";
-import { useState, useEffect, useCallback } from "react";
+import Tilt from "react-parallax-tilt";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import SegmentedControl from "./SegmentedControl";
 import SelectUserSlide from "./SelectUserSlide";
-import ShineBorder from "@/components/ui/shine-border";
-import { useDispatch, useSelector } from "react-redux";
-import { loginWithRfid } from "@/store/slices/authentication/authSlice";
-import type { AppDispatch, RootState } from "@/store";
-import { useNavigate } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import Tilt from "react-parallax-tilt";
-import { TypographySmall } from "@/components/ui/typography";
 
 export default function SelectUser() {
   const [activeTab, setActiveTab] = useState("cashiers");

@@ -1,7 +1,11 @@
-import { logoLightMode, logoWithoutText } from "@/assets";
+import { logoWithoutText } from "@/assets";
+import { useShift } from "@/auth/context/ShiftContext";
 import { LoadingFullScreen } from "@/components/global/loading";
+import { createToast } from "@/components/global/Toasters";
 import { Button } from "@/components/ui/button";
+import { TypographyH2, TypographySmall } from "@/components/ui/typography";
 import { AppDispatch, RootState } from "@/store";
+import { logout } from "@/store/slices/authentication/authSlice";
 import {
   checkOpenDay,
   openDay,
@@ -18,15 +22,11 @@ import { motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { pageAnimations } from "./animation";
 import PosCard from "./components/PosCard";
 import UserCard from "./components/ui/UserCard";
 import OpenShift from "./OpenShift";
-import { toast } from "react-toastify";
-import { createToast } from "@/components/global/Toasters";
-import { logout } from "@/store/slices/authentication/authSlice";
-import { TypographyH2, TypographySmall } from "@/components/ui/typography";
-import { useShift } from "@/auth/context/ShiftContext";
 
 const DAY_NOT_OPEN_WARNING = "Day is not open";
 const UNAUTHORIZED_ERROR = "Unauthorized";

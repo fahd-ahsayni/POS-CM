@@ -13,13 +13,11 @@ import { TextShimmer } from "@/components/ui/text-shimmer";
 import {
   TypographyP
 } from "@/components/ui/typography";
-import { useTheme } from "@/providers/themeProvider";
 import { LucideMaximize } from "lucide-react";
 import { useEffect, useState } from "react";
 import Logo from "./Logo";
 
 export default function Navbar() {
-  const theme = useTheme();
   const [greeting, setGreeting] = useState("Good Morning");
   const [timeIcon, setTimeIcon] = useState(sunrise);
   const [currentTime, setCurrentTime] = useState(new Date());
