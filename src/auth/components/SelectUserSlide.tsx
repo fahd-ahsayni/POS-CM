@@ -38,6 +38,11 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
 
   const processedUsers = useMemo(() => {
     const originalUsers = users[userType as keyof typeof users] || [];
+
+    if (originalUsers.length > 1 && originalUsers.length < 4) {
+      return [...originalUsers, ...originalUsers];
+    }
+
     return originalUsers;
   }, [users, userType]);
 
@@ -55,13 +60,13 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
       centeredSlides: true,
       initialSlide: initialSlideIndex,
       spaceBetween: 30,
-      loop: true,
+      loop: processedUsers.length > 1,
       watchSlidesProgress: true,
       updateOnWindowResize: true,
       observer: true,
       observeParents: true,
     }),
-    [initialSlideIndex]
+    [initialSlideIndex, processedUsers.length]
   );
 
   useEffect(() => {
@@ -82,7 +87,6 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
       dispatch(setSelectedUser(newSelectedUser));
     }
   };
-
 
   if (loading) {
     return (
@@ -112,7 +116,7 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
     );
   }
 
-  console.log(selectedUser)
+  console.log(selectedUser);
 
   return (
     <div className="slider-container w-full custom-slider overflow-hidden mt-2 relative">
