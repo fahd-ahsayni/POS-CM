@@ -6,6 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import NavigationButton from "./ui/NavigationButton";
 import UserCard from "./ui/UserCard";
 import UserCardSkeleton from "./ui/UserCardSkelton";
+import { User } from "@/types";
 
 export interface SelectUserSlideProps {
   userType: string;
@@ -137,7 +138,7 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
           onSlideChange={handleSlideChange}
           className="mySwiper relative"
         >
-          {processedUsers.map((user, index) => (
+          {processedUsers.map((user: User, index: number) => (
             <SwiperSlide
               key={`${user._id}-${index}-${userType}`}
               virtualIndex={index}

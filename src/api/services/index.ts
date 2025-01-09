@@ -73,6 +73,20 @@ export const loginWithRfid = async (rfid: string) => {
   }
 };
 
+export const logoutService = async () => {
+  try {
+    localStorage.clear();
+  } catch (error) {
+    toast.error(
+      createToast(
+        "Error logging out",
+        "An unexpected error occurred while trying to log out",
+        "error"
+      )
+    );
+  }
+};
+
 export const getByTableName = async (tableName: string) => {
   return api.get(`/order/by-table-name/${tableName}`);
 };
@@ -157,20 +171,6 @@ export const checkAuthorization = async (passcode: string) => {
 
 export const createPayment = async (data: any) => {
   return api.post("/order/create-with-payment", data);
-};
-
-export const logoutService = async () => {
-  try {
-    localStorage.clear();
-  } catch (error) {
-    toast.error(
-      createToast(
-        "Error logging out",
-        "An unexpected error occurred while trying to log out",
-        "error"
-      )
-    );
-  }
 };
 
 export const cancelOrder = async (data: any) => {

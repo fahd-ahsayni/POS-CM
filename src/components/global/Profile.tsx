@@ -1,3 +1,4 @@
+import { logoutService } from "@/api/services";
 import { unknownUser } from "@/assets";
 import CloseShift from "@/auth/CloseShift";
 import {
@@ -9,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { truncateName } from "@/lib/utils";
 import { AppDispatch } from "@/store";
 import { logout } from "@/store/slices/authentication/authSlice";
 import { selectPosData } from "@/store/slices/data/posSlice";
@@ -17,7 +19,6 @@ import { ChevronDown, HelpCircle, LogOut, Power, User } from "lucide-react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { TypographySmall } from "../ui/typography";
-import { truncateName } from "@/lib/utils";
 
 const menuItems = [
   { icon: User, label: "My Profile" },
@@ -40,7 +41,7 @@ export default function Profile() {
 
   const handleLogout = () => {
     dispatch(logout());
-    localStorage.clear();
+    logoutService();
   };
 
   return (

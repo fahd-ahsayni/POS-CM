@@ -141,10 +141,10 @@ export default function Passcode() {
             {loading ? <BeatLoader color="white" size={8} /> : "Log In"}
           </Button>
           <div className="flex justify-between items-center mt-4">
-            <TypographySmall className="text-neutral-bright-grey/70">
+            <TypographySmall className="text-neutral-700 dark:text-neutral-400">
               Having system issues?{" "}
             </TypographySmall>
-            <TypographySmall className="text-neutral-bright-grey/70">
+            <TypographySmall className="text-neutral-700 dark:text-neutral-400">
               Forgot Passcode?
             </TypographySmall>
           </div>

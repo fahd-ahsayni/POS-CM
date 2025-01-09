@@ -27,6 +27,7 @@ import { pageAnimations } from "./animation";
 import PosCard from "./components/PosCard";
 import UserCard from "./components/ui/UserCard";
 import OpenShift from "./OpenShift";
+import SessionExpired from "@/components/errors/SessionExpired";
 
 const DAY_NOT_OPEN_WARNING = "Day is not open";
 const UNAUTHORIZED_ERROR = "Unauthorized";
@@ -156,7 +157,7 @@ export default function SelectPosPage() {
   }, []);
 
   if (loading) return <LoadingFullScreen />;
-  if (error) return <div>Error: {error}</div>;
+  if (error) return <SessionExpired />;
 
   return (
     <div className="flex h-screen overflow-hidden">

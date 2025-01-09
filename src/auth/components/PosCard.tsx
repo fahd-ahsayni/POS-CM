@@ -1,3 +1,4 @@
+import { BorderBeam } from "@/components/ui/border-beam";
 import { Card } from "@/components/ui/card";
 import { TypographyH3, TypographySmall } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
@@ -6,7 +7,6 @@ import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import { pageAnimations } from "../animation";
-import { BorderBeam } from "@/components/ui/border-beam";
 
 interface PosCardProps {
   pos: PosData;
@@ -20,12 +20,20 @@ const PosCard = ({ pos, onClick }: PosCardProps) => {
       <Card
         className={cn(
           "w-full cursor-pointer px-8 group relative",
-          // pos.shift?.user_id._id === user.id ? "last-pos-card" : "",
+          pos.shift?.user_id._id === user.id
+            ? "shadow-xl shadow-primary-red/20"
+            : "",
           pos.shift?.user_id ? "py-4" : "py-6"
         )}
       >
         {pos.shift?.user_id._id === user.id && (
-          <BorderBeam colorFrom="#FB0000" colorTo="#520000" size={140} borderWidth={2} duration={5} />
+          <BorderBeam
+            colorFrom="#FB0000"
+            colorTo="#520000"
+            size={140}
+            borderWidth={2}
+            duration={5}
+          />
         )}
         <div className="flex justify-between items-center">
           <div>

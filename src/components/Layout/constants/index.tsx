@@ -8,7 +8,7 @@ import {
   OrdersIcon,
   WaitersIcon,
   WaitingOrdersIcon,
-} from "@/assets/sidebar";
+} from "@/assets/plumpy-icons";
 import { createToast } from "@/components/global/Toasters";
 import { toast } from "react-toastify";
 import { useOrderType } from "@/components/views/home/right-section/hooks/useOrderType";
