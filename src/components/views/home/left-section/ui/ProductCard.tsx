@@ -74,8 +74,8 @@ export function ProductCard({
           )}
         </div>
         <div className="flex flex-col items-start justify-between flex-1 h-full w-full pr-2">
-          <TypographySmall className="font-medium text-sm">
-            {toTitleCase(truncateName(product.name.toLowerCase(), 18))}
+          <TypographySmall className="font-medium text-sm line-clamp-2">
+            {toTitleCase(product.name.toLowerCase())}
           </TypographySmall>
           <div className="flex items-center justify-between w-full">
             <TypographySmall className="font-medium text-neutral-dark-grey">

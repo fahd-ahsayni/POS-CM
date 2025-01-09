@@ -7,6 +7,7 @@ import {
   BreadcrumbSeparator,
   BreadcrumbEllipsis,
 } from "@/components/ui/breadcrumb";
+import { toTitleCase } from "@/functions/string-transforms";
 import React from "react";
 
 interface BreadcrumbItemType {
@@ -41,16 +42,16 @@ export function CustomBreadcrumb({ items }: BreadcrumbProps) {
             <React.Fragment key={item._id + index}>
               <BreadcrumbItem className="text-sm flex-shrink-0">
                 {item.isLast ? (
-                  <BreadcrumbPage className="font-medium capitalize">
-                    {item.name.toLowerCase()}
+                  <BreadcrumbPage className="font-medium line-clamp-2">
+                    {toTitleCase(item.name.toLowerCase())}
                   </BreadcrumbPage>
                 ) : (
                   <BreadcrumbLink
                     to="#"
                     onClick={item.onClick}
-                    className="cursor-pointer hover:text-primary font-medium transition-colors capitalize"
+                    className="cursor-pointer hover:text-primary font-medium transition-colors line-clamp-2"
                   >
-                    {item.name.toLowerCase()}
+                    {toTitleCase(item.name.toLowerCase())}
                   </BreadcrumbLink>
                 )}
               </BreadcrumbItem>

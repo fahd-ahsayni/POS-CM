@@ -6,6 +6,7 @@ import { ALL_CATEGORIES_VIEW } from "../constants";
 import { useLeftViewContext } from "../contexts/LeftViewContext";
 import { cn } from "@/lib/utils";
 import { useCallback } from "react";
+import { toTitleCase } from "@/functions/string-transforms";
 
 export default function Header() {
   const { setViews, category } = useLeftViewContext();
@@ -39,11 +40,13 @@ export default function Header() {
           )}
           <TypographyP
             className={cn(
-              "text-center relative font-semibold capitalize",
+              "text-center relative font-semibold line-clamp-2",
               category && "text-white"
             )}
           >
-            {category ? category.name.toLowerCase() : "All Products"}
+            {category
+              ? toTitleCase(category.name.toLowerCase())
+              : "All Products"}
           </TypographyP>
         </Card>
       </motion.div>

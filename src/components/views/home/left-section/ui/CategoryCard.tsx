@@ -38,8 +38,8 @@ export const CategoryCard = memo(function CategoryCard({
           )}
           loadingClassName="dark:bg-white/5 bg-primary-black/30"
         />
-        <TypographyP className="text-center group text-lg font-medium absolute text-white px-6">
-          {toTitleCase(truncateName(category.name.toLowerCase(), 28))}
+        <TypographyP className="text-center group text-lg font-medium absolute text-white px-6 line-clamp-2">
+          {toTitleCase(category.name.toLowerCase())}
         </TypographyP>
       </Card>
     </div>
