@@ -6,6 +6,7 @@ import { toTitleCase } from "@/functions/string-transforms";
 import { currency } from "@/preferences";
 import { Product, ProductSelected } from "@/types";
 import { motion } from "framer-motion";
+import { BsInfoCircleFill } from "react-icons/bs";
 
 interface ProductCardProps {
   product: Product;
@@ -35,7 +36,6 @@ export function ProductCard({
     (sum, p) => sum + (p.quantity || 0),
     0
   );
-
   return (
     <motion.div className="flex cursor-pointer items-center justify-start h-full w-full">
       <Card
@@ -76,7 +76,7 @@ export function ProductCard({
             </div>
           )}
         </div>
-        <div className="flex flex-col items-start justify-between flex-1 h-full w-full pr-2">
+        <div className="flex flex-col items-start justify-between flex-1 h-full w-full pr-2 py-2">
           <TypographySmall className="font-medium text-sm line-clamp-2">
             {toTitleCase(product.name.toLowerCase())}
           </TypographySmall>
@@ -85,6 +85,7 @@ export function ProductCard({
               {product.price ? product.price : product.variants[0].price_ttc}{" "}
               {currency.symbol}
             </TypographySmall>
+            <BsInfoCircleFill className="text-info-color/90 w-4 h-4" />
           </div>
         </div>
       </Card>
