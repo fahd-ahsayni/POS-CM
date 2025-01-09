@@ -88,8 +88,8 @@ export default function ProductsVariants() {
       setOpen={setOpenDrawerVariants}
       position="left"
     >
-      <div className="h-full w-full relative flex justify-center px-4 sm:px-6">
-        <div className="w-full h-full overflow-auto space-y-2">
+      <div className="h-full w-full relative flex justify-center">
+        <div className="w-full h-full overflow-auto space-y-4 p-2">
           {variantCards}
         </div>
         <div className="w-full absolute bottom-0 h-16 flex items-end dark:!bg-secondary-black bg-secondary-white px-4 sm:px-6">
@@ -114,8 +114,8 @@ const VariantCard = memo<VariantCardProps>(
     >
       <Card
         className={cn(
-          "w-full h-full px-4 py-2 rounded-lg dark:!bg-zinc-950",
-          isSelected && "!border-2 !border-primary-red"
+          "w-full h-full px-4 py-4 rounded-lg dark:bg-primary-black bg-neutral-bright-grey",
+          isSelected && "!ring-2 !ring-primary-red"
         )}
       >
         <div className="flex items-center justify-between mb-4">

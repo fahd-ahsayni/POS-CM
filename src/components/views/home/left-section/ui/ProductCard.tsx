@@ -3,7 +3,6 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { toTitleCase } from "@/functions/string-transforms";
-import { truncateName } from "@/lib/utils";
 import { currency } from "@/preferences";
 import { Product, ProductSelected } from "@/types";
 import { motion } from "framer-motion";
@@ -20,14 +19,18 @@ export function ProductCard({
   onProductClick,
 }: ProductCardProps) {
   // Get all variants of this product across all customers
-  const selectedProductVariants = selectedProducts.filter(
-    (p) =>
-      product.variants[0].is_menu
-        ? p._id === product.variants[0]._id // For combos
-        : p.product_variant_id === product.variants[0]._id // For regular products
-  );
+  const selectedProductVariants = selectedProducts.filter((p) => {
+    // For combos, check by product ID
+    if (product.variants[0].is_menu) {
+      return p._id === product.variants[0]._id;
+    }
+    // For regular products with multiple variants, check if variant belongs to this product
+    return product.variants.some(
+      (variant) => variant._id === p.product_variant_id
+    );
+  });
 
-  // Calculate total quantity across all customers
+  // Calculate total quantity across all variants and customers
   const totalQuantity = selectedProductVariants.reduce(
     (sum, p) => sum + (p.quantity || 0),
     0

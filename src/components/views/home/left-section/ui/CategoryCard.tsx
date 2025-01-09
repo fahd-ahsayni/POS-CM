@@ -2,7 +2,7 @@ import { BlurImage } from "@/components/global/BlurImage";
 import { Card } from "@/components/ui/card";
 import { TypographyP } from "@/components/ui/typography";
 import { toTitleCase } from "@/functions/string-transforms";
-import { cn, truncateName } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { Category } from "@/types";
 import { memo } from "react";
 

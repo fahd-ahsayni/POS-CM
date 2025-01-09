@@ -1,20 +1,46 @@
 import { logoWithoutText } from "@/assets";
 import { TypographySmall } from "@/components/ui/typography";
+import { cn } from "@/lib/utils";
 
-export default function Logo() {
+interface LogoProps {
+  size?: "sm" | "md" | "lg";
+}
+
+export default function Logo({ size = "sm" }: LogoProps) {
+  const sizeClasses = {
+    sm: {
+      container: "gap-2",
+      image: "w-8",
+      text: "text-xs",
+    },
+    md: {
+      container: "gap-2",
+      image: "w-10",
+      text: "text-sm",
+    },
+    lg: {
+      container: "gap-3",
+      image: "w-12",
+      text: "text-base",
+    },
+  };
+
   return (
-    <div className="flex items-center gap-2">
+    <div className={cn("flex items-center", sizeClasses[size].container)}>
       <img
-        // src={theme.theme === "dark" ? logoDarkMode : logoLightMode}
         src={logoWithoutText}
         alt="logo"
-        className="w-8 h-auto"
+        className={cn("h-auto", sizeClasses[size].image)}
       />
       <span>
-        <TypographySmall className="font-semibold leading-[0] text-xs">
+        <TypographySmall
+          className={cn("font-semibold leading-[0]", sizeClasses[size].text)}
+        >
           Caisse
         </TypographySmall>
-        <TypographySmall className="font-semibold leading-[0] text-xs">
+        <TypographySmall
+          className={cn("font-semibold leading-[0]", sizeClasses[size].text)}
+        >
           Manager
         </TypographySmall>
       </span>

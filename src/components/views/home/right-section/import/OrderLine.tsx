@@ -124,9 +124,21 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
       <div className="absolute h-full w-1.5 left-0 top-0 bg-interactive-dark-red" />
       <Card className="flex flex-col w-full py-2 pr-2 pl-4 gap-y-2">
         <div className="flex items-center justify-between gap-x-4">
-          <TypographyP className="font-medium">
-            {toTitleCase(item.name.toLowerCase())}
-          </TypographyP>
+          <div className="flex flex-col">
+            {item.variants.length > 0 ? (
+              <>
+                <TypographyP className="font-medium">
+                  {toTitleCase(
+                    item.variants[0]?.name || item.name.toLowerCase()
+                  )}
+                </TypographyP>
+              </>
+            ) : (
+              <TypographyP className="font-medium">
+                {toTitleCase(item.name.toLowerCase())}
+              </TypographyP>
+            )}
+          </div>
           <div className="flex items-center gap-x-2">
             {isSuitCamand ? (
               <div className="flex items-center">
