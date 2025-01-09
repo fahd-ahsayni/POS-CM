@@ -1,6 +1,7 @@
 import { logoLightMode } from "@/assets";
 import { logoDarkMode } from "@/assets";
 import { useTheme } from "@/providers/themeProvider";
+import Ripple from "../ui/ripple";
 
 export function LoadingFullScreen() {
   const theme = useTheme();
@@ -10,8 +11,9 @@ export function LoadingFullScreen() {
       <img
         src={theme.theme === "dark" ? logoDarkMode : logoLightMode}
         alt="logo"
-        className="w-52 h-auto z-10"
+        className="w-32 h-auto z-10"
       />
+      <Ripple />
     </div>
   );
 }

@@ -149,13 +149,22 @@ module.exports = {
   				'100%': {
   					'offset-distance': '100%'
   				}
+  			},
+  			ripple: {
+  				'0%, 100%': {
+  					transform: 'translate(-50%, -50%) scale(1)'
+  				},
+  				'50%': {
+  					transform: 'translate(-50%, -50%) scale(0.9)'
+  				}
   			}
   		},
   		animation: {
   			shine: 'shine var(--duration) infinite linear',
   			rainbow: 'rainbow var(--speed, 2s) infinite linear',
   			trail: 'trail var(--duration) linear infinite',
-  			'border-beam': 'border-beam calc(var(--duration)*1s) infinite linear'
+  			'border-beam': 'border-beam calc(var(--duration)*1s) infinite linear',
+  			ripple: 'ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite'
   		}
   	}
   },

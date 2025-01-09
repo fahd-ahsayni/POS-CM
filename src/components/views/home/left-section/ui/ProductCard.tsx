@@ -34,7 +34,7 @@ export function ProductCard({
   );
 
   return (
-    <motion.div className="flex cursor-pointer items-center justify-start h-[5.5rem] w-full">
+    <motion.div className="flex cursor-pointer items-center justify-start h-full w-full">
       <Card
         className={`flex items-center justify-center h-full w-full py-3 px-3 gap-x-4 ${
           totalQuantity > 0 ? "!ring-2 !ring-primary-red" : ""

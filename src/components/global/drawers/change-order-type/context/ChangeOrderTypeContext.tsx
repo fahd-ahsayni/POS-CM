@@ -75,7 +75,7 @@ export function ChangeOrderTypeProvider({
       setDisplayedTypes(
         JSON.parse(
           localStorage.getItem("generalData") || "{}"
-        ).orderTypes.filter((type: OrderType) => !type.parent_id)
+        ).orderTypes?.filter((type: OrderType) => !type.parent_id)
       );
     }
   }, [selectedType, showForm]);

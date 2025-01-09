@@ -21,12 +21,12 @@ export default memo(function AllCategories() {
       animate={{ opacity: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.35 }}
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-3.5 mt-4 pb-16 px-2"
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 mt-4 pb-16"
     >
       <Card
         onClick={handleAllProductsClick}
         className={cn(
-          "flex cursor-pointer relative flex-col items-center h-20 !rounded-lg overflow-hidden justify-center",
+          "flex cursor-pointer relative flex-col items-center h-full !rounded-lg overflow-hidden justify-center",
           isInteractionDisabled && "pointer-events-none"
         )}
       >

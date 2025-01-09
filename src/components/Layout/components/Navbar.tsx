@@ -1,8 +1,4 @@
-import {
-  moon,
-  sunrise,
-  sunset
-} from "@/assets";
+import { moon, sunrise, sunset } from "@/assets";
 import { AlertIcon } from "@/assets/figma-icons";
 import { ModeToggleWithDropdown } from "@/components/global/mode-toggle";
 import Profile from "@/components/global/Profile";
@@ -10,12 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { TextLoop } from "@/components/ui/text-loop";
 import { TextShimmer } from "@/components/ui/text-shimmer";
-import {
-  TypographyP
-} from "@/components/ui/typography";
+import { TypographyP } from "@/components/ui/typography";
 import { LucideMaximize } from "lucide-react";
 import { useEffect, useState } from "react";
 import Logo from "./Logo";
+import { handleFullScreen } from "@/lib/utils";
 
 export default function Navbar() {
   const [greeting, setGreeting] = useState("Good Morning");
@@ -51,14 +46,6 @@ export default function Navbar() {
     const interval = setInterval(updateTime, 60000); // Update every minute
     return () => clearInterval(interval);
   }, []);
-
-  const handleFullScreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-    } else {
-      document.exitFullscreen();
-    }
-  };
 
   const motivatedMessages = [
     "Let's make today productive!",

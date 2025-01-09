@@ -1,3 +1,4 @@
+import CustomSwiper from "@/components/global/CustomSwiper";
 import Combo from "@/components/global/drawers/combo/Combo";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -7,10 +8,7 @@ import { Category, Product, ProductSelected } from "@/types";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { memo, useEffect, useMemo, useState } from "react";
-import "swiper/css";
-import "swiper/css/grid";
-import "swiper/css/pagination";
-import { Grid, Mousewheel, Navigation, Pagination } from "swiper/modules";
+import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useProducts } from "../hooks/useProducts";
 import { useProductsByCategory } from "../hooks/useProductsByCategory";
@@ -69,39 +67,52 @@ const ProductGrid = memo(function ProductGrid({
   }
 
   return (
-    <Swiper
+    <CustomSwiper
       direction="vertical"
-      slidesPerView={1}
       grid={{
         rows: ROWS_PER_SLIDE,
         fill: "row",
       }}
       mousewheel={true}
-      spaceBetween={24}
-      pagination={{
-        clickable: true,
-        renderBullet: function (_, className) {
-          return `<span class="${className} !w-2 !h-2"></span>`;
-        },
-      }}
-      modules={[Grid, Mousewheel, Pagination]}
+      showPagination={true}
       className="h-[calc(100vh-250px)] products-swiper px-2"
+      onInit={(swiper) => {
+        swiper.el.classList.add("initialized");
+        const bullets = document.querySelectorAll(".swiper-pagination-bullet");
+        bullets.forEach((bullet, index) => {
+          if (index < 0 || index > 2) {
+            bullet.classList.add("hidden");
+          }
+        });
+      }}
+      onSlideChange={(swiper) => {
+        const bullets = document.querySelectorAll(".swiper-pagination-bullet");
+        const activeIndex = swiper.activeIndex;
+        const startIndex = Math.max(0, activeIndex - 2);
+        const endIndex = Math.min(startIndex + 3, bullets.length - 1);
+
+        bullets.forEach((bullet) => bullet.classList.add("hidden"));
+        for (let i = startIndex; i <= endIndex; i++) {
+          bullets[i]?.classList.remove("hidden");
+        }
+      }}
     >
       {chunkedProducts.map((chunk, slideIndex) => (
-        <SwiperSlide key={slideIndex}>
-          <div className="grid grid-cols-3 gap-3 h-full pl-4 pr-1 py-2">
-            {chunk.map((product) => (
-              <ProductCard
-                key={product._id}
-                product={product}
-                selectedProducts={selectedProducts}
-                onProductClick={handleProductClick}
-              />
-            ))}
-          </div>
-        </SwiperSlide>
+        <div
+          key={slideIndex}
+          className="grid grid-cols-3 gap-3 h-full pl-4 pr-1 py-2"
+        >
+          {chunk.map((product) => (
+            <ProductCard
+              key={product._id}
+              product={product}
+              selectedProducts={selectedProducts}
+              onProductClick={handleProductClick}
+            />
+          ))}
+        </div>
       ))}
-    </Swiper>
+    </CustomSwiper>
   );
 });
 

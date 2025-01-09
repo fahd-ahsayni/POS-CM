@@ -1,15 +1,11 @@
+import CustomSwiper from "@/components/global/CustomSwiper";
+import Combo from "@/components/global/drawers/combo/Combo";
+import { Product, ProductSelected } from "@/types";
 import { motion } from "framer-motion";
-import { useEffect, memo, useMemo } from "react";
+import { memo, useEffect, useMemo } from "react";
+import { useProducts } from "../hooks/useProducts";
 import { ProductCard, ProductCardSkeleton } from "../ui/ProductCard";
 import ProductsVariants from "./ProductsVariants";
-import Combo from "@/components/global/drawers/combo/Combo";
-import { useProducts } from "../hooks/useProducts";
-import { ProductSelected, Product } from "@/types";
-import "swiper/css";
-import "swiper/css/grid";
-import "swiper/css/pagination";
-import { Grid, Mousewheel, Pagination } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
 
 interface ProductsGridProps {
   products: Product[];
@@ -67,39 +63,52 @@ const ProductsGrid = memo(function ProductsGrid({
   }
 
   return (
-    <Swiper
+    <CustomSwiper
       direction="vertical"
-      slidesPerView={1}
       grid={{
         rows: ROWS_PER_SLIDE,
         fill: "row",
       }}
       mousewheel={true}
-      spaceBetween={24}
-      pagination={{
-        clickable: true,
-        renderBullet: function (_, className) {
-          return `<span class="${className} !w-2 !h-2"></span>`;
-        },
+      showPagination={true}
+      className="!h-[calc(100vh-250px)] products-swiper px-2"
+      onInit={(swiper) => {
+        swiper.el.classList.add("initialized");
+        const bullets = document.querySelectorAll(".swiper-pagination-bullet");
+        bullets.forEach((bullet, index) => {
+          if (index < 0 || index > 2) {
+            bullet.classList.add("hidden");
+          }
+        });
       }}
-      modules={[Grid, Mousewheel, Pagination]}
-      className="h-[calc(100vh-250px)] products-swiper px-2"
+      onSlideChange={(swiper) => {
+        const bullets = document.querySelectorAll(".swiper-pagination-bullet");
+        const activeIndex = swiper.activeIndex;
+        const startIndex = Math.max(0, activeIndex - 2);
+        const endIndex = Math.min(startIndex + 3, bullets.length - 1);
+
+        bullets.forEach((bullet) => bullet.classList.add("hidden"));
+        for (let i = startIndex; i <= endIndex; i++) {
+          bullets[i]?.classList.remove("hidden");
+        }
+      }}
     >
       {chunkedProducts.map((chunk, slideIndex) => (
-        <SwiperSlide key={slideIndex}>
-          <div className="grid grid-cols-3 gap-3 h-full pl-4 pr-1 py-2">
-            {chunk.map((product) => (
-              <ProductCard
-                key={product._id}
-                product={product}
-                selectedProducts={selectedProducts}
-                onProductClick={onProductClick}
-              />
-            ))}
-          </div>
-        </SwiperSlide>
+        <div
+          key={slideIndex}
+          className="grid grid-cols-3 gap-3 h-full pl-2 py-2"
+        >
+          {chunk.map((product) => (
+            <ProductCard
+              key={product._id}
+              product={product}
+              selectedProducts={selectedProducts}
+              onProductClick={onProductClick}
+            />
+          ))}
+        </div>
       ))}
-    </Swiper>
+    </CustomSwiper>
   );
 });
 
@@ -135,7 +144,7 @@ const AllProducts = memo(function AllProducts() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <Combo />
       <ProductsVariants />
       <ProductsGrid
