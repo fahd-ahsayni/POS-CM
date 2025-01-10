@@ -34,6 +34,12 @@ const OrderSummary = () => {
     },
   } = useOrderSummary();
 
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      handleShowTicket();
+    }
+  };
+
   return (
     <>
       <Payments open={openDrawerPayments} setOpen={setOpenDrawerPayments} />
@@ -76,6 +82,7 @@ const OrderSummary = () => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
+                onClick={handleBackdropClick}
               >
                 <Ticket />
               </motion.div>
