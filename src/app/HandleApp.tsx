@@ -9,6 +9,8 @@ import LogInPage from "../auth/LogInPage";
 import HomePage from "./HomePage";
 import OrdersPage from "./OrdersPage";
 import WaitingOrders from "./WaitingOrders";
+import BrokenLink from "@/components/errors/BrokenLink";
+import CustomerDisplay from "@/components/global/Customer-display/CustomerDisplay";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = useSelector(
@@ -53,6 +55,7 @@ export default function HandleApp() {
             </ProtectedRoute>
           }
         />
+        <Route path="/customer-display" element={<CustomerDisplay />} />
         <Route
           element={
             <ProtectedRoute>
@@ -64,6 +67,7 @@ export default function HandleApp() {
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/waiting-orders" element={<WaitingOrders />} />
         </Route>
+        <Route path="*" element={<BrokenLink />} />
       </Routes>
     </>
   );

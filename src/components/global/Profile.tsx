@@ -1,5 +1,6 @@
 import { logoutService } from "@/api/services";
 import { unknownUser } from "@/assets";
+import { DisplayIcon, UserIcon } from "@/assets/figma-icons";
 import CloseShift from "@/auth/CloseShift";
 import {
   DropdownMenu,
@@ -15,17 +16,14 @@ import { AppDispatch } from "@/store";
 import { logout } from "@/store/slices/authentication/authSlice";
 import { selectPosData } from "@/store/slices/data/posSlice";
 import { formatDistanceToNow } from "date-fns";
-import { ChevronDown, HelpCircle, LogOut, Power, User } from "lucide-react";
+import { ChevronDown, HelpCircle, LogOut, Power } from "lucide-react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { TypographySmall } from "../ui/typography";
-
-const menuItems = [
-  { icon: User, label: "My Profile" },
-  { icon: HelpCircle, label: "Help" },
-  { icon: Power, label: "End Shift" },
-  { icon: LogOut, label: "Logout" },
-];
+import {
+  isCustomerDisplayOpen,
+  openCustomerDisplay,
+} from "./Customer-display/useCustomerDisplay";
 
 export default function Profile() {
   const [open, setOpen] = useState(false);
@@ -43,6 +41,24 @@ export default function Profile() {
     dispatch(logout());
     logoutService();
   };
+
+  const handleCustomerDisplay = () => {
+    if (!isCustomerDisplayOpen()) {
+      openCustomerDisplay();
+    }
+  };
+
+  const menuItems = [
+    { icon: UserIcon, label: "My Profile" },
+    { icon: HelpCircle, label: "Help" },
+    {
+      icon: DisplayIcon,
+      label: "Customer Display",
+      onClick: handleCustomerDisplay,
+    },
+    { icon: Power, label: "End Shift" },
+    { icon: LogOut, label: "Logout" },
+  ];
 
   return (
     <>
@@ -86,8 +102,8 @@ export default function Profile() {
             </span>
           </DropdownMenuLabel>
           <DropdownMenuGroup>
-            {menuItems.slice(0, 2).map((item, index) => (
-              <DropdownMenuItem key={index}>
+            {menuItems.slice(0, 3).map((item, index) => (
+              <DropdownMenuItem key={index} onClick={item.onClick}>
                 <item.icon
                   size={16}
                   strokeWidth={2}

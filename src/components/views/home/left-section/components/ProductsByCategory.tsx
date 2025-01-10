@@ -51,18 +51,38 @@ const ProductGrid = memo(function ProductGrid({
     return chunks;
   }, [products]);
 
-  if (products.length < 15) {
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth < 1024);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  if (products.length < 15 || isSmallScreen) {
     return (
-      <div className="grid grid-cols-3 gap-3 h-full">
-        {products.map((product) => (
-          <ProductCard
-            key={product._id}
-            product={product}
-            selectedProducts={selectedProducts}
-            onProductClick={handleProductClick}
-          />
-        ))}
-      </div>
+      <motion.div
+        className="w-full grid grid-cols-2 pl-2 pr-2 py-1 lg:grid-cols-3 gap-3"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.35 }}
+      >
+        {products.map(
+          (product) =>
+            product.variants.length > 0 && (
+              <ProductCard
+                key={product._id}
+                product={product}
+                selectedProducts={selectedProducts}
+                onProductClick={handleProductClick}
+              />
+            )
+        )}
+      </motion.div>
     );
   }
 
@@ -70,12 +90,12 @@ const ProductGrid = memo(function ProductGrid({
     <CustomSwiper
       direction="vertical"
       grid={{
-        rows: ROWS_PER_SLIDE,
+        rows: 5,
         fill: "row",
       }}
       mousewheel={true}
       showPagination={true}
-      className="h-[calc(100vh-250px)] products-swiper px-2"
+      className="px-2 products-swiper h-[600px]"
       onInit={(swiper) => {
         swiper.el.classList.add("initialized");
         const bullets = document.querySelectorAll(".swiper-pagination-bullet");
@@ -100,7 +120,7 @@ const ProductGrid = memo(function ProductGrid({
       {chunkedProducts.map((chunk, slideIndex) => (
         <div
           key={slideIndex}
-          className="grid grid-cols-3 gap-3 h-full pl-4 pr-1 py-2"
+          className="grid grid-cols-3 gap-3 pl-2 pr-1 py-1 h-[500px]"
         >
           {chunk.map((product) => (
             <ProductCard
@@ -154,7 +174,7 @@ export default memo(function ProductsByCategory() {
   }, [products.length, loadProducts]);
 
   return (
-    <div className="h-full flex flex-col overflow-y-hidden">
+    <div className="h-full flex flex-col">
       <Header />
       <div className="max-w-full">
         {(category?.children?.length ?? 0) > 0 && (
@@ -229,18 +249,18 @@ export default memo(function ProductsByCategory() {
           </>
         )}
       </div>
-      <div className="flex-1 ">
+      <div className="flex-1 overflow-y-auto">
         <div className="flex-none">
-          <div className="flex items-center justify-between relative flex-shrink-0 mt-4">
-            <TypographyP className="pr-4 bg-background font-medium">
+          <div className="flex items-center justify-between relative flex-shrink-0 mt-4 w-full overflow-hidden">
+            <TypographyP className="pr-4 bg-background font-medium text-sm">
               Products
             </TypographyP>
-            <Separator />
+            <Separator className="h-[0.5px]" />
           </div>
         </div>
 
-        <div className="flex-1 ">
-          <div className="w-full h-full relative px-2 pt-2">
+        <div className="flex-1 overflow-y-auto">
+          <div className="w-full relative pt-6">
             <Combo />
             <ProductsVariants />
             {loading ? (

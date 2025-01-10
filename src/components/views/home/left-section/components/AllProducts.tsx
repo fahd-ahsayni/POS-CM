@@ -66,12 +66,12 @@ const ProductsGrid = memo(function ProductsGrid({
     <CustomSwiper
       direction="vertical"
       grid={{
-        rows: ROWS_PER_SLIDE,
+        rows: 5,
         fill: "row",
       }}
       mousewheel={true}
       showPagination={true}
-      className="!h-[calc(100vh-250px)] products-swiper px-2"
+      className="px-2 products-swiper h-[600px]"
       onInit={(swiper) => {
         swiper.el.classList.add("initialized");
         const bullets = document.querySelectorAll(".swiper-pagination-bullet");
@@ -96,7 +96,7 @@ const ProductsGrid = memo(function ProductsGrid({
       {chunkedProducts.map((chunk, slideIndex) => (
         <div
           key={slideIndex}
-          className="grid grid-cols-3 gap-3 h-full pl-2 py-2"
+          className="grid grid-cols-3 gap-3 pl-2 pr-2 py-1 h-[500px]"
         >
           {chunk.map((product) => (
             <ProductCard

@@ -26,7 +26,7 @@ export const tabsConfig = [
           <TypographyP className="pr-4 bg-background text-sm font-medium">
             Products
           </TypographyP>
-          <Separator className="dark:bg-zinc-800/60 bg-zinc-50/70" />
+          <Separator />
         </div>
         <div className="w-full h-full scrollbar-hide relative px-2 pt-4">
           <AllProducts />

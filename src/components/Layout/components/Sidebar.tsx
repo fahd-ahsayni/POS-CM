@@ -77,6 +77,7 @@ export default function Sidebar() {
   const { views } = useRightViewContext();
   const { theme } = useTheme();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [openClientDrawer, setOpenClientDrawer] = useState(false);
   const [openDropDrawer, setOpenDropDrawer] = useState(false);
   // Used to force re-render when orderType changes
@@ -107,7 +108,7 @@ export default function Sidebar() {
 
   const handleResetApp = () => {
     localStorage.removeItem("orderType");
-    window.location.reload();
+    navigate(0);
   };
 
   return (

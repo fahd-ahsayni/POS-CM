@@ -26,7 +26,9 @@ export default function Logo({ size = "sm" }: LogoProps) {
   };
 
   return (
-    <div className={cn("flex items-center", sizeClasses[size].container)}>
+    <div
+      className={cn("flex items-center relative", sizeClasses[size].container)}
+    >
       <img
         src={logoWithoutText}
         alt="logo"

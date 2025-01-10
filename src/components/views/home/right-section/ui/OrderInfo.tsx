@@ -5,6 +5,7 @@ import {
   Table8Seats,
 } from "@/assets/tables-icons";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
+import { getTableById } from "@/functions/getTableById";
 import { selectOrder } from "@/store/slices/order/createOrder";
 import { useSelector } from "react-redux";
 
@@ -89,15 +90,17 @@ const OnPlaceOrder: React.FC<{ order: any; orderType: OrderType }> = ({
   orderType,
 }) => {
   const TableNumber = localStorage.getItem("tableNumber");
+  const tableSeats = getTableById(TableNumber || "")?.seats;
 
   const TableIcon =
-    parseInt(TableNumber || "0") > 7
+    tableSeats && tableSeats > 7
       ? Table8Seats
-      : parseInt(TableNumber || "0") > 5
+      : tableSeats && tableSeats > 5
       ? Table6Seats
-      : parseInt(TableNumber || "0") > 3
+      : tableSeats && tableSeats > 3
       ? Table4Seats
       : Table2Seats;
+      
   if (orderType.type === "onPlace") {
     return (
       <OrderContainer>

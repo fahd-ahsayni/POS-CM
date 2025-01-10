@@ -4,6 +4,7 @@ import { Product, ProductSelected, Variant } from "@/types";
 import { useCallback } from "react";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
+import { updateCustomerDisplay } from "@/components/global/Customer-display/useCustomerDisplay";
 
 interface UseProductSelectionProps {
   selectedProducts: ProductSelected[];
@@ -86,6 +87,11 @@ export const useProductSelection = ({
     []
   );
 
+  const updateProductsAndDisplay = useCallback((newProducts: ProductSelected[]) => {
+    setSelectedProducts(newProducts);
+    updateCustomerDisplay(newProducts);
+  }, [setSelectedProducts]);
+
   const addOrUpdateProduct = useCallback(
     async (
       product: Product,
@@ -110,29 +116,21 @@ export const useProductSelection = ({
 
         setSelectedProducts((prevSelected) => {
           const variant = findVariant(product, variantId);
-
           if (!variant) {
-            toast.warning(
-              createToast(
-                "Variant not found",
-                "Choose another variant",
-                "warning"
-              )
-            );
+            toast.warning(createToast("Variant not found", "Choose another variant", "warning"));
             return prevSelected;
           }
 
           const existingProduct = prevSelected.find(
-            (p: any) =>
-              p.product_variant_id === variantId &&
-              p.customer_index === customerIndex
+            (p: any) => p.product_variant_id === variantId && p.customer_index === customerIndex
           );
 
-          if (existingProduct) {
-            return updateExistingProduct(prevSelected, variantId, price, notes);
-          }
+          const newProducts = existingProduct
+            ? updateExistingProduct(prevSelected, variantId, price, notes)
+            : [...prevSelected, createNewProduct(product, variant, price)];
 
-          return [...prevSelected, createNewProduct(product, variant, price)];
+          updateProductsAndDisplay(newProducts);
+          return newProducts;
         });
       } catch (error) {
         toast.error(
@@ -144,7 +142,7 @@ export const useProductSelection = ({
         );
       }
     },
-    [findVariant, createNewProduct, updateExistingProduct, customerIndex]
+    [findVariant, createNewProduct, updateExistingProduct, customerIndex, updateProductsAndDisplay]
   );
 
   return {

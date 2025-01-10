@@ -225,8 +225,8 @@ body.keyboard-visible {
   --swiper-pagination-color: theme("colors.primary-red");
   --swiper-pagination-bullet-inactive-color: theme("colors.secondary-black");
   --swiper-pagination-bullet-inactive-opacity: 1;
-  --swiper-pagination-bullet-size: 6px;
-  --swiper-pagination-bullet-horizontal-gap: 6px;
+  --swiper-pagination-bullet-size: 5px;
+  --swiper-pagination-bullet-horizontal-gap: 5px;
 }
 
 .products-swiper .swiper-pagination {

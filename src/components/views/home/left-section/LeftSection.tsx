@@ -21,7 +21,7 @@ export default function LeftSection() {
           <TabsContent
             key={value}
             value={value}
-            className={cn("w-full h-full", className)}
+            className={cn("w-full h-full overflow-hidden", className)}
           >
             {component}
           </TabsContent>
