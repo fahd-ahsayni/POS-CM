@@ -26,7 +26,7 @@ export default function UserCard({
       <div
         className={`relative ${
           isActive
-            ? "ring-[6px] ring-red-500 ring-offset-[8px] ring-offset-secondary-white rounded-full transition-all duration-300"
+            ? "ring-[6px] ring-primary-red ring-offset-[8px] ring-offset-secondary-white rounded-full transition-all duration-300"
             : ""
         }`}
       >
@@ -38,7 +38,7 @@ export default function UserCard({
       </div>
       <p
         className={`text-zinc-900 font-semibold text-lg mt-4 ${
-          isActive ? "text-red-500" : ""
+          isActive ? "text-primary-red" : ""
         }`}
       >
         {user.name}

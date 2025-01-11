@@ -30,8 +30,7 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 403) {
-      await logoutService();
-      window.location.href = "/login";
+      window.location.href = "/session-expired";
     }
     return Promise.reject(error);
   }

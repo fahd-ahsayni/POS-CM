@@ -14,9 +14,9 @@ import { useProducts } from "../hooks/useProducts";
 import { useProductsByCategory } from "../hooks/useProductsByCategory";
 import { CustomBreadcrumb } from "../ui/Bredcrump";
 import { ProductCard } from "../ui/ProductCard";
-import { ProductsLoadingSkeleton } from "./AllProducts";
 import Header from "./Header";
 import ProductsVariants from "./ProductsVariants";
+import { ProductsLoadingSkeleton } from "../ui/ProductsLoadingSkeleton";
 
 interface LoadingConfig {
   threshold: number;

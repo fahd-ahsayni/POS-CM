@@ -57,7 +57,7 @@ export default function Passcode() {
       toast.error(
         createToast(
           "User Selection Required",
-          "Please select a user before attempting to login.",
+          "Please select a user before logging in.",
           "error"
         )
       );

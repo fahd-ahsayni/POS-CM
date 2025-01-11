@@ -137,7 +137,7 @@ export const printOrder = async (
           ] as const)
         : ([
             "Failed to print order",
-            "Please check the printer connection and try again",
+            "Please check the printer connection",
             "error",
           ] as const);
 

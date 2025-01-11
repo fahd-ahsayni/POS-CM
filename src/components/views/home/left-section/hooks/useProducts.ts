@@ -1,6 +1,6 @@
 import { extractProducts } from "@/functions/extractProducts";
 import { Product } from "@/types";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useMemo } from "react";
 import { useRightViewContext } from "../../right-section/contexts/RightViewContext";
 import { useLeftViewContext } from "../contexts/LeftViewContext";
 import { useProductSelection } from "./useProductSelection";
@@ -11,6 +11,9 @@ export const useProducts = (initialProducts?: Product[]) => {
     loading: true,
   });
 
+  const contextValues = useLeftViewContext();
+  const { orderType, customerIndex } = useRightViewContext();
+
   const {
     selectedProducts,
     setSelectedProducts,
@@ -18,16 +21,19 @@ export const useProducts = (initialProducts?: Product[]) => {
     setSelectedProduct,
     setOpenDrawerCombo,
     setSelectedCombo,
-  } = useLeftViewContext();
+  } = useMemo(() => contextValues, [contextValues]);
 
-  const { orderType, customerIndex } = useRightViewContext();
+  const productSelectionOptions = useMemo(
+    () => ({
+      selectedProducts,
+      setSelectedProducts,
+      customerIndex,
+      orderType,
+    }),
+    [selectedProducts, setSelectedProducts, customerIndex, orderType]
+  );
 
-  const { addOrUpdateProduct } = useProductSelection({
-    selectedProducts,
-    setSelectedProducts,
-    customerIndex,
-    orderType,
-  });
+  const { addOrUpdateProduct } = useProductSelection(productSelectionOptions);
 
   const loadProducts = useCallback(async () => {
     setState((prev) => ({ ...prev, loading: true }));

@@ -101,18 +101,34 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
     );
   }
 
-  if (error) {
+  if (false) {
     return (
-      <div className="w-full p-4 text-center text-primary-red">
-        <p>Error loading users. Please try again later.</p>
+      <div className="w-full text-center text-primary-red h-[300px] flex items-center justify-center">
+        <div
+          className="bg-red-100/50 border w-full border-primary-red text-primary-red px-4 py-3 rounded relative"
+          role="alert"
+        >
+          <strong className="font-semibold pr-2">Error!</strong>
+          <span className="block text-sm sm:inline">
+            No users available. Please contact support.
+          </span>
+        </div>
       </div>
     );
   }
 
   if (processedUsers.length === 0) {
     return (
-      <div className="w-full p-4 text-center text-primary-black">
-        <p>No users available</p>
+      <div className="w-full text-center text-primary-red h-[300px] flex items-center justify-center">
+        <div
+          className="bg-red-100/30 border w-full border-primary-red text-primary-red px-4 py-3 rounded relative"
+          role="alert"
+        >
+          <strong className="font-semibold pr-2">No users available</strong>
+          <span className="block text-sm sm:inline">
+            Please contact support.
+          </span>
+        </div>
       </div>
     );
   }
@@ -120,16 +136,12 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
   console.log(selectedUser);
 
   return (
-    <div className="slider-container w-full custom-slider overflow-hidden mt-2 relative">
+    <div className="slider-container w-full custom-slider overflow-hidden mt-2 relative h-[300px]">
       {loading ? (
         <div className="flex justify-center space-x-4">
           {[1, 2, 3].map((n) => (
             <UserCardSkeleton key={n} />
           ))}
-        </div>
-      ) : processedUsers.length === 0 ? (
-        <div className="w-full p-4 text-center text-primary-black">
-          <p>No users available</p>
         </div>
       ) : (
         <Swiper

@@ -2,9 +2,14 @@ import { SessionExpiredIcon } from "@/assets/plumpy-icons";
 import Layout from "./Layout";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
+import { logoutService } from "@/api/services";
 
 export default function SessionExpired() {
   const navigate = useNavigate();
+  const handleContinue = async () => {
+    await logoutService();
+    navigate("/login");
+  };
   return (
     <main className="flex h-screen w-screen overflow-hidden">
       <Layout
@@ -20,7 +25,7 @@ export default function SessionExpired() {
         }
       >
         <div>
-          <Button onClick={() => navigate("/login")}>Continue</Button>
+          <Button onClick={handleContinue}>Continue</Button>
         </div>
       </Layout>
     </main>

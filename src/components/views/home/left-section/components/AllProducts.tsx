@@ -96,7 +96,7 @@ const ProductsGrid = memo(function ProductsGrid({
       {chunkedProducts.map((chunk, slideIndex) => (
         <div
           key={slideIndex}
-          className="grid grid-cols-3 gap-3 pl-2 pr-2 py-1 h-[500px]"
+          className="grid grid-cols-3 gap-3 pl-2 pr-2 py-2 h-[500px]"
         >
           {chunk.map((product) => (
             <ProductCard
