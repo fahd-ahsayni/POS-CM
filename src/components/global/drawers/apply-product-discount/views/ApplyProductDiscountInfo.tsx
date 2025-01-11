@@ -1,12 +1,14 @@
-import { useDispatch } from "react-redux";
+import ComboboxSelect from "@/components/global/ComboboxSelect";
+import { createToast } from "@/components/global/Toasters";
 import { Button } from "@/components/ui/button";
 import { TypographyP } from "@/components/ui/typography";
-import ComboboxSelect from "@/components/global/ComboboxSelect";
-import { useState, useMemo, useCallback } from "react";
+import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
+import { updateOrderLine } from "@/store/slices/order/createOrder";
+import { ProductSelected } from "@/types";
 import { CheckIcon } from "lucide-react";
-import { setDiscount } from "@/store/slices/order/createOrder";
+import { useCallback, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import { createToast } from "@/components/global/Toasters";
 
 interface Discount {
   _id: string;
@@ -18,16 +20,21 @@ interface DefineNote {
   text: string;
 }
 
-export default function ApplyDiscountInfo({
-  admin,
-  setOpen,
-  setAuthorization,
-}: {
+interface ApplyProductDiscountInfoProps {
   admin: any;
   setOpen: (open: boolean) => void;
   setAuthorization: (authorization: boolean) => void;
-}) {
+  orderLine: ProductSelected;
+}
+
+export default function ApplyProductDiscountInfo({
+  admin,
+  setOpen,
+  setAuthorization,
+  orderLine,
+}: ApplyProductDiscountInfoProps) {
   const dispatch = useDispatch();
+  const { setSelectedProducts } = useLeftViewContext();
   const [selectedDiscount, setSelectedDiscount] = useState<string>("");
   const [selectedReason, setSelectedReason] = useState<string>("");
 
@@ -54,30 +61,46 @@ export default function ApplyDiscountInfo({
     }));
   }, [generalData]);
 
-  const handleDiscountSelect = useCallback((value: string) => {
-    setSelectedDiscount(value);
-  }, []);
-
-  const handleReasonSelect = useCallback((value: string) => {
-    setSelectedReason(value);
-  }, []);
-
   const handleApplyDiscount = useCallback(() => {
     try {
       if (!selectedDiscount || !selectedReason) return;
 
+      const discountInfo = {
+        discount_id: selectedDiscount,
+        reason: selectedReason,
+        confirmed_by: admin.user.id,
+      };
+
+      // Update Redux store
       dispatch(
-        setDiscount({
-          discount_id: selectedDiscount,
-          reason: selectedReason,
-          confirmed_by: admin.user.id,
+        updateOrderLine({
+          _id: orderLine._id,
+          customerIndex: orderLine.customer_index,
+          orderLine: {
+            ...orderLine,
+            discount: discountInfo,
+          },
         })
       );
 
-      toast.success(
-        createToast("Discount applied", "Discount applied successfully", "success")
+      // Update selected products
+      setSelectedProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product._id === orderLine._id &&
+          product.customer_index === orderLine.customer_index
+            ? { ...product, discount: discountInfo }
+            : product
+        )
       );
-      setOpen(false); // This will trigger the reset through the drawer close
+
+      toast.success(
+        createToast(
+          "Discount applied",
+          "Product discount applied successfully",
+          "success"
+        )
+      );
+      setOpen(false);
     } catch (error) {
       toast.error(
         createToast(
@@ -86,23 +109,30 @@ export default function ApplyDiscountInfo({
           "error"
         )
       );
-      setAuthorization(false); // Reset authorization on error
+      setAuthorization(false);
     }
-  }, [dispatch, selectedDiscount, selectedReason, admin.user.id, setOpen, setAuthorization]);
+  }, [
+    dispatch,
+    selectedDiscount,
+    selectedReason,
+    admin.user.id,
+    orderLine,
+    setOpen,
+    setAuthorization,
+    setSelectedProducts,
+  ]);
 
   return (
     <section className="overflow-hidden h-full flex flex-col items-start gap-8 relative w-full">
       <TypographyP className="text-sm pt-10 text-start px-2">
-        Provide the discount details to finalize the authorization.
+        Apply discount to selected product.
       </TypographyP>
       <div className="flex-1 pt-4 flex items-center justify-start flex-col space-y-8 w-full px-2">
         <ComboboxSelect
           label="Select a discount"
           items={discounts}
-          value={
-            discounts.find((d) => d.value === selectedDiscount) || null
-          }
-          onChange={(item) => handleDiscountSelect(item?.value || "")}
+          value={discounts.find((d) => d.value === selectedDiscount) || null}
+          onChange={(item) => setSelectedDiscount(item?.value || "")}
           displayValue={(item) => item?.label || ""}
           placeholder="Select a discount"
           filterFunction={(query, item) =>
@@ -120,7 +150,7 @@ export default function ApplyDiscountInfo({
           label="Select a reason"
           items={reasons}
           value={reasons.find((r) => r.value === selectedReason) || null}
-          onChange={(item) => handleReasonSelect(item?.value || "")}
+          onChange={(item) => setSelectedReason(item?.value || "")}
           displayValue={(item) => item?.label || ""}
           placeholder="Reason for discount"
           filterFunction={(query, item) =>

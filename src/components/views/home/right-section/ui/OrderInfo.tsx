@@ -19,7 +19,7 @@ interface OrderType {
 }
 
 const OrderBadge: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="h-8 flex-1 flex items-center justify-center px-5">
+  <div className="h-8 flex-1 flex items-center justify-center">
     <TypographyP className="font-medium text-sm">{children}</TypographyP>
   </div>
 );

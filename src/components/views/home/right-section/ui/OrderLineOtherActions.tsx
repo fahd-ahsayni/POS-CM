@@ -1,4 +1,5 @@
 import { TrashRegularIcon } from "@/assets/figma-icons";
+import ApplyProductDiscount from "@/components/global/drawers/apply-product-discount/ApplyProductDiscount";
 import BaseModal from "@/components/global/modal/Layout/BaseModal";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +28,7 @@ export default function OrderLineOtherActions({
   const { selectedProducts, setSelectedProducts } = useLeftViewContext();
   const { customerIndex } = useRightViewContext();
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isDiscountDrawerOpen, setIsDiscountDrawerOpen] = useState(false);
 
   const handleUrgentToggle = (enabled: boolean) => {
     const currentCustomerIndex = item.customer_index || customerIndex;
@@ -99,6 +101,12 @@ export default function OrderLineOtherActions({
         cancelText="Cancel"
       />
 
+      <ApplyProductDiscount 
+        open={isDiscountDrawerOpen}
+        setOpen={setIsDiscountDrawerOpen}
+        orderLine={item}
+      />
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -114,7 +122,7 @@ export default function OrderLineOtherActions({
           <DropdownMenuItem onClick={handleRemoveOrderLine}>
             <span className="text-sm">Remove Order Line</span>
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setIsDiscountDrawerOpen(true)}>
             <span className="text-sm">Apply Discount</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />

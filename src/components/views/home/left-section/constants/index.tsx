@@ -15,7 +15,7 @@ export const tabsConfig = [
   {
     value: ALL_CATEGORIES_VIEW,
     component: <AllCategories />,
-    className: "flex-1 overflow-auto",
+    className: "flex-1 overflow-auto scrollbar-hide",
   },
   {
     value: ALL_PRODUCTS_VIEW,
@@ -28,7 +28,7 @@ export const tabsConfig = [
           </TypographyP>
           <Separator />
         </div>
-        <div className="w-full h-full scrollbar-hide relative px-2 pt-4">
+        <div className="w-full h-full relative px-2 pt-4">
           <AllProducts />
         </div>
       </>

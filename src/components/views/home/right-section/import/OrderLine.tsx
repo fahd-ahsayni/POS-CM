@@ -30,6 +30,7 @@ interface OrderLineProps {
     customer_index: number;
     notes?: string[];
     high_priority?: boolean;
+    _animation?: string;
   };
   increment: () => void;
   decrement: () => void;
@@ -48,14 +49,20 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
 
   const itemVariants = useMemo(
     () => ({
-      initial: { x: 50, opacity: 0 },
-      animate: {
-        x: 0,
-        opacity: 1,
-        transition: { duration: 0.25, ease: "easeInOut" },
+      initial: { 
+        opacity: 0,
+        x: item._animation === 'reverse' ? -20 : 20
       },
+      animate: {
+        opacity: 1,
+        x: 0
+      },
+      exit: {
+        opacity: 0,
+        x: -20
+      }
     }),
-    []
+    [item._animation]
   );
 
   const selectCustomer = useCallback(() => {
@@ -117,7 +124,15 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
 
   return (
     <motion.div
+      layout
+      initial="initial"
+      animate="animate"
+      exit="exit"
       variants={itemVariants}
+      transition={{ 
+        duration: 0.2,
+        ease: "easeOut"
+      }}
       className="flex relative cursor-pointer items-center justify-start h-full w-full rounded-lg overflow-hidden"
       onClick={selectCustomer}
     >

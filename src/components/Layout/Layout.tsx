@@ -76,7 +76,7 @@ const Layout = () => {
 
   const BackgroundDecoration = () => (
     <div
-      className="absolute rounded-full -top-52 -right-52 w-[400px] h-[400px] bg-red-600 blur-3xl opacity-30"
+      className="absolute rounded-full -top-48 -right-48 w-[320px] h-[320px] bg-primary-red/50 blur-3xl"
       aria-hidden="true"
     />
   );

@@ -1,4 +1,4 @@
-import { useState, memo } from "react";
+import { useState, memo, useCallback } from "react";
 import Drawer from "../../Drawer";
 import Authorization from "../auth/Authorization";
 import CancelOrderReason from "./views/CancelOrderReason";
@@ -8,15 +8,26 @@ const CancelOrder = memo(
     const [authorization, setAuthorization] = useState(false);
     const [admin, setAdmin] = useState<any>({});
 
+    const handleClose = useCallback(() => {
+      setOpen(false);
+      setAuthorization(false);
+      setAdmin({});
+    }, [setOpen]);
+
+
     return (
       <Drawer
         open={open}
-        setOpen={setOpen}
+        setOpen={handleClose}
         title="Cancel order"
         classNames="max-w-lg"
       >
         {authorization ? (
-          <CancelOrderReason admin={admin} setOpen={setOpen} setAuthorization={setAuthorization} />
+          <CancelOrderReason
+            admin={admin}
+            setOpen={handleClose}
+            setAuthorization={setAuthorization}
+          />
         ) : (
           <Authorization
             setAuthorization={setAuthorization}
@@ -27,5 +38,7 @@ const CancelOrder = memo(
     );
   }
 );
+
+CancelOrder.displayName = "CancelOrder";
 
 export default CancelOrder;

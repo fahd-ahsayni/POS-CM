@@ -1,154 +1,18 @@
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  TypographyH3,
-  TypographyP,
-  TypographySmall
-} from "@/components/ui/typography";
-import { updateOrder } from "@/functions/updateOrder";
-import { cn } from "@/lib/utils";
-import { OrderType } from "@/types";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { memo, useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import {
-  COASTER_CALL_VIEW,
-  NUMBER_OF_TABLE_VIEW,
-  ORDER_SUMMARY_VIEW,
-  OWN_DELIVERY_FORM_VIEW,
-} from "../constants";
-import { useRightViewContext } from "../contexts/RightViewContext";
-import { TypeOfOrderDescription, TypeOfOrderIcon } from "../ui/TypeOfOrderIcon";
-
-export const OrderCardSkeleton = () => (
-  <Card className="w-full rounded-lg h-24 px-8 py-4 dark:!bg-secondary-black bg-white flex space-x-4 items-center justify-between">
-    <div className="flex items-center gap-x-4 w-full">
-      <Skeleton className="h-7 w-7 rounded-full bg-neutral-dark-grey/30" />
-      <div className="space-y-2 flex-1">
-        <Skeleton className="h-5 w-24 bg-neutral-dark-grey/30" />
-        <Skeleton className="h-4 w-40 bg-neutral-dark-grey/30" />
-      </div>
-    </div>
-  </Card>
-);
-
-// Memoized OrderCard component
-export const OrderCard = memo(
-  ({
-    orderType,
-    onSelect,
-    isSelected,
-    fixedLightDark,
-  }: {
-    orderType: OrderType;
-    onSelect: (orderType: OrderType) => void;
-    isSelected?: boolean;
-    fixedLightDark?: boolean;
-  }) => {
-    const iconType = orderType.type.toLowerCase();
-    const isDeliveryChild = orderType.parent_id && iconType === "delivery";
-    const showDescription = !orderType.parent_id; // Only show description for root items
-
-    return (
-      <Card
-        className={cn(
-          "w-full rounded-md h-24 px-6 py-6 flex space-x-4 items-center justify-between cursor-pointer",
-          fixedLightDark
-            ? "bg-neutral-bright-grey dark:bg-primary-black"
-            : "bg-white dark:bg-secondary-black",
-          isSelected && "ring-2 ring-primary-red"
-        )}
-        onClick={() => onSelect(orderType)}
-      >
-        <div className="flex items-center gap-x-4">
-          {orderType.image || isDeliveryChild ? (
-            <img
-              src={orderType.image || "/path/to/delivery-image.png"} // Add your delivery image path
-              alt={orderType.name}
-              className="w-7 h-7"
-            />
-          ) : (
-            <TypeOfOrderIcon type={iconType} />
-          )}
-          <div>
-            <TypographyP className="font-medium text-lg">
-              {orderType.name}
-            </TypographyP>
-            {showDescription && (
-              <TypographySmall className="text-xs text-neutral-dark-grey pt-0.5 tracking-tight">
-                {TypeOfOrderDescription({ type: iconType })}
-              </TypographySmall>
-            )}
-          </div>
-        </div>
-
-        <ChevronRightIcon className="w-6 h-6 text-primary-black/50 dark:text-white/50" />
-      </Card>
-    );
-  }
-);
-
-OrderCard.displayName = "OrderCard";
+import { TypographyH3 } from "@/components/ui/typography";
+import { ChevronLeftIcon } from "lucide-react";
+import { memo } from "react";
+import { useSelectOrderType } from "../hooks/useSelectOrderType";
+import { OrderCard, OrderCardSkeleton } from "../ui/OrderTypeCards";
 
 function SelectTypeOfOrder() {
-  const dispatch = useDispatch();
-  const [orderTypes, setOrderTypes] = useState<OrderType[]>([]);
-  const [selectedType, setSelectedType] = useState<OrderType | null>(null);
-  const [displayedTypes, setDisplayedTypes] = useState<OrderType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const loadOrderTypes = () => {
-      setIsLoading(true);
-      const storedGeneralData = localStorage.getItem("generalData");
-      if (storedGeneralData) {
-        const parsedData = JSON.parse(storedGeneralData);
-        const rootOrderTypes = parsedData.orderTypes.filter(
-          (type: OrderType) => !type.parent_id
-        );
-        setOrderTypes(rootOrderTypes);
-        setDisplayedTypes(rootOrderTypes);
-      }
-      setIsLoading(false);
-    };
-
-    loadOrderTypes();
-  }, []);
-
-  const { setViews } = useRightViewContext();
-
-  const handleOrderTypeSelect = useCallback(
-    (orderType: OrderType) => {
-      setSelectedType(orderType);
-
-      if (orderType.children.length > 0) {
-        setDisplayedTypes(orderType.children);
-      } else {
-        dispatch(updateOrder({ order_type_id: orderType._id }));
-        localStorage.setItem("orderType", JSON.stringify(orderType));
-
-        if (orderType.select_table) {
-          setViews(NUMBER_OF_TABLE_VIEW);
-        } else if (orderType.select_client) {
-          setViews(OWN_DELIVERY_FORM_VIEW);
-        } else if (orderType.select_coaster_call) {
-          setViews(COASTER_CALL_VIEW);
-        } else {
-          setViews(ORDER_SUMMARY_VIEW);
-        }
-      }
-    },
-    [dispatch, setViews]
-  );
-
-  const handleBack = useCallback(() => {
-    setSelectedType(null);
-    setDisplayedTypes(orderTypes);
-  }, [orderTypes]);
+  const {
+    state: { selectedType, displayedTypes, isLoading },
+    actions: { handleOrderTypeSelect, handleBack },
+  } = useSelectOrderType();
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full pb-7">
       <div className="flex items-center gap-x-2">
         {selectedType && (
           <Button variant="secondary" size="icon" onClick={handleBack}>
@@ -161,8 +25,9 @@ function SelectTypeOfOrder() {
             : "What type of order would you like to process?"}
         </TypographyH3>
       </div>
-      <div className="flex-1 flex h-full items-center justify-center">
-        <div className="w-full space-y-10 -mt-20">
+      <div className="flex-1 flex h-full items-center justify-center overflow-hidden relative mt-20">
+        <div className="absolute top-0 left-0 w-full h-12 bg-gradient-to-b from-background to-transparent" />
+        <div className="w-full space-y-6 pb-12 pt-12 h-full overflow-y-auto">
           {isLoading ? (
             <OrderCardSkeleton />
           ) : (

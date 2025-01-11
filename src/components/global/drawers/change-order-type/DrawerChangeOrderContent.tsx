@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { OrderCard } from "@/components/views/home/right-section/components/SelectTypeOfOrder";
+import { OrderCard } from "@/components/views/home/right-section/ui/OrderTypeCards";
 import { useAddClient } from "@/components/views/home/right-section/hooks/useAddClient";
 import { useNumberOfTable } from "@/components/views/home/right-section/hooks/useNumberOfTable";
 import ClientForm from "@/components/views/home/right-section/layouts/ClientForm";

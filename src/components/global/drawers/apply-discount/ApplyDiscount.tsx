@@ -1,4 +1,4 @@
-import { useState, memo } from "react";
+import { memo, useCallback, useState } from "react";
 import Drawer from "../../Drawer";
 import Authorization from "../auth/Authorization";
 import ApplyDiscountInfo from "./views/ApplyDiscountInfo";
@@ -8,15 +8,26 @@ const ApplyDiscount = memo(
     const [authorization, setAuthorization] = useState(false);
     const [admin, setAdmin] = useState<any>({});
 
+    const handleClose = useCallback(() => {
+      setOpen(false);
+      setAuthorization(false);
+      setAdmin({});
+    }, [setOpen]);
+
+
     return (
       <Drawer
         open={open}
-        setOpen={setOpen}
+        setOpen={handleClose}
         title="Authorize discount"
         classNames="max-w-lg"
       >
         {authorization ? (
-          <ApplyDiscountInfo admin={admin} setOpen={setOpen} setAuthorization={setAuthorization} />
+          <ApplyDiscountInfo 
+            admin={admin} 
+            setOpen={handleClose}
+            setAuthorization={setAuthorization} 
+          />
         ) : (
           <Authorization
             setAuthorization={setAuthorization}
@@ -27,5 +38,7 @@ const ApplyDiscount = memo(
     );
   }
 );
+
+ApplyDiscount.displayName = "ApplyDiscount";
 
 export default ApplyDiscount;

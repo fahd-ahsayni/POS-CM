@@ -53,19 +53,26 @@ export default function CancelOrderReason({
   const handleApplyCancel = useCallback(async () => {
     if (!selectedOrder?._id) return;
 
-    const response = await cancelOrder({
-      order_id: selectedOrder._id,
-      reason: selectedReason,
-      confirmed_by: admin.user.id,
-    });
+    try {
+      const response = await cancelOrder({
+        order_id: selectedOrder._id,
+        reason: selectedReason,
+        confirmed_by: admin.user.id,
+      });
 
-    if (response.status === 200) {
-      toast.success(
-        createToast("Order canceled", "Order canceled successfully", "success")
-      );
-      setOpen(false);
-      setAuthorization(false);
-    } else {
+      if (response.status === 200) {
+        toast.success(
+          createToast(
+            "Order canceled",
+            "Order canceled successfully",
+            "success"
+          )
+        );
+        setOpen(false);
+      } else {
+        throw new Error("Failed to cancel order");
+      }
+    } catch (error) {
       toast.error(
         createToast(
           "Error canceling order",
@@ -73,8 +80,15 @@ export default function CancelOrderReason({
           "error"
         )
       );
+      setAuthorization(false);
     }
-  }, [selectedOrder?._id, selectedReason, admin.user.id, setOpen]);
+  }, [
+    selectedOrder?._id,
+    selectedReason,
+    admin.user.id,
+    setOpen,
+    setAuthorization,
+  ]);
 
   return (
     <section className="overflow-hidden h-full flex flex-col items-start gap-8 relative w-full">
