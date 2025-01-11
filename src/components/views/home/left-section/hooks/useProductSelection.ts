@@ -40,6 +40,7 @@ export const useProductSelection = ({
         order_type_id: orderType || "",
         uom_id: variant.uom_id ? variant.uom_id._id : "",
         notes: [],
+        discount: null,
         is_paid: false,
         is_ordred: false,
         suite_commande: false,
@@ -87,10 +88,13 @@ export const useProductSelection = ({
     []
   );
 
-  const updateProductsAndDisplay = useCallback((newProducts: ProductSelected[]) => {
-    setSelectedProducts(newProducts);
-    updateCustomerDisplay(newProducts);
-  }, [setSelectedProducts]);
+  const updateProductsAndDisplay = useCallback(
+    (newProducts: ProductSelected[]) => {
+      setSelectedProducts(newProducts);
+      updateCustomerDisplay(newProducts);
+    },
+    [setSelectedProducts]
+  );
 
   const addOrUpdateProduct = useCallback(
     async (
@@ -117,12 +121,20 @@ export const useProductSelection = ({
         setSelectedProducts((prevSelected) => {
           const variant = findVariant(product, variantId);
           if (!variant) {
-            toast.warning(createToast("Variant not found", "Choose another variant", "warning"));
+            toast.warning(
+              createToast(
+                "Variant not found",
+                "Choose another variant",
+                "warning"
+              )
+            );
             return prevSelected;
           }
 
           const existingProduct = prevSelected.find(
-            (p: any) => p.product_variant_id === variantId && p.customer_index === customerIndex
+            (p: any) =>
+              p.product_variant_id === variantId &&
+              p.customer_index === customerIndex
           );
 
           const newProducts = existingProduct
@@ -142,7 +154,13 @@ export const useProductSelection = ({
         );
       }
     },
-    [findVariant, createNewProduct, updateExistingProduct, customerIndex, updateProductsAndDisplay]
+    [
+      findVariant,
+      createNewProduct,
+      updateExistingProduct,
+      customerIndex,
+      updateProductsAndDisplay,
+    ]
   );
 
   return {

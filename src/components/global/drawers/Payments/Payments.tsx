@@ -131,7 +131,7 @@ export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
           <div className="w-full flex flex-col items-start justify-center h-[70%]">
             <div className="flex flex-col w-full items-center justify-center">
               <TypographySmall className="dark:text-white/50 text-primary-black/50 mb-0.5 text-xs">
-                Total
+                Total Amount
               </TypographySmall>
               <TypographyH2 className="text-center font-semibold">
                 {order.total_amount.toFixed(currency.toFixed || 2)}{" "}

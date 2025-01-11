@@ -101,11 +101,19 @@ export interface Product {
   quantity?: number;
 }
 
+// Add OrderLineDiscount interface
+export interface OrderLineDiscount {
+  discount_id: string;
+  reason: string;
+  confirmed_by: string | number;
+}
+
 // Main product type
 export interface ProductSelected extends Product {
-  id: string;
+  id?: string;
   product_variant_id: string;
   quantity: number;
+  discount?: OrderLineDiscount; // Changed from 'any' to proper type
   price: number;
   customer_index: number;
   order_type_id: string;

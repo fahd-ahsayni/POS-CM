@@ -48,10 +48,20 @@ const initialState: OrderSliceState = {
   error: null,
 };
 
+interface OrderLineDiscount {
+  discount_id: string;
+  reason: string;
+  confirmed_by: string | number;
+}
+
 interface UpdateOrderLinePayload {
   _id: string;
   customerIndex: number;
-  orderLine: any;
+  orderLine: {
+    quantity?: number;
+    discount?: OrderLineDiscount;
+    // ... other possible fields
+  };
 }
 
 interface SetOrderTypePayload {
@@ -78,99 +88,63 @@ const orderSlice = createSlice({
     updateOrderLine: (state, action: PayloadAction<UpdateOrderLinePayload>) => {
       const orderLineIndex = state.data.orderlines.findIndex(
         (ol) =>
-          ol.id === action.payload._id &&
+          (ol.id === action.payload._id || ol._id === action.payload._id) &&
           ol.customer_index === action.payload.customerIndex
       );
 
       if (orderLineIndex !== -1) {
         const orderLine = state.data.orderlines[orderLineIndex];
 
+        // Create new orderline with all fields preserved
+        let newOrderLine = {
+          ...orderLine,
+          ...action.payload.orderLine,
+          discount: action.payload.orderLine.discount || orderLine.discount // Explicitly handle discount
+        };
+
         // If this is a combo product
         if (orderLine.is_combo && orderLine.combo_items) {
-          const newQuantity =
-            action.payload.orderLine.quantity || orderLine.quantity;
-          // Match the calculation from OrderLine.tsx
-          const unitPrice = getAllVariants().find(
-            (v) => orderLine._id === v._id
-          ).price_ttc;
+          const newQuantity = action.payload.orderLine.quantity || orderLine.quantity;
+          const unitPrice = getAllVariants().find(v => orderLine._id === v._id)?.price_ttc || 0;
           const newPrice = unitPrice * newQuantity;
 
-          // Update the main combo product
-          state.data.orderlines[orderLineIndex] = {
-            ...orderLine,
-            ...action.payload.orderLine,
+          newOrderLine = {
+            ...newOrderLine,
             price: newPrice,
             combo_items: {
               variants: orderLine.combo_items.variants.map((variant: any) => ({
                 ...variant,
                 quantity: (variant.quantity / orderLine.quantity) * newQuantity,
-                notes: action.payload.orderLine.notes || variant.notes,
-                suite_commande:
-                  action.payload.orderLine.suite_commande ??
-                  variant.suite_commande,
               })),
-              supplements: orderLine.combo_items.supplements.map(
-                (supplement: any) => ({
-                  ...supplement,
-                  quantity:
-                    (supplement.quantity / orderLine.quantity) * newQuantity,
-                  notes: action.payload.orderLine.notes || supplement.notes,
-                  suite_commande:
-                    action.payload.orderLine.suite_commande ??
-                    supplement.suite_commande,
-                })
-              ),
-            },
-          };
-        } else {
-          // Regular product update
-          state.data.orderlines[orderLineIndex] = {
-            ...orderLine,
-            ...action.payload.orderLine,
+              supplements: orderLine.combo_items.supplements.map((supplement: any) => ({
+                ...supplement,
+                quantity: (supplement.quantity / orderLine.quantity) * newQuantity,
+              }))
+            }
           };
         }
-      }
 
-      // Handle updates for variants within combos
-      state.data.orderlines = state.data.orderlines.map((orderLine) => {
-        if (orderLine.is_combo && orderLine.combo_items) {
-          return {
-            ...orderLine,
-            combo_items: {
-              variants: orderLine.combo_items.variants.map((variant: any) => {
-                if (
-                  variant._id === action.payload._id &&
-                  orderLine.customer_index === action.payload.customerIndex
-                ) {
-                  return {
-                    ...variant,
-                    ...action.payload.orderLine,
-                  };
-                }
-                return variant;
-              }),
-              supplements: orderLine.combo_items.supplements.map(
-                (supplement: any) => {
-                  if (
-                    supplement._id === action.payload._id &&
-                    orderLine.customer_index === action.payload.customerIndex
-                  ) {
-                    return {
-                      ...supplement,
-                      ...action.payload.orderLine,
-                    };
-                  }
-                  return supplement;
-                }
-              ),
-            },
-          };
-        }
-        return orderLine;
-      });
+        // Update the orderline in state
+        state.data.orderlines[orderLineIndex] = newOrderLine;
+
+        // Log for debugging
+        console.log('Updated orderline in Redux:', newOrderLine);
+      }
     },
     addOrderLine: (state, action: PayloadAction<any[]>) => {
-      state.data.orderlines = action.payload;
+      // Preserve existing discounts when updating orderlines
+      const updatedOrderlines = action.payload.map(newLine => {
+        const existingLine = state.data.orderlines.find(
+          ol => (ol.id === newLine.id || ol._id === newLine._id) && 
+                ol.customer_index === newLine.customer_index
+        );
+        return {
+          ...newLine,
+          discount: newLine.discount || (existingLine?.discount || null)
+        };
+      });
+      
+      state.data.orderlines = updatedOrderlines;
     },
     removeOrderLine: (state, action: PayloadAction<number>) => {
       state.data.orderlines = state.data.orderlines.filter(

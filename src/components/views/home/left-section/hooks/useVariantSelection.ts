@@ -133,7 +133,7 @@ export const useVariantSelection = ({
               // Dispatch the same values to the store
               dispatch(
                 updateOrderLine({
-                  _id: product.id,
+                  _id: product.id || product._id || '',
                   customerIndex: product.customer_index,
                   orderLine: updatedProduct,
                 })
@@ -171,10 +171,10 @@ export const useVariantSelection = ({
           quantity: p.quantity,
           suite_commande: p.suite_commande || false,
           high_priority: p.high_priority || false,
-          order_type_id: JSON.parse(localStorage.getItem("orderType") || "{}")
-            ._id,
+          order_type_id: JSON.parse(localStorage.getItem("orderType") || "{}")._id,
           is_ordred: p.is_ordred || false,
           is_paid: p.is_paid || false,
+          discount: p.discount || null,
         };
 
         if (p.is_combo && p.combo_items) {
@@ -184,21 +184,14 @@ export const useVariantSelection = ({
               product_variant_id: v._id,
               quantity: v.quantity,
               notes: Array.isArray(v.notes) ? v.notes : [],
-              // suite_commande: v.suite_commande || false,
-              // high_priority: v.high_priority || false,
-              order_type_id: JSON.parse(
-                localStorage.getItem("orderType") || "{}"
-              )._id,
+              order_type_id: JSON.parse(localStorage.getItem("orderType") || "{}")._id,
             })),
             combo_supp_ids: p.combo_items.supplements.map((s: any) => ({
               product_variant_id: s._id,
               quantity: s.quantity,
               notes: Array.isArray(s.notes) ? s.notes : [],
               suite_commande: s.suite_commande || false,
-              // high_priority: s.high_priority || false,
-              order_type_id: JSON.parse(
-                localStorage.getItem("orderType") || "{}"
-              )._id,
+              order_type_id: JSON.parse(localStorage.getItem("orderType") || "{}")._id,
             })),
           };
         }

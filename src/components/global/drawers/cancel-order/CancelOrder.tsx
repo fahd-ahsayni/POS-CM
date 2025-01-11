@@ -14,7 +14,6 @@ const CancelOrder = memo(
       setAdmin({});
     }, [setOpen]);
 
-
     return (
       <Drawer
         open={open}
