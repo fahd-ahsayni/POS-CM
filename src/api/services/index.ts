@@ -218,3 +218,11 @@ export const filterOrderByTableNumber = async (
 export const checkProductAvailability = async (productId: string) => {
   return api.get(`/product/check-availability/${productId}`);
 };
+
+export const checkOpenDay = async () => {
+  return api.get("/days/check-open");
+};
+
+export const openDay = async () => {
+  return api.post("/days/open");
+};

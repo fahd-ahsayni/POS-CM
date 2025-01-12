@@ -51,9 +51,9 @@ export default function HandleApp() {
         <Route
           path="/select-pos"
           element={
-            // <ProtectedRoute>
+            <ProtectedRoute>
               <SelectPosPage />
-            // </ProtectedRoute>
+            </ProtectedRoute>
           }
         />
         <Route path="/customer-display" element={<CustomerDisplay />} />

@@ -1,51 +1,35 @@
 import { logoWithoutText } from "@/assets";
 import { useShift } from "@/auth/context/ShiftContext";
-import { LoadingFullScreen } from "@/components/global/loading";
-import { createToast } from "@/components/global/Toasters";
+import SessionExpired from "@/components/errors/SessionExpired";
 import { Button } from "@/components/ui/button";
 import { TypographyH2, TypographySmall } from "@/components/ui/typography";
-import { AppDispatch, RootState } from "@/store";
+import { AppDispatch } from "@/store";
 import { logout } from "@/store/slices/authentication/authSlice";
-import {
-  checkOpenDay,
-  openDay,
-} from "@/store/slices/authentication/openDaySlice";
-import {
-  fetchPosData,
-  selectPosData,
-  selectPosError,
-  selectPosLoading,
-} from "@/store/slices/data/posSlice";
+import { selectPosError } from "@/store/slices/data/posSlice";
 import { User } from "@/types";
 import { PosData } from "@/types/pos";
 import { motion } from "framer-motion";
-import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import { pageAnimations } from "./animation";
 import PosCard from "./components/PosCard";
 import UserCard from "./components/ui/UserCard";
+import { useSelectPos } from "./hooks/useSelectPos";
 import OpenShift from "./OpenShift";
-import SessionExpired from "@/components/errors/SessionExpired";
-
-const DAY_NOT_OPEN_WARNING = "Day is not open";
-const UNAUTHORIZED_ERROR = "Unauthorized";
-const WELCOME_BACK_SUCCESS = "Welcome back";
 
 export default function SelectPosPage() {
-  const navigate = useNavigate();
+  const {
+    data,
+    checkDay,
+    open,
+    reOpen,
+    setOpen,
+    handleOpenDay,
+    handleSelectPos,
+  } = useSelectPos();
   const dispatch = useDispatch<AppDispatch>();
-  const { isOpen: isDayOpen } = useSelector(
-    (state: RootState) => state.dayStatus
-  );
-  const data = useSelector(selectPosData);
-  const loading = useSelector(selectPosLoading);
+
   const error = useSelector(selectPosError);
-  const [checkDay, setCheckDay] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [reOpen, setReOpen] = useState(false);
-  const { shiftId, setShiftId } = useShift();
+  const { shiftId } = useShift();
 
   console.log(data.pos);
 
@@ -54,109 +38,10 @@ export default function SelectPosPage() {
     localStorage.getItem("user") || "null"
   );
 
-  // Handlers
-  const handleOpenDay = useCallback(() => {
-    setCheckDay(true);
-    dispatch(openDay());
-  }, [dispatch]);
-
-  const handleSelectPos = useCallback(
-    (id: string) => {
-      // Check if day is not open first
-      if (!checkDay || !isDayOpen) {
-        toast.warning(
-          createToast(
-            DAY_NOT_OPEN_WARNING,
-            "Please open the day first",
-            "warning"
-          )
-        );
-        return;
-      }
-
-      const findPos = data.pos?.find((pos) => pos._id === id);
-      if (!findPos) return;
-
-      localStorage.setItem("posId", id);
-
-      const isAuthorizedUser =
-        findPos.shift?.user_id._id === userAuthenticated?.id ||
-        userAuthenticated?.position === "Manager";
-
-      if (isAuthorizedUser) {
-        setShiftId(findPos.shift?._id ?? "");
-        localStorage.setItem("shiftID", findPos.shift?._id ?? "");
-        toast.success(
-          createToast(
-            WELCOME_BACK_SUCCESS,
-            "You are authorized to use this POS",
-            "success"
-          )
-        );
-        if (findPos.shift?.status !== "opening_control") {
-          navigate("/");
-        } else {
-          setOpen(true);
-          setReOpen(true);
-        }
-        return;
-      }
-
-      if (findPos.shift !== null && !isAuthorizedUser) {
-        toast.error(
-          createToast(
-            UNAUTHORIZED_ERROR,
-            "You are not authorized to use this POS",
-            "error"
-          )
-        );
-        return;
-      }
-
-      if (findPos.shift?.status === "opening_control") {
-        toast.info(
-          createToast(
-            `Welcome back ${userAuthenticated?.name}`,
-            "Please open the shift first",
-            "info"
-          )
-        );
-        setOpen(true);
-        setReOpen(true);
-        return;
-      }
-
-      if (findPos.shift === null) {
-        setOpen(true);
-        setReOpen(false);
-        return;
-      }
-    },
-    [data.pos, userAuthenticated, checkDay, isDayOpen, navigate, setShiftId]
-  );
-
-  // Effects
-  useEffect(() => {
-    dispatch(checkOpenDay());
-    setCheckDay(isDayOpen ?? false);
-  }, [dispatch, isDayOpen]);
-
-  useEffect(() => {
-    dispatch(fetchPosData());
-  }, [dispatch]);
-
   const handleChangeAccount = () => {
     dispatch(logout());
   };
 
-  useEffect(() => {
-    localStorage.removeItem("posId");
-    localStorage.removeItem("shiftID");
-
-    console.log(data.pos);
-  }, []);
-
-  if (loading) return <LoadingFullScreen />;
   if (error) return <SessionExpired />;
 
   return (

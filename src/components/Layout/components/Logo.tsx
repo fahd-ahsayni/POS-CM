@@ -41,7 +41,7 @@ export default function Logo({ size = "sm" }: LogoProps) {
           Caisse
         </TypographySmall>
         <TypographySmall
-          className={cn("font-semibold leading-[0]", sizeClasses[size].text)}
+          className={cn("font-semibold -mt-0.5", sizeClasses[size].text)}
         >
           Manager
         </TypographySmall>

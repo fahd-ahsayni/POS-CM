@@ -1,5 +1,3 @@
-"use client";
-
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -75,7 +73,7 @@ export default function InputLikeTextarea({
         onChange={handleInput}
         rows={rows || defaultRows}
         className={cn(
-          "min-h-[none] h-9 w-full resize-none",
+          "min-h-[none] h-9 w-full resize-none scrollbar-hide",
           error && "ring-[1.25px] ring-primary-red",
           disabled && "opacity-50 cursor-not-allowed"
         )}

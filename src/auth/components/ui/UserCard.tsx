@@ -37,7 +37,7 @@ export default function UserCard({
         />
       </div>
       <p
-        className={`text-zinc-900 font-semibold text-lg mt-4 ${
+        className={`text-zinc-900 font-semibold text-lg mt-6 ${
           isActive ? "text-primary-red" : ""
         }`}
       >
