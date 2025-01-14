@@ -1,18 +1,20 @@
 import { DishIcon, SuiteCommandIcon } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
+import { toTitleCase } from "@/functions/string-transforms";
+import { currency } from "@/preferences";
+import { updateOrderLine } from "@/store/slices/order/create-order.slice";
 import { motion } from "framer-motion";
 import { Minus, Plus } from "lucide-react";
-import { memo, useMemo, useState, useCallback } from "react";
-import OderLineAddComments from "../ui/OderLineAddComments";
-import OrderLineOtherActions from "../ui/OrderLineOtherActions";
-import { Card } from "@/components/ui/card";
-import { currency } from "@/preferences";
+import { memo, useCallback, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
-import { updateOrderLine } from "@/store/slices/order/create-order.slice";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { useRightViewContext } from "../contexts/RightViewContext";
-import { toTitleCase } from "@/functions/string-transforms";
+import OderLineAddComments from "../ui/OderLineAddComments";
+import OrderLineOtherActions from "../ui/OrderLineOtherActions";
+import { calculateProductPrice } from "@/functions/priceCalculations";
+import { ProductSelected } from "@/types/product.types";
 
 interface OrderLineProps {
   item: {
@@ -42,25 +44,28 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
   );
   const dispatch = useDispatch();
   const { customerIndex, setCustomerIndex } = useRightViewContext();
-  const { selectedProducts, setSelectedProducts } = useLeftViewContext();
+  const { selectedProducts, setSelectedProducts, currentMenu } =
+    useLeftViewContext();
 
-  const unitPrice = item.variants[0]?.price_ttc || item.price / item.quantity;
-  const totalPrice = unitPrice * item.quantity;
+  const prices = useMemo(() => {
+    if (!currentMenu) return calculateProductPrice(item as ProductSelected, null, item.quantity);
+    return calculateProductPrice(item as ProductSelected, currentMenu, item.quantity);
+  }, [item, currentMenu]);
 
   const itemVariants = useMemo(
     () => ({
-      initial: { 
+      initial: {
         opacity: 0,
-        x: item._animation === 'reverse' ? -20 : 20
+        x: item._animation === "reverse" ? -20 : 20,
       },
       animate: {
         opacity: 1,
-        x: 0
+        x: 0,
       },
       exit: {
         opacity: 0,
-        x: -20
-      }
+        x: -20,
+      },
     }),
     [item._animation]
   );
@@ -129,9 +134,9 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
       animate="animate"
       exit="exit"
       variants={itemVariants}
-      transition={{ 
+      transition={{
         duration: 0.2,
-        ease: "easeOut"
+        ease: "easeOut",
       }}
       className="flex relative cursor-pointer items-center justify-start h-full w-full rounded-lg overflow-hidden"
       onClick={selectCustomer}
@@ -215,7 +220,10 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
             {item.combo_items.supplements.length > 0 && (
               <div className="mt-1">
                 {item.combo_items.supplements.map((supp, idx) => {
-                  const price = supp.price_ttc * supp.quantity;
+                  const suppPrice = supp.menus?.find(
+                    (menu: any) => menu.menu_id === currentMenu
+                  )?.price_ttc || supp.default_price || 0;
+                  const price = suppPrice * supp.quantity;
                   return (
                     <div key={`${supp.name}-${idx}`}>
                       <TypographySmall className="text-sm space-x-2">
@@ -225,8 +233,7 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
                         </span>
                       </TypographySmall>
                       <TypographySmall className="font-semibold">
-                        +{price.toFixed(currency.toFixed || 2)}{" "}
-                        {currency.currency}
+                        +{price.toFixed(currency.toFixed || 2)} {currency.currency}
                       </TypographySmall>
                     </div>
                   );
@@ -238,7 +245,7 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
 
         <div className="flex items-center justify-between w-full mt-4">
           <TypographyP className="text-sm font-medium">
-            {totalPrice.toFixed(2)} {currency.currency}
+            {prices.totalPrice.toFixed(2)} {currency.currency}
           </TypographyP>
           <div className="flex items-center gap-x-3">
             <OderLineAddComments

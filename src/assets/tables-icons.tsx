@@ -7,7 +7,7 @@ export const Table2Seats = ({ className }: { className: string }) => (
     xmlns="http://www.w3.org/2000/svg"
     className={className}
   >
-    <g clip-path="url(#clip0_1566_25498)">
+    <g clipPath="url(#clip0_1566_25498)">
       <path
         d="M42 19.6641H8C3.58172 19.6641 0 23.2458 0 27.6641V61.6641C0 66.0823 3.58172 69.6641 8 69.6641H42C46.4183 69.6641 50 66.0823 50 61.6641V27.6641C50 23.2458 46.4183 19.6641 42 19.6641Z"
         fill="currentColor"
@@ -38,7 +38,7 @@ export const Table4Seats = ({ className }: { className: string }) => (
     xmlns="http://www.w3.org/2000/svg"
     className={className}
   >
-    <g clip-path="url(#clip0_1566_25499)">
+    <g clipPath="url(#clip0_1566_25499)">
       <path
         d="M67 20H8C3.58172 20 0 23.5817 0 28V62C0 66.4183 3.58172 70 8 70H67C71.4183 70 75 66.4183 75 62V28C75 23.5817 71.4183 20 67 20Z"
         fill="currentColor"
@@ -82,7 +82,7 @@ export const Table6Seats = ({ className }: { className: string }) => (
     xmlns="http://www.w3.org/2000/svg"
     className={className}
   >
-    <g clip-path="url(#clip0_1566_25501)">
+    <g clipPath="url(#clip0_1566_25501)">
       <path
         d="M102 20.3359H8C3.58172 20.3359 0 23.9177 0 28.3359V62.3359C0 66.7542 3.58172 70.3359 8 70.3359H102C106.418 70.3359 110 66.7542 110 62.3359V28.3359C110 23.9177 106.418 20.3359 102 20.3359Z"
         fill="currentColor"
@@ -134,7 +134,7 @@ export const Table8Seats = ({ className }: { className: string }) => (
     xmlns="http://www.w3.org/2000/svg"
     className={className}
   >
-    <g clip-path="url(#clip0_1566_25500)">
+    <g clipPath="url(#clip0_1566_25500)">
       <path
         d="M138.67 19.6719H8C3.58172 19.6719 0 23.2536 0 27.6719V61.6719C0 66.0902 3.58172 69.6719 8 69.6719H138.67C143.088 69.6719 146.67 66.0902 146.67 61.6719V27.6719C146.67 23.2536 143.088 19.6719 138.67 19.6719Z"
         fill="currentColor"

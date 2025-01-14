@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { currency } from "@/preferences/index";
 import { selectOrder } from "@/store/slices/order/create-order.slice";
 import { AnimatePresence, motion } from "framer-motion";
-import { X } from "lucide-react";
+import { Pencil, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import type { Swiper as SwiperType } from "swiper";
@@ -20,6 +20,7 @@ import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Drawer from "../../Drawer";
 import { usePayments } from "./hooks/usePayments";
+import { BeatLoader } from "react-spinners";
 
 interface PaymentMethod {
   _id: string;
@@ -281,13 +282,20 @@ export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
             )}
           </div>
 
-          <div className="px-2">
+          <div className="px-2 flex items-center justify-center gap-2">
             <Button
-              className="w-full"
+              className="flex-1"
               disabled={isProcessing}
               onClick={handleComplete}
             >
-              {isProcessing ? "Processing..." : "Complete Payment"}
+              {isProcessing ? (
+                <BeatLoader color="#fff" size={8} />
+              ) : (
+                "Complete Payment"
+              )}
+            </Button>
+            <Button size="icon" className="bg-warning-color/20" variant="link">
+              <Pencil className="h-5 w-5 text-warning-color" />
             </Button>
           </div>
         </div>

@@ -221,7 +221,7 @@ export const SessionExpiredIcon = (props: SVGProps<SVGSVGElement>) => (
     xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
-    <g clip-path="url(#clip0_195_1133)">
+    <g clipPath="url(#clip0_195_1133)">
       <path
         opacity="0.35"
         d="M27.0938 27.3093L24.3999 21.5565C25.3216 20.9253 25.9271 19.8672 25.9271 18.6667V7C25.9271 5.06683 24.3602 3.5 22.4271 3.5H6.09375C4.16058 3.5 2.59375 5.06683 2.59375 7V18.6667C2.59375 20.5998 4.16058 22.1667 6.09375 22.1667H17.7604V27.3093H27.0938Z"

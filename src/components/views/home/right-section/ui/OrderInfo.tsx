@@ -4,7 +4,7 @@ import {
   Table6Seats,
   Table8Seats,
 } from "@/assets/tables-icons";
-import { TypographyP, TypographySmall } from "@/components/ui/typography";
+import { TypographySmall } from "@/components/ui/typography";
 import { getTableById } from "@/functions/getTableById";
 import { selectOrder } from "@/store/slices/order/create-order.slice";
 import { useSelector } from "react-redux";
@@ -20,7 +20,7 @@ interface OrderType {
 
 const OrderBadge: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="h-8 flex-1 flex items-center justify-center">
-    <TypographyP className="font-medium text-sm">{children}</TypographyP>
+    <span className="font-medium text-sm">{children}</span>
   </div>
 );
 

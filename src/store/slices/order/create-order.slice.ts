@@ -1,29 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../..";
-import { getAllVariants } from "@/functions/getAllVariants";
+import { calculateProductPrice } from "@/functions/priceCalculations";
 
-interface OrderState {
-  waiter_id: number | null;
-  coaster_call: string | null;
-  urgent: boolean | false;
-  shift_id: string;
-  table_id: string | null;
-  delivery_guy_id: string | null;
-  discount: any | null;
-  client_id: string | null;
-  customer_count: number;
-  notes: string;
-  one_time: boolean;
-  total_amount: number;
-  order_type_id: string | null;
-  orderlines: any[];
-}
-
-interface OrderSliceState {
-  data: OrderState;
-  status: "idle" | "loading" | "succeeded" | "failed";
-  error: string | null;
-}
 
 const initialOrderState: OrderState = {
   waiter_id: null,
@@ -38,6 +16,7 @@ const initialOrderState: OrderState = {
   notes: "",
   one_time: false,
   total_amount: 0,
+  changed_price: 0,
   order_type_id: null,
   orderlines: [],
 };
@@ -48,35 +27,21 @@ const initialState: OrderSliceState = {
   error: null,
 };
 
-interface OrderLineDiscount {
-  discount_id: string;
-  reason: string;
-  confirmed_by: string | number;
-}
-
-interface UpdateOrderLinePayload {
-  _id: string;
-  customerIndex: number;
-  orderLine: {
-    quantity?: number;
-    discount?: OrderLineDiscount;
-    // ... other possible fields
-  };
-}
-
-interface SetOrderTypePayload {
-  order_type_id: string | null;
-  table_id?: string | null;
-  client_id?: string | null;
-  coaster_call?: string | null;
-}
+const calculateTotalAmount = (orderlines: any[]) => {
+  return orderlines.reduce((sum, line) => sum + (line.price || 0), 0);
+};
 
 const orderSlice = createSlice({
   name: "order",
-  initialState,
+  initialState: {
+    data: initialOrderState,
+    status: "idle" as const,
+    error: null
+  },
   reducers: {
     setOrderData: (state, action: PayloadAction<OrderState>) => {
       state.data = action.payload;
+      state.data.total_amount = calculateTotalAmount(state.data.orderlines);
     },
     resetOrder: (state) => {
       const currentShiftId = state.data.shift_id;
@@ -84,74 +49,61 @@ const orderSlice = createSlice({
         ...initialOrderState,
         shift_id: currentShiftId,
       };
+      state.data.total_amount = calculateTotalAmount(state.data.orderlines);
     },
     updateOrderLine: (state, action: PayloadAction<UpdateOrderLinePayload>) => {
       const orderLineIndex = state.data.orderlines.findIndex(
-        (ol) =>
+        (ol) => 
           (ol.id === action.payload._id || ol._id === action.payload._id) &&
           ol.customer_index === action.payload.customerIndex
       );
 
       if (orderLineIndex !== -1) {
         const orderLine = state.data.orderlines[orderLineIndex];
+        const newQuantity = action.payload.orderLine.quantity || orderLine.quantity;
+        
+        const priceCalc = calculateProductPrice(
+          orderLine,
+          localStorage.getItem("currentMenu"),
+          newQuantity
+        );
 
-        // Create new orderline with all fields preserved
-        let newOrderLine = {
+        state.data.orderlines[orderLineIndex] = {
           ...orderLine,
           ...action.payload.orderLine,
-          discount: action.payload.orderLine.discount || orderLine.discount, // Explicitly handle discount
+          quantity: newQuantity,
+          price: priceCalc.totalPrice
         };
-
-        // If this is a combo product
-        if (orderLine.is_combo && orderLine.combo_items) {
-          const newQuantity =
-            action.payload.orderLine.quantity || orderLine.quantity;
-          const unitPrice =
-            getAllVariants().find((v) => orderLine._id === v._id)?.price_ttc ||
-            0;
-          const newPrice = unitPrice * newQuantity;
-
-          newOrderLine = {
-            ...newOrderLine,
-            price: newPrice,
-            combo_items: {
-              variants: orderLine.combo_items.variants.map((variant: any) => ({
-                ...variant,
-                quantity: (variant.quantity / orderLine.quantity) * newQuantity,
-              })),
-              supplements: orderLine.combo_items.supplements.map(
-                (supplement: any) => ({
-                  ...supplement,
-                  quantity:
-                    (supplement.quantity / orderLine.quantity) * newQuantity,
-                })
-              ),
-            },
-          };
-        }
-
-        // Update the orderline in state
-        state.data.orderlines[orderLineIndex] = newOrderLine;
-
-        // Log for debugging
-        console.log("Updated orderline in Redux:", newOrderLine);
+        state.data.total_amount = calculateTotalAmount(state.data.orderlines);
       }
     },
     addOrderLine: (state, action: PayloadAction<any[]>) => {
-      // Preserve existing discounts when updating orderlines
-      const updatedOrderlines = action.payload.map((newLine) => {
-        const existingLine = state.data.orderlines.find(
-          (ol) =>
-            (ol.id === newLine.id || ol._id === newLine._id) &&
-            ol.customer_index === newLine.customer_index
-        );
+      const currentMenu = localStorage.getItem("currentMenu");
+      
+      state.data.orderlines = action.payload.map((line) => {
+        if (line.price && line.price > 0) {
+          return line;
+        }
+
+        if (line.is_combo && line.combo_items) {
+          const priceCalc = calculateProductPrice(line, currentMenu, line.quantity);
+          return {
+            ...line,
+            price: priceCalc.totalPrice
+          };
+        }
+
+        const variant = line.variants?.[0];
+        if (!variant) return { ...line, price: 0 };
+
+        const priceCalc = calculateProductPrice(line, currentMenu, line.quantity);
         return {
-          ...newLine,
-          discount: newLine.discount || existingLine?.discount || null,
+          ...line,
+          price: priceCalc.totalPrice
         };
       });
 
-      state.data.orderlines = updatedOrderlines;
+      state.data.total_amount = calculateTotalAmount(state.data.orderlines);
     },
     removeOrderLine: (state, action: PayloadAction<number>) => {
       state.data.orderlines = state.data.orderlines.filter(
@@ -280,5 +232,6 @@ export const selectOrderStatus = (state: RootState) => state.createOrder.status;
 export const selectOrderError = (state: RootState) => state.createOrder.error;
 export const selectOrderLines = (state: RootState) =>
   state.createOrder.data.orderlines;
-export const selectTotalAmount = (state: RootState) =>
-  state.createOrder.data.total_amount;
+export const selectTotalAmount = (state: RootState) => {
+  return calculateTotalAmount(state.createOrder.data.orderlines);
+};

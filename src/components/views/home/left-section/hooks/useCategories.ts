@@ -6,9 +6,14 @@ import { ALL_PRODUCTS_VIEW, PRODUCTS_BY_CATEGORY_VIEW } from "../constants";
 import { useLeftViewContext } from "../contexts/LeftViewContext";
 
 export const useCategories = () => {
-  const { setViews, setCategory } = useLeftViewContext();
+  const { setViews, setCategory, setCurrentMenu } = useLeftViewContext();
   const { views } = useRightViewContext();
   const [orderTypeChanged, setOrderTypeChanged] = useState(0);
+
+  // Retrieve orderType from local storage
+  const orderType = useMemo(() => {
+    return JSON.parse(localStorage.getItem("orderType") || "null");
+  }, [orderTypeChanged]);
 
   // Listen for changes to orderType in localStorage
   useEffect(() => {
@@ -41,10 +46,7 @@ export const useCategories = () => {
     const generalData = JSON.parse(localStorage.getItem("generalData") || "{}");
     const orderType = JSON.parse(localStorage.getItem("orderType") || "null");
 
-    console.log("🔍 Current orderType:", orderType);
-
     if (orderType?.menu_id) {
-      console.log("📋 Filtering categories for menu:", orderType.menu_id);
       return (
         generalData.categories?.filter((category: Category) =>
           category.menu_ids.includes(orderType.menu_id)
@@ -52,7 +54,6 @@ export const useCategories = () => {
       );
     }
 
-    console.log("📚 Using all categories (no menu filter)");
     return generalData.categories || [];
   }, [orderTypeChanged]);
 
@@ -66,11 +67,10 @@ export const useCategories = () => {
   );
 
   const handleAllProductsClick = useCallback(() => {
-    if (views === ORDER_SUMMARY_VIEW) {
-      setViews(ALL_PRODUCTS_VIEW);
-    }
     setCategory(null);
-  }, [views, setViews, setCategory]);
+    setCurrentMenu(orderType?.menu_id || null);
+    setViews(ALL_PRODUCTS_VIEW);
+  }, [setCategory, setCurrentMenu, setViews, orderType]);
 
   const isInteractionDisabled = views !== ORDER_SUMMARY_VIEW;
 

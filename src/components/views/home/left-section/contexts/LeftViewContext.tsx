@@ -1,5 +1,4 @@
-import { calculateSelectedProductsTotal } from "@/functions/calculateSelectedProductsTotal";
-import { updateOrder } from "@/functions/updateOrder";
+import { calculateProductPrice } from "@/functions/priceCalculations";
 import { Category, Product, ProductSelected } from "@/types/product.types";
 import {
   createContext,
@@ -11,6 +10,7 @@ import {
   useState,
 } from "react";
 import { useDispatch } from "react-redux";
+import { updateTotalAmount } from "@/store/slices/order/create-order.slice";
 
 interface LeftViewContextType {
   views: string;
@@ -31,6 +31,8 @@ interface LeftViewContextType {
   setOpenDrawerCombo: React.Dispatch<React.SetStateAction<boolean>>;
   selectedCombo: any | null;
   setSelectedCombo: React.Dispatch<React.SetStateAction<any | null>>;
+  currentMenu: string | null;
+  setCurrentMenu: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 const LeftViewContext = createContext<LeftViewContextType | null>(null);
@@ -40,7 +42,7 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
   const [selectedProducts, setSelectedProducts] = useState<ProductSelected[]>(
     []
   );
-  
+
   console.log(selectedProducts);
 
   const [openDrawerVariants, setOpenDrawerVariants] = useState(false);
@@ -56,16 +58,18 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
   const [openDrawerCombo, setOpenDrawerCombo] = useState(false);
   const [selectedCombo, setSelectedCombo] = useState<any | null>(null);
 
+  const [currentMenu, setCurrentMenu] = useState<string | null>(null);
+
   const dispatch = useDispatch();
 
   const updateOrderTotal = useCallback(() => {
-    dispatch(
-      updateOrder({
-        total_amount: calculateSelectedProductsTotal(selectedProducts as any)
-          .total,
-      })
-    );
-  }, [dispatch, selectedProducts]);
+    const totalPrice = calculateProductPrice(
+      selectedProducts as any,
+      currentMenu,
+      selectedProducts.length
+    ).totalPrice;
+    dispatch(updateTotalAmount(totalPrice));
+  }, [dispatch, selectedProducts, currentMenu]);
 
   useEffect(() => {
     updateOrderTotal();
@@ -98,6 +102,8 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
       setOpenDrawerCombo,
       selectedCombo,
       setSelectedCombo,
+      currentMenu,
+      setCurrentMenu,
     }),
     [
       views,
@@ -113,6 +119,7 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
       setOpenDrawerCombo,
       selectedCombo,
       setSelectedCombo,
+      currentMenu,
     ]
   );
 

@@ -1,6 +1,5 @@
 import { checkProductAvailability } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
-import { getAllVariants } from "@/functions/getAllVariants";
 import {
   addOrderLine,
   updateOrderLine,
@@ -9,6 +8,8 @@ import { Product, ProductSelected } from "@/types/product.types";
 import { useCallback, useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
+import { useLeftViewContext } from "../contexts/LeftViewContext";
+import { calculateProductPrice } from "@/functions/priceCalculations";
 
 interface UseVariantSelectionProps {
   selectedProduct: Product | null;
@@ -27,6 +28,8 @@ export const useVariantSelection = ({
   addOrUpdateProduct,
 }: UseVariantSelectionProps) => {
   const dispatch = useDispatch();
+
+  const { currentMenu } = useLeftViewContext();
 
   const handleSelectVariant = useCallback(
     async (id: string, price: number) => {
@@ -105,32 +108,24 @@ export const useVariantSelection = ({
 
             // Handle combo products
             if (product.is_combo && product.combo_items) {
-              // Get unit price from getAllVariants
-              const unitPrice =
-                getAllVariants().find((v) => product._id === v._id)
-                  ?.price_ttc || product.variants[0].price_ttc;
-
-              const newPrice = unitPrice * newQuantity;
-
+              const priceCalc = calculateProductPrice(product, currentMenu, newQuantity);
+              
               const updatedProduct = {
                 ...product,
                 quantity: newQuantity,
-                price: newPrice,
+                price: priceCalc.totalPrice,
                 combo_items: {
                   variants: product.combo_items.variants.map((v: any) => ({
                     ...v,
                     quantity: (v.quantity / product.quantity) * newQuantity,
                   })),
-                  supplements: product.combo_items.supplements.map(
-                    (s: any) => ({
-                      ...s,
-                      quantity: (s.quantity / product.quantity) * newQuantity,
-                    })
-                  ),
+                  supplements: product.combo_items.supplements.map((s: any) => ({
+                    ...s,
+                    quantity: (s.quantity / product.quantity) * newQuantity,
+                  })),
                 },
               };
 
-              // Dispatch the same values to the store
               dispatch(
                 updateOrderLine({
                   _id: product.id || product._id || '',
@@ -142,28 +137,29 @@ export const useVariantSelection = ({
               return updatedProduct;
             }
 
-            // Handle regular products (unchanged)
-            const basePrice = product.variants[0].price_ttc;
+            // Handle regular products
+            const priceCalc = calculateProductPrice(product, currentMenu, newQuantity);
             return {
               ...product,
               quantity: newQuantity,
-              price: basePrice * newQuantity,
+              price: priceCalc.totalPrice,
             };
           }
           return product;
         })
       );
     },
-    [customerIndex, setSelectedProducts]
+    [customerIndex, currentMenu, setSelectedProducts, dispatch]
   );
 
   const orderlineData = useMemo(
     () =>
       selectedProducts.map((p) => {
         const variant = p.variants?.[0] || p.product_variant_id;
+        const priceCalc = calculateProductPrice(p, currentMenu, p.quantity);
 
         const baseOrderLine = {
-          price: p.price * p.quantity,
+          price: priceCalc.totalPrice,
           product_variant_id: p.product_variant_id || variant?._id || null,
           uom_id: variant?.uom_id?._id || null,
           customer_index: p.customer_index,
@@ -202,7 +198,7 @@ export const useVariantSelection = ({
           combo_supp_ids: [],
         };
       }),
-    [selectedProducts]
+    [selectedProducts, currentMenu]
   );
 
   useEffect(() => {

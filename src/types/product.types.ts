@@ -34,6 +34,7 @@ export interface ProductVariant extends BaseEntity {
   is_active: boolean;
   is_available: boolean;
   barcode: string;
+  default_price?: number;
   reference: string;
   is_menu: boolean;
   is_quantity_check: boolean;
@@ -50,11 +51,26 @@ export interface ProductVariant extends BaseEntity {
   }[];
 }
 
+
+interface MenuProduct {
+  _id: string; // Unique identifier for the menu product
+  menu_id: string; // ID of the associated menu
+  product_id: string; // ID of the associated product
+  archived: boolean; // Indicates if the item is archived
+  is_displayed: boolean; // Indicates if the item is displayed
+  in_mobile: boolean; // Indicates if the item is available on mobile
+  in_pos: boolean; // Indicates if the item is available in POS (Point of Sale)
+  createdAt: string; // Timestamp of when the item was created
+  updatedAt: string; // Timestamp of the last update
+  __v: number; // Version key for Mongoose
+}
+
 export interface Product extends BaseEntity {
   active: boolean;
   image: string | null;
   name: string;
   description: string | null;
+  menus: MenuProduct[];
   sequence: number;
   category_id: string;
   variants: ProductVariant[];

@@ -135,8 +135,7 @@ const AllProducts = memo(function AllProducts() {
   } = useProducts();
 
   useEffect(() => {
-    const timer = setTimeout(loadProducts, LOADING_DELAY);
-    return () => clearTimeout(timer);
+    loadProducts();
   }, [loadProducts]);
 
   if (loading) {

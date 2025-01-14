@@ -37,12 +37,14 @@ export const useProductsByCategory = () => {
 
   const getProductsByCategory = useCallback((categoryId: string) => {
     try {
-      const generalData = JSON.parse(
-        localStorage.getItem("generalData") || "{}"
-      );
+      const generalData = JSON.parse(localStorage.getItem("generalData") || "{}");
+      const orderType = JSON.parse(localStorage.getItem("orderType") || "null");
+
       return (
         generalData.products?.filter(
-          (product: Product) => product.category_id === categoryId
+          (product: Product) =>
+            product.category_id === categoryId &&
+            product.menus.some((menuProduct) => menuProduct.menu_id === orderType.menu_id)
         ) || []
       );
     } catch (error) {

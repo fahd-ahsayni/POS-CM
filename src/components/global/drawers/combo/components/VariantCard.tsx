@@ -9,6 +9,7 @@ import { ProductVariant, Step } from "@/types/product.types";
 import { Minus, Plus } from "lucide-react";
 import { useState } from "react";
 import { useCombo } from "../context/ComboContext";
+import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 
 interface VariantCardProps {
   variant: ProductVariant;
@@ -32,10 +33,15 @@ export function VariantCard({
   step,
   customerIndex,
 }: VariantCardProps) {
+  const { currentMenu } = useLeftViewContext();
   const { updateVariantNotes, updateVariantSuiteCommande } = useCombo();
   const [suiteCommande, setSuiteCommande] = useState(
     variant.suite_commande || false
   );
+
+  const variantPrice = variant.menus?.find(
+    (menu) => menu.menu_id === currentMenu
+  )?.price_ttc ?? variant.default_price ?? 0;
 
   const handleQuantityChange = (e: React.MouseEvent, increment: boolean) => {
     e.preventDefault();
@@ -70,7 +76,7 @@ export function VariantCard({
           </TypographyP>
           {step.is_supplement && (
             <TypographySmall className="text-sm text-neutral-dark-grey">
-              {variant.price_ttc.toFixed(currency.toFixed || 2)}{" "}
+              {variantPrice.toFixed(currency.toFixed || 2)}{" "}
               {currency.currency}
             </TypographySmall>
           )}

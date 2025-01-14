@@ -1,6 +1,5 @@
-import { extractProducts } from "@/functions/extractProducts";
-import { Product } from "@/types/product.types";
-import { useCallback, useState, useMemo } from "react";
+import { Product, ProductVariant } from "@/types/product.types";
+import { useCallback, useMemo, useState } from "react";
 import { useRightViewContext } from "../../right-section/contexts/RightViewContext";
 import { useLeftViewContext } from "../contexts/LeftViewContext";
 import { useProductSelection } from "./useProductSelection";
@@ -13,6 +12,7 @@ export const useProducts = (initialProducts?: Product[]) => {
 
   const contextValues = useLeftViewContext();
   const { orderType, customerIndex } = useRightViewContext();
+  const { currentMenu } = useLeftViewContext();
 
   const {
     selectedProducts,
@@ -41,14 +41,37 @@ export const useProducts = (initialProducts?: Product[]) => {
       const storedGeneralData = localStorage.getItem("generalData");
       if (storedGeneralData) {
         const parsedData = JSON.parse(storedGeneralData);
-        const extractedProducts = extractProducts(parsedData.categories);
+        
+        // Filter products that belong to the current menu and handle variants properly
+        const extractedProducts = parsedData.products.filter((product: Product) => {
+          const isInCurrentMenu = product.menus.some(
+            (menuProduct) => 
+              menuProduct.menu_id === currentMenu && 
+              menuProduct.is_displayed === true &&
+              menuProduct.in_pos === true
+          );
+
+          // Check if product has valid variants for combo
+          const hasValidVariants = product.variants.some((variant: ProductVariant) => 
+            variant.menus.some(menu => 
+              menu.menu_id === currentMenu && 
+              variant.is_menu === true
+            )
+          );
+
+          return isInCurrentMenu && (hasValidVariants || !product.variants.some(v => v.is_menu));
+        });
+
+        console.log('Current Menu:', currentMenu);
+        console.log('Filtered Products:', extractedProducts);
+
         setState({ products: extractedProducts, loading: false });
       }
     } catch (error) {
       console.error("Error loading products:", error);
       setState((prev) => ({ ...prev, loading: false }));
     }
-  }, []);
+  }, [currentMenu]);
 
   const handleProductClick = useCallback(
     (product: Product) => {

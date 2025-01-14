@@ -1,23 +1,39 @@
 import { TypographyP } from "@/components/ui/typography";
-import { calculateSelectedProductsTotal } from "@/functions/calculateSelectedProductsTotal";
+import { calculateProductPrice } from "@/functions/priceCalculations";
 import { currency } from "@/preferences";
 import { motion } from "framer-motion";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { RootState } from "@/store";
 import { useSelector } from "react-redux";
+import { useMemo } from "react";
 
 export default function Ticket() {
-  const { selectedProducts } = useLeftViewContext();
-
+  const { selectedProducts, currentMenu } = useLeftViewContext();
   const order = useSelector((state: RootState) => state.createOrder);
-  const discount = order.data.discount?.discount_id
-    ? JSON.parse(localStorage.getItem("generalData") || "{}")?.discount?.find(
-        (d: any) => d._id === order.data.discount.discount_id
-      )
-    : null;
+  
+  const calculations = useMemo(() => {
+    const subtotal = selectedProducts.reduce((total, product) => {
+      const price = calculateProductPrice(product, currentMenu, product.quantity);
+      return total + price.totalPrice;
+    }, 0);
 
-  const { subtotal, discountAmount, tax, total } =
-    calculateSelectedProductsTotal(selectedProducts as any, discount);
+    const discount = order.data.discount?.discount_id
+      ? JSON.parse(localStorage.getItem("generalData") || "{}")?.discount?.find(
+          (d: any) => d._id === order.data.discount.discount_id
+        )
+      : null;
+
+    const discountAmount = discount
+      ? discount.type === "percentage"
+        ? (subtotal * Number(discount.value)) / 100
+        : Number(discount.value)
+      : 0;
+
+    const tax = (subtotal * 10) / 110; // Assuming 10% tax rate
+    const total = subtotal - discountAmount;
+
+    return { subtotal, discountAmount, tax, total };
+  }, [selectedProducts, currentMenu, order.data.discount]);
 
   const { toFixed, currency: currencySymbol } = currency;
 
@@ -36,7 +52,7 @@ export default function Ticket() {
               Subtotal
             </TypographyP>
             <TypographyP className="text-sm font-semibold dark:text-primary-black text-white">
-              {subtotal.toFixed(toFixed ?? 2)} {currencySymbol}
+              {calculations.subtotal.toFixed(toFixed ?? 2)} {currencySymbol}
             </TypographyP>
           </div>
           <div className="flex items-center justify-between w-full">
@@ -44,7 +60,7 @@ export default function Ticket() {
               Discount sales
             </TypographyP>
             <TypographyP className="text-sm dark:text-primary-black text-white">
-              {discountAmount.toFixed(toFixed ?? 2)} {currencySymbol}
+              {calculations.discountAmount.toFixed(toFixed ?? 2)} {currencySymbol}
             </TypographyP>
           </div>
           <div className="flex items-center justify-between w-full">
@@ -52,7 +68,7 @@ export default function Ticket() {
               Total sales tax
             </TypographyP>
             <TypographyP className="text-sm dark:text-primary-black text-white  ">
-              {tax.toFixed(toFixed ?? 2)} {currencySymbol}
+              {calculations.tax.toFixed(toFixed ?? 2)} {currencySymbol}
             </TypographyP>
           </div>
         </div>
@@ -66,7 +82,7 @@ export default function Ticket() {
             Total
           </TypographyP>
           <TypographyP className="dark:text-primary-black text-white font-semibold text-lg">
-            {total.toFixed(toFixed ?? 2)} {currencySymbol}
+            {calculations.total.toFixed(toFixed ?? 2)} {currencySymbol}
           </TypographyP>
         </div>
       </div>
