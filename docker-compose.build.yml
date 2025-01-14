@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: DockerfileBuild
-    image: fahdbouaicha/pos_front:v0.0.6
+    image: fahdbouaicha/pos_front:v0.0.13
 
 # docker compose -f docker-compose.build.yml build
 # docker tag pos-front fahdbouaicha/pos_front:v0.0.4
