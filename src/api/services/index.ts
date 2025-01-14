@@ -1,6 +1,6 @@
 import { api } from "@/api/axios";
 import { createToast } from "@/components/global/Toasters";
-import { User } from "@/types";
+import { User } from "@/types/user.types";
 import { toast } from "react-toastify";
 
 export const fetchCashiers = async (): Promise<User[]> => {
@@ -225,4 +225,11 @@ export const checkOpenDay = async () => {
 
 export const openDay = async () => {
   return api.post("/days/open");
+};
+
+export const getCategories = async (id?: string) => {
+  if (id) {
+    return api.get(`/categories/${id}`);
+  }
+  return api.get("/categories");
 };

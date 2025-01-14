@@ -1,7 +1,7 @@
 // src/store/slices/data/userSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import { User } from "@/types";
+import { User } from "@/types/user.types";
 import { fetchCashiers, fetchManagers } from "@/api/services";
 
 interface UserState {

@@ -1,4 +1,4 @@
-import { setCustomerCount } from "@/store/slices/order/createOrder";
+import { setCustomerCount } from "@/store/slices/order/create-order.slice";
 import { createContext, ReactNode, useCallback, useContext, useMemo, useState, useEffect } from "react";
 import { TYPE_OF_ORDER_VIEW } from "../constants";
 

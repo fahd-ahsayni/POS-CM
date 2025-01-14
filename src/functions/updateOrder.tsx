@@ -1,4 +1,4 @@
-import { ProductSelected } from "@/types";
+import { ProductSelected } from "@/types/product.types";
 import {
   addOrderLine,
   removeOrderLine,
@@ -15,7 +15,7 @@ import {
   setNotes,
   setUrgent,
   setDiscount,
-} from "../store/slices/order/createOrder";
+} from "../store/slices/order/create-order.slice";
 
 /**
  * Represents the possible operations that can be performed on order lines

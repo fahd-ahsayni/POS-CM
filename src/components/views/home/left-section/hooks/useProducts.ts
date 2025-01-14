@@ -1,5 +1,5 @@
 import { extractProducts } from "@/functions/extractProducts";
-import { Product } from "@/types";
+import { Product } from "@/types/product.types";
 import { useCallback, useState, useMemo } from "react";
 import { useRightViewContext } from "../../right-section/contexts/RightViewContext";
 import { useLeftViewContext } from "../contexts/LeftViewContext";

@@ -1,6 +1,6 @@
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
-import { Step } from "@/types/comboTypes";
+import { Step } from "@/types/product.types";
 import { useCallback, useEffect } from "react";
 import { useCombo } from "../context/ComboContext";
 import { checkProductAvailability } from "@/api/services";

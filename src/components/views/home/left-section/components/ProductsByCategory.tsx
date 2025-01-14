@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { TypographyP } from "@/components/ui/typography";
-import { Category, Product, ProductSelected } from "@/types";
+import { Category, Product, ProductSelected } from "@/types/product.types";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { memo, useEffect, useMemo, useState } from "react";
@@ -66,7 +66,7 @@ const ProductGrid = memo(function ProductGrid({
   if (products.length < 15 || isSmallScreen) {
     return (
       <motion.div
-        className="w-full grid grid-cols-2 pl-2 pr-2 py-1 lg:grid-cols-3 gap-3"
+        className="w-full grid grid-cols-2 pl-2 pr-2 py-1 lg:grid-cols-3 gap-3 scrollbar-hide"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.35 }}
@@ -120,7 +120,7 @@ const ProductGrid = memo(function ProductGrid({
       {chunkedProducts.map((chunk, slideIndex) => (
         <div
           key={slideIndex}
-          className="grid grid-cols-3 gap-3 pl-2 pr-1 py-1 h-[500px]"
+          className="grid grid-cols-3 gap-3 pl-2 pr-1 py-1 h-[500px] scrollbar-hide"
         >
           {chunk.map((product) => (
             <ProductCard
@@ -249,7 +249,7 @@ export default memo(function ProductsByCategory() {
           </>
         )}
       </div>
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto scrollbar-hide">
         <div className="flex-none">
           <div className="flex items-center justify-between relative flex-shrink-0 mt-4 w-full overflow-hidden">
             <TypographyP className="pr-4 bg-background font-medium text-sm">
@@ -259,8 +259,8 @@ export default memo(function ProductsByCategory() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
-          <div className="w-full relative pt-6">
+        <div className="flex-1 overflow-y-auto scrollbar-hide">
+          <div className="w-full relative pt-6 scrollbar-hide">
             <Combo />
             <ProductsVariants />
             {loading ? (

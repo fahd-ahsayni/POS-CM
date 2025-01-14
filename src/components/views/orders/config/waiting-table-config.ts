@@ -1,5 +1,5 @@
-import { OrderType, ProductSelected } from "@/types";
-import { WaitingOrder } from "@/types/waitingOrders";
+  import { ProductSelected } from "@/types/product.types";
+import { Order, OrderType } from "@/types/order.types";
 
 interface WaitingTableHeader {
   key: keyof WaitingTableData;
@@ -10,7 +10,7 @@ interface WaitingTableHeader {
 }
 
 export interface WaitingTableData
-  extends Pick<WaitingOrder, "_id" | "total_amount"> {
+  extends Pick<Order, "_id" | "total_amount"> {
   createdAt: string;
   "created_by.name": string;
   "order_type_id.type": OrderType["type"];

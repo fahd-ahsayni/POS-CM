@@ -1,4 +1,4 @@
-import { Category } from "@/types";
+import { Category } from "@/types/product.types";
 import { memo } from "react";
 import { CategoryCard } from "./CategoryCard";
 

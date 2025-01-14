@@ -3,7 +3,7 @@ import ShineBorder from "@/components/ui/shine-border";
 import { TypographySmall } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import type { AppDispatch, RootState } from "@/store";
-import { loginWithRfid } from "@/store/slices/authentication/authSlice";
+import { loginWithRfid } from "@/store/slices/authentication/auth.slice";
 import { useCallback, useEffect, useState } from "react";
 import { RiRfidFill } from "react-icons/ri";
 import Tilt from "react-parallax-tilt";

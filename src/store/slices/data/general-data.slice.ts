@@ -1,38 +1,39 @@
+import { logoutService } from "@/api/services";
 // Import required modules
-import { extractProducts } from "@/functions/extractProducts";
-import { GeneralData, GeneralDataState } from "@/types";
+import { GeneralData, GeneralDataState } from "@/types/general.types";
 import {
   createAsyncThunk,
-  createSelector,
   createSlice,
-  PayloadAction,
+  PayloadAction
 } from "@reduxjs/toolkit";
 import axios from "axios";
+
 
 // Async thunk to fetch general data
 export const fetchGeneralData = createAsyncThunk<
   GeneralData,
   string,
   { rejectValue: string }
->("generalData/fetchGeneralData", async (id, { rejectWithValue}) => {
+>("generalData/fetchGeneralData", async (id, { rejectWithValue }) => {
   try {
     const token = localStorage.getItem("token");
-    const response = await axios.get(
+    
+    // Remove categories fetch from Promise.all
+    const generalDataResponse = await axios.get(
       `${import.meta.env.VITE_BASE_URL}/general-data/pos/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
-    return response.data;
+
+    // Save to localStorage without categories
+    localStorage.setItem("generalData", JSON.stringify(generalDataResponse.data));
+    
+    return generalDataResponse.data;
   } catch (error: any) {
     if (axios.isAxiosError(error)) {
-      // Check for 403 status code
       if (error.response?.status === 403) {
-        // Clear local storage
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        // Redirect to login page
-        window.location.href = "/login";
+        await logoutService();
       }
       return rejectWithValue(
         error.response?.data || "Failed to fetch POS data"
@@ -71,25 +72,32 @@ export const fetchPaginatedGeneralData = createAsyncThunk<
   }
 );
 
+// Define initial state with localStorage check
+const initialState: GeneralDataState = {
+  data: JSON.parse(localStorage.getItem("generalData") || JSON.stringify({
+    floors: [],
+    configs: [],
+    defineNote: [],
+    orderTypes: [],
+    discount: [],
+    paymentMethods: [],
+    waiters: [],
+    livreurs: [],
+  })),
+  status: "idle",
+  error: null,
+};
+
 // Create slice
 const generalDataSlice = createSlice({
   name: "generalData",
-  initialState: {
-    data: {
-      floors: [],
-      categories: [],
-      configs: [],
-      defineNote: [],
-      orderTypes: [],
-      discount: [],
-      paymentMethods: [],
-      waiters: [],
-      livreurs: [],
+  initialState,
+  reducers: {
+    // Add sync reducers if needed
+    resetGeneralData: (state) => {
+      return initialState;
     },
-    status: "idle",
-    error: null,
-  } as GeneralDataState,
-  reducers: {},
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchGeneralData.pending, (state) => {
@@ -111,29 +119,37 @@ const generalDataSlice = createSlice({
           state.status = "failed";
           state.error = action.payload || "Something went wrong";
         }
-      );
+      )
+      // Add cases for fetchPaginatedGeneralData
+      .addCase(fetchPaginatedGeneralData.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(fetchPaginatedGeneralData.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.data = action.payload;
+        // Add localStorage save
+        localStorage.setItem("generalData", JSON.stringify(action.payload));
+      })
+      .addCase(fetchPaginatedGeneralData.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload || "Something went wrong";
+      });
   },
 });
 
-// Add this before the existing selectAllProducts
-const selectGeneralData = (state: { generalData: GeneralDataState }) =>
-  state.generalData.data;
+// Export actions
+export const { resetGeneralData } = generalDataSlice.actions;
 
-export const selectAllProducts = createSelector(
-  [selectGeneralData],
-  (generalData) => {
-    return extractProducts(generalData.categories);
-  }
-);
-
-// Other Selectors
-export const selectFloors = (state: { generalData: GeneralDataState }) =>
-  state.generalData.data.floors;
-export const selectCategories = (state: { generalData: GeneralDataState }) =>
-  state.generalData.data.categories;
-
-export const selectOrderTypes = (state: { generalData: GeneralDataState }) =>
-  state.generalData.data.orderTypes;
+// Create a single object for all selectors
+export const generalDataSelectors = {
+  selectGeneralData: (state: { generalData: GeneralDataState }) =>
+    state.generalData.data,
+  selectFloors: (state: { generalData: GeneralDataState }) =>
+    state.generalData.data.floors,
+  selectOrderTypes: (state: { generalData: GeneralDataState }) =>
+    state.generalData.data.orderTypes,
+};
 
 // Export reducer
 export default generalDataSlice.reducer;

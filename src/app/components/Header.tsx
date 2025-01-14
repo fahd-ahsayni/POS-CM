@@ -1,6 +1,6 @@
 import { TypographyH2 } from "@/components/ui/typography";
 import FilterOrders from "@/components/views/orders/components/FilterOrders";
-import { FilterCriteria } from "@/types";
+import { FilterCriteria } from "@/types/general.types";
 import { RefreshCwIcon } from "lucide-react";
 import { useSelector } from "react-redux";
 

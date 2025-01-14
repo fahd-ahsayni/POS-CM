@@ -4,12 +4,18 @@ import { ChevronLeftIcon } from "lucide-react";
 import { memo } from "react";
 import { useSelectOrderType } from "../hooks/useSelectOrderType";
 import { OrderCard, OrderCardSkeleton } from "../ui/OrderTypeCards";
+import { OrderType } from "@/types/order.types";
 
 function SelectTypeOfOrder() {
   const {
-    state: { selectedType, displayedTypes, isLoading },
+    state: { selectedType, displayedTypes, isLoading, categories },
     actions: { handleOrderTypeSelect, handleBack },
   } = useSelectOrderType();
+
+  const handleTypeSelect = (type: OrderType) => (event: React.MouseEvent) => {
+    event.preventDefault();
+    handleOrderTypeSelect(type);
+  };
 
   return (
     <div className="flex flex-col h-full pb-7">
@@ -31,14 +37,32 @@ function SelectTypeOfOrder() {
           {isLoading ? (
             <OrderCardSkeleton />
           ) : (
-            displayedTypes.map((type) => (
-              <OrderCard
-                key={type._id}
-                orderType={type}
-                onSelect={handleOrderTypeSelect}
-                isSelected={selectedType?._id === type._id}
-              />
-            ))
+            <>
+              {displayedTypes.map((type) => (
+                <OrderCard
+                  key={type._id}
+                  orderType={type}
+                  onSelect={handleTypeSelect(type)}
+                  isSelected={selectedType?._id === type._id}
+                />
+              ))}
+              
+              {categories.length > 0 && (
+                <div className="mt-6">
+                  <TypographyH3>Categories</TypographyH3>
+                  <div className="grid grid-cols-3 gap-4 mt-4">
+                    {categories.map((category) => (
+                      <div
+                        key={category._id}
+                        className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                      >
+                        {category.name}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

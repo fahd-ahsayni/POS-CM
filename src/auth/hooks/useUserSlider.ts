@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { setSelectedUser } from "@/store/slices/data/usersSlice";
-import { User } from "@/types";
+import { setSelectedUser } from "@/store/slices/data/users.slice";
 
 export const useUserSlider = (userType: string) => {
   const dispatch = useDispatch();

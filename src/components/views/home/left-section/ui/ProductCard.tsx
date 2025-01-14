@@ -4,8 +4,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { toTitleCase } from "@/functions/string-transforms";
 import { currency } from "@/preferences";
-import { Product, ProductSelected } from "@/types";
+import { Product, ProductSelected } from "@/types/product.types";
 import { motion } from "framer-motion";
+import { useMemo } from "react";
 import { BsInfoCircleFill } from "react-icons/bs";
 
 interface ProductCardProps {
@@ -19,6 +20,49 @@ export function ProductCard({
   selectedProducts,
   onProductClick,
 }: ProductCardProps) {
+  // Get the current orderType from localStorage
+  const currentMenu = useMemo(() => {
+    try {
+      const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
+      console.log("🔍 Current orderType:", orderType);
+      return orderType.menu_id || null;
+    } catch (error) {
+      console.error("Error parsing orderType:", error);
+      return null;
+    }
+  }, []);
+
+  // Get price based on menu
+  const price = useMemo(() => {
+    const variant = product.variants[0];
+    if (!variant) {
+      console.warn("⚠️ No variant found for product:", product.name);
+      return 0;
+    }
+
+    // If there's a menu, try to find menu-specific price
+    if (currentMenu && variant.menus && variant.menus.length > 0) {
+      console.log("📋 Looking for menu price:", {
+        menuId: currentMenu,
+        productName: product.name,
+        variantMenus: variant.menus,
+      });
+
+      const menuPrice = variant.menus.find(
+        (m) => m.menu_id === currentMenu
+      )?.price_ttc;
+      if (menuPrice !== undefined) {
+        console.log("✅ Found menu-specific price:", menuPrice);
+        return menuPrice;
+      }
+      console.log("⚠️ No menu-specific price found, using default price");
+    }
+
+    // Fallback to default price
+    console.log("💰 Using default price:", variant.price_ttc);
+    return variant.price_ttc;
+  }, [product.variants, currentMenu]);
+
   // Get all variants of this product across all customers
   const selectedProductVariants = selectedProducts.filter((p) => {
     // For combos, check by product ID
@@ -36,6 +80,7 @@ export function ProductCard({
     (sum, p) => sum + (p.quantity || 0),
     0
   );
+
   return (
     <motion.div className="flex cursor-pointer items-center justify-start h-24 w-full">
       <Card
@@ -82,8 +127,7 @@ export function ProductCard({
           </TypographySmall>
           <div className="flex items-center justify-between w-full">
             <TypographySmall className="font-medium text-neutral-dark-grey">
-              {product.price ? product.price : product.variants[0].price_ttc}{" "}
-              {currency.symbol}
+              {price?.toFixed(2)} {currency.symbol}
             </TypographySmall>
             <BsInfoCircleFill className="text-info-color/90 w-4 h-4" />
           </div>

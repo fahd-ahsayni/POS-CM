@@ -5,7 +5,7 @@ import { useNumberOfTable } from "@/components/views/home/right-section/hooks/us
 import ClientForm from "@/components/views/home/right-section/layouts/ClientForm";
 import CoasterCallNumberDisplay from "@/components/views/home/right-section/layouts/CoasterCallNumberDisplay";
 import { TableNumberDisplay } from "@/components/views/home/right-section/layouts/TableNumberDisplay";
-import { selectOrder } from "@/store/slices/order/createOrder";
+import { selectOrder } from "@/store/slices/order/create-order.slice";
 import { useSelector } from "react-redux";
 import { useChangeOrderType } from "./context/ChangeOrderTypeContext";
 

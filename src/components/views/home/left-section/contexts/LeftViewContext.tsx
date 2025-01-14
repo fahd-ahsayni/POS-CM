@@ -1,6 +1,6 @@
 import { calculateSelectedProductsTotal } from "@/functions/calculateSelectedProductsTotal";
 import { updateOrder } from "@/functions/updateOrder";
-import { Category, Product, ProductSelected } from "@/types";
+import { Category, Product, ProductSelected } from "@/types/product.types";
 import {
   createContext,
   ReactNode,

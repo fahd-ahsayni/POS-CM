@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
-import { OrderType } from "@/types";
+import { OrderType } from "@/types/order.types";
 import { ChevronRightIcon } from "lucide-react";
 import { memo } from "react";
 import { TypeOfOrderDescription, TypeOfOrderIcon } from "./TypeOfOrderIcon";
@@ -27,13 +27,13 @@ export const OrderCard = memo(
     fixedLightDark,
   }: {
     orderType: OrderType;
-    onSelect: (orderType: OrderType) => void;
+    onSelect: (event: React.MouseEvent) => void;
     isSelected?: boolean;
     fixedLightDark?: boolean;
   }) => {
-    const iconType = orderType.type.toLowerCase();
-    const isDeliveryChild = orderType.parent_id && iconType === "delivery";
-    const showDescription = !orderType.parent_id;
+    const iconType = orderType?.type?.toLowerCase();
+    const isDeliveryChild = orderType?.parent_id && iconType === "delivery";
+    const showDescription = !orderType?.parent_id;
 
     return (
       <Card
@@ -41,10 +41,9 @@ export const OrderCard = memo(
           "w-full rounded-md h-24 px-6 py-6 flex space-x-4 items-center justify-between cursor-pointer",
           fixedLightDark
             ? "bg-neutral-bright-grey dark:bg-primary-black"
-            : "bg-white dark:bg-secondary-black",
-          isSelected && "ring-2 ring-primary-red"
+            : "bg-white dark:bg-secondary-black" 
         )}
-        onClick={() => onSelect(orderType)}
+        onClick={onSelect}
       >
         <div className="flex items-center gap-x-4">
           {orderType.image || isDeliveryChild ? (
@@ -54,7 +53,7 @@ export const OrderCard = memo(
               className="w-7 h-7"
             />
           ) : (
-            <TypeOfOrderIcon type={iconType} />
+            <TypeOfOrderIcon type={iconType || ""} />
           )}
           <div>
             <TypographyP className="font-medium text-lg">
@@ -62,7 +61,7 @@ export const OrderCard = memo(
             </TypographyP>
             {showDescription && (
               <TypographySmall className="text-xs text-neutral-dark-grey pt-0.5 tracking-tight">
-                {TypeOfOrderDescription({ type: iconType })}
+                {TypeOfOrderDescription({ type: iconType || "" })}
               </TypographySmall>
             )}
           </div>

@@ -1,13 +1,14 @@
 import { updateOrder } from "@/functions/updateOrder";
 import { AppDispatch, RootState } from "@/store";
-import { fetchGeneralData } from "@/store/slices/data/generalDataSlice";
-import { fetchPosData } from "@/store/slices/data/posSlice";
+import { fetchGeneralData } from "@/store/slices/data/general-data.slice";
+import { fetchPosData } from "@/store/slices/data/pos.slice";
 import { memo, useEffect, useMemo, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
 import { LoadingFullScreen } from "../global/loading";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
+import SessionExpired from "../errors/SessionExpired";
 
 const Layout = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -102,7 +103,7 @@ const Layout = () => {
   );
 
   if (isLoading) return <LoadingFullScreen />;
-  if (generalError) return <div>Error: {generalError}</div>;
+  if (generalError) return <SessionExpired />;
   return content;
 };
 

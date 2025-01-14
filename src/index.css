@@ -11,6 +11,12 @@
   /* font-feature-settings: ; */
 }
 
+.smooth-corners {
+  --smooth-corners: 4
+  mask-image: paint(smooth-corners);
+  -webkit-mask-image: paint(smooth-corners);
+}
+
 @property --angle {
   syntax: "<angle>";
   initial-value: 0deg;

@@ -14,6 +14,9 @@ import ownDelivery from "./deliveryApps/own-delivery.png";
 import unknownUser from "./unknown-user.png";
 import unknownProduct from "./unknown-product.svg";
 
+import googlePlay from "./svg/google-play.svg";
+import appStore from "./svg/app-store.svg";
+
 export {
   logoDarkMode,
   logoLightMode,
@@ -27,4 +30,6 @@ export {
   ownDelivery,
   unknownUser,
   unknownProduct,
+  googlePlay,
+  appStore,
 };

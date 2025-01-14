@@ -3,7 +3,7 @@ import { TypographyH1 } from "@/components/ui/typography";
 import { useCoasterCall } from "@/components/views/home/right-section/hooks/useCoasterCall";
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
-import { selectOrder } from "@/store/slices/order/createOrder";
+import { selectOrder } from "@/store/slices/order/create-order.slice";
 
 export default function CoasterCallNumberDisplay({ fixedLightDark }: { fixedLightDark?: boolean }) {
   const { number, handleNumberClick } = useCoasterCall();

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { currency } from "@/preferences/index";
-import { selectOrder } from "@/store/slices/order/createOrder";
+import { selectOrder } from "@/store/slices/order/create-order.slice";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { useEffect, useRef } from "react";

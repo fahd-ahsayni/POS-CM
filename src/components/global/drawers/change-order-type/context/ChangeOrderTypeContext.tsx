@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useCallback } from "react";
-import { OrderType } from "@/types";
+import { OrderType } from "@/types/order.types";
 import { useDispatch } from "react-redux";
-import { setOrderTypeId } from "@/store/slices/order/createOrder";
+import { setOrderTypeId } from "@/store/slices/order/create-order.slice";
 
 interface ChangeOrderTypeContextType {
   selectedType: OrderType | null;

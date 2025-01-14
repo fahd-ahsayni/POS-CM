@@ -1,6 +1,6 @@
 import { useTheme } from "@/providers/themeProvider";
 import type { AppDispatch } from "@/store";
-import { fetchUsers } from "@/store/slices/data/usersSlice";
+import { fetchUsers } from "@/store/slices/data/users.slice";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";

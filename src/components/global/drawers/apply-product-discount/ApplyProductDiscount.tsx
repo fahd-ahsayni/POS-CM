@@ -2,7 +2,7 @@ import { useState, memo, useCallback } from "react";
 import Drawer from "../../Drawer";
 import Authorization from "../auth/Authorization";
 import ApplyProductDiscountInfo from "@/components/global/drawers/apply-product-discount/views/ApplyProductDiscountInfo";
-import { ProductSelected } from "@/types";
+import { ProductSelected } from "@/types/product.types";
 
 interface ApplyProductDiscountProps {
   open: boolean;

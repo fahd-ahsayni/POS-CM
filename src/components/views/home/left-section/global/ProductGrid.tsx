@@ -1,5 +1,5 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Product, ProductSelected } from "@/types";
+import { Product, ProductSelected } from "@/types/product.types";
 import { memo, useRef } from "react";
 import { ProductCard } from "../ui/ProductCard";
 

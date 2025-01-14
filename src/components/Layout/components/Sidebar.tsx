@@ -166,15 +166,12 @@ export default function Sidebar() {
               title="reload"
               key="reload"
               className={cn(
-                "group w-full p-2 rounded-lg flex flex-col items-center text-xs font-medium transition-all duration-150",
-                "dark:!bg-white/5 dark:hover:!bg-white",
-                "!bg-white/30 hover:!bg-white"
+                "w-full p-2 rounded-lg flex flex-col items-center text-xs font-medium transition-all duration-150",
+                "dark:!bg-interactive-vivid-red/20 dark:hover:!bg-interactive-vivid-red/60 !border-interactive-dark-red/70"
               )}
             >
-              <RefreshCw className="h-4 w-4 group-hover:text-primary-black transition-all duration-300" />
-              <span className="mt-2 text-center group-hover:text-primary-black">
-                Reload
-              </span>
+              <RefreshCw className="h-4 w-4" />
+              <span className="mt-2 text-center">Reload</span>
             </Card>
           </div>
         </div>

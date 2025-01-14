@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { memo } from "react";
 import { useCategories } from "../hooks/useCategories";
 import { CategoryCard } from "../ui/CategoryCard";
-import { Category } from "@/types";
+import { Category } from "@/types/product.types";
 
 export default memo(function AllCategories() {
   const {

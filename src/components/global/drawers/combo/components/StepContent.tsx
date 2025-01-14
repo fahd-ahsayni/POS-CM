@@ -1,4 +1,4 @@
-import { Step } from "@/types/comboTypes";
+import { Step } from "@/types/product.types";
 import { useCombo } from "../context/ComboContext";
 import { VariantCard } from "./VariantCard";
 
@@ -26,8 +26,12 @@ export function StepContent({ step }: StepContentProps) {
       <div className="space-y-4 p-1">
         {step.product_variant_ids.map((variant) => {
           const selectedVariant = step.is_supplement
-            ? currentSelections.supplements.find((v) => v._id === variant._id)
-            : currentSelections.variants.find((v) => v._id === variant._id);
+            ? currentSelections.supplements.find(
+                (v: any) => v._id === variant._id
+              )
+            : currentSelections.variants.find(
+                (v: any) => v._id === variant._id
+              );
 
           return (
             <VariantCard

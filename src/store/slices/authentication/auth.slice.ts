@@ -3,7 +3,7 @@ import {
   login as loginService,
   loginWithRfid as loginWithRfidService,
 } from "@/api/services";
-import { User } from "@/types";
+import { User } from "@/types/user.types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 

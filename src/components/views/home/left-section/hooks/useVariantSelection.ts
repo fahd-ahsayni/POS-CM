@@ -4,8 +4,8 @@ import { getAllVariants } from "@/functions/getAllVariants";
 import {
   addOrderLine,
   updateOrderLine,
-} from "@/store/slices/order/createOrder";
-import { Product, ProductSelected } from "@/types";
+} from "@/store/slices/order/create-order.slice";
+import { Product, ProductSelected } from "@/types/product.types";
 import { useCallback, useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";

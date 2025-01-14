@@ -1,6 +1,6 @@
 import { unknownUser } from "@/assets";
 import ComboboxSelect from "@/components/global/ComboboxSelect";
-import { User } from "@/types";
+import { User } from "@/types/user.types";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import { cn } from "@/lib/utils";
 

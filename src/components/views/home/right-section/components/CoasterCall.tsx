@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { TypographyH3 } from "@/components/ui/typography";
 import CoasterCallNumberDisplay from "@/components/views/home/right-section/layouts/CoasterCallNumberDisplay";
-import { selectOrder } from "@/store/slices/order/createOrder";
+import { selectOrder } from "@/store/slices/order/create-order.slice";
 import { useSelector } from "react-redux";
 import { ORDER_SUMMARY_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
 import { useRightViewContext } from "../contexts/RightViewContext";

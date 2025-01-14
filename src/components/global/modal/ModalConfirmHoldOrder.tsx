@@ -3,7 +3,7 @@ import { useLeftViewContext } from "@/components/views/home/left-section/context
 import { TYPE_OF_ORDER_VIEW } from "@/components/views/home/right-section/constants";
 import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
 import { updateOrder } from "@/functions/updateOrder";
-import { holdOrder, resetOrder } from "@/store/slices/order/createOrder";
+import { holdOrder, resetOrder } from "@/store/slices/order/create-order.slice";
 import { BsExclamation } from "react-icons/bs";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";

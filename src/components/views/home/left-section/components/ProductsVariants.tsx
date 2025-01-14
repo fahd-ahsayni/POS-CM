@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
-import { Variant } from "@/types";
+import { ProductVariant } from "@/types/product.types";
 import { Minus, Plus } from "lucide-react";
 import { memo, useCallback, useMemo } from "react";
 import { ORDER_SUMMARY_VIEW } from "../../right-section/constants";
@@ -13,7 +13,7 @@ import { useProductSelection } from "../hooks/useProductSelection";
 import { useVariantSelection } from "../hooks/useVariantSelection";
 
 interface VariantCardProps {
-  variant: Variant;
+  variant: ProductVariant;
   isSelected: boolean;
   quantity: number;
   onSelect: () => void;
@@ -54,7 +54,7 @@ export default function ProductsVariants() {
 
   const variantCards = useMemo(
     () =>
-      selectedProduct?.variants.map((variant, index) => {
+      selectedProduct?.variants.map((variant: any, index: any) => {
         const selectedVariant = selectedProducts.find(
           (p: any) =>
             p.product_variant_id === variant._id &&

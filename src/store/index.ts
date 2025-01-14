@@ -1,11 +1,11 @@
+import authReducer from "@/store/slices/authentication/auth.slice";
+import dayStatusReducer from "@/store/slices/authentication/open.day.slice";
+import generalDataReducer from "@/store/slices/data/general-data.slice";
+import ordersReducer from "@/store/slices/data/orders.slice";
+import posReducer from "@/store/slices/data/pos.slice";
+import userReducer from "@/store/slices/data/users.slice";
+import createOrderReducer from "@/store/slices/order/create-order.slice";
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer from "@/store/slices/data/usersSlice";
-import ordersReducer from "@/store/slices/data/ordersSlice";
-import authReducer from "@/store/slices/authentication/authSlice";
-import dayStatusReducer from "@/store/slices/authentication/openDaySlice";
-import posReducer from "@/store/slices/data/posSlice";
-import generalDataReducer from "@/store/slices/data/generalDataSlice";
-import createOrderReducer from "@/store/slices/order/createOrder";
 
 export const store = configureStore({
   reducer: {

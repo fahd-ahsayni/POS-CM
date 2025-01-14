@@ -1,4 +1,4 @@
-import { ProductSelected } from "../types";
+import { ProductSelected } from "@/types/product.types";
 
 interface Discount {
   _id: string;

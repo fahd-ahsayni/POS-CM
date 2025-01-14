@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 import { CheckIcon } from "lucide-react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { updateOrderLine } from "@/store/slices/order/createOrder";
+import { updateOrderLine } from "@/store/slices/order/create-order.slice";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { useRightViewContext } from "../contexts/RightViewContext";
 import { useProductSelection } from "../../left-section/hooks/useProductSelection";

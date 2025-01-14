@@ -13,8 +13,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { truncateName } from "@/lib/utils";
 import { AppDispatch } from "@/store";
-import { logout } from "@/store/slices/authentication/authSlice";
-import { selectPosData } from "@/store/slices/data/posSlice";
+import { logout } from "@/store/slices/authentication/auth.slice";
+import { selectPosData } from "@/store/slices/data/pos.slice";
 import { formatDistanceToNow } from "date-fns";
 import { ChevronDown, HelpCircle, LogOut, Power } from "lucide-react";
 import { useState } from "react";
@@ -31,7 +31,7 @@ export default function Profile() {
   const dispatch = useDispatch<AppDispatch>();
   const posId = localStorage.getItem("posId");
   const pos = useSelector(selectPosData);
-  const currentShift = pos.pos.find((p) => p._id === posId)?.shift;
+  const currentShift = pos.pos.find((p: any) => p._id === posId)?.shift;
 
   console.log(user);
 
@@ -92,7 +92,7 @@ export default function Profile() {
         <DropdownMenuContent className="min-w-52 mt-2 -ml-10">
           <DropdownMenuLabel className="flex items-center justify-between">
             <span className="truncate text-xs font-medium text-foreground">
-              {pos.pos.find((p) => p._id === posId)?.name}
+              {pos.pos.find((p: any) => p._id === posId)?.name}
             </span>
             <span className="truncate text-xs font-normal text-muted-foreground">
               {currentShift?.opening_time &&

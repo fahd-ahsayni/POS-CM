@@ -1,7 +1,16 @@
 // src/store/slices/data/posSlice.ts
+import { DayData, PosData } from "@/types/pos.types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { PosState } from "@/types/pos";
+
+interface PosState {
+  data: {
+    pos: PosData[]; // pos is directly an array of PosData
+    day: DayData;
+  };
+  loading: boolean;
+  error: string | null;
+}
 
 // Initial state as a constant
 const initialState: PosState = {

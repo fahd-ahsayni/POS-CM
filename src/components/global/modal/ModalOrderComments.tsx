@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { TypographyH4, TypographyP } from "@/components/ui/typography";
 import { RootState } from "@/store";
-import { setNotes } from "@/store/slices/order/createOrder";
+import { setNotes } from "@/store/slices/order/create-order.slice";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ModalLayout from "./Layout";

@@ -1,4 +1,4 @@
-import { selectOrder, setCoasterCall } from "@/store/slices/order/createOrder";
+import { selectOrder, setCoasterCall } from "@/store/slices/order/create-order.slice";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 

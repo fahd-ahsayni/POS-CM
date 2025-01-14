@@ -6,7 +6,7 @@ import { TYPE_OF_ORDER_VIEW } from "@/components/views/home/right-section/consta
 import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
 import { useCustomerManagement } from "@/components/views/home/right-section/hooks/useCustomerManagement";
 import { currency } from "@/preferences";
-import { selectOrder, resetOrder } from "@/store/slices/order/createOrder";
+import { selectOrder, resetOrder } from "@/store/slices/order/create-order.slice";
 import { useCallback, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";

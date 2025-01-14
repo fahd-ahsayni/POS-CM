@@ -29,7 +29,7 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 403) {
-      window.location.href = "/session-expired";
+      // window.location.href = "/session-expired";
     }
     return Promise.reject(error);
   }

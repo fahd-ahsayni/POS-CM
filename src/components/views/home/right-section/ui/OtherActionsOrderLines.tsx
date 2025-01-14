@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
 import { updateOrder } from "@/functions/updateOrder";
-import { setOneTime, setUrgent } from "@/store/slices/order/createOrder";
+import { setOneTime, setUrgent } from "@/store/slices/order/create-order.slice";
 import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch } from "react-redux";

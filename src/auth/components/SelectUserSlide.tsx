@@ -1,12 +1,12 @@
 import { RootState } from "@/store";
-import { setSelectedUser } from "@/store/slices/data/usersSlice";
+import { setSelectedUser } from "@/store/slices/data/users.slice";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Swiper, SwiperSlide } from "swiper/react";
 import NavigationButton from "./ui/NavigationButton";
 import UserCard from "./ui/UserCard";
 import UserCardSkeleton from "./ui/UserCardSkelton";
-import { User } from "@/types";
+import { User } from "@/types/user.types";
 
 export interface SelectUserSlideProps {
   userType: string;

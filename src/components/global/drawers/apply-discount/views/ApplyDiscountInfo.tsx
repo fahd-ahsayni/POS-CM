@@ -4,7 +4,7 @@ import { TypographyP } from "@/components/ui/typography";
 import ComboboxSelect from "@/components/global/ComboboxSelect";
 import { useState, useMemo, useCallback } from "react";
 import { CheckIcon } from "lucide-react";
-import { setDiscount } from "@/store/slices/order/createOrder";
+import { setDiscount } from "@/store/slices/order/create-order.slice";
 import { toast } from "react-toastify";
 import { createToast } from "@/components/global/Toasters";
 

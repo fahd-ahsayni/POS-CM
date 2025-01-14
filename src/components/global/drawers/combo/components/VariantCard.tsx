@@ -5,7 +5,7 @@ import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import OderLineAddComments from "@/components/views/home/right-section/ui/OderLineAddComments";
 import { cn } from "@/lib/utils";
 import { currency } from "@/preferences";
-import { ProductVariant, Step } from "@/types/comboTypes";
+import { ProductVariant, Step } from "@/types/product.types";
 import { Minus, Plus } from "lucide-react";
 import { useState } from "react";
 import { useCombo } from "../context/ComboContext";

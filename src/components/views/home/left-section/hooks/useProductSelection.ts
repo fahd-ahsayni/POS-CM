@@ -1,6 +1,6 @@
 import { checkProductAvailability } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
-import { Product, ProductSelected, Variant } from "@/types";
+import { Product, ProductSelected, ProductVariant } from "@/types/product.types";
 import { useCallback } from "react";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
@@ -19,14 +19,14 @@ export const useProductSelection = ({
   orderType,
 }: UseProductSelectionProps) => {
   const findVariant = useCallback(
-    (product: any, variantId: string): Variant | undefined => {
+    (product: any, variantId: string): ProductVariant | undefined => {
       return product.variants.find((v: any) => v._id === variantId);
     },
     []
   );
 
   const createNewProduct = useCallback(
-    (product: any, variant: Variant, price?: number): ProductSelected => {
+    (product: any, variant: ProductVariant, price?: number): ProductSelected => {
       const unitPrice = price || variant.price_ttc;
       return {
         ...product,

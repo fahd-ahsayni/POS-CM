@@ -5,8 +5,8 @@ import { toast } from "react-toastify";
 import { z } from "zod";
 import { createToast } from "@/components/global/Toasters";
 import { useDispatch } from "react-redux";
-import { setClientId } from "@/store/slices/order/createOrder";
-import { Client } from "@/types/clients";
+import { setClientId } from "@/store/slices/order/create-order.slice";
+import { Client } from "@/types/clients.types";
 import { useRightViewContext } from "../contexts/RightViewContext";
 import { formatAddress } from "@/lib/utils";
 

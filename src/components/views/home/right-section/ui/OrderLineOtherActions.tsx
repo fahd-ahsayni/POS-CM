@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
-import { updateOrderLine } from "@/store/slices/order/createOrder";
+import { updateOrderLine } from "@/store/slices/order/create-order.slice";
 import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch } from "react-redux";

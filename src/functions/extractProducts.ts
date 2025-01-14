@@ -1,4 +1,4 @@
-import { Category, Product } from "@/types";
+import { Category, Product } from "@/types/product.types";
 
 export const extractProducts = (
   categories: Category[] | undefined

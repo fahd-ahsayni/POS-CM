@@ -1,5 +1,5 @@
 import { createContext, useContext, ReactNode, useState } from "react";
-import { Order, OrderLine } from "@/types/getDataByDay";
+import { Order, OrderLine } from "@/types/order.types";
 
 interface OrderContextType {
   selectedOrder: Order | null;

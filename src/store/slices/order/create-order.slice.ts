@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "../../../store";
+import { RootState } from "../..";
 import { getAllVariants } from "@/functions/getAllVariants";
 
 interface OrderState {
@@ -82,7 +82,7 @@ const orderSlice = createSlice({
       const currentShiftId = state.data.shift_id;
       state.data = {
         ...initialOrderState,
-        shift_id: currentShiftId
+        shift_id: currentShiftId,
       };
     },
     updateOrderLine: (state, action: PayloadAction<UpdateOrderLinePayload>) => {
@@ -99,13 +99,16 @@ const orderSlice = createSlice({
         let newOrderLine = {
           ...orderLine,
           ...action.payload.orderLine,
-          discount: action.payload.orderLine.discount || orderLine.discount // Explicitly handle discount
+          discount: action.payload.orderLine.discount || orderLine.discount, // Explicitly handle discount
         };
 
         // If this is a combo product
         if (orderLine.is_combo && orderLine.combo_items) {
-          const newQuantity = action.payload.orderLine.quantity || orderLine.quantity;
-          const unitPrice = getAllVariants().find(v => orderLine._id === v._id)?.price_ttc || 0;
+          const newQuantity =
+            action.payload.orderLine.quantity || orderLine.quantity;
+          const unitPrice =
+            getAllVariants().find((v) => orderLine._id === v._id)?.price_ttc ||
+            0;
           const newPrice = unitPrice * newQuantity;
 
           newOrderLine = {
@@ -116,11 +119,14 @@ const orderSlice = createSlice({
                 ...variant,
                 quantity: (variant.quantity / orderLine.quantity) * newQuantity,
               })),
-              supplements: orderLine.combo_items.supplements.map((supplement: any) => ({
-                ...supplement,
-                quantity: (supplement.quantity / orderLine.quantity) * newQuantity,
-              }))
-            }
+              supplements: orderLine.combo_items.supplements.map(
+                (supplement: any) => ({
+                  ...supplement,
+                  quantity:
+                    (supplement.quantity / orderLine.quantity) * newQuantity,
+                })
+              ),
+            },
           };
         }
 
@@ -128,22 +134,23 @@ const orderSlice = createSlice({
         state.data.orderlines[orderLineIndex] = newOrderLine;
 
         // Log for debugging
-        console.log('Updated orderline in Redux:', newOrderLine);
+        console.log("Updated orderline in Redux:", newOrderLine);
       }
     },
     addOrderLine: (state, action: PayloadAction<any[]>) => {
       // Preserve existing discounts when updating orderlines
-      const updatedOrderlines = action.payload.map(newLine => {
+      const updatedOrderlines = action.payload.map((newLine) => {
         const existingLine = state.data.orderlines.find(
-          ol => (ol.id === newLine.id || ol._id === newLine._id) && 
-                ol.customer_index === newLine.customer_index
+          (ol) =>
+            (ol.id === newLine.id || ol._id === newLine._id) &&
+            ol.customer_index === newLine.customer_index
         );
         return {
           ...newLine,
-          discount: newLine.discount || (existingLine?.discount || null)
+          discount: newLine.discount || existingLine?.discount || null,
         };
       });
-      
+
       state.data.orderlines = updatedOrderlines;
     },
     removeOrderLine: (state, action: PayloadAction<number>) => {
@@ -178,26 +185,30 @@ const orderSlice = createSlice({
     setOneTime: (state, action: PayloadAction<boolean>) => {
       state.data.one_time = action.payload;
     },
-    setOrderTypeId: (state, action: PayloadAction<SetOrderTypePayload | string | null>) => {
+    setOrderTypeId: (
+      state,
+      action: PayloadAction<SetOrderTypePayload | string | null>
+    ) => {
       // Handle both simple string/null input and complex payload
-      if (typeof action.payload === 'string' || action.payload === null) {
+      if (typeof action.payload === "string" || action.payload === null) {
         // Reset all related fields when only order_type_id is provided
         state.data = {
           ...state.data,
           order_type_id: action.payload,
           client_id: null,
           table_id: null,
-          coaster_call: null
+          coaster_call: null,
         };
       } else {
         // Keep provided values and only reset those that weren't specified
-        const { order_type_id, table_id, client_id, coaster_call } = action.payload;
+        const { order_type_id, table_id, client_id, coaster_call } =
+          action.payload;
         state.data = {
           ...state.data,
           order_type_id,
           table_id: table_id ?? null,
           client_id: client_id ?? null,
-          coaster_call: coaster_call ?? null
+          coaster_call: coaster_call ?? null,
         };
       }
     },

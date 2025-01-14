@@ -2,7 +2,7 @@ import { BorderBeam } from "@/components/ui/border-beam";
 import { Card } from "@/components/ui/card";
 import { TypographyH3, TypographySmall } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
-import { PosData } from "@/types/pos";
+import { PosData } from "@/types/pos.types";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";

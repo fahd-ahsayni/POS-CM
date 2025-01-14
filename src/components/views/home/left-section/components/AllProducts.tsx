@@ -1,6 +1,6 @@
 import CustomSwiper from "@/components/global/CustomSwiper";
 import Combo from "@/components/global/drawers/combo/Combo";
-import { Product, ProductSelected } from "@/types";
+import { Product, ProductSelected } from "@/types/product.types";
 import { motion } from "framer-motion";
 import { memo, useEffect, useMemo } from "react";
 import { useProducts } from "../hooks/useProducts";
@@ -44,7 +44,7 @@ const ProductsGrid = memo(function ProductsGrid({
   if (products.length < 15) {
     return (
       <motion.div
-        className="w-full grid grid-cols-2 lg:grid-cols-3 gap-3"
+        className="w-full grid grid-cols-2 lg:grid-cols-3 gap-3 scrollbar-hide"
         {...animationConfig}
       >
         {products.map(

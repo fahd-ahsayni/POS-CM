@@ -2,9 +2,10 @@ import { openDay } from "@/api/services";
 import { useShift } from "@/auth/context/ShiftContext";
 import { createToast } from "@/components/global/Toasters";
 import { AppDispatch, RootState } from "@/store";
-import { checkOpenDay } from "@/store/slices/authentication/openDaySlice";
-import { fetchPosData, selectPosData } from "@/store/slices/data/posSlice";
-import { User } from "@/types";
+import { checkOpenDay } from "@/store/slices/authentication/open.day.slice";
+import { fetchPosData, selectPosData } from "@/store/slices/data/pos.slice";
+import { PosData } from "@/types/pos.types";
+import { User } from "@/types/user.types";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -61,7 +62,7 @@ export const useSelectPos = (): UseSelectPosReturn => {
         return;
       }
 
-      const findPos = data.pos?.find((pos) => pos._id === id);
+      const findPos = data.pos?.find((pos: PosData) => pos._id === id);
       if (!findPos) return;
 
       localStorage.setItem("posId", id);

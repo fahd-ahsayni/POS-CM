@@ -1,7 +1,7 @@
 import ComboboxSelectOnChange from "@/components/global/ComboboxSelectOnChange";
 import InputComponent from "@/components/global/InputField";
 import InputLikeTextarea from "@/components/global/InputLikeTextarea";
-import { Client, ClientFormData } from "@/types/clients";
+import { Client, ClientFormData } from "@/types/clients.types";
 import { BeatLoader } from "react-spinners";
 
 interface ClientFormProps {

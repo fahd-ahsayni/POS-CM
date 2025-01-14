@@ -1,9 +1,9 @@
-import { WaitingOrder } from "@/types/waitingOrders";
+import { Order } from "@/types/order.types";
 import { format, isValid } from "date-fns";
 import { useCallback, useEffect, useState } from "react";
 
 export function useWaitingOrders() {
-  const [holdOrders, setHoldOrders] = useState<WaitingOrder[]>([]);
+  const [holdOrders, setHoldOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,7 +27,7 @@ export function useWaitingOrders() {
   const removeWaitingOrder = useCallback((orderId: string) => {
     try {
       const orders = JSON.parse(localStorage.getItem('holdOrders') || '[]');
-      const updatedOrders = orders.filter((order: WaitingOrder) => 
+      const updatedOrders = orders.filter((order: Order) => 
         order._id !== orderId
       );
       localStorage.setItem('holdOrders', JSON.stringify(updatedOrders));
@@ -50,7 +50,7 @@ export function useWaitingOrders() {
       orderType: orderTypes?.find(
         (type: any) => type._id === order.order_type_id
       )?.name || 'Unknown',
-      createdAt: formatDate(order.createdAt),
+      createdAt: formatDate(order.createdAt || ""),
       orderTotal: order.total_amount || 0,
       originalOrder: order
     }));

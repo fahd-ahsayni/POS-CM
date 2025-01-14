@@ -1,4 +1,4 @@
-import { setCustomerCount } from "@/store/slices/order/createOrder";
+import { setCustomerCount } from "@/store/slices/order/create-order.slice";
 import { useCallback, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";

@@ -1,4 +1,4 @@
-import { Category, Product } from "@/types";
+import { Category, Product } from "@/types/product.types";
 import { useState, useCallback, useEffect } from "react";
 import { useLeftViewContext } from "../contexts/LeftViewContext";
 import { useRightViewContext } from "../../right-section/contexts/RightViewContext";
@@ -35,10 +35,47 @@ export const useProductsByCategory = () => {
     orderType,
   });
 
-  const updateSubcategoryState = useCallback((newSubCategory: Category) => {
-    setProducts(newSubCategory.products);
-    setSubCategories(newSubCategory.children);
+  const getProductsByCategory = useCallback((categoryId: string) => {
+    try {
+      const generalData = JSON.parse(
+        localStorage.getItem("generalData") || "{}"
+      );
+      return (
+        generalData.products?.filter(
+          (product: Product) => product.category_id === categoryId
+        ) || []
+      );
+    } catch (error) {
+      console.error("Error filtering products by category:", error);
+      return [];
+    }
   }, []);
+
+  useEffect(() => {
+    if (category) {
+      setLoading(true);
+      try {
+        const categoryProducts = getProductsByCategory(category._id);
+        setProducts(categoryProducts);
+        setSubCategories(category.children ?? []);
+        setBreadcrumbs([category]);
+        setSubCategory(null);
+      } catch (error) {
+        console.error("Error loading category data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+  }, [category, setSubCategory, getProductsByCategory]);
+
+  const updateSubcategoryState = useCallback(
+    (newSubCategory: Category) => {
+      const categoryProducts = getProductsByCategory(newSubCategory._id);
+      setProducts(categoryProducts);
+      setSubCategories(newSubCategory.children);
+    },
+    [getProductsByCategory]
+  );
 
   const handleSubCategoryChange = useCallback(() => {
     if (
@@ -96,22 +133,6 @@ export const useProductsByCategory = () => {
   useEffect(() => {
     handleSubCategoryChange();
   }, [handleSubCategoryChange]);
-
-  useEffect(() => {
-    if (category) {
-      setLoading(true);
-      try {
-        setProducts(category.products ?? []);
-        setSubCategories(category.children ?? []);
-        setBreadcrumbs([category]);
-        setSubCategory(null);
-      } catch (error) {
-        console.error('Error loading category data:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-  }, [category, setSubCategory]);
 
   return {
     products,

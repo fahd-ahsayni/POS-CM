@@ -8,7 +8,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { AppDispatch } from "@/store";
-import { setCurrentPage } from "@/store/slices/data/ordersSlice";
+import { setCurrentPage } from "@/store/slices/data/orders.slice";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 

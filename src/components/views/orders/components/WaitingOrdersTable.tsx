@@ -12,7 +12,7 @@ import { ORDER_SUMMARY_VIEW } from "@/components/views/home/right-section/consta
 import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 import { useDispatch } from "react-redux";
-import { setOrderData } from "@/store/slices/order/createOrder";
+import { setOrderData } from "@/store/slices/order/create-order.slice";
 
 const HEADERS = [
   { label: "Created At", align: "start" },

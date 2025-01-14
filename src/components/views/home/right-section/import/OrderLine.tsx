@@ -9,7 +9,7 @@ import OrderLineOtherActions from "../ui/OrderLineOtherActions";
 import { Card } from "@/components/ui/card";
 import { currency } from "@/preferences";
 import { useDispatch } from "react-redux";
-import { updateOrderLine } from "@/store/slices/order/createOrder";
+import { updateOrderLine } from "@/store/slices/order/create-order.slice";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { useRightViewContext } from "../contexts/RightViewContext";
 import { toTitleCase } from "@/functions/string-transforms";

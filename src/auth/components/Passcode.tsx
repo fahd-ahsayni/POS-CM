@@ -1,8 +1,8 @@
 import NumberPad from "@/components/global/NumberPad";
 import { Button } from "@/components/ui/button";
 import { AppDispatch, RootState } from "@/store";
-import { login } from "@/store/slices/authentication/authSlice";
-import { setSelectedUser } from "@/store/slices/data/usersSlice";
+import { login } from "@/store/slices/authentication/auth.slice";
+import { setSelectedUser } from "@/store/slices/data/users.slice";
 import { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";

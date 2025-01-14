@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { TypographyP } from "@/components/ui/typography";
 import { toTitleCase } from "@/functions/string-transforms";
 import { cn } from "@/lib/utils";
-import { Category } from "@/types";
+import { Category } from "@/types/product.types";
 import { memo } from "react";
 
 interface CategoryCardProps {

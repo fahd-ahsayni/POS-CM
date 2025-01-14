@@ -6,7 +6,7 @@ import {
 } from "@/assets/tables-icons";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { getTableById } from "@/functions/getTableById";
-import { selectOrder } from "@/store/slices/order/createOrder";
+import { selectOrder } from "@/store/slices/order/create-order.slice";
 import { useSelector } from "react-redux";
 
 interface OrderType {

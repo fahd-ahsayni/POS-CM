@@ -1,6 +1,6 @@
 import { unknownUser } from "@/assets";
 import { cn } from "@/lib/utils";
-import { User } from "@/types";
+import { User } from "@/types/user.types";
 
 interface UserCardProps {
   user: User;
@@ -37,7 +37,7 @@ export default function UserCard({
         />
       </div>
       <p
-        className={`text-zinc-900 font-semibold text-lg mt-6 ${
+        className={`text-zinc-900 font-semibold text-lg mt-4 ${
           isActive ? "text-primary-red" : ""
         }`}
       >

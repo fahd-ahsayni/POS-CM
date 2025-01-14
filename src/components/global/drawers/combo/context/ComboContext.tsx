@@ -1,4 +1,4 @@
-import { ProductVariant, Step } from "@/types/comboTypes";
+import { ProductVariant, Step } from "@/types/product.types";
 import { createContext, useCallback, useContext, useState } from "react";
 
 interface SelectionState {

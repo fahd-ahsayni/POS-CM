@@ -5,7 +5,7 @@ import { ChevronDown } from "lucide-react";
 import { memo, useMemo, useCallback } from "react";
 import { useRightViewContext } from "../contexts/RightViewContext";
 import OrderLine from "./OrderLine";
-import { ProductSelected } from "@/types";
+import { ProductSelected } from "@/types/product.types";
 import { currency } from "@/preferences";
 
 interface OrderLineIndexProps {

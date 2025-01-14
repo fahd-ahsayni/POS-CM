@@ -1,10 +1,4 @@
-interface OrderType {
-  _id: string;
-  name: string;
-  type: string;
-  select_delivery_boy: boolean;
-  select_table: boolean;
-}
+import { OrderType } from "@/types/order.types";
 
 export const useOrderType = () => {
   const getOrderType = (): OrderType | null => {
