@@ -20,7 +20,7 @@ export const fetchGeneralData = createAsyncThunk<
     
     // Remove categories fetch from Promise.all
     const generalDataResponse = await axios.get(
-      `${import.meta.env.VITE_BASE_URL}/general-data/pos/${id}`,
+      `${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}/general-data/pos/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }
@@ -54,7 +54,7 @@ export const fetchPaginatedGeneralData = createAsyncThunk<
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/general-data/pos/${id}`,
+        `${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}/general-data/pos/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
           params: { page, limit },

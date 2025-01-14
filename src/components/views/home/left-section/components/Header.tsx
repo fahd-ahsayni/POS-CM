@@ -35,7 +35,7 @@ export default function Header() {
         <Card className="flex overflow-hidden relative cursor-pointer flex-col items-center h-full w-full justify-center border-2 !border-primary-red">
           {category && (
             <img
-              src={`${import.meta.env.VITE_BASE_URL}${category.image}`}
+              src={`${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}${category.image}`}
               className="absolute w-full h-full object-cover brightness-[0.5]"
               alt={category.name}
               crossOrigin="anonymous"

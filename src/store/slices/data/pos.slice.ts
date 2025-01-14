@@ -47,7 +47,7 @@ export const fetchPosData = createAsyncThunk(
       }
 
       const response = await axios.get<PosState["data"]>(
-        `${import.meta.env.VITE_BASE_URL}/pos`,
+        `${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}/pos`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
