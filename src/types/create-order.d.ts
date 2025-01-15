@@ -28,15 +28,6 @@ interface OrderLineDiscount {
   confirmed_by: string | number;
 }
 
-interface UpdateOrderLinePayload {
-  _id: string;
-  customerIndex: number;
-  orderLine: {
-    quantity?: number;
-    discount?: OrderLineDiscount;
-    // ... other possible fields
-  };
-}
 
 interface SetOrderTypePayload {
   order_type_id: string | null;

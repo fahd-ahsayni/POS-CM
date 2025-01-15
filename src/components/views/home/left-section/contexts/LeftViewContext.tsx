@@ -1,16 +1,12 @@
-import { calculateProductPrice } from "@/functions/priceCalculations";
 import { Category, Product, ProductSelected } from "@/types/product.types";
 import {
   createContext,
   ReactNode,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
-  useState,
+  useState
 } from "react";
-import { useDispatch } from "react-redux";
-import { updateTotalAmount } from "@/store/slices/order/create-order.slice";
 
 interface LeftViewContextType {
   views: string;
@@ -59,21 +55,6 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
   const [selectedCombo, setSelectedCombo] = useState<any | null>(null);
 
   const [currentMenu, setCurrentMenu] = useState<string | null>(null);
-
-  const dispatch = useDispatch();
-
-  const updateOrderTotal = useCallback(() => {
-    const totalPrice = calculateProductPrice(
-      selectedProducts as any,
-      currentMenu,
-      selectedProducts.length
-    ).totalPrice;
-    dispatch(updateTotalAmount(totalPrice));
-  }, [dispatch, selectedProducts, currentMenu]);
-
-  useEffect(() => {
-    updateOrderTotal();
-  }, [updateOrderTotal]);
 
   // Define callbacks at the top level
   const handleSetViews = useCallback((view: string) => setViews(view), []);

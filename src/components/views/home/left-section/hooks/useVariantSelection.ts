@@ -104,7 +104,12 @@ export const useVariantSelection = ({
           ) {
             const newQuantity = increment
               ? product.quantity + 1
-              : Math.max(1, product.quantity - 1);
+              : Math.max(0, product.quantity - 1);
+
+            // Remove product if quantity becomes 0
+            if (newQuantity === 0) {
+              return product; // Will be filtered out later
+            }
 
             // Handle combo products
             if (product.is_combo && product.combo_items) {
@@ -139,14 +144,24 @@ export const useVariantSelection = ({
 
             // Handle regular products
             const priceCalc = calculateProductPrice(product, currentMenu, newQuantity);
-            return {
+            const updatedProduct = {
               ...product,
               quantity: newQuantity,
               price: priceCalc.totalPrice,
             };
+
+            dispatch(
+              updateOrderLine({
+                _id: product.id || product._id || '',
+                customerIndex: product.customer_index,
+                orderLine: updatedProduct,
+              })
+            );
+
+            return updatedProduct;
           }
           return product;
-        })
+        }).filter(product => product.quantity > 0) // Remove products with quantity 0
       );
     },
     [customerIndex, currentMenu, setSelectedProducts, dispatch]

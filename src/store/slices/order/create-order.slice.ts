@@ -2,7 +2,6 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../..";
 import { calculateProductPrice } from "@/functions/priceCalculations";
 
-
 const initialOrderState: OrderState = {
   waiter_id: null,
   coaster_call: null,
@@ -28,7 +27,25 @@ const initialState: OrderSliceState = {
 };
 
 const calculateTotalAmount = (orderlines: any[]) => {
-  return orderlines.reduce((sum, line) => sum + (line.price || 0), 0);
+  return orderlines.reduce((sum, line) => {
+    // Handle combo products
+    if (line.is_combo && line.combo_items) {
+      const comboBasePrice = line.price || 0;
+      const supplementsTotal =
+        line.combo_items.supplements?.reduce(
+          (suppSum: number, supp: any) =>
+            suppSum + (supp.price_ttc || 0) * (supp.quantity || 1),
+          0
+        ) || 0;
+
+      // Multiply the total combo price by its quantity
+      return sum + (comboBasePrice + supplementsTotal) * (line.quantity || 1);
+    }
+
+    // Handle regular products
+    const unitPrice = line.unit_price || line.price / (line.quantity || 1);
+    return sum + unitPrice * (line.quantity || 1);
+  }, 0);
 };
 
 const orderSlice = createSlice({
@@ -36,7 +53,7 @@ const orderSlice = createSlice({
   initialState: {
     data: initialOrderState,
     status: "idle" as const,
-    error: null
+    error: null,
   },
   reducers: {
     setOrderData: (state, action: PayloadAction<OrderState>) => {
@@ -51,56 +68,92 @@ const orderSlice = createSlice({
       };
       state.data.total_amount = calculateTotalAmount(state.data.orderlines);
     },
-    updateOrderLine: (state, action: PayloadAction<UpdateOrderLinePayload>) => {
-      const orderLineIndex = state.data.orderlines.findIndex(
-        (ol) => 
-          (ol.id === action.payload._id || ol._id === action.payload._id) &&
-          ol.customer_index === action.payload.customerIndex
-      );
+    updateOrderLine: (state, action: PayloadAction<any>) => {
+      const { _id, customerIndex, orderLine } = action.payload;
+
+      // Find the index of the existing order line
+      const orderLineIndex = state.data.orderlines.findIndex((ol) => {
+        // For combo products, check by id
+        if (ol.is_combo) {
+          return ol.id === _id && ol.customer_index === customerIndex;
+        }
+        // For regular products, check by product_variant_id
+        return (
+          ol.product_variant_id === orderLine.product_variant_id &&
+          ol.customer_index === customerIndex
+        );
+      });
 
       if (orderLineIndex !== -1) {
-        const orderLine = state.data.orderlines[orderLineIndex];
-        const newQuantity = action.payload.orderLine.quantity || orderLine.quantity;
-        
-        const priceCalc = calculateProductPrice(
-          orderLine,
-          localStorage.getItem("currentMenu"),
-          newQuantity
-        );
-
+        // Update existing order line
         state.data.orderlines[orderLineIndex] = {
+          ...state.data.orderlines[orderLineIndex],
           ...orderLine,
-          ...action.payload.orderLine,
-          quantity: newQuantity,
-          price: priceCalc.totalPrice
+          quantity: orderLine.quantity,
+          price: orderLine.price,
         };
-        state.data.total_amount = calculateTotalAmount(state.data.orderlines);
+
+        // Remove the order line if quantity is 0
+        if (orderLine.quantity <= 0) {
+          state.data.orderlines.splice(orderLineIndex, 1);
+        }
+      } else {
+        // Add new order line
+        state.data.orderlines.push(orderLine);
       }
+
+      // Recalculate total amount
+      state.data.total_amount = calculateTotalAmount(state.data.orderlines);
     },
     addOrderLine: (state, action: PayloadAction<any[]>) => {
       const currentMenu = localStorage.getItem("currentMenu");
-      
-      state.data.orderlines = action.payload.map((line) => {
+      const newOrderLines = action.payload.map((line) => {
+        // If price is already set and valid, keep it
         if (line.price && line.price > 0) {
           return line;
         }
 
+        // Handle combo products
         if (line.is_combo && line.combo_items) {
-          const priceCalc = calculateProductPrice(line, currentMenu, line.quantity);
+          const priceCalc = calculateProductPrice(
+            line,
+            currentMenu,
+            line.quantity || 1
+          );
           return {
             ...line,
-            price: priceCalc.totalPrice
+            price: priceCalc.totalPrice,
+            quantity: line.quantity || 1,
           };
         }
 
+        // Handle regular products with variants
         const variant = line.variants?.[0];
-        if (!variant) return { ...line, price: 0 };
+        if (!variant)
+          return { ...line, price: 0, quantity: line.quantity || 1 };
 
-        const priceCalc = calculateProductPrice(line, currentMenu, line.quantity);
+        const priceCalc = calculateProductPrice(
+          line,
+          currentMenu,
+          line.quantity || 1
+        );
         return {
           ...line,
-          price: priceCalc.totalPrice
+          price: priceCalc.totalPrice,
+          quantity: line.quantity || 1,
         };
+      });
+
+      // Replace existing order lines with matching product_variant_id and customer_index
+      state.data.orderlines = newOrderLines.map((newLine) => {
+        const existingLine = state.data.orderlines.find(
+          (ol) =>
+            (ol.is_combo
+              ? ol.id === newLine.id
+              : ol.product_variant_id === newLine.product_variant_id) &&
+            ol.customer_index === newLine.customer_index
+        );
+        return existingLine ? { ...existingLine, ...newLine } : newLine;
       });
 
       state.data.total_amount = calculateTotalAmount(state.data.orderlines);
@@ -109,6 +162,7 @@ const orderSlice = createSlice({
       state.data.orderlines = state.data.orderlines.filter(
         (_: any, index: number) => index !== action.payload
       );
+      state.data.total_amount = calculateTotalAmount(state.data.orderlines);
     },
     updateTotalAmount: (state, action: PayloadAction<number>) => {
       state.data.total_amount = action.payload;
