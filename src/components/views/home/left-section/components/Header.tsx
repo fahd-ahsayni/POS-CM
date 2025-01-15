@@ -9,11 +9,14 @@ import { useCallback } from "react";
 import { toTitleCase } from "@/functions/string-transforms";
 
 export default function Header() {
-  const { setViews, category } = useLeftViewContext();
+  const { setViews, category, setCategory, setSubCategory, setBreadcrumbs } = useLeftViewContext();
 
   const handleBack = useCallback(() => {
     setViews(ALL_CATEGORIES_VIEW);
-  }, [setViews]);
+    setCategory(null);
+    setSubCategory(null);
+    setBreadcrumbs([]);
+  }, [setViews, setCategory, setSubCategory, setBreadcrumbs]);
 
   return (
     <div className="flex items-start relative justify-start w-full py-2 mt-2 gap-x-2">

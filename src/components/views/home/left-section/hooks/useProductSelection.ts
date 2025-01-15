@@ -20,14 +20,18 @@ export const useProductSelection = ({
 }: UseProductSelectionProps) => {
   const findVariant = useCallback(
     (product: Product, variantId: string): ProductVariant | undefined => {
-      const orderType = JSON.parse(localStorage.getItem("orderType") || "null");
+      const orderTypeData = JSON.parse(localStorage.getItem("orderType") || "null");
+      if (!product?.variants) return undefined;
+
       const variant = product.variants.find((v) => v._id === variantId);
 
-      if (variant) {
-        const menuPrice = variant.menus.find((menu) => menu.menu_id === orderType.menu_id)?.price_ttc;
+      if (variant && orderTypeData?.menu_id) {
+        const menuPrice = variant.menus?.find(
+          (menu) => menu.menu_id === orderTypeData.menu_id
+        )?.price_ttc;
         return { ...variant, price_ttc: menuPrice || variant.price_ttc };
       }
-      return undefined;
+      return variant;
     },
     []
   );

@@ -5,7 +5,7 @@ import {
   useCallback,
   useContext,
   useMemo,
-  useState
+  useState,
 } from "react";
 
 interface LeftViewContextType {
@@ -29,6 +29,8 @@ interface LeftViewContextType {
   setSelectedCombo: React.Dispatch<React.SetStateAction<any | null>>;
   currentMenu: string | null;
   setCurrentMenu: React.Dispatch<React.SetStateAction<string | null>>;
+  breadcrumbs: Category[];
+  setBreadcrumbs: React.Dispatch<React.SetStateAction<Category[]>>;
 }
 
 const LeftViewContext = createContext<LeftViewContextType | null>(null);
@@ -55,6 +57,8 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
   const [selectedCombo, setSelectedCombo] = useState<any | null>(null);
 
   const [currentMenu, setCurrentMenu] = useState<string | null>(null);
+
+  const [breadcrumbs, setBreadcrumbs] = useState<Category[]>([]);
 
   // Define callbacks at the top level
   const handleSetViews = useCallback((view: string) => setViews(view), []);
@@ -85,6 +89,8 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
       setSelectedCombo,
       currentMenu,
       setCurrentMenu,
+      breadcrumbs,
+      setBreadcrumbs,
     }),
     [
       views,
@@ -101,6 +107,7 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
       selectedCombo,
       setSelectedCombo,
       currentMenu,
+      breadcrumbs,
     ]
   );
 

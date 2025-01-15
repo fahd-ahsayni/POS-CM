@@ -24,7 +24,6 @@ export function ProductCard({
   const currentMenu = useMemo(() => {
     try {
       const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
-      console.log("🔍 Current orderType:", orderType);
       return orderType.menu_id || null;
     } catch (error) {
       console.error("Error parsing orderType:", error);
@@ -35,32 +34,21 @@ export function ProductCard({
   // Get price based on menu
   const price = useMemo(() => {
     const variant = product.variants[0];
-    if (!variant) {
-      console.warn("⚠️ No variant found for product:", product.name);
-      return 0;
-    }
+    if (!variant) return 0;
 
-    // If there's a menu, try to find menu-specific price
-    if (currentMenu && variant.menus && variant.menus.length > 0) {
-      console.log("📋 Looking for menu price:", {
-        menuId: currentMenu,
-        productName: product.name,
-        variantMenus: variant.menus,
-      });
-
+    // Find menu-specific price in the variant's menus array
+    if (currentMenu && variant.menus?.length > 0) {
       const menuPrice = variant.menus.find(
-        (m) => m.menu_id === currentMenu
+        (menu) => menu.menu_id === currentMenu
       )?.price_ttc;
+
       if (menuPrice !== undefined) {
-        console.log("✅ Found menu-specific price:", menuPrice);
         return menuPrice;
       }
-      console.log("⚠️ No menu-specific price found, using default price");
     }
 
-    // Fallback to default price
-    console.log("💰 Using default price:", variant.price_ttc);
-    return variant.price_ttc;
+    // If no menu-specific price found, use default_price
+    return variant.default_price || 0;
   }, [product.variants, currentMenu]);
 
   // Get all variants of this product across all customers

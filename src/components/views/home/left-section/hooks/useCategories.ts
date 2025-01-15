@@ -6,7 +6,8 @@ import { ALL_PRODUCTS_VIEW, PRODUCTS_BY_CATEGORY_VIEW } from "../constants";
 import { useLeftViewContext } from "../contexts/LeftViewContext";
 
 export const useCategories = () => {
-  const { setViews, setCategory, setCurrentMenu } = useLeftViewContext();
+  const { setViews, setCategory, setCurrentMenu, setBreadcrumbs } =
+    useLeftViewContext();
   const { views } = useRightViewContext();
   const [orderTypeChanged, setOrderTypeChanged] = useState(0);
 
@@ -42,28 +43,70 @@ export const useCategories = () => {
     };
   }, []);
 
+  const buildCategoryTree = useCallback((categories: Category[]) => {
+    const categoryMap = new Map<string, Category>();
+    const rootCategories: Category[] = [];
+
+    // First pass: create map of all categories with empty children arrays
+    categories.forEach((category) => {
+      categoryMap.set(category._id, { ...category, children: [] });
+    });
+
+    // Second pass: build the tree structure
+    categories.forEach((category) => {
+      const currentCategory = categoryMap.get(category._id);
+      if (currentCategory) {
+        if (category.parent_id) {
+          // This is a child category - add it to its parent's children array
+          const parentCategory = categoryMap.get(category.parent_id);
+          if (parentCategory) {
+            parentCategory.children.push(currentCategory);
+          }
+        } else {
+          // This is a root category
+          rootCategories.push(currentCategory);
+        }
+      }
+    });
+
+    // Sort all categories (root and children) by sequence
+    const sortBySequence = (cats: Category[]) => {
+      cats.sort((a, b) => (a.sequence || 0) - (b.sequence || 0));
+      cats.forEach((cat) => {
+        if (cat.children?.length > 0) {
+          sortBySequence(cat.children);
+        }
+      });
+    };
+
+    sortBySequence(rootCategories);
+    return rootCategories;
+  }, []);
+
   const categories = useMemo(() => {
     const generalData = JSON.parse(localStorage.getItem("generalData") || "{}");
     const orderType = JSON.parse(localStorage.getItem("orderType") || "null");
 
     if (orderType?.menu_id) {
-      return (
+      const filteredCategories =
         generalData.categories?.filter((category: Category) =>
           category.menu_ids.includes(orderType.menu_id)
-        ) || []
-      );
+        ) || [];
+
+      return buildCategoryTree(filteredCategories);
     }
 
-    return generalData.categories || [];
-  }, [orderTypeChanged]);
+    return [];
+  }, [orderTypeChanged, buildCategoryTree]);
 
   const handleCategoryClick = useCallback(
     (category: Category) => {
       console.log("🎯 Selected category:", category);
+      setBreadcrumbs([{ ...category, name: "Subcategories" }]);
       setCategory(category);
       setViews(PRODUCTS_BY_CATEGORY_VIEW);
     },
-    [setCategory, setViews]
+    [setCategory, setViews, setBreadcrumbs]
   );
 
   const handleAllProductsClick = useCallback(() => {

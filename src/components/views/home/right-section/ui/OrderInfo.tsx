@@ -100,15 +100,17 @@ const OnPlaceOrder: React.FC<{ order: any; orderType: OrderType }> = ({
       : tableSeats && tableSeats > 3
       ? Table4Seats
       : Table2Seats;
-      
+
   if (orderType.type === "onPlace") {
     return (
       <OrderContainer>
         <OrderBadge>
           <div className="flex items-center justify-center space-x-1.5">
-            <TableIcon className="w-auto h-8 text-primary-black dark:text-white/80" />
+            {TableNumber && (
+              <TableIcon className="w-auto h-8 text-primary-black dark:text-white/80" />
+            )}
             <TypographySmall className="font-medium">
-              Table N° {TableNumber}
+              {TableNumber ? `Table N° ${TableNumber}` : orderType.name}
             </TypographySmall>
           </div>
         </OrderBadge>

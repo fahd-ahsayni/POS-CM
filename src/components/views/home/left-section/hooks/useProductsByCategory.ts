@@ -1,7 +1,7 @@
 import { Category, Product } from "@/types/product.types";
-import { useState, useCallback, useEffect } from "react";
-import { useLeftViewContext } from "../contexts/LeftViewContext";
+import { useCallback, useEffect, useState } from "react";
 import { useRightViewContext } from "../../right-section/contexts/RightViewContext";
+import { useLeftViewContext } from "../contexts/LeftViewContext";
 import { useProductSelection } from "./useProductSelection";
 
 export const useProductsByCategory = () => {
@@ -15,6 +15,7 @@ export const useProductsByCategory = () => {
     setSubCategory,
     setOpenDrawerCombo,
     setSelectedCombo,
+    currentMenu,
   } = useLeftViewContext();
 
   const { orderType, customerIndex } = useRightViewContext();
@@ -36,21 +37,66 @@ export const useProductsByCategory = () => {
   });
 
   const getProductsByCategory = useCallback((categoryId: string) => {
-    try {
-      const generalData = JSON.parse(localStorage.getItem("generalData") || "{}");
-      const orderType = JSON.parse(localStorage.getItem("orderType") || "null");
+    const generalData = JSON.parse(localStorage.getItem("generalData") || "{}");
+    const products = generalData.products || [];
+    const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
 
-      return (
-        generalData.products?.filter(
-          (product: Product) =>
-            product.category_id === categoryId &&
-            product.menus.some((menuProduct) => menuProduct.menu_id === orderType.menu_id)
-        ) || []
+    return products.filter((product: Product) => {
+      // Check if product belongs to the selected category
+      const matchesCategory = product.category_id === categoryId;
+
+      // Check if product is available in the selected menu
+      const isInMenu = product.menus?.some(
+        (menu) =>
+          menu.menu_id === orderType.menu_id &&
+          menu.is_displayed &&
+          !menu.archived
       );
-    } catch (error) {
-      console.error("Error filtering products by category:", error);
-      return [];
+
+      return matchesCategory && isInMenu;
+    });
+  }, []);
+
+  const findCategoryWithChildren = useCallback((categoryId: string) => {
+    const generalData = JSON.parse(localStorage.getItem("generalData") || "{}");
+    const allCategories = generalData.categories || [];
+
+    // Find the target category
+    const targetCategory = allCategories.find(
+      (c: Category) => c._id === categoryId
+    );
+    if (!targetCategory) return null;
+
+    // Find all immediate children for this category
+    const children = allCategories
+      .filter((c: Category) => c.parent_id === categoryId)
+      .sort(
+        (a: Category, b: Category) => (a.sequence || 0) - (b.sequence || 0)
+      );
+
+    return {
+      ...targetCategory,
+      children,
+    };
+  }, []);
+
+  const getBreadcrumbPath = useCallback((categoryId: string) => {
+    const generalData = JSON.parse(localStorage.getItem("generalData") || "{}");
+    const allCategories = generalData.categories || [];
+    const path: Category[] = [];
+
+    let currentCategoryId = categoryId;
+    while (currentCategoryId) {
+      const category = allCategories.find(
+        (c: Category) => c._id === currentCategoryId
+      );
+      if (!category) break;
+
+      path.unshift(category); // Add to start of array
+      currentCategoryId = category.parent_id || "";
     }
+
+    return path;
   }, []);
 
   useEffect(() => {
@@ -74,7 +120,7 @@ export const useProductsByCategory = () => {
     (newSubCategory: Category) => {
       const categoryProducts = getProductsByCategory(newSubCategory._id);
       setProducts(categoryProducts);
-      setSubCategories(newSubCategory.children);
+      setSubCategories(newSubCategory.children ?? []);
     },
     [getProductsByCategory]
   );
@@ -91,22 +137,64 @@ export const useProductsByCategory = () => {
 
   const handleBack = useCallback(() => {
     if (breadcrumbs.length <= 1) return;
+
     const newBreadcrumbs = breadcrumbs.slice(0, -1);
     const previousCategory = newBreadcrumbs[newBreadcrumbs.length - 1];
-    setBreadcrumbs(newBreadcrumbs);
+
+    // Reset breadcrumbs with "Subcategories" as the first item
+    const updatedBreadcrumbs = newBreadcrumbs.map((crumb, index) => ({
+      ...crumb,
+      name: index === 0 ? "Subcategories" : crumb.name,
+    }));
+
+    setBreadcrumbs(updatedBreadcrumbs);
     setSubCategory(previousCategory);
     updateSubcategoryState(previousCategory);
   }, [breadcrumbs, setSubCategory, updateSubcategoryState]);
 
   const handleCategoryClick = useCallback(
-    (category: Category) => {
-      setSubCategory(category);
-      updateSubcategoryState(category);
-      setBreadcrumbs((prev) =>
-        prev.slice(0, prev.findIndex((c) => c._id === category._id) + 1)
-      );
+    (clickedCategory: Category) => {
+      setLoading(true);
+
+      if (breadcrumbs.find((c) => c._id === clickedCategory._id)) {
+        // Clicking on breadcrumb - navigate back to that level
+        const newBreadcrumbs = breadcrumbs
+          .slice(
+            0,
+            breadcrumbs.findIndex((c) => c._id === clickedCategory._id) + 1
+          )
+          .map((crumb, index) => ({
+            ...crumb,
+            name: index === 0 ? "Subcategories" : crumb.name,
+          }));
+        setBreadcrumbs(newBreadcrumbs);
+      } else {
+        // Clicking on new category
+        const breadcrumbPath = getBreadcrumbPath(clickedCategory._id).map(
+          (crumb, index) => ({
+            ...crumb,
+            name: index === 0 ? "Subcategories" : crumb.name,
+          })
+        );
+        setBreadcrumbs(breadcrumbPath);
+      }
+
+      const fullCategory = findCategoryWithChildren(clickedCategory._id);
+      if (fullCategory) {
+        setSubCategory(fullCategory);
+        setSubCategories(fullCategory.children || []);
+        const products = getProductsByCategory(clickedCategory._id);
+        setProducts(products);
+      }
+
+      setLoading(false);
     },
-    [setSubCategory, updateSubcategoryState]
+    [
+      breadcrumbs,
+      findCategoryWithChildren,
+      getProductsByCategory,
+      getBreadcrumbPath,
+    ]
   );
 
   const handleProductClick = useCallback(

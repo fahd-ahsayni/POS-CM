@@ -7,6 +7,8 @@ import { useRightViewContext } from "../contexts/RightViewContext";
 import OrderLine from "./OrderLine";
 import { ProductSelected } from "@/types/product.types";
 import { currency } from "@/preferences";
+import { calculateProductPrice } from "@/functions/priceCalculations";
+import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 
 interface OrderLineIndexProps {
   customerIndex: number;
@@ -29,6 +31,7 @@ const OrderLineIndex = ({
 }: OrderLineIndexProps) => {
   const { customerIndex: contextCustomerIndex, setCustomerIndex } =
     useRightViewContext();
+  const { currentMenu } = useLeftViewContext();
 
   const totalItems = useMemo(
     () => products.reduce((sum, product) => sum + product.quantity, 0),
@@ -38,10 +41,14 @@ const OrderLineIndex = ({
   const totalPrice = useMemo(
     () =>
       products.reduce((sum, product) => {
-        const unitPrice = product.variants[0]?.price_ttc || product.price / product.quantity;
-        return sum + (unitPrice * product.quantity);
+        const priceCalc = calculateProductPrice(
+          product,
+          currentMenu,
+          product.quantity
+        );
+        return sum + priceCalc.totalPrice;
       }, 0),
-    [products]
+    [products, currentMenu]
   );
 
   const handleDelete = useCallback(
