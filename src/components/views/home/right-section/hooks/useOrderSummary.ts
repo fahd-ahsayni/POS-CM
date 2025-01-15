@@ -3,8 +3,8 @@ import { createToast } from "@/components/global/Toasters";
 import {
   resetOrder,
   selectOrder,
-  setCustomerCount,
   setClientId,
+  setCustomerCount,
   setTableId,
 } from "@/store/slices/order/create-order.slice";
 import { useCallback, useMemo, useState } from "react";
@@ -62,26 +62,26 @@ export const useOrderSummary = () => {
 
   const resetOrderState = useCallback(() => {
     const shiftId = order.shift_id;
-    
+
     // Reset Redux store
     dispatch(resetOrder());
     dispatch(setCustomerCount(1)); // Ensure customer count starts at 1
     dispatch(setClientId(null));
     dispatch(setTableId(null));
-    
+
     // Reset local states
     setSelectedProducts([]);
     handlePaymentComplete();
     setCoasterNumber("");
     setTableNumber("");
-    
+
     // Reset views
     setViewsLeft(ALL_CATEGORIES_VIEW);
     setViewsRight(TYPE_OF_ORDER_VIEW);
-    
+
     // Clear localStorage items
     localStorage.removeItem("tableNumber");
-    
+
     return shiftId;
   }, [
     dispatch,
@@ -91,7 +91,7 @@ export const useOrderSummary = () => {
     setViewsRight,
     order.shift_id,
     setCoasterNumber,
-    setTableNumber
+    setTableNumber,
   ]);
 
   const handlers = useMemo(
@@ -103,18 +103,31 @@ export const useOrderSummary = () => {
       },
       handleProceedOrder: () => {
         if (isProcessing || selectedProducts.length === 0) return;
-        updateState("openModalConfirmOrder", true);
+
+        const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
+
+        if (orderType?.creation_order_with_payment) {
+          // Skip confirmation modal and go straight to payments
+          updateState("openDrawerPayments", true);
+        } else {
+          // Show confirmation modal only for orders without payment
+          updateState("openModalConfirmOrder", true);
+        }
       },
       handleConfirmOrder: async () => {
         if (isProcessing || selectedProducts.length === 0) return;
         setIsProcessing(true);
 
         try {
-          const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
+          const orderType = JSON.parse(
+            localStorage.getItem("orderType") || "{}"
+          );
           dispatch(setCustomerCount(Math.max(customerIndex, 1)));
 
           if (orderType?.creation_order_with_payment) {
+            updateState("openModalConfirmOrder", false);
             updateState("openDrawerPayments", true);
+            setIsProcessing(false);
           } else {
             await createOrderWithOutPayment(order);
             resetOrderState();
@@ -135,9 +148,7 @@ export const useOrderSummary = () => {
             )
           );
           console.error("Order creation error:", error);
-        } finally {
           setIsProcessing(false);
-          updateState("openModalConfirmOrder", false);
         }
       },
       handleShowTicket: () => {

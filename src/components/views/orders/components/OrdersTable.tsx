@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useTableOrders } from "@/components/views/orders/hooks/useTableOrders";
-import { FilterCriteria } from "@/types/general.types";
+import { FilterCriteria } from "@/types/general";
 import { Order } from "@/types/order.types";
 import { ArrowDownAZ, ArrowUpAZ, SortDesc } from "lucide-react";
 import { useSelector } from "react-redux";

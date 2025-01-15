@@ -26,3 +26,10 @@ export interface FilterCriteria {
   orderId: string;
   tableNumber: number | string;
 }
+
+export interface PaymentMethod {
+  _id: string;
+  name: string;
+  amount: number;
+  originalId?: string;
+}

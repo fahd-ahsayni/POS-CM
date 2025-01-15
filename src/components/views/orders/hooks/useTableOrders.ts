@@ -1,5 +1,5 @@
 import { filterOrderByTableNumber } from "@/api/services";
-import { FilterCriteria } from "@/types/general.types";
+import { FilterCriteria } from "@/types/general";
 import { useEffect, useMemo, useState } from "react";
 
 interface SortConfig {

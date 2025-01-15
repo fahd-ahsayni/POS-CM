@@ -64,7 +64,7 @@ const Layout = () => {
       ? setTimeout(() => {
           localStorage.setItem("firstRender", "true");
           setIsLoading(false);
-          window.location.reload();
+          // window.location.reload();
         }, 3000)
       : setIsLoading(false);
 

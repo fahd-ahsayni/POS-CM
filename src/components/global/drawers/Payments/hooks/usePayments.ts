@@ -1,17 +1,22 @@
-import { createPayment } from "@/api/services";
+import { createPayment, payOrder } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
 import { ALL_CATEGORIES_VIEW } from "@/components/views/home/left-section/constants";
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 import { TYPE_OF_ORDER_VIEW } from "@/components/views/home/right-section/constants";
 import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
-import { useCustomerManagement } from "@/components/views/home/right-section/hooks/useCustomerManagement";
-import { currency } from "@/preferences";
-import { selectOrder, resetOrder } from "@/store/slices/order/create-order.slice";
-import { useCallback, useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { toast } from "react-toastify";
-import { useNumberOfTable } from "@/components/views/home/right-section/hooks/useNumberOfTable";
 import { useCoasterCall } from "@/components/views/home/right-section/hooks/useCoasterCall";
+import { useCustomerManagement } from "@/components/views/home/right-section/hooks/useCustomerManagement";
+import { useNumberOfTable } from "@/components/views/home/right-section/hooks/useNumberOfTable";
+import { currency } from "@/preferences";
+import {
+  resetOrder,
+  selectOrder,
+  setCustomerCount,
+} from "@/store/slices/order/create-order.slice";
+import { Order } from "@/types/order.types";
+import { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 /**
  * Represents a payment method with its properties
@@ -28,13 +33,19 @@ interface PaymentMethod {
  */
 interface UsePaymentsProps {
   onComplete?: (payments: PaymentMethod[]) => Promise<void>;
+  selectedOrder?: Order;
+  totalAmount?: number;
 }
 
 /**
  * Custom hook to manage payment methods and calculations
  * @param onComplete - Callback function called when payments are completed
  */
-export function usePayments({ onComplete }: UsePaymentsProps) {
+export function usePayments({
+  onComplete,
+  selectedOrder,
+  totalAmount,
+}: UsePaymentsProps) {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [selectedPayments, setSelectedPayments] = useState<PaymentMethod[]>([]);
   const [currentAmount, setCurrentAmount] = useState<string>("");
@@ -44,6 +55,7 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
   const { handlePaymentComplete } = useCustomerManagement();
   const { setViews: setViewsRight } = useRightViewContext();
   const { setViews: setViewsLeft } = useLeftViewContext();
+  const { customerIndex } = useRightViewContext();
 
   const order = useSelector(selectOrder);
   const dispatch = useDispatch();
@@ -68,15 +80,19 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
   }, [selectedPayments]);
 
   const getRemainingAmount = useCallback(() => {
-    return Number((order.total_amount - getTotalPaidAmount()).toFixed(2));
-  }, [order.total_amount, getTotalPaidAmount]);
+    const orderTotal = selectedOrder 
+      ? totalAmount || selectedOrder.total_amount 
+      : (order.changed_price !== null ? order.changed_price : order.total_amount);
+    return Number((orderTotal - getTotalPaidAmount()).toFixed(2));
+  }, [order.changed_price, order.total_amount, getTotalPaidAmount, selectedOrder, totalAmount]);
 
   const handlePaymentMethodSelect = useCallback(
     (method: PaymentMethod, initialAmount?: string) => {
       const remainingAmount = getRemainingAmount();
       const currentTotalPaid = getTotalPaidAmount();
+      const orderTotal = selectedOrder ? totalAmount || selectedOrder.total_amount : order.total_amount;
 
-      if (currentTotalPaid < order.total_amount) {
+      if (selectedPayments.length === 0 || currentTotalPaid < orderTotal) {
         const newPayment = {
           ...method,
           _id: `${method._id}_${Date.now()}`,
@@ -90,14 +106,21 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
       } else {
         toast.info(
           createToast(
-            "Payment completed",
-            "You have already paid the full amount",
+            "Maximum amount reached",
+            "The payment amount cannot exceed the order total",
             "info"
           )
         );
       }
     },
-    [getRemainingAmount, getTotalPaidAmount, order.total_amount]
+    [
+      getRemainingAmount,
+      getTotalPaidAmount,
+      order.total_amount,
+      selectedPayments.length,
+      selectedOrder,
+      totalAmount,
+    ]
   );
 
   const handleAmountInput = useCallback(
@@ -218,27 +241,44 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
   const handleComplete = useCallback(async () => {
     if (isProcessing) return;
 
+    const remainingAmount = getRemainingAmount();
+    if (remainingAmount > 0) {
+      toast.warning(
+        createToast(
+          "Incomplete Payment",
+          `There is still ${remainingAmount.toFixed(currency.toFixed || 2)} ${currency.symbol} remaining`,
+          "warning"
+        )
+      );
+      return;
+    }
+
     setIsProcessing(true);
 
     try {
-      // 1. Process the payment
+      // Ensure customer count is at least 1
+      dispatch(setCustomerCount(Math.max(customerIndex, 1)));
+
       const validPaymentData = selectedPayments.map((item) => ({
         payment_method_id: item.originalId,
         amount_given: item.amount,
       }));
-      if (order.shift_id) {
-        await createPayment({
-          order: order,
-          shift_id: order.shift_id,
+
+      const shiftId = localStorage.getItem("shiftId");
+
+      if (selectedOrder) {
+        await payOrder({
+          order_id: selectedOrder._id,
+          shift_id: shiftId,
           payments: validPaymentData,
         });
       } else {
         await createPayment({
           order: {
             ...order,
-            shift_id: localStorage.getItem("shiftId"),
+            shift_id: order.shift_id || shiftId,
           },
-          shift_id: localStorage.getItem("shiftId"),
+          shift_id: order.shift_id || shiftId,
           payments: validPaymentData,
         });
       }
@@ -266,9 +306,7 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
       toast.success(
         createToast(
           "Payment completed successfully",
-          `Total paid: ${getTotalPaidAmount().toFixed(currency.toFixed || 2)} ${
-            currency.symbol
-          }`,
+          `Total paid: ${getTotalPaidAmount().toFixed(currency.toFixed || 2)} ${currency.symbol}`,
           "success"
         )
       );
@@ -276,7 +314,6 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
       // Reset table number and coaster call
       setTableNumber("");
       setNumber("");
-
     } catch (error) {
       toast.error(
         createToast(
@@ -297,9 +334,11 @@ export function usePayments({ onComplete }: UsePaymentsProps) {
     setViewsRight,
     getTotalPaidAmount,
     order,
+    selectedOrder,
     dispatch,
     setTableNumber,
     setNumber,
+    customerIndex,
   ]);
 
   const resetPayments = useCallback(() => {

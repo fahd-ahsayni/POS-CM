@@ -2,8 +2,7 @@ import { printOrder } from "@/api/services";
 import {
   BillIcon,
   DishIcon,
-  PrinterIcon,
-  UserIcon,
+  UserIcon
 } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -12,15 +11,31 @@ import { toTitleCase } from "@/functions/string-transforms";
 import { cn } from "@/lib/utils";
 import { currency } from "@/preferences";
 import { Checkbox as HeadlessUICheckbox } from "@headlessui/react";
-import { useState } from "react";
 import Drawer from "../../Drawer";
 import CancelOrder from "../cancel-order/CancelOrder";
-import { useOrder } from "./context/OrderContext";
+import Payments from "../Payments/Payments";
+import { useOrderDetails } from "./hooks/useOrderDetails";
+import { useEffect } from "react";
 
 export default function OrderDetails() {
-  const { selectedOrder, openOrderDetails, setOpenOrderDetails } = useOrder();
-  const [selectedOrderlines, setSelectedOrderlines] = useState<string[]>([]);
-  const [openCancelOrder, setOpenCancelOrder] = useState(false);
+  const {
+    selectedOrder,
+    openOrderDetails,
+    setOpenOrderDetails,
+    selectedOrderlines,
+    setSelectedOrderlines,
+    openCancelOrder,
+    setOpenCancelOrder,
+    openPayments,
+    setOpenPayments,
+    handleProcessPayment,
+    handlePaymentComplete,
+    orderAmount
+  } = useOrderDetails();
+
+  useEffect(() => {
+    console.log("Selected Order:", selectedOrder);
+  }, [selectedOrder]);
 
   const toggleOrderLineSelection = (orderId: string) => {
     setSelectedOrderlines((prev) =>
@@ -82,7 +97,9 @@ export default function OrderDetails() {
 
   const calculateTotalPrice = (orderLine: any) => {
     // Use the price directly from the orderline
-    return (orderLine.price * orderLine.quantity).toFixed(currency.toFixed || 2);
+    return (orderLine.price * orderLine.quantity).toFixed(
+      currency.toFixed || 2
+    );
   };
 
   if (!selectedOrder) return null;
@@ -111,7 +128,7 @@ export default function OrderDetails() {
                       )
                     }
                     className={({ checked }) => `
-                      group block size-6 rounded border 
+                      group block size-7 p-1 rounded border 
                       ${
                         checked
                           ? "bg-primary-red border-primary-red"
@@ -149,7 +166,7 @@ export default function OrderDetails() {
                       className={cn(
                         "flex flex-col gap-4 w-full dark:bg-primary-black bg-neutral-bright-grey py-4 px-4 cursor-pointer",
                         selectedOrderlines.includes(orderLine._id) &&
-                          "ring-2 ring-primary-red"
+                          "ring-1 ring-primary-red"
                       )}
                       onClick={() => toggleOrderLineSelection(orderLine._id)}
                     >
@@ -221,10 +238,12 @@ export default function OrderDetails() {
                   Cancel Order
                 </Button>
               )}
+              {selectedOrder.status === "new" && (
+                <Button className="flex-1" onClick={handleProcessPayment}>
+                  Process Payment
+                </Button>
+              )}
               <Button size="icon" onClick={handlePrintBill}>
-                <PrinterIcon className="w-5 h-5 dark:!fill-white fill-primary-black" />
-              </Button>
-              <Button size="icon">
                 <BillIcon className="w-5 h-5 dark:!fill-white fill-primary-black -mr-1 mt-0.5" />
               </Button>
             </div>
@@ -232,6 +251,13 @@ export default function OrderDetails() {
         </div>
       </Drawer>
       <CancelOrder open={openCancelOrder} setOpen={setOpenCancelOrder} />
+      <Payments
+        open={openPayments}
+        setOpen={setOpenPayments}
+        onComplete={handlePaymentComplete}
+        selectedOrder={selectedOrder}
+        totalAmount={orderAmount}
+      />
     </>
   );
 }

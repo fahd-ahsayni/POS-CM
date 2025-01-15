@@ -13,7 +13,7 @@ import { currency } from "@/preferences/index";
 import { selectOrder } from "@/store/slices/order/create-order.slice";
 import { AnimatePresence, motion } from "framer-motion";
 import { Pencil, X } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import { useSelector } from "react-redux";
 import type { Swiper as SwiperType } from "swiper";
 import { Pagination } from "swiper/modules";
@@ -21,6 +21,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import Drawer from "../../Drawer";
 import { usePayments } from "./hooks/usePayments";
 import { BeatLoader } from "react-spinners";
+import { Order } from "@/types/order.types";
 
 interface PaymentMethod {
   _id: string;
@@ -32,9 +33,17 @@ interface PaymentsProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   onComplete?: (payments: PaymentMethod[]) => Promise<void>;
+  selectedOrder?: Order;
+  totalAmount?: number;
 }
 
-export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
+export default function Payments({
+  open,
+  setOpen,
+  onComplete,
+  selectedOrder,
+  totalAmount,
+}: PaymentsProps) {
   const {
     paymentMethods,
     selectedPayments,
@@ -49,12 +58,26 @@ export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
     removePaymentMethod,
     handleComplete,
     resetPayments,
-  } = usePayments({ onComplete });
+  } = usePayments({ 
+    onComplete, 
+    selectedOrder,
+    totalAmount 
+  });
 
   const order = useSelector(selectOrder);
+  const generalData = JSON.parse(localStorage.getItem("generalData") || "{}");
 
   const swiperRef = useRef<SwiperType>();
   const isManualSwipe = useRef(false);
+
+  const canEditPrice = useMemo(() => {
+    if (!generalData) return false;
+    const configs = generalData.configs;
+    const canEditPriceSetting = configs?.find(
+      (item: any) => item.key === "can_edit_price"
+    );
+    return canEditPriceSetting?.value;
+  }, []);
 
   useEffect(() => {
     if (!open) {
@@ -76,7 +99,10 @@ export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
 
   const getPaymentStatus = () => {
     const totalPaid = getTotalPaidAmount();
-    const difference = totalPaid - order.total_amount;
+    const orderTotal = selectedOrder 
+      ? (totalAmount || 0) 
+      : (order.changed_price !== null ? order.changed_price : order.total_amount);
+    const difference = totalPaid - orderTotal;
 
     if (difference === 0) {
       return <span className="text-success-color">Exact amount</span>;
@@ -135,7 +161,11 @@ export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
                 Total Amount
               </TypographySmall>
               <TypographyH2 className="text-center font-semibold">
-                {order.total_amount.toFixed(currency.toFixed || 2)}{" "}
+                {selectedOrder
+                  ? totalAmount?.toFixed(currency.toFixed || 2)
+                  : (order.changed_price !== null 
+                      ? order.changed_price.toFixed(currency.toFixed || 2)
+                      : order.total_amount.toFixed(currency.toFixed || 2))}{" "}
               </TypographyH2>
               <TypographyP className="text-center text-sm mt-0.5">
                 {getPaymentStatus()}
@@ -294,9 +324,20 @@ export default function Payments({ open, setOpen, onComplete }: PaymentsProps) {
                 "Complete Payment"
               )}
             </Button>
-            <Button size="icon" className="bg-warning-color/20" variant="link">
-              <Pencil className="h-5 w-5 text-warning-color" />
-            </Button>
+            {canEditPrice && (
+              <Button
+                size="icon"
+                className="bg-warning-color/20"
+                variant="link"
+                onClick={() => {
+                  // Add your edit price logic here
+                  console.log("Edit price clicked");
+                }}
+              >
+                <Pencil className="h-5 w-5 text-warning-color" />
+                <span className="sr-only">Edit price</span>
+              </Button>
+            )}
           </div>
         </div>
       </div>
