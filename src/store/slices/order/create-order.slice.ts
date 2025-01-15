@@ -15,7 +15,7 @@ const initialOrderState: OrderState = {
   notes: "",
   one_time: false,
   total_amount: 0,
-  changed_price: 0,
+  changed_price: null,
   order_type_id: null,
   orderlines: [],
 };

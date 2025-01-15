@@ -19,6 +19,7 @@ interface OrderSummaryState {
   openModalConfirmHoldOrder: boolean;
   openDrawerPayments: boolean;
   showTicket: boolean;
+  openModalConfirmOrder: boolean;
 }
 
 export const useOrderSummary = () => {
@@ -26,6 +27,7 @@ export const useOrderSummary = () => {
     openModalConfirmHoldOrder: false,
     openDrawerPayments: false,
     showTicket: false,
+    openModalConfirmOrder: false,
   });
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -75,24 +77,22 @@ export const useOrderSummary = () => {
           toggleAllCustomers();
         }
       },
-      handleProceedOrder: async () => {
+      handleProceedOrder: () => {
+        if (isProcessing || selectedProducts.length === 0) return;
+        updateState("openModalConfirmOrder", true);
+      },
+      handleConfirmOrder: async () => {
         if (isProcessing || selectedProducts.length === 0) return;
         setIsProcessing(true);
 
         try {
-          const orderType = JSON.parse(
-            localStorage.getItem("orderType") || "{}"
-          );
+          const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
           dispatch(setCustomerCount(Math.max(customerIndex, 1)));
 
           if (orderType?.creation_order_with_payment) {
-            // Open payment drawer for orders requiring payment
             updateState("openDrawerPayments", true);
           } else {
-            // Process order without payment
             await createOrderWithOutPayment(order);
-
-            // Reset state and show success message
             resetOrderState();
             toast.success(
               createToast(
@@ -113,6 +113,7 @@ export const useOrderSummary = () => {
           console.error("Order creation error:", error);
         } finally {
           setIsProcessing(false);
+          updateState("openModalConfirmOrder", false);
         }
       },
       handleShowTicket: () => {
@@ -131,6 +132,8 @@ export const useOrderSummary = () => {
           toggleAllCustomers();
         }
       },
+      setOpenModalConfirmOrder: (value: boolean) =>
+        updateState("openModalConfirmOrder", value),
     }),
     [
       selectedProducts.length,
