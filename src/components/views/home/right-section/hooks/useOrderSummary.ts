@@ -1,17 +1,19 @@
-import { Order } from "./../../../../../types/order.types";
+import { createOrderWithOutPayment } from "@/api/services";
+import { createToast } from "@/components/global/Toasters";
 import {
+  resetOrder,
   selectOrder,
   setCustomerCount,
 } from "@/store/slices/order/create-order.slice";
 import { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
-import { useRightViewContext } from "../contexts/RightViewContext";
-import { useOrderLines } from "../contexts/OrderLinesContext";
-import { useCustomerManagement } from "../hooks/useCustomerManagement";
-import { createOrderWithOutPayment } from "@/api/services";
+import { toast } from "react-toastify";
 import { ALL_CATEGORIES_VIEW } from "../../left-section/constants";
+import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { TYPE_OF_ORDER_VIEW } from "../constants";
+import { useOrderLines } from "../contexts/OrderLinesContext";
+import { useRightViewContext } from "../contexts/RightViewContext";
+import { useCustomerManagement } from "../hooks/useCustomerManagement";
 
 interface OrderSummaryState {
   openModalConfirmHoldOrder: boolean;
@@ -25,16 +27,17 @@ export const useOrderSummary = () => {
     openDrawerPayments: false,
     showTicket: false,
   });
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const { setViews: setViewsLeft } = useLeftViewContext();
-  const { setViews: setViewsRight } = useRightViewContext();
+  const { setViews: setViewsLeft, setSelectedProducts } = useLeftViewContext();
+  const { setViews: setViewsRight, customerIndex } = useRightViewContext();
+  const { handlePaymentComplete, addCustomer } = useCustomerManagement();
 
   const dispatch = useDispatch();
+  const order = useSelector(selectOrder);
 
   const { selectedProducts } = useLeftViewContext();
   const { expandedCustomers, toggleAllCustomers } = useOrderLines();
-  const { customerIndex } = useRightViewContext();
-  const { addCustomer } = useCustomerManagement();
 
   const isActionsDisabled = useMemo(
     () => selectedProducts.length === 0,
@@ -48,6 +51,23 @@ export const useOrderSummary = () => {
     []
   );
 
+  const resetOrderState = useCallback(() => {
+    const shiftId = order.shift_id;
+    dispatch(resetOrder());
+    setSelectedProducts([]);
+    handlePaymentComplete();
+    setViewsLeft(ALL_CATEGORIES_VIEW);
+    setViewsRight(TYPE_OF_ORDER_VIEW);
+    return shiftId;
+  }, [
+    dispatch,
+    setSelectedProducts,
+    handlePaymentComplete,
+    setViewsLeft,
+    setViewsRight,
+    order.shift_id,
+  ]);
+
   const handlers = useMemo(
     () => ({
       handleToggleAll: () => {
@@ -56,18 +76,43 @@ export const useOrderSummary = () => {
         }
       },
       handleProceedOrder: async () => {
-        const order = useSelector(selectOrder);
-        const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
-        if (orderType?.creation_order_with_payment) {
-          if (selectedProducts.length > 0) {
-            updateState("openDrawerPayments", true);
-            dispatch(setCustomerCount(Math.max(customerIndex, 1)));
-          }
-        } else {
+        if (isProcessing || selectedProducts.length === 0) return;
+        setIsProcessing(true);
+
+        try {
+          const orderType = JSON.parse(
+            localStorage.getItem("orderType") || "{}"
+          );
           dispatch(setCustomerCount(Math.max(customerIndex, 1)));
-          await createOrderWithOutPayment(order);
-          setViewsLeft(ALL_CATEGORIES_VIEW);
-          setViewsRight(TYPE_OF_ORDER_VIEW);
+
+          if (orderType?.creation_order_with_payment) {
+            // Open payment drawer for orders requiring payment
+            updateState("openDrawerPayments", true);
+          } else {
+            // Process order without payment
+            await createOrderWithOutPayment(order);
+
+            // Reset state and show success message
+            resetOrderState();
+            toast.success(
+              createToast(
+                "Order Created Successfully",
+                "Your order has been processed without payment",
+                "success"
+              )
+            );
+          }
+        } catch (error) {
+          toast.error(
+            createToast(
+              "Order Creation Failed",
+              "There was an error processing your order",
+              "error"
+            )
+          );
+          console.error("Order creation error:", error);
+        } finally {
+          setIsProcessing(false);
         }
       },
       handleShowTicket: () => {
@@ -94,6 +139,9 @@ export const useOrderSummary = () => {
       state.showTicket,
       addCustomer,
       customerIndex,
+      isProcessing,
+      order,
+      resetOrderState,
     ]
   );
 
@@ -102,6 +150,7 @@ export const useOrderSummary = () => {
       ...state,
       isActionsDisabled,
       expandedCustomers,
+      isProcessing,
     },
     actions: handlers,
   };
