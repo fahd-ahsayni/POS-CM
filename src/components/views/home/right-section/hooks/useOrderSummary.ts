@@ -4,6 +4,8 @@ import {
   resetOrder,
   selectOrder,
   setCustomerCount,
+  setClientId,
+  setTableId,
 } from "@/store/slices/order/create-order.slice";
 import { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,6 +16,8 @@ import { TYPE_OF_ORDER_VIEW } from "../constants";
 import { useOrderLines } from "../contexts/OrderLinesContext";
 import { useRightViewContext } from "../contexts/RightViewContext";
 import { useCustomerManagement } from "../hooks/useCustomerManagement";
+import { useCoasterCall } from "./useCoasterCall";
+import { useNumberOfTable } from "./useNumberOfTable";
 
 interface OrderSummaryState {
   openModalConfirmHoldOrder: boolean;
@@ -41,6 +45,9 @@ export const useOrderSummary = () => {
   const { selectedProducts } = useLeftViewContext();
   const { expandedCustomers, toggleAllCustomers } = useOrderLines();
 
+  const { setNumber: setCoasterNumber } = useCoasterCall();
+  const { setTableNumber } = useNumberOfTable();
+
   const isActionsDisabled = useMemo(
     () => selectedProducts.length === 0,
     [selectedProducts.length]
@@ -55,11 +62,26 @@ export const useOrderSummary = () => {
 
   const resetOrderState = useCallback(() => {
     const shiftId = order.shift_id;
+    
+    // Reset Redux store
     dispatch(resetOrder());
+    dispatch(setCustomerCount(1)); // Ensure customer count starts at 1
+    dispatch(setClientId(null));
+    dispatch(setTableId(null));
+    
+    // Reset local states
     setSelectedProducts([]);
     handlePaymentComplete();
+    setCoasterNumber("");
+    setTableNumber("");
+    
+    // Reset views
     setViewsLeft(ALL_CATEGORIES_VIEW);
     setViewsRight(TYPE_OF_ORDER_VIEW);
+    
+    // Clear localStorage items
+    localStorage.removeItem("tableNumber");
+    
     return shiftId;
   }, [
     dispatch,
@@ -68,6 +90,8 @@ export const useOrderSummary = () => {
     setViewsLeft,
     setViewsRight,
     order.shift_id,
+    setCoasterNumber,
+    setTableNumber
   ]);
 
   const handlers = useMemo(

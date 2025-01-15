@@ -166,8 +166,8 @@ export default function Sidebar() {
               title="reload"
               key="reload"
               className={cn(
-                "w-full p-2 rounded-lg flex flex-col items-center text-xs font-medium transition-all duration-150",
-                "dark:!bg-interactive-vivid-red/20 dark:hover:!bg-interactive-vivid-red/60 !border-interactive-dark-red/70"
+                "w-full p-2 rounded-lg flex flex-col items-center text-xs font-medium transition-all duration-150 text-white",
+                "bg-interactive-vivid-red/50 dark:bg-interactive-vivid-red/20 hover:!bg-interactive-vivid-red/60 !border-interactive-dark-red/70"
               )}
             >
               <RefreshCw className="h-4 w-4" />

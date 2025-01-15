@@ -81,14 +81,22 @@ export default function OrderDetails() {
   };
 
   const calculateTotalPrice = (orderLine: any) => {
-    // Base price from product variant
-    let total = orderLine.product_variant_id.price_ttc * orderLine.quantity;
+    // Get base price from the variant's menu price or default price
+    const basePrice = orderLine.product_variant_id.menus?.[0]?.price_ttc || 
+                     orderLine.product_variant_id.default_price || 
+                     orderLine.price;
 
-    // Add prices from supplements if they exist
+    // Calculate total with quantity
+    let total = basePrice * orderLine.quantity;
+
+    // Add prices from combo supplements if they exist
     if (orderLine.combo_supp_ids?.length > 0) {
       const supplementsTotal = orderLine.combo_supp_ids.reduce(
         (acc: number, supp: any) => {
-          return acc + supp.product_variant_id.price_ttc * supp.quantity;
+          const suppPrice = supp.product_variant_id.menus?.[0]?.price_ttc || 
+                           supp.product_variant_id.default_price || 
+                           supp.price || 0;
+          return acc + (suppPrice * supp.quantity);
         },
         0
       );
