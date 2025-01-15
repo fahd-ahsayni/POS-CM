@@ -12,6 +12,7 @@ import OrderLines from "../import/OrderLines";
 import Ticket from "../layouts/Ticket";
 import { OrderBannerOnSummary } from "../ui/OrderInfo";
 import OtherActionsOrderLines from "../ui/OtherActionsOrderLines";
+import ModalConfirmOrder from "@/components/global/modal/ModalConfirmOrder";
 
 const OrderSummary = () => {
   const { selectedProducts } = useLeftViewContext();
@@ -22,6 +23,8 @@ const OrderSummary = () => {
       showTicket,
       isActionsDisabled,
       expandedCustomers,
+      openModalConfirmOrder,
+      isProcessing,
     },
     actions: {
       setOpenModalConfirmHoldOrder,
@@ -29,8 +32,10 @@ const OrderSummary = () => {
       handleToggleAll,
       handleAddCustomer,
       handleProceedOrder,
+      handleConfirmOrder,
       handleShowTicket,
       handleHoldOrder,
+      setOpenModalConfirmOrder,
     },
   } = useOrderSummary();
 
@@ -46,6 +51,12 @@ const OrderSummary = () => {
       <ModalConfirmHoldOrder
         open={openModalConfirmHoldOrder}
         setOpen={setOpenModalConfirmHoldOrder}
+      />
+      <ModalConfirmOrder
+        open={openModalConfirmOrder}
+        setOpen={setOpenModalConfirmOrder}
+        onConfirm={handleConfirmOrder}
+        isProcessing={isProcessing}
       />
       <div className="flex flex-col justify-start h-full gap-y-2">
         <div className="flex items-center justify-between p-1">

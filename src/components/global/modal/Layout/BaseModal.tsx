@@ -13,6 +13,7 @@ interface BaseModalProps {
   onConfirm: () => void;
   onCancel: () => void;
   variant?: "warning" | "success" | "danger" | "default";
+  disabled?: boolean;
 }
 
 const getIconContainerClass = (variant: BaseModalProps["variant"]) => {
@@ -36,6 +37,7 @@ export default function BaseModal({
   onConfirm,
   onCancel,
   variant = "default",
+  disabled = false,
 }: BaseModalProps) {
   return (
     <ModalLayout isOpen={isOpen} closeModal={closeModal}>
@@ -64,10 +66,12 @@ export default function BaseModal({
         </div>
       </div>
       <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-        <Button variant="secondary" onClick={onCancel}>
+        <Button variant="secondary" onClick={onCancel} disabled={disabled}>
           {cancelText}
         </Button>
-        <Button onClick={onConfirm}>{confirmText}</Button>
+        <Button onClick={onConfirm} disabled={disabled}>
+          {confirmText}
+        </Button>
       </div>
     </ModalLayout>
   );
