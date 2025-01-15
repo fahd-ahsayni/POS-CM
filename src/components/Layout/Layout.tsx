@@ -47,7 +47,7 @@ const Layout = () => {
 
   useEffect(() => {
     if (generalStatus === "failed") {
-      navigate("/login");
+      navigate("/error");
     }
   }, [generalStatus, navigate]);
 

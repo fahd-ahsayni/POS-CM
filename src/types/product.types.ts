@@ -75,6 +75,7 @@ export interface Product extends BaseEntity {
   category_id: string;
   variants: ProductVariant[];
   quantity?: number;
+  customer_index?: number;
 }
 
 export interface ProductSelected extends Product {

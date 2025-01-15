@@ -20,7 +20,7 @@ interface OrderType {
 
 const OrderBadge: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="h-8 flex-1 flex items-center justify-center">
-    <span className="font-medium text-sm">{children}</span>
+    <span className="font-medium text-md">{children}</span>
   </div>
 );
 
@@ -60,10 +60,13 @@ const DeliveryOrder: React.FC<{ order: any; orderType: OrderType }> = ({
 }) => {
   const getDeliveryText = () => {
     if (order.delivery_guy_id === null && orderType.select_delivery_boy) {
-      return `${orderType.name} - N° ${order.delivery_guy_id}`;
+      return `${orderType.name}`;
     }
     if (order.delivery_guy_id === null && !orderType.select_delivery_boy) {
       return "Delivery";
+    }
+    if (order.delivery_guy_id !== null && orderType.select_delivery_boy) {
+      return `${orderType.name} - N° ${order.delivery_guy_id}`;
     }
     return "";
   };

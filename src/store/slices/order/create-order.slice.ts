@@ -184,7 +184,7 @@ const orderSlice = createSlice({
       state.data.total_amount = action.payload;
     },
     setCustomerCount: (state, action: PayloadAction<number>) => {
-      state.data.customer_count = action.payload;
+      state.data.customer_count = Math.max(action.payload, 1);
     },
     setWaiterId: (state, action: PayloadAction<number | null>) => {
       state.data.waiter_id = action.payload;

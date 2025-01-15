@@ -1,10 +1,17 @@
-import { setCustomerCount } from "@/store/slices/order/create-order.slice";
+import { Order } from "./../../../../../types/order.types";
+import {
+  selectOrder,
+  setCustomerCount,
+} from "@/store/slices/order/create-order.slice";
 import { useCallback, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { useRightViewContext } from "../contexts/RightViewContext";
 import { useOrderLines } from "../contexts/OrderLinesContext";
 import { useCustomerManagement } from "../hooks/useCustomerManagement";
+import { createOrderWithOutPayment } from "@/api/services";
+import { ALL_CATEGORIES_VIEW } from "../../left-section/constants";
+import { TYPE_OF_ORDER_VIEW } from "../constants";
 
 interface OrderSummaryState {
   openModalConfirmHoldOrder: boolean;
@@ -18,6 +25,9 @@ export const useOrderSummary = () => {
     openDrawerPayments: false,
     showTicket: false,
   });
+
+  const { setViews: setViewsLeft } = useLeftViewContext();
+  const { setViews: setViewsRight } = useRightViewContext();
 
   const dispatch = useDispatch();
 
@@ -45,10 +55,19 @@ export const useOrderSummary = () => {
           toggleAllCustomers();
         }
       },
-      handleProceedOrder: () => {
-        if (selectedProducts.length > 0) {
-          updateState("openDrawerPayments", true);
-          dispatch(setCustomerCount(customerIndex));
+      handleProceedOrder: async () => {
+        const order = useSelector(selectOrder);
+        const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
+        if (orderType?.creation_order_with_payment) {
+          if (selectedProducts.length > 0) {
+            updateState("openDrawerPayments", true);
+            dispatch(setCustomerCount(Math.max(customerIndex, 1)));
+          }
+        } else {
+          dispatch(setCustomerCount(Math.max(customerIndex, 1)));
+          await createOrderWithOutPayment(order);
+          setViewsLeft(ALL_CATEGORIES_VIEW);
+          setViewsRight(TYPE_OF_ORDER_VIEW);
         }
       },
       handleShowTicket: () => {
@@ -68,7 +87,14 @@ export const useOrderSummary = () => {
         }
       },
     }),
-    [selectedProducts.length, toggleAllCustomers, updateState, state.showTicket, addCustomer]
+    [
+      selectedProducts.length,
+      toggleAllCustomers,
+      updateState,
+      state.showTicket,
+      addCustomer,
+      customerIndex,
+    ]
   );
 
   return {

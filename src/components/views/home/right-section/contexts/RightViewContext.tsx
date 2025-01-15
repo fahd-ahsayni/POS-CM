@@ -1,6 +1,7 @@
 import { setCustomerCount } from "@/store/slices/order/create-order.slice";
 import { createContext, ReactNode, useCallback, useContext, useMemo, useState, useEffect } from "react";
 import { TYPE_OF_ORDER_VIEW } from "../constants";
+import { useDispatch } from 'react-redux';
 
 interface RightViewState {
   views: string;
@@ -21,6 +22,7 @@ interface RightViewContextType extends RightViewState {
 const RightViewContext = createContext<RightViewContextType>({} as RightViewContextType);
 
 export const RightViewProvider = ({ children }: { children: ReactNode }) => {
+  const dispatch = useDispatch();
   const [state, setState] = useState<RightViewState>({
     views: TYPE_OF_ORDER_VIEW,
     selectedOrderType: null,
@@ -45,8 +47,9 @@ export const RightViewProvider = ({ children }: { children: ReactNode }) => {
   }), [updateState]);
 
   useEffect(() => {
-    setCustomerCount(state.customerIndex);
-  }, [state.customerIndex]);
+    const validCustomerCount = Math.max(1, state.customerIndex);
+    dispatch(setCustomerCount(validCustomerCount));
+  }, [state.customerIndex, dispatch]);
 
   const contextValue = useMemo(
     () => ({
