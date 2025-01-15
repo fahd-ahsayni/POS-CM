@@ -1,17 +1,33 @@
-# Use the official Node.js image
-FROM node:18-alpine
+# Base stage
+FROM node:18-alpine as base
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Copy package.json and install dependencies
 COPY package*.json ./
+
 RUN npm install
 
-# Copy the application files
 COPY . .
 
-# Expose the development server port
-EXPOSE 5173
+# Development stage
+FROM base as development
 
-# Start the Vite development server
+EXPOSE 3000
+
 CMD ["npm", "run", "dev"]
+
+# Production build stage
+FROM base as build
+
+RUN npm run build
+
+# Production stage with nginx
+FROM nginx:stable-alpine as production
+
+COPY --from=build /app/build /usr/share/nginx/html
+
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 3001
+
+CMD ["nginx", "-g", "daemon off;"]
