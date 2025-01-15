@@ -267,6 +267,18 @@ const orderSlice = createSlice({
     resetClientId: (state) => {
       state.data.client_id = null;
     },
+    setChangedPrice: (
+      state,
+      action: PayloadAction<{
+        price: number;
+        reason?: string;
+        confirmed_by: string;
+      }>
+    ) => {
+      state.data.changed_price = action.payload.price;
+      state.data.price_change_reason = action.payload.reason;
+      state.data.price_change_confirmed_by = action.payload.confirmed_by;
+    },
   },
 });
 
@@ -293,6 +305,7 @@ export const {
   resetCoasterCall,
   resetTableId,
   resetClientId,
+  setChangedPrice,
 } = orderSlice.actions;
 
 export default orderSlice.reducer;

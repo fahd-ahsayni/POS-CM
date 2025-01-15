@@ -14,6 +14,8 @@ interface OrderState {
   changed_price: number | null;
   order_type_id: string | null;
   orderlines: any[];
+  price_change_reason?: string;
+  price_change_confirmed_by?: string;
 }
 
 interface OrderSliceState {
@@ -28,7 +30,6 @@ interface OrderLineDiscount {
   confirmed_by: string | number;
 }
 
-
 interface SetOrderTypePayload {
   order_type_id: string | null;
   table_id?: string | null;
@@ -37,8 +38,8 @@ interface SetOrderTypePayload {
 }
 
 interface PriceCalculation {
-    basePrice: number;
-    supplementsTotal: number;
-    unitPrice: number;
-    totalPrice: number;
-  }
+  basePrice: number;
+  supplementsTotal: number;
+  unitPrice: number;
+  totalPrice: number;
+}

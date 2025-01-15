@@ -74,4 +74,5 @@ export interface Order extends BaseEntity {
   updated_by: string | null;
   coaster_call: number | null;
   archived: boolean;
+  changed_price: number | null;
 }

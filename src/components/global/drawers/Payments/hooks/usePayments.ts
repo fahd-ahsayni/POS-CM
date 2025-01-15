@@ -80,47 +80,49 @@ export function usePayments({
   }, [selectedPayments]);
 
   const getRemainingAmount = useCallback(() => {
-    const orderTotal = selectedOrder 
-      ? totalAmount || selectedOrder.total_amount 
-      : (order.changed_price !== null ? order.changed_price : order.total_amount);
+    const orderTotal = selectedOrder
+      ? totalAmount || selectedOrder.total_amount
+      : order.changed_price !== null
+      ? order.changed_price
+      : order.total_amount;
+
     return Number((orderTotal - getTotalPaidAmount()).toFixed(2));
-  }, [order.changed_price, order.total_amount, getTotalPaidAmount, selectedOrder, totalAmount]);
+  }, [
+    order.changed_price,
+    order.total_amount,
+    getTotalPaidAmount,
+    selectedOrder,
+    totalAmount,
+  ]);
 
   const handlePaymentMethodSelect = useCallback(
     (method: PaymentMethod, initialAmount?: string) => {
       const remainingAmount = getRemainingAmount();
-      const currentTotalPaid = getTotalPaidAmount();
-      const orderTotal = selectedOrder ? totalAmount || selectedOrder.total_amount : order.total_amount;
 
-      if (selectedPayments.length === 0 || currentTotalPaid < orderTotal) {
-        const newPayment = {
-          ...method,
-          _id: `${method._id}_${Date.now()}`,
-          originalId: method._id,
-          amount: initialAmount ? parseFloat(initialAmount) : remainingAmount,
-        };
-
-        setSelectedPayments((prev) => [...prev, newPayment]);
-        setActivePaymentIndex((prev) => prev + 1);
-        setCurrentAmount(initialAmount || remainingAmount.toString());
-      } else {
-        toast.info(
+      // Prevent adding new payment method if remaining amount is >= price
+      if (remainingAmount <= 0) {
+        toast.warning(
           createToast(
-            "Maximum amount reached",
-            "The payment amount cannot exceed the order total",
-            "info"
+            "Payment amount exceeded",
+            "Cannot add more payment methods as the total amount has been covered",
+            "warning"
           )
         );
+        return;
       }
+
+      const newPayment = {
+        ...method,
+        _id: `${method._id}_${Date.now()}`,
+        originalId: method._id,
+        amount: initialAmount ? parseFloat(initialAmount) : remainingAmount,
+      };
+
+      setSelectedPayments((prev) => [...prev, newPayment]);
+      setActivePaymentIndex((prev) => prev + 1);
+      setCurrentAmount(initialAmount || remainingAmount.toString());
     },
-    [
-      getRemainingAmount,
-      getTotalPaidAmount,
-      order.total_amount,
-      selectedPayments.length,
-      selectedOrder,
-      totalAmount,
-    ]
+    [getRemainingAmount]
   );
 
   const handleAmountInput = useCallback(
@@ -246,7 +248,9 @@ export function usePayments({
       toast.warning(
         createToast(
           "Incomplete Payment",
-          `There is still ${remainingAmount.toFixed(currency.toFixed || 2)} ${currency.symbol} remaining`,
+          `There is still ${remainingAmount.toFixed(currency.toFixed || 2)} ${
+            currency.symbol
+          } remaining`,
           "warning"
         )
       );
@@ -306,7 +310,9 @@ export function usePayments({
       toast.success(
         createToast(
           "Payment completed successfully",
-          `Total paid: ${getTotalPaidAmount().toFixed(currency.toFixed || 2)} ${currency.symbol}`,
+          `Total paid: ${getTotalPaidAmount().toFixed(currency.toFixed || 2)} ${
+            currency.symbol
+          }`,
           "success"
         )
       );

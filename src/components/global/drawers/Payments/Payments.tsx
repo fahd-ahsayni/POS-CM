@@ -13,7 +13,7 @@ import { currency } from "@/preferences/index";
 import { selectOrder } from "@/store/slices/order/create-order.slice";
 import { AnimatePresence, motion } from "framer-motion";
 import { Pencil, X } from "lucide-react";
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useRef, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import type { Swiper as SwiperType } from "swiper";
 import { Pagination } from "swiper/modules";
@@ -22,6 +22,7 @@ import Drawer from "../../Drawer";
 import { usePayments } from "./hooks/usePayments";
 import { BeatLoader } from "react-spinners";
 import { Order } from "@/types/order.types";
+import EditPrice from "../edit-price/EditPrice";
 
 interface PaymentMethod {
   _id: string;
@@ -44,6 +45,8 @@ export default function Payments({
   selectedOrder,
   totalAmount,
 }: PaymentsProps) {
+  const [editPriceOpen, setEditPriceOpen] = useState(false);
+
   const {
     paymentMethods,
     selectedPayments,
@@ -58,10 +61,10 @@ export default function Payments({
     removePaymentMethod,
     handleComplete,
     resetPayments,
-  } = usePayments({ 
-    onComplete, 
+  } = usePayments({
+    onComplete,
     selectedOrder,
-    totalAmount 
+    totalAmount,
   });
 
   const order = useSelector(selectOrder);
@@ -99,9 +102,11 @@ export default function Payments({
 
   const getPaymentStatus = () => {
     const totalPaid = getTotalPaidAmount();
-    const orderTotal = selectedOrder 
-      ? (totalAmount || 0) 
-      : (order.changed_price !== null ? order.changed_price : order.total_amount);
+    const orderTotal = selectedOrder
+      ? totalAmount || 0
+      : order.changed_price !== null
+      ? order.changed_price
+      : order.total_amount;
     const difference = totalPaid - orderTotal;
 
     if (difference === 0) {
@@ -163,9 +168,9 @@ export default function Payments({
               <TypographyH2 className="text-center font-semibold">
                 {selectedOrder
                   ? totalAmount?.toFixed(currency.toFixed || 2)
-                  : (order.changed_price !== null 
-                      ? order.changed_price.toFixed(currency.toFixed || 2)
-                      : order.total_amount.toFixed(currency.toFixed || 2))}{" "}
+                  : order.changed_price !== null
+                  ? order.changed_price.toFixed(currency.toFixed || 2)
+                  : order.total_amount.toFixed(currency.toFixed || 2)}{" "}
               </TypographyH2>
               <TypographyP className="text-center text-sm mt-0.5">
                 {getPaymentStatus()}
@@ -329,10 +334,7 @@ export default function Payments({
                 size="icon"
                 className="bg-warning-color/20"
                 variant="link"
-                onClick={() => {
-                  // Add your edit price logic here
-                  console.log("Edit price clicked");
-                }}
+                onClick={() => setEditPriceOpen(true)}
               >
                 <Pencil className="h-5 w-5 text-warning-color" />
                 <span className="sr-only">Edit price</span>
@@ -341,6 +343,7 @@ export default function Payments({
           </div>
         </div>
       </div>
+      <EditPrice open={editPriceOpen} setOpen={setEditPriceOpen} />
     </Drawer>
   );
 }
