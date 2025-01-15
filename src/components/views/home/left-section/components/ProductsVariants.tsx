@@ -103,59 +103,71 @@ export default function ProductsVariants() {
 }
 
 const VariantCard = memo<VariantCardProps>(
-  ({ variant, isSelected, quantity, onSelect, onQuantityChange }) => (
-    <div
-      onClick={() => !isSelected && onSelect()}
-      tabIndex={0}
-      role="button"
-      onKeyPress={(e) => {
-        if (e.key === "Enter" && !isSelected) onSelect();
-      }}
-    >
-      <Card
-        className={cn(
-          "w-full h-full px-4 py-4 rounded-lg dark:bg-primary-black bg-neutral-bright-grey",
-          isSelected && "!ring-2 !ring-primary-red"
-        )}
+  ({ variant, isSelected, quantity, onSelect, onQuantityChange }) => {
+    const { currentMenu } = useLeftViewContext();
+
+    // Use the same price calculation logic as OrderLine
+    const variantPrice = useMemo(() => {
+      const menuPrice = variant.menus?.find(
+        (menu) => menu.menu_id === currentMenu
+      )?.price_ttc;
+      return menuPrice ?? variant.default_price ?? variant.price_ttc ?? 0;
+    }, [variant, currentMenu]);
+
+    return (
+      <div
+        onClick={() => !isSelected && onSelect()}
+        tabIndex={0}
+        role="button"
+        onKeyPress={(e) => {
+          if (e.key === "Enter" && !isSelected) onSelect();
+        }}
       >
-        <div className="flex items-center justify-between mb-4">
-          <TypographyP className="font-semibold capitalize text-sm">
-            {variant.name.toLowerCase()}
-          </TypographyP>
-          {isSelected && (
-            <div className="flex items-center gap-2">
-              <Button
-                slot="decrement"
-                className="-ms-px h-6 w-6 rounded bg-accent-white/10 hover:bg-accent-black/10"
-                size="icon"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onQuantityChange(variant._id, false);
-                }}
-              >
-                <Minus size={16} strokeWidth={2} aria-hidden="true" />
-              </Button>
-              <TypographyP className="px-1.5 font-medium">
-                {quantity}
-              </TypographyP>
-              <Button
-                slot="increment"
-                className="-ms-px h-6 w-6 rounded bg-accent-white/10 hover:bg-accent-black/10"
-                size="icon"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onQuantityChange(variant._id, true);
-                }}
-              >
-                <Plus size={16} strokeWidth={2} aria-hidden="true" />
-              </Button>
-            </div>
+        <Card
+          className={cn(
+            "w-full h-full px-4 py-4 rounded-lg dark:bg-primary-black bg-neutral-bright-grey",
+            isSelected && "!ring-2 !ring-primary-red"
           )}
-        </div>
-        <TypographySmall className="text-neutral-dark-grey font-medium text-xs">
-          {variant.price_ttc} Dhs
-        </TypographySmall>
-      </Card>
-    </div>
-  )
+        >
+          <div className="flex items-center justify-between mb-4">
+            <TypographyP className="font-semibold capitalize text-sm">
+              {variant.name.toLowerCase()}
+            </TypographyP>
+            {isSelected && (
+              <div className="flex items-center gap-2">
+                <Button
+                  slot="decrement"
+                  className="-ms-px h-6 w-6 rounded bg-accent-white/10 hover:bg-accent-black/10"
+                  size="icon"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onQuantityChange(variant._id, false);
+                  }}
+                >
+                  <Minus size={16} strokeWidth={2} aria-hidden="true" />
+                </Button>
+                <TypographyP className="px-1.5 font-medium">
+                  {quantity}
+                </TypographyP>
+                <Button
+                  slot="increment"
+                  className="-ms-px h-6 w-6 rounded bg-accent-white/10 hover:bg-accent-black/10"
+                  size="icon"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onQuantityChange(variant._id, true);
+                  }}
+                >
+                  <Plus size={16} strokeWidth={2} aria-hidden="true" />
+                </Button>
+              </div>
+            )}
+          </div>
+          <TypographySmall className="text-neutral-dark-grey font-medium text-xs">
+            {variantPrice} Dhs
+          </TypographySmall>
+        </Card>
+      </div>
+    );
+  }
 );

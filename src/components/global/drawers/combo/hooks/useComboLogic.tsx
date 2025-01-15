@@ -1,13 +1,15 @@
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
 import { Step } from "@/types/product.types";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useCombo } from "../context/ComboContext";
 import { checkProductAvailability } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
 import { toast } from "react-toastify";
 
 export function useComboLogic(currentStep: number, selectedStep?: Step) {
+  const [isFinishing, setIsFinishing] = useState(false);
+
   const {
     selections,
     setSelections,
@@ -22,7 +24,22 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
   const handleFinish = useCallback(async () => {
     if (!selectedCombo) return;
 
+    // Check if there are any selections
+    const hasVariants = selections.variants.length > 0;
+    const hasSupplements = selections.supplements.length > 0;
+
+    if (!hasVariants && !hasSupplements) {
+      toast.error(createToast(
+        "Invalid Combo",
+        "Please select at least one product for your combo",
+        "error"
+      ));
+      return;
+    }
+
     try {
+      setIsFinishing(true);
+
       // Check availability for all selected variants and supplements
       const variantsToCheck = [
         ...selections.variants,
@@ -43,8 +60,8 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
 
       // Create combo product with a unique identifier
       const comboProduct: any = {
-        id: `${selectedCombo._id}_${Date.now()}`, // Unique id
-        _id: selectedCombo._id, // Keep original _id
+        id: `${selectedCombo._id}_${Date.now()}`,
+        _id: selectedCombo._id,
         name: selectedCombo.name,
         quantity: 1,
         price: selectedCombo.price_ttc,
@@ -90,6 +107,8 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
         "Unable to verify product availability",
         "error"
       ));
+    } finally {
+      setIsFinishing(false);
     }
   }, [
     selectedCombo,
@@ -118,18 +137,20 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
     }
   }, [currentStep, selectedStep, setSelections]);
 
-  const getStepDescription = (step: Step): string => {
-    if (step.is_required && !step.is_supplement) {
-      return "All variants are automatically selected";
-    }
-    if (!step.is_required && !step.is_supplement) {
-      return `You can select up to ${step.number_of_products} items`;
-    }
-    if (!step.is_required && step.is_supplement) {
-      return "Select supplements and adjust quantities as needed";
-    }
-    return "";
+  return { 
+    getStepDescription: (step: Step): string => {
+      if (step.is_required && !step.is_supplement) {
+        return "All variants are automatically selected";
+      }
+      if (!step.is_required && !step.is_supplement) {
+        return `You can select up to ${step.number_of_products} items`;
+      }
+      if (!step.is_required && step.is_supplement) {
+        return "Select supplements and adjust quantities as needed";
+      }
+      return "";
+    }, 
+    handleFinish,
+    isFinishing
   };
-
-  return { getStepDescription, handleFinish };
 }

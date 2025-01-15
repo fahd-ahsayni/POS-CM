@@ -1,6 +1,6 @@
+import { calculateProductPrice } from "@/functions/priceCalculations";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../..";
-import { calculateProductPrice } from "@/functions/priceCalculations";
 
 const initialOrderState: OrderState = {
   waiter_id: null,
@@ -68,38 +68,54 @@ const orderSlice = createSlice({
       };
       state.data.total_amount = calculateTotalAmount(state.data.orderlines);
     },
-    updateOrderLine: (state, action: PayloadAction<any>) => {
-      const { _id, customerIndex, orderLine } = action.payload;
+    updateOrderLine: (
+      state,
+      action: PayloadAction<{
+        _id?: string;
+        customer_index: number;
+        product_variant_id?: string;
+        quantity: number;
+        price: number;
+        combo_prod_ids?: Array<{
+          product_variant_id: string;
+          quantity: number;
+          notes: string[];
+        }>;
+        combo_supp_ids?: Array<{
+          product_variant_id: string;
+          quantity: number;
+          notes: string[];
+          suite_commande: boolean;
+        }>;
+      }>
+    ) => {
+      const { _id, customer_index, product_variant_id, ...updateData } =
+        action.payload;
 
       // Find the index of the existing order line
       const orderLineIndex = state.data.orderlines.findIndex((ol) => {
-        // For combo products, check by id
-        if (ol.is_combo) {
-          return ol.id === _id && ol.customer_index === customerIndex;
+        if (_id) {
+          // For combo products, check by id
+          return ol.id === _id && ol.customer_index === customer_index;
         }
         // For regular products, check by product_variant_id
         return (
-          ol.product_variant_id === orderLine.product_variant_id &&
-          ol.customer_index === customerIndex
+          ol.product_variant_id === product_variant_id &&
+          ol.customer_index === customer_index
         );
       });
 
       if (orderLineIndex !== -1) {
-        // Update existing order line
-        state.data.orderlines[orderLineIndex] = {
-          ...state.data.orderlines[orderLineIndex],
-          ...orderLine,
-          quantity: orderLine.quantity,
-          price: orderLine.price,
-        };
-
-        // Remove the order line if quantity is 0
-        if (orderLine.quantity <= 0) {
+        if (updateData.quantity <= 0) {
+          // Remove the order line if quantity is 0
           state.data.orderlines.splice(orderLineIndex, 1);
+        } else {
+          // Update only the necessary fields
+          state.data.orderlines[orderLineIndex] = {
+            ...state.data.orderlines[orderLineIndex],
+            ...updateData,
+          };
         }
-      } else {
-        // Add new order line
-        state.data.orderlines.push(orderLine);
       }
 
       // Recalculate total amount

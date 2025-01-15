@@ -41,35 +41,72 @@ export const useProducts = (initialProducts?: Product[]) => {
       const storedGeneralData = localStorage.getItem("generalData");
       if (storedGeneralData) {
         const parsedData = JSON.parse(storedGeneralData);
-        
-        // Filter products that belong to the current menu and handle variants properly
-        const extractedProducts = parsedData.products.filter((product: Product) => {
-          const isInCurrentMenu = product.menus.some(
-            (menuProduct) => 
-              menuProduct.menu_id === currentMenu && 
-              menuProduct.is_displayed === true &&
-              menuProduct.in_pos === true
-          );
 
-          // Check if product has valid variants for combo
-          const hasValidVariants = product.variants.some((variant: ProductVariant) => 
-            variant.menus.some(menu => 
-              menu.menu_id === currentMenu && 
-              variant.is_menu === true
-            )
-          );
+        // Filter products that belong to the current menu
+        const extractedProducts = parsedData.products.filter(
+          (product: Product) => {
+            // Safety check for product and its properties
+            if (!product || !Array.isArray(product.menus)) {
+              console.warn("Invalid product structure:", product);
+              return false;
+            }
 
-          return isInCurrentMenu && (hasValidVariants || !product.variants.some(v => v.is_menu));
+            // Check if product is in current menu
+            const isInCurrentMenu = product.menus.some(
+              (menuProduct) =>
+                menuProduct?.menu_id === currentMenu &&
+                menuProduct?.is_displayed === true &&
+                menuProduct?.in_pos === true
+            );
+
+            if (!isInCurrentMenu) return false;
+
+            // Safety check for variants array
+            if (!Array.isArray(product.variants)) {
+              console.warn("Product has no variants array:", product);
+              return false;
+            }
+
+            // Include product if it has no variants
+            if (product.variants.length === 0) return true;
+
+            // Check for valid variants
+            const hasValidVariant = product.variants.some(
+              (variant: ProductVariant) => {
+                if (!variant) return false;
+
+                // Include variant if it's not menu-specific
+                if (!variant.is_menu) return true;
+
+                // Safety check for variant menus
+                if (!Array.isArray(variant.menus)) return false;
+
+                return variant.menus.some(
+                  (menu) => menu?.menu_id === currentMenu
+                );
+              }
+            );
+
+            return hasValidVariant;
+          }
+        );
+
+        console.log("Debug Info:", {
+          currentMenu,
+          totalProducts: parsedData.products?.length || 0,
+          filteredProducts: extractedProducts.length,
+          sampleProduct: extractedProducts[0] || null,
         });
-
-        console.log('Current Menu:', currentMenu);
-        console.log('Filtered Products:', extractedProducts);
 
         setState({ products: extractedProducts, loading: false });
       }
     } catch (error) {
       console.error("Error loading products:", error);
-      setState((prev) => ({ ...prev, loading: false }));
+      console.error("Error details:", {
+        currentMenu,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+      setState((prev) => ({ ...prev, loading: false, products: [] }));
     }
   }, [currentMenu]);
 

@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import "swiper/css";
 import "swiper/css/grid";
 import "swiper/css/navigation";
@@ -60,6 +60,28 @@ export default function CustomSwiper({
       }
     : false;
 
+  // Calculate the number of empty slots needed to complete the grid
+  const fillerSlides = useMemo(() => {
+    if (!grid) return 0;
+    const totalSlots =
+      Math.ceil(children.length / (grid.rows * slidesPerView)) *
+      (grid.rows * slidesPerView);
+    return totalSlots - children.length;
+  }, [children.length, grid, slidesPerView]);
+
+  // Create array of empty slides to fill the grid
+  const emptySlides = useMemo(
+    () =>
+      Array(fillerSlides)
+        .fill(null)
+        .map((_, index) => (
+          <SwiperSlide key={`empty-${index}`} className="swiper-slide-empty">
+            <div className="invisible" />
+          </SwiperSlide>
+        )),
+    [fillerSlides]
+  );
+
   return (
     <Swiper
       direction={direction}
@@ -69,13 +91,14 @@ export default function CustomSwiper({
       spaceBetween={spaceBetween}
       pagination={paginationConfig}
       modules={defaultModules}
-      className={className}
+      className={`${className} custom-swiper-container`}
       onInit={onInit}
       onSlideChange={onSlideChange}
     >
       {children.map((child, index) => (
         <SwiperSlide key={index}>{child}</SwiperSlide>
       ))}
+      {emptySlides}
     </Swiper>
   );
 }

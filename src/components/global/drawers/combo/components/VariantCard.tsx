@@ -1,15 +1,15 @@
-import { DishIcon, SuiteCommandIcon } from "@/assets/figma-icons";
+import { DishIcon } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
+import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 import OderLineAddComments from "@/components/views/home/right-section/ui/OderLineAddComments";
+import { toTitleCase } from "@/functions/string-transforms";
 import { cn } from "@/lib/utils";
 import { currency } from "@/preferences";
 import { ProductVariant, Step } from "@/types/product.types";
 import { Minus, Plus } from "lucide-react";
-import { useState } from "react";
 import { useCombo } from "../context/ComboContext";
-import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 
 interface VariantCardProps {
   variant: ProductVariant;
@@ -34,14 +34,19 @@ export function VariantCard({
   customerIndex,
 }: VariantCardProps) {
   const { currentMenu } = useLeftViewContext();
-  const { updateVariantNotes, updateVariantSuiteCommande } = useCombo();
-  const [suiteCommande, setSuiteCommande] = useState(
-    variant.suite_commande || false
-  );
+  /* TODO SUITE COMMAND COMBO: ADD "updateVariantSuiteCommande" */
+  const { updateVariantNotes } = useCombo();
 
-  const variantPrice = variant.menus?.find(
-    (menu) => menu.menu_id === currentMenu
-  )?.price_ttc ?? variant.default_price ?? 0;
+  /* TODO SUITE COMMAND COMBO: ADD "suiteCommande" STATE */
+
+  // const [suiteCommande, setSuiteCommande] = useState(
+  //   variant.suite_commande || false
+  // );
+
+  const variantPrice =
+    variant.menus?.find((menu) => menu.menu_id === currentMenu)?.price_ttc ??
+    variant.default_price ??
+    0;
 
   const handleQuantityChange = (e: React.MouseEvent, increment: boolean) => {
     e.preventDefault();
@@ -49,13 +54,14 @@ export function VariantCard({
     onQuantityChange?.(increment);
   };
 
-  const handleSuiteCommandeToggle = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const newValue = !suiteCommande;
-    setSuiteCommande(newValue);
-    updateVariantSuiteCommande(variant._id, newValue, step.is_supplement);
-  };
+  /* TODO SUITE COMMAND COMBO: ACTIVATE THIS FUNCTION */
+  // const handleSuiteCommandeToggle = (e: React.MouseEvent) => {
+  //   e.preventDefault();
+  //   e.stopPropagation();
+  //   const newValue = !suiteCommande;
+  //   setSuiteCommande(newValue);
+  //   updateVariantSuiteCommande(variant._id, newValue, step.is_supplement);
+  // };
 
   const handleNotesUpdate = (notes: string[]) => {
     updateVariantNotes(variant._id, notes, step.is_supplement);
@@ -71,13 +77,12 @@ export function VariantCard({
     >
       <div className="flex justify-between items-center h-full">
         <div className="flex flex-col gap-1 justify-between h-full">
-          <TypographyP className="font-medium capitalize text-sm">
-            {variant.name.toLowerCase()}
+          <TypographyP className="font-medium text-sm">
+            {toTitleCase(variant.name.toLowerCase())}
           </TypographyP>
           {step.is_supplement && (
             <TypographySmall className="text-sm text-neutral-dark-grey">
-              {variantPrice.toFixed(currency.toFixed || 2)}{" "}
-              {currency.currency}
+              {variantPrice.toFixed(currency.toFixed || 2)} {currency.currency}
             </TypographySmall>
           )}
         </div>
@@ -140,7 +145,8 @@ export function VariantCard({
                     onNotesUpdate={handleNotesUpdate}
                   />
                 </div>
-                <Button
+                {/* TODO SUITE COMMAND COMBO: ACTIVATE THIS BUTTON */}
+                {/* <Button
                   size="icon"
                   variant="ghost"
                   className={cn(
@@ -157,7 +163,7 @@ export function VariantCard({
                         : "!text-primary-black dark:!text-white"
                     )}
                   />
-                </Button>
+                </Button> */}
               </>
             )}
           </div>

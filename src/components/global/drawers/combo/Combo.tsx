@@ -5,24 +5,20 @@ import Drawer from "../../Drawer";
 import { StepContent } from "./components/StepContent";
 import { ComboProvider, useCombo } from "./context/ComboContext";
 import { useComboLogic } from "./hooks/useComboLogic";
+import { BeatLoader } from "react-spinners";
 
 function ComboContent() {
   const { selectedCombo } = useLeftViewContext();
   console.log("selectedCombo", selectedCombo);
   const { currentStep, selections } = useCombo();
   const { handleNavigation } = useCombo();
-  const { handleFinish } = useComboLogic(
+  const { handleFinish, isFinishing, getStepDescription } = useComboLogic(
     currentStep,
     selectedCombo?.steps[currentStep]
   );
 
   console.log("currentStep", currentStep);
   console.log("selections", selections);
-
-  const { getStepDescription } = useComboLogic(
-    currentStep,
-    selectedCombo?.steps[currentStep]
-  );
 
   if (!selectedCombo) return null;
 
@@ -54,7 +50,7 @@ function ComboContent() {
       <TypographySmall className="mb-4 font-medium">
         {getStepDescription(currentStepData)}
       </TypographySmall>
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto pr-2">
         {currentStepData && <StepContent step={currentStepData} />}
       </main>
 
@@ -64,12 +60,17 @@ function ComboContent() {
             variant="secondary"
             className="flex-1 bg-white dark:bg-white/10 shadow border border-border"
             onClick={() => handleNavigation("previous")}
+            disabled={isFinishing}
           >
             Previous
           </Button>
         )}
-        <Button className="flex-1" onClick={handleNextOrFinish}>
-          {isLastStep ? "Finish" : "Next"}
+        <Button
+          className="flex-1"
+          onClick={handleNextOrFinish}
+          disabled={isFinishing}
+        >
+          {isLastStep ? (isFinishing ? <BeatLoader color="#fff" size={8} /> : "Finish") : "Next"}
         </Button>
       </footer>
     </div>

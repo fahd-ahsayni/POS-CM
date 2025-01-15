@@ -180,3 +180,12 @@
 .products-swiper .swiper-pagination-bullet.hidden {
   display: none;
 }
+
+.swiper-slide-empty {
+  pointer-events: none;
+  visibility: hidden;
+}
+.custom-swiper-container {
+  min-height: 0;
+  min-width: 0;
+}

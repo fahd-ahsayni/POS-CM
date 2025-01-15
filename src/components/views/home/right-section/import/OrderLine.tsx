@@ -1,20 +1,18 @@
-import { DishIcon, SuiteCommandIcon } from "@/assets/figma-icons";
+import { DishIcon } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
+import { calculateProductPrice } from "@/functions/priceCalculations";
 import { toTitleCase } from "@/functions/string-transforms";
 import { currency } from "@/preferences";
-import { updateOrderLine } from "@/store/slices/order/create-order.slice";
+import { ProductSelected } from "@/types/product.types";
 import { motion } from "framer-motion";
 import { Minus, Plus } from "lucide-react";
-import { memo, useCallback, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
+import { memo, useCallback, useMemo } from "react";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { useRightViewContext } from "../contexts/RightViewContext";
 import OderLineAddComments from "../ui/OderLineAddComments";
 import OrderLineOtherActions from "../ui/OrderLineOtherActions";
-import { calculateProductPrice } from "@/functions/priceCalculations";
-import { ProductSelected } from "@/types/product.types";
 
 interface OrderLineProps {
   item: {
@@ -39,17 +37,27 @@ interface OrderLineProps {
 }
 
 export function OrderLine({ item, increment, decrement }: OrderLineProps) {
-  const [isSuitCamand, setIsSuitCamand] = useState(
-    item.suite_commande || false
-  );
-  const dispatch = useDispatch();
+  /* TODO SUITE COMMAND: ADD IS SUITE STATE HERE  */
+  // const [isSuitCamand, setIsSuitCamand] = useState(
+  //   item.suite_commande || false
+  // );
   const { customerIndex, setCustomerIndex } = useRightViewContext();
-  const { selectedProducts, setSelectedProducts, currentMenu } =
-    useLeftViewContext();
+
+  /* TODO SUITE COMMAND: ADD SELECTED PRODUCTS STATE HERE */
+  const { currentMenu } = useLeftViewContext();
 
   const prices = useMemo(() => {
-    if (!currentMenu) return calculateProductPrice(item as ProductSelected, null, item.quantity);
-    return calculateProductPrice(item as ProductSelected, currentMenu, item.quantity);
+    if (!currentMenu)
+      return calculateProductPrice(
+        item as ProductSelected,
+        null,
+        item.quantity
+      );
+    return calculateProductPrice(
+      item as ProductSelected,
+      currentMenu,
+      item.quantity
+    );
   }, [item, currentMenu]);
 
   const itemVariants = useMemo(
@@ -88,44 +96,44 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
     decrement();
   };
 
-  const handleSuiteCommandeToggle = () => {
-    selectCustomer();
-    const currentCustomerIndex = item.customer_index || customerIndex;
+  /* TODO SUITE COMMAND: ACTIVATE THIS FUNCTION */
 
-    const updatedOrderLine = {
-      ...item,
-      suite_commande: !isSuitCamand,
-      high_priority: !isSuitCamand ? false : item.high_priority,
-      customer_index: currentCustomerIndex,
-    };
+  // const handleSuiteCommandeToggle = () => {
+  //   selectCustomer();
+  //   const currentCustomerIndex = item.customer_index || customerIndex;
 
-    dispatch(
-      updateOrderLine({
-        _id: item._id,
-        customerIndex: currentCustomerIndex,
-        orderLine: updatedOrderLine,
-      })
-    );
+  //   const updatedOrderLine = {
+  //     ...item,
+  //     suite_commande: !isSuitCamand,
+  //     high_priority: !isSuitCamand ? false : item.high_priority,
+  //     customer_index: currentCustomerIndex,
+  //   };
 
-    const updatedProducts = selectedProducts.map((product) => {
-      if (
-        product._id === item._id &&
-        product.customer_index === currentCustomerIndex
-      ) {
-        return {
-          ...product,
-          suite_commande: !isSuitCamand,
-          high_priority: !isSuitCamand ? false : product.high_priority,
-        };
-      }
-      return product;
-    });
-    setSelectedProducts(updatedProducts);
+  //   dispatch(
+  //     updateOrderLine({
+  //       _id: item._id,
+  //       customerIndex: currentCustomerIndex,
+  //       orderLine: updatedOrderLine,
+  //     })
+  //   );
 
-    setIsSuitCamand(!isSuitCamand);
-  };
+  //   const updatedProducts = selectedProducts.map((product) => {
+  //     if (
+  //       product._id === item._id &&
+  //       product.customer_index === currentCustomerIndex
+  //     ) {
+  //       return {
+  //         ...product,
+  //         suite_commande: !isSuitCamand,
+  //         high_priority: !isSuitCamand ? false : product.high_priority,
+  //       };
+  //     }
+  //     return product;
+  //   });
+  //   setSelectedProducts(updatedProducts);
 
-  console.log(item);
+  //   setIsSuitCamand(!isSuitCamand);
+  // };
 
   return (
     <motion.div
@@ -160,7 +168,8 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
             )}
           </div>
           <div className="flex items-center gap-x-2">
-            {isSuitCamand ? (
+            {/* TODO SUITE COMMAND: ADD IS SUITE STATE HERE  */}
+            {false ? (
               <div className="flex items-center">
                 <TypographyP className="px-1.5 font-medium">
                   {item.quantity}
@@ -210,8 +219,8 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
                 key={`${variant.name}-${idx}`}
                 className="text-sm space-x-2"
               >
-                <span className="font-semibold">x{variant.quantity}</span>
-                <span className="capitalize first-letter:uppercase dark:text-neutral-bright-grey/90 text-primary-black/90">
+                <span className="font-medium">x{variant.quantity}</span>
+                <span className="first-letter:uppercase dark:text-neutral-bright-grey text-primary-black/90 tracking-wide">
                   {toTitleCase(variant.name)}
                 </span>
               </TypographySmall>
@@ -220,20 +229,24 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
             {item.combo_items.supplements.length > 0 && (
               <div className="mt-1">
                 {item.combo_items.supplements.map((supp, idx) => {
-                  const suppPrice = supp.menus?.find(
-                    (menu: any) => menu.menu_id === currentMenu
-                  )?.price_ttc || supp.default_price || 0;
+                  const suppPrice =
+                    supp.menus?.find(
+                      (menu: any) => menu.menu_id === currentMenu
+                    )?.price_ttc ||
+                    supp.default_price ||
+                    0;
                   const price = suppPrice * supp.quantity;
                   return (
                     <div key={`${supp.name}-${idx}`}>
                       <TypographySmall className="text-sm space-x-2">
-                        <span className="font-semibold">x{supp.quantity}</span>
-                        <span className="capitalize first-letter:uppercase dark:text-neutral-bright-grey/90 text-primary-black/90">
+                        <span className="font-medium">x{supp.quantity}</span>
+                        <span className="first-letter:uppercase dark:text-neutral-bright-grey text-primary-black/90 tracking-wid">
                           {toTitleCase(supp.name)}
                         </span>
                       </TypographySmall>
-                      <TypographySmall className="font-semibold">
-                        +{price.toFixed(currency.toFixed || 2)} {currency.currency}
+                      <TypographySmall className="font-medium">
+                        +{price.toFixed(currency.toFixed || 2)}{" "}
+                        {currency.currency}
                       </TypographySmall>
                     </div>
                   );
@@ -253,14 +266,14 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
               customerIndex={item.customer_index || customerIndex}
               initialNotes={item.notes || []}
             />
-            <Button
+            {/* <Button
               size="icon"
               variant="ghost"
               className="-ms-px rounded h-7 w-7 bg-accent-white/10 hover:bg-accent-white/20"
               onClick={handleSuiteCommandeToggle}
             >
               <SuiteCommandIcon className="!text-primary-black dark:!text-white h-4 w-4" />
-            </Button>
+            </Button> */}
 
             <OrderLineOtherActions item={item} />
           </div>

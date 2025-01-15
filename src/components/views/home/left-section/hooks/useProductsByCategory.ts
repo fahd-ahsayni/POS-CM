@@ -15,7 +15,6 @@ export const useProductsByCategory = () => {
     setSubCategory,
     setOpenDrawerCombo,
     setSelectedCombo,
-    currentMenu,
   } = useLeftViewContext();
 
   const { orderType, customerIndex } = useRightViewContext();
