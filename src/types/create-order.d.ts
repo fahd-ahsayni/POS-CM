@@ -11,7 +11,7 @@ interface OrderState {
   notes: string;
   one_time: boolean;
   total_amount: number;
-  changed_price: number;
+  changed_price: number | null;
   order_type_id: string | null;
   orderlines: any[];
 }
