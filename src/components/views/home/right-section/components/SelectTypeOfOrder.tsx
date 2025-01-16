@@ -43,7 +43,6 @@ function SelectTypeOfOrder() {
                   key={type._id}
                   orderType={type}
                   onSelect={handleTypeSelect(type)}
-                  isSelected={selectedType?._id === type._id}
                 />
               ))}
             </>

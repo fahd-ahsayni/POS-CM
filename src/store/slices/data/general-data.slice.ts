@@ -1,6 +1,6 @@
 import { logoutService } from "@/api/services";
 // Import required modules
-import { GeneralData, GeneralDataState } from "@/types/general.types";
+import { GeneralData, GeneralDataState } from "@/types/general.d";
 import {
   createAsyncThunk,
   createSlice,
@@ -94,7 +94,7 @@ const generalDataSlice = createSlice({
   initialState,
   reducers: {
     // Add sync reducers if needed
-    resetGeneralData: (state) => {
+    resetGeneralData: () => {
       return initialState;
     },
   },

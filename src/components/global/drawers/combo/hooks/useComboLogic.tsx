@@ -31,8 +31,8 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
     if (!hasVariants && !hasSupplements) {
       toast.error(createToast(
         "Invalid Combo",
-        "Please select at least one product for your combo",
-        "error"
+        "Please select at least one product",
+        "warning"
       ));
       return;
     }

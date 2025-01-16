@@ -73,7 +73,7 @@ export const useSelectPos = (): UseSelectPosReturn => {
 
       if (isAuthorizedUser) {
         setShiftId(findPos.shift?._id ?? "");
-        localStorage.setItem("shiftID", findPos.shift?._id ?? "");
+        localStorage.setItem("shiftId", findPos.shift?._id ?? "");
         toast.success(
           createToast(
             TOAST_MESSAGES.WELCOME_BACK,
@@ -134,7 +134,7 @@ export const useSelectPos = (): UseSelectPosReturn => {
 
   useEffect(() => {
     localStorage.removeItem("posId");
-    localStorage.removeItem("shiftID");
+    localStorage.removeItem("shiftId");
   }, []);
 
   return {

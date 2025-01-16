@@ -81,8 +81,8 @@ export default function ApplyDiscountInfo({
     } catch (error) {
       toast.error(
         createToast(
-          "Error applying discount",
-          "An unexpected error occurred while trying to apply the discount",
+          "Apply Discount failed",
+          "Please try again",
           "error"
         )
       );

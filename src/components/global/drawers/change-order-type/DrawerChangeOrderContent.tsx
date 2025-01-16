@@ -14,7 +14,6 @@ export default function DrawerChangeOrderContent() {
     showForm,
     handleBack,
     setOpen,
-    selectedType,
     handleOrderTypeSelect,
     displayedTypes,
   } = useChangeOrderType();
@@ -145,7 +144,6 @@ export default function DrawerChangeOrderContent() {
               key={orderType._id}
               orderType={orderType}
               onSelect={() => handleOrderTypeSelect(orderType)}
-              isSelected={selectedType?._id === orderType._id}
               fixedLightDark={true}
             />
           ))}

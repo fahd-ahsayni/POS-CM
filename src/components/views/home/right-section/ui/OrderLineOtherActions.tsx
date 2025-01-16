@@ -34,19 +34,12 @@ export default function OrderLineOtherActions({
     const currentCustomerIndex = item.customer_index || customerIndex;
 
     // If enabling high_priority, ensure suite_commande is false
-    const updatedOrderLine = {
-      ...item,
-      high_priority: enabled,
-      suite_commande: enabled ? false : item.suite_commande, // Force suite_commande to false if high_priority is true
-      customer_index: currentCustomerIndex,
-    };
-
-    // Update Redux store
     dispatch(
       updateOrderLine({
         _id: item._id,
-        customerIndex: currentCustomerIndex,
-        orderLine: updatedOrderLine,
+        customer_index: currentCustomerIndex,
+        high_priority: enabled,
+        suite_commande: enabled ? false : item.suite_commande,
       })
     );
 
@@ -101,7 +94,7 @@ export default function OrderLineOtherActions({
         cancelText="Cancel"
       />
 
-      <ApplyProductDiscount 
+      <ApplyProductDiscount
         open={isDiscountDrawerOpen}
         setOpen={setIsDiscountDrawerOpen}
         orderLine={item}

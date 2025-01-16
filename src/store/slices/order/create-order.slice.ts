@@ -133,6 +133,9 @@ const orderSlice = createSlice({
         quantity?: number;
         price?: number;
         notes?: string[];
+        discount?: OrderLineDiscount;
+        high_priority?: boolean;
+        suite_commande?: boolean;
         combo_prod_ids?: Array<{
           product_variant_id: string;
           quantity: number;

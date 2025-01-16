@@ -81,11 +81,13 @@ export function usePayments({
   }, [selectedPayments]);
 
   const getRemainingAmount = useCallback(() => {
-    const orderTotal = editedAmount ?? (selectedOrder
-      ? totalAmount || 0
-      : order.changed_price !== null
-      ? order.changed_price
-      : order.total_amount);
+    const orderTotal =
+      editedAmount ??
+      (selectedOrder
+        ? totalAmount || 0
+        : order.changed_price !== null
+        ? order.changed_price
+        : order.total_amount);
 
     return Number((orderTotal - getTotalPaidAmount()).toFixed(2));
   }, [
@@ -106,7 +108,7 @@ export function usePayments({
         toast.warning(
           createToast(
             "Payment amount exceeded",
-            "Cannot add more payment methods as the total amount has been covered",
+            "Cannot add more payments",
             "warning"
           )
         );
@@ -176,7 +178,13 @@ export function usePayments({
       }
 
       if (activePaymentIndex === -1) {
-        toast.error("Please select a payment method first");
+        toast.warning(
+          createToast(
+            "Payment method required",
+            "Please select a payment method first",
+            "warning"
+          )
+        );
         return;
       }
 
@@ -204,7 +212,13 @@ export function usePayments({
   const handleQuickAmount = useCallback(
     (amount: number) => {
       if (activePaymentIndex === -1) {
-        toast.error("Please select a payment method first");
+        toast.warning(
+          createToast(
+            "Payment method required",
+            "Please select a payment method first",
+            "warning"
+          )
+        );
         return;
       }
 
@@ -325,8 +339,8 @@ export function usePayments({
     } catch (error) {
       toast.error(
         createToast(
-          "Failed to process payment",
-          "Check your payment details and try again or contact support",
+          "Payment failed",
+          "Please try again or contact support",
           "error"
         )
       );

@@ -75,8 +75,8 @@ export default function CancelOrderReason({
     } catch (error) {
       toast.error(
         createToast(
-          "Error canceling order",
-          "An unexpected error occurred while trying to cancel the order",
+          "Cancel Order failed",
+          "Please try again",
           "error"
         )
       );

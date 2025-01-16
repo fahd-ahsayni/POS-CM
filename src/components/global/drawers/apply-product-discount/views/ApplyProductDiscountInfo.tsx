@@ -75,11 +75,8 @@ export default function ApplyProductDiscountInfo({
       dispatch(
         updateOrderLine({
           _id: orderLine._id,
-          customerIndex: orderLine.customer_index,
-          orderLine: {
-            ...orderLine,
-            discount: discountInfo,
-          },
+          customer_index: orderLine.customer_index,
+          discount: discountInfo,
         })
       );
 
@@ -104,8 +101,8 @@ export default function ApplyProductDiscountInfo({
     } catch (error) {
       toast.error(
         createToast(
-          "Error applying discount",
-          "An unexpected error occurred while trying to apply the discount",
+          "Apply Product Discount failed",
+          "Please try again",
           "error"
         )
       );

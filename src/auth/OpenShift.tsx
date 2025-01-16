@@ -50,7 +50,7 @@ export default function OpenShift({
         const res = await openShift(amount, posId);
         if (res.status === 200) {
           setShiftId(res.data.shift._id);
-          localStorage.setItem("shiftID", res.data.shift._id);
+          localStorage.setItem("shiftId", res.data.shift._id);
         }
       } else if (shiftId) {
         await updateShift({ starting_balance: amount }, shiftId);

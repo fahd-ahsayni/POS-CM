@@ -17,7 +17,6 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
   const {
     users,
     loading: reduxLoading,
-    error,
   } = useSelector((state: RootState) => state.users);
   const selectedUser = useSelector(
     (state: RootState) => state.users.selectedUser

@@ -82,7 +82,7 @@ export default function EditPriceInfo({
       toast.error(
         createToast(
           "Invalid price",
-          "Please enter a valid price greater than 0",
+          "Please enter a valid price",
           "error"
         )
       );
@@ -116,8 +116,8 @@ export default function EditPriceInfo({
     } catch (error) {
       toast.error(
         createToast(
-          "Error updating price",
-          "An unexpected error occurred while trying to update the price",
+          "Update Price failed",
+          "Please try again",
           "error"
         )
       );

@@ -8,7 +8,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { FilterCriteria } from "@/types/general.types";
+import { FilterCriteria } from "@/types/general.d";
 import { CheckIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 

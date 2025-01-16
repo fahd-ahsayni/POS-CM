@@ -23,12 +23,10 @@ export const OrderCard = memo(
   ({
     orderType,
     onSelect,
-    isSelected,
     fixedLightDark,
   }: {
     orderType: OrderType;
     onSelect: (event: React.MouseEvent) => void;
-    isSelected?: boolean;
     fixedLightDark?: boolean;
   }) => {
     const iconType = orderType?.type?.toLowerCase();
