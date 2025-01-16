@@ -114,6 +114,10 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
     return toTitleCase((variant.name || "Unknown Product").toLowerCase());
   };
 
+  const isComboProduct = useMemo(() => 
+    item.is_combo || (item.variants?.[0]?.is_menu && item.combo_items), 
+  [item]);
+
   return (
     <motion.div
       layout
@@ -187,42 +191,46 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
           </div>
         </div>
 
-        {item.is_combo && item.combo_items && (
+        {isComboProduct && item.combo_items && (
           <div className="mt-2 pl-4 border-l-2 border-neutral-dark-grey/50 space-y-2">
-            {item.combo_items.variants.map((variant, idx) => (
+            {item.combo_items.variants?.map((variant: any, idx: number) => (
               <TypographySmall
-                key={`${variant.name}-${idx}`}
+                key={`${variant._id || variant.name}-${idx}`}
                 className="text-sm space-x-2"
               >
-                <span className="font-medium">x{variant.quantity}</span>
+                <span className="font-medium">
+                  x{variant.quantity || 1}
+                </span>
                 <span className="first-letter:uppercase dark:text-neutral-bright-grey text-primary-black/90 tracking-wide">
-                  {toTitleCase(variant.name)}
+                  {toTitleCase(variant.name || '')}
                 </span>
               </TypographySmall>
             ))}
 
-            {item.combo_items.supplements.length > 0 && (
+            {item.combo_items.supplements?.length > 0 && (
               <div className="mt-1">
-                {item.combo_items.supplements.map((supp, idx) => {
-                  const suppPrice =
-                    supp.menus?.find(
-                      (menu: any) => menu.menu_id === currentMenu
-                    )?.price_ttc ||
-                    supp.default_price ||
+                {item.combo_items.supplements.map((supp: any, idx: number) => {
+                  const suppPrice = supp.price || 
+                    supp.menus?.find((menu: any) => menu.menu_id === currentMenu)?.price_ttc || 
+                    supp.default_price || 
                     0;
-                  const price = suppPrice * supp.quantity;
+                  const price = suppPrice * (supp.quantity || 1);
+                  
                   return (
-                    <div key={`${supp.name}-${idx}`}>
+                    <div key={`${supp._id || supp.name}-${idx}`}>
                       <TypographySmall className="text-sm space-x-2">
-                        <span className="font-medium">x{supp.quantity}</span>
-                        <span className="first-letter:uppercase dark:text-neutral-bright-grey text-primary-black/90 tracking-wid">
-                          {toTitleCase(supp.name)}
+                        <span className="font-medium">
+                          x{supp.quantity || 1}
+                        </span>
+                        <span className="first-letter:uppercase dark:text-neutral-bright-grey text-primary-black/90 tracking-wide">
+                          {toTitleCase(supp.name || '')}
                         </span>
                       </TypographySmall>
-                      <TypographySmall className="font-medium">
-                        +{price.toFixed(currency.toFixed || 2)}{" "}
-                        {currency.currency}
-                      </TypographySmall>
+                      {price > 0 && (
+                        <TypographySmall className="font-medium">
+                          +{price.toFixed(currency.toFixed || 2)} {currency.currency}
+                        </TypographySmall>
+                      )}
                     </div>
                   );
                 })}
