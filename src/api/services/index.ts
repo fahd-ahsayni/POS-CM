@@ -177,8 +177,8 @@ export const createOrderWithOutPayment = async (data: any) => {
   return api.post("/order/create", data);
 };
 
-export const payOrder = async (data: any) => {
-  return api.post("/payment", data);
+export const payNewOrder = async (data: any) => {
+  return api.post("/payment/payments", data);
 };
 
 export const cancelOrder = async (data: any) => {

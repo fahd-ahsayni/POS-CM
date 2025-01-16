@@ -14,18 +14,18 @@ export default function NumberOfTable() {
   } = useNumberOfTable();
 
   return (
-    <div className="flex flex-col justify-start h-full bg-black">
+    <div className="flex flex-col justify-start h-full">
       <TypographyH3 className="font-medium max-w-lg text-balance">
         Enter the table number to start the order:
       </TypographyH3>
-      <div className="flex flex-col justify-center -mt-20 h-full relative">
+      <div className="flex flex-col justify-center h-full relative">
         <TableNumberDisplay
           getValidationMessage={getValidationMessage}
           tableNumber={tableNumber}
           tableValid={tableValid}
           handleNumberClick={handleNumberClick}
         />
-        <div className="flex gap-x-2 absolute bottom-0 w-full pt-20">
+        <div className="flex gap-x-2 absolute bottom-0 w-full">
           <Button className="flex-1" variant="secondary" onClick={handleCancel}>
             Cancel
           </Button>

@@ -1,6 +1,7 @@
 import { filterOrderByTableNumber } from "@/api/services";
 import { FilterCriteria } from "@/types/general";
 import { useEffect, useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 
 interface SortConfig {
   key: string;
@@ -23,6 +24,10 @@ export function useTableOrders<T>({
   );
   const [tableData, setTableData] = useState<T[]>([]);
 
+  const ordersVersion = useSelector((state: any) => state.orders.version);
+  const ordersStatus = useSelector((state: any) => state.orders.status);
+  const ordersCancellationStatus = useSelector((state: any) => state.orders.cancellationStatus);
+
   // Fetch table data when tableNumber changes
   useEffect(() => {
     const fetchTableData = async () => {
@@ -42,7 +47,7 @@ export function useTableOrders<T>({
     };
 
     fetchTableData();
-  }, [filterCriteria.tableNumber]);
+  }, [filterCriteria.tableNumber, ordersVersion, ordersStatus, ordersCancellationStatus]);
 
   const handleSort = (key: string) => {
     setSortConfig((prev) => ({

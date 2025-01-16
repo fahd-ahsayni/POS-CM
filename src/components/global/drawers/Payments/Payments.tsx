@@ -61,6 +61,8 @@ export default function Payments({
     removePaymentMethod,
     handleComplete,
     resetPayments,
+    editedAmount,
+    setEditedAmount,
   } = usePayments({
     onComplete,
     selectedOrder,
@@ -102,11 +104,13 @@ export default function Payments({
 
   const getPaymentStatus = () => {
     const totalPaid = getTotalPaidAmount();
-    const orderTotal = selectedOrder
-      ? totalAmount || 0
-      : order.changed_price !== null
-      ? order.changed_price
-      : order.total_amount;
+    const orderTotal =
+      editedAmount ??
+      (selectedOrder
+        ? totalAmount || 0
+        : order.changed_price !== null
+        ? order.changed_price
+        : order.total_amount);
     const difference = totalPaid - orderTotal;
 
     if (difference === 0) {
@@ -166,11 +170,14 @@ export default function Payments({
                 Total Amount
               </TypographySmall>
               <TypographyH2 className="text-center font-semibold">
-                {selectedOrder
-                  ? totalAmount?.toFixed(currency.toFixed || 2)
-                  : order.changed_price !== null
-                  ? order.changed_price.toFixed(currency.toFixed || 2)
-                  : order.total_amount.toFixed(currency.toFixed || 2)}{" "}
+                {(
+                  editedAmount ??
+                  (selectedOrder
+                    ? totalAmount ?? 0
+                    : order.changed_price !== null
+                    ? order.changed_price
+                    : order.total_amount)
+                ).toFixed(currency.toFixed || 2)}{" "}
               </TypographyH2>
               <TypographyP className="text-center text-sm mt-0.5">
                 {getPaymentStatus()}
@@ -343,7 +350,11 @@ export default function Payments({
           </div>
         </div>
       </div>
-      <EditPrice open={editPriceOpen} setOpen={setEditPriceOpen} />
+      <EditPrice
+        open={editPriceOpen}
+        setOpen={setEditPriceOpen}
+        onPriceChange={(price) => setEditedAmount(price)}
+      />
     </Drawer>
   );
 }

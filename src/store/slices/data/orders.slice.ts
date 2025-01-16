@@ -9,6 +9,8 @@ interface OrdersState {
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
   filteredDataLength: number;
+  version: number;
+  cancellationStatus: number;
 }
 
 const initialState: OrdersState = {
@@ -18,6 +20,8 @@ const initialState: OrdersState = {
   status: "idle",
   error: null,
   filteredDataLength: 0,
+  version: 0,
+  cancellationStatus: 0,
 };
 
 export const fetchOrders = createAsyncThunk("orders/fetchOrders", async () => {
@@ -56,6 +60,9 @@ const ordersSlice = createSlice({
     setFilteredDataLength(state, action: PayloadAction<number>) {
       state.filteredDataLength = action.payload;
     },
+    orderCancelled: (state) => {
+      state.cancellationStatus += 1;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -65,6 +72,7 @@ const ordersSlice = createSlice({
       .addCase(fetchOrders.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.orders = action.payload;
+        state.version += 1;
       })
       .addCase(fetchOrders.rejected, (state, action) => {
         state.status = "failed";
@@ -77,6 +85,7 @@ const ordersSlice = createSlice({
         state.status = "succeeded";
         state.orders = action.payload;
         state.currentPage = 0;
+        state.version += 1;
       })
       .addCase(refreshOrders.rejected, (state, action) => {
         state.status = "failed";
@@ -85,6 +94,6 @@ const ordersSlice = createSlice({
   },
 });
 
-export const { setPageSize, setCurrentPage, resetPagination, setFilteredDataLength } =
+export const { setPageSize, setCurrentPage, resetPagination, setFilteredDataLength, orderCancelled } =
   ordersSlice.actions;
 export default ordersSlice.reducer;

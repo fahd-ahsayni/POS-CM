@@ -1,4 +1,4 @@
-import { createPayment, payOrder } from "@/api/services";
+import { createPayment, payNewOrder } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
 import { ALL_CATEGORIES_VIEW } from "@/components/views/home/left-section/constants";
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
@@ -51,6 +51,7 @@ export function usePayments({
   const [currentAmount, setCurrentAmount] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [activePaymentIndex, setActivePaymentIndex] = useState<number>(-1);
+  const [editedAmount, setEditedAmount] = useState<number | null>(null);
 
   const { handlePaymentComplete } = useCustomerManagement();
   const { setViews: setViewsRight } = useRightViewContext();
@@ -80,14 +81,15 @@ export function usePayments({
   }, [selectedPayments]);
 
   const getRemainingAmount = useCallback(() => {
-    const orderTotal = selectedOrder
-      ? totalAmount || selectedOrder.total_amount
+    const orderTotal = editedAmount ?? (selectedOrder
+      ? totalAmount || 0
       : order.changed_price !== null
       ? order.changed_price
-      : order.total_amount;
+      : order.total_amount);
 
     return Number((orderTotal - getTotalPaidAmount()).toFixed(2));
   }, [
+    editedAmount,
     order.changed_price,
     order.total_amount,
     getTotalPaidAmount,
@@ -271,7 +273,7 @@ export function usePayments({
       const shiftId = localStorage.getItem("shiftId");
 
       if (selectedOrder) {
-        await payOrder({
+        await payNewOrder({
           order_id: selectedOrder._id,
           shift_id: shiftId,
           payments: validPaymentData,
@@ -370,5 +372,7 @@ export function usePayments({
     removePaymentMethod,
     handleComplete,
     resetPayments,
+    editedAmount,
+    setEditedAmount,
   };
 }

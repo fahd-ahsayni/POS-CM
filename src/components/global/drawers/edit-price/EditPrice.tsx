@@ -2,10 +2,23 @@ import { memo, useCallback, useState } from "react";
 import Drawer from "../../Drawer";
 import Authorization from "../auth/Authorization";
 import EditPriceInfo from "./views/EditPriceInfo";
+import { useOrder } from "../order-details/context/OrderContext";
+
 const EditPrice = memo(
-  ({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) => {
+  ({ 
+    open, 
+    setOpen, 
+    onPriceChange 
+  }: { 
+    open: boolean; 
+    setOpen: (open: boolean) => void;
+    onPriceChange?: (price: number) => void;
+  }) => {
     const [authorization, setAuthorization] = useState(false);
     const [admin, setAdmin] = useState<any>({});
+    const { selectedOrder } = useOrder();
+
+    console.log(selectedOrder);
 
     const handleClose = useCallback(() => {
       setOpen(false);
@@ -25,6 +38,8 @@ const EditPrice = memo(
             admin={admin}
             setOpen={handleClose}
             setAuthorization={setAuthorization}
+            selectedOrder={selectedOrder}
+            onPriceChange={onPriceChange}
           />
         ) : (
           <Authorization

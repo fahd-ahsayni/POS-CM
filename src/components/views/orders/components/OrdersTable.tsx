@@ -1,4 +1,4 @@
-import { printOrder, getOrderById } from "@/api/services";
+import { getOrderById, printOrder } from "@/api/services";
 import { PrinterIcon } from "@/assets/figma-icons";
 import { useOrder } from "@/components/global/drawers/order-details/context/OrderContext";
 import { Button } from "@/components/ui/button";
@@ -11,11 +11,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useTableOrders } from "@/components/views/orders/hooks/useTableOrders";
+import { refreshOrders } from "@/store/slices/data/orders.slice";
 import { FilterCriteria } from "@/types/general";
 import { Order } from "@/types/order.types";
-import { ArrowDownAZ, ArrowUpAZ, SortDesc } from "lucide-react";
-import { useSelector } from "react-redux";
 import { format, parseISO } from "date-fns";
+import { ArrowDownAZ, ArrowUpAZ, SortDesc } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
 
 interface DataTableProps {
   headers: {
@@ -38,15 +39,32 @@ export default function DataTable({
   withPrintButton,
   filterCriteria,
 }: DataTableProps) {
+  const dispatch = useDispatch();
   const { setSelectedOrder, setOpenOrderDetails } = useOrder();
   const currentPage = useSelector((state: any) => state.orders.currentPage);
   const pageSize = useSelector((state: any) => state.orders.pageSize);
 
-  // Apply filters to the entire dataset
   const { sortedData, sortConfig, handleSort } = useTableOrders({
     data,
     filterCriteria,
+    defaultSort: { key: "createdAt", direction: "descending" },
   });
+
+  const handleRowClick = async (row: any) => {
+    try {
+      const response = await getOrderById(row._id);
+      if (response.data) {
+        setSelectedOrder({
+          ...response.data,
+          id: row._id,
+        });
+        setOpenOrderDetails(true);
+        await dispatch(refreshOrders() as any);
+      }
+    } catch (error) {
+      console.error("Error fetching order details:", error);
+    }
+  };
 
   // Slice the filtered and sorted data based on currentPage and pageSize
   const paginatedData = sortedData.slice(
@@ -148,25 +166,8 @@ export default function DataTable({
     );
   };
 
-  const handleRowClick = async (row: any) => {
-    console.log("row", row._id);
-    try {
-      const response = await getOrderById(row._id);
-      if (response.data) {
-        setSelectedOrder({
-          ...response.data,
-          id: row._id,
-        });
-        setOpenOrderDetails(true);
-      }
-    } catch (error) {
-      console.error("Error fetching order details:", error);
-      // Optionally add error handling (toast notification, etc.)
-    }
-  };
-
   return (
-    <div className="rounded-md h-full relative overflow-y-auto">
+    <div className="rounded-md h-full relative overflow-y-auto pr-3">
       <Table className="w-full">
         <TableHeader className="dark:bg-secondary-black bg-white sticky top-0 z-10">
           <TableRow>

@@ -20,12 +20,12 @@ export default function CoasterCall() {
 
   return (
     <div className="flex flex-col justify-start h-full">
-      <TypographyH3 className="font-medium">
+      <TypographyH3 className="font-medium max-w-lg text-balance">
         Enter the beeper number to start the order:
       </TypographyH3>
-      <div className="flex flex-col justify-center -mt-20 h-full relative">
+      <div className="flex flex-col justify-center h-full relative">
         <CoasterCallNumberDisplay />
-        <div className="flex gap-x-4 w-full absolute bottom-4">
+        <div className="flex gap-x-4 w-full absolute bottom-0">
           <Button
             className="flex-1"
             variant="secondary"
@@ -33,7 +33,11 @@ export default function CoasterCall() {
           >
             Cancel
           </Button>
-          <Button className="flex-1" onClick={handleConfirm} disabled={order.coaster_call === null}>
+          <Button
+            className="flex-1"
+            onClick={handleConfirm}
+            disabled={order.coaster_call === null}
+          >
             Confirm
           </Button>
         </div>

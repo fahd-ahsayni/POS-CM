@@ -1,48 +1,68 @@
-import { useDispatch, useSelector } from "react-redux";
+import ComboboxSelect from "@/components/global/ComboboxSelect";
+import { createToast } from "@/components/global/Toasters";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { TypographyP } from "@/components/ui/typography";
-import { useState, useCallback } from "react";
+import { currency } from "@/preferences";
 import {
-  setChangedPrice,
   selectOrder,
+  setChangedPrice,
   updateTotalAmount,
 } from "@/store/slices/order/create-order.slice";
-import { toast } from "react-toastify";
-import { createToast } from "@/components/global/Toasters";
-import { Input } from "@/components/ui/input";
-import ComboboxSelect from "@/components/global/ComboboxSelect";
 import { CheckIcon } from "lucide-react";
-import { currency } from "@/preferences";
+import { useCallback, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 export default function EditPriceInfo({
   admin,
   setOpen,
   setAuthorization,
+  selectedOrder,
+  onPriceChange,
 }: {
   admin: any;
   setOpen: (open: boolean) => void;
   setAuthorization: (authorization: boolean) => void;
+  selectedOrder: any;
+  onPriceChange?: (price: number) => void;
 }) {
   const dispatch = useDispatch();
   const order = useSelector(selectOrder);
-  const [newPrice, setNewPrice] = useState<string>(
-    (order.changed_price || order.total_amount).toString()
-  );
+
+  // Initialize price state with memoized value from current order total
+  const initialPrice = useMemo(() => {
+    if (selectedOrder) {
+      return selectedOrder.total_amount;
+    }
+    return order.changed_price || order.total_amount;
+  }, [order.changed_price, order.total_amount, selectedOrder]);
+
+  const [newPrice, setNewPrice] = useState<string>(initialPrice);
   const [selectedReason, setSelectedReason] = useState<string>("");
 
-  const generalData = JSON.parse(localStorage.getItem("generalData") || "{}");
-  const reasons = (generalData.defineNote || [])
-    .filter((item: any) => item.type === "price_edit")
-    .map((reason: any) => ({
-      value: reason.text,
-      label: reason.text,
-    }));
+  // Memoize reasons array to prevent unnecessary recalculations
+  const reasons = useMemo(() => {
+    const generalData = JSON.parse(localStorage.getItem("generalData") || "{}");
+    return (generalData.defineNote || [])
+      .filter((item: any) => item.type === "price_edit")
+      .map((reason: any) => ({
+        value: reason.text,
+        label: reason.text,
+      }));
+  }, []);
 
   const handlePriceChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value.replace(/[^0-9.]/g, "");
       if (value === "" || /^\d*\.?\d*$/.test(value)) {
-        setNewPrice(value);
+        const numericValue = parseFloat(value);
+        if (!isNaN(numericValue)) {
+          // Remove toFixed to allow typing without automatic formatting
+          setNewPrice(Math.min(numericValue, 999999.99).toString());
+        } else {
+          setNewPrice(value);
+        }
       }
     },
     []
@@ -52,25 +72,45 @@ export default function EditPriceInfo({
     setSelectedReason(value);
   }, []);
 
-  const handleApplyNewPrice = useCallback(() => {
-    try {
-      if (!newPrice) return;
+  const isValidPrice = useMemo(() => {
+    const numericPrice = parseFloat(newPrice);
+    return !isNaN(numericPrice) && numericPrice > 0;
+  }, [newPrice]);
 
+  const handleApplyNewPrice = useCallback(() => {
+    if (!isValidPrice) {
+      toast.error(
+        createToast(
+          "Invalid price",
+          "Please enter a valid price greater than 0",
+          "error"
+        )
+      );
+      return;
+    }
+
+    try {
       const numericPrice = parseFloat(newPrice);
-      if (isNaN(numericPrice) || numericPrice <= 0) {
-        throw new Error("Invalid price");
+
+      if (selectedOrder && onPriceChange) {
+        onPriceChange(numericPrice);
+      } else {
+        dispatch(
+          setChangedPrice({
+            price: numericPrice,
+            reason: selectedReason,
+            confirmed_by: admin.user.id,
+          })
+        );
+        dispatch(updateTotalAmount(numericPrice));
       }
 
-      dispatch(
-        setChangedPrice({
-          price: numericPrice,
-          reason: selectedReason,
-          confirmed_by: admin.user.id,
-        })
-      );
-
       toast.success(
-        createToast("Price updated", "Order price updated successfully", "success")
+        createToast(
+          "Price updated",
+          "Order price updated successfully",
+          "success"
+        )
       );
       setOpen(false);
     } catch (error) {
@@ -83,7 +123,17 @@ export default function EditPriceInfo({
       );
       setAuthorization(false);
     }
-  }, [dispatch, newPrice, selectedReason, admin.user.id, setOpen, setAuthorization]);
+  }, [
+    dispatch,
+    newPrice,
+    selectedReason,
+    admin.user.id,
+    setOpen,
+    setAuthorization,
+    isValidPrice,
+    selectedOrder,
+    onPriceChange,
+  ]);
 
   return (
     <section className="overflow-hidden h-full flex flex-col items-start gap-8 relative w-full">
@@ -100,6 +150,7 @@ export default function EditPriceInfo({
             value={newPrice}
             onChange={handlePriceChange}
             placeholder="Enter new price"
+            className={!isValidPrice ? "border-red-500" : ""}
           />
         </div>
 
@@ -125,7 +176,7 @@ export default function EditPriceInfo({
         <Button
           onClick={handleApplyNewPrice}
           className="w-full"
-          disabled={!newPrice}
+          disabled={!isValidPrice}
         >
           Update Price
         </Button>

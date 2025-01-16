@@ -15,9 +15,12 @@ import Drawer from "../../Drawer";
 import CancelOrder from "../cancel-order/CancelOrder";
 import Payments from "../Payments/Payments";
 import { useOrderDetails } from "./hooks/useOrderDetails";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import EditPrice from "../edit-price/EditPrice";
 
 export default function OrderDetails() {
+  const [editPriceOpen, setEditPriceOpen] = useState(false);
+
   const {
     selectedOrder,
     openOrderDetails,
@@ -30,7 +33,8 @@ export default function OrderDetails() {
     setOpenPayments,
     handleProcessPayment,
     handlePaymentComplete,
-    orderAmount
+    orderAmount,
+    setEditedAmount,
   } = useOrderDetails();
 
   useEffect(() => {
@@ -251,6 +255,11 @@ export default function OrderDetails() {
         </div>
       </Drawer>
       <CancelOrder open={openCancelOrder} setOpen={setOpenCancelOrder} />
+      <EditPrice 
+        open={editPriceOpen} 
+        setOpen={setEditPriceOpen}
+        onPriceChange={(price) => setEditedAmount(price)}
+      />
       <Payments
         open={openPayments}
         setOpen={setOpenPayments}

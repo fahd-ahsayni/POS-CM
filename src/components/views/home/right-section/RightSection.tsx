@@ -14,7 +14,7 @@ const RightSection = () => {
           <TabsContent
             key={value}
             value={value}
-            className={cn("w-full h-full", className)}
+            className={cn("w-full h-[calc(100%-35px)]", className)}
           >
             {component}
           </TabsContent>
