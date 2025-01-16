@@ -276,8 +276,8 @@ const orderSlice = createSlice({
       }>
     ) => {
       state.data.changed_price = action.payload.price;
-      state.data.price_change_reason = action.payload.reason;
-      state.data.price_change_confirmed_by = action.payload.confirmed_by;
+      state.data.changed_price_reason = action.payload.reason;
+      state.data.changed_price_confirmed_by = action.payload.confirmed_by;
     },
   },
 });

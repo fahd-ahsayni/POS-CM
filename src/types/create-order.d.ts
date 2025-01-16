@@ -14,8 +14,8 @@ interface OrderState {
   changed_price: number | null;
   order_type_id: string | null;
   orderlines: any[];
-  price_change_reason?: string;
-  price_change_confirmed_by?: string;
+  changed_price_reason?: string;
+  changed_price_confirmed_by?: string;
 }
 
 interface OrderSliceState {
