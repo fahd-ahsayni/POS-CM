@@ -31,7 +31,6 @@ export default function ClientForm({
     );
   }
 
-  console.log(formData);
   return (
     <div className="space-y-8 w-full">
       <ComboboxSelectOnChange<Client>

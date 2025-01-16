@@ -1,24 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { TypographySmall } from "@/components/ui/typography";
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
+import { BeatLoader } from "react-spinners";
 import Drawer from "../../Drawer";
 import { StepContent } from "./components/StepContent";
 import { ComboProvider, useCombo } from "./context/ComboContext";
 import { useComboLogic } from "./hooks/useComboLogic";
-import { BeatLoader } from "react-spinners";
 
 function ComboContent() {
   const { selectedCombo } = useLeftViewContext();
-  console.log("selectedCombo", selectedCombo);
-  const { currentStep, selections } = useCombo();
+  const { currentStep } = useCombo();
   const { handleNavigation } = useCombo();
   const { handleFinish, isFinishing, getStepDescription } = useComboLogic(
     currentStep,
     selectedCombo?.steps[currentStep]
   );
-
-  console.log("currentStep", currentStep);
-  console.log("selections", selections);
 
   if (!selectedCombo) return null;
 
@@ -70,7 +66,15 @@ function ComboContent() {
           onClick={handleNextOrFinish}
           disabled={isFinishing}
         >
-          {isLastStep ? (isFinishing ? <BeatLoader color="#fff" size={8} /> : "Finish") : "Next"}
+          {isLastStep ? (
+            isFinishing ? (
+              <BeatLoader color="#fff" size={8} />
+            ) : (
+              "Finish"
+            )
+          ) : (
+            "Next"
+          )}
         </Button>
       </footer>
     </div>

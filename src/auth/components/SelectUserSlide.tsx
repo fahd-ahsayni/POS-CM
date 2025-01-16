@@ -14,10 +14,9 @@ export interface SelectUserSlideProps {
 
 const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
   const dispatch = useDispatch();
-  const {
-    users,
-    loading: reduxLoading,
-  } = useSelector((state: RootState) => state.users);
+  const { users, loading: reduxLoading } = useSelector(
+    (state: RootState) => state.users
+  );
   const selectedUser = useSelector(
     (state: RootState) => state.users.selectedUser
   );
@@ -131,8 +130,6 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
       </div>
     );
   }
-
-  console.log(selectedUser);
 
   return (
     <div className="slider-container w-full custom-slider overflow-hidden mt-2 relative h-[300px]">

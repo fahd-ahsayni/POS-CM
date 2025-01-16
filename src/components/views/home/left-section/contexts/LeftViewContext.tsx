@@ -41,8 +41,6 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
     []
   );
 
-  console.log(selectedProducts);
-
   const [openDrawerVariants, setOpenDrawerVariants] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [quantityPerVariant, setQuantityPerVariant] = useState<number>(0);

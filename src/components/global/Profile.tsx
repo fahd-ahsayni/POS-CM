@@ -33,8 +33,6 @@ export default function Profile() {
   const pos = useSelector(selectPosData);
   const currentShift = pos.pos.find((p: any) => p._id === posId)?.shift;
 
-  console.log(user);
-
   localStorage.setItem("shiftId", currentShift?._id || "");
 
   const handleLogout = () => {

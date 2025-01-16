@@ -18,8 +18,6 @@ const EditPrice = memo(
     const [admin, setAdmin] = useState<any>({});
     const { selectedOrder } = useOrder();
 
-    console.log(selectedOrder);
-
     const handleClose = useCallback(() => {
       setOpen(false);
       setAuthorization(false);

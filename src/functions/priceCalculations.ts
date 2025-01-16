@@ -105,19 +105,6 @@ export const calculateProductPrice = (
   const unitPrice = basePrice + supplementsTotal;
   const totalPrice = unitPrice * quantity;
 
-  console.log("Price calculation:", {
-    item: item.name,
-    menuId,
-    basePrice,
-    supplementsTotal,
-    unitPrice,
-    quantity,
-    totalPrice,
-    variant: item.variants?.[0],
-    variantSupplements: item.variants?.[0]?.supplements,
-    comboSupplements: item.is_combo ? item.combo_items?.supplements : [],
-  });
-
   return {
     basePrice,
     supplementsTotal,

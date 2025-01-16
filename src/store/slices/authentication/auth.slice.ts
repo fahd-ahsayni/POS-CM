@@ -63,7 +63,6 @@ export const loginWithRfid = createAsyncThunk<LoginResponse, string>(
   async (rfid, { rejectWithValue }) => {
     try {
       const response = await loginWithRfidService(rfid);
-      console.log("RFID Login API Response:", response);
       return response;
     } catch (error: any) {
       if (axios.isAxiosError(error)) {

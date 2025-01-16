@@ -38,8 +38,6 @@ export default function SelectDeliveryType() {
   const { setViews, setSelectedOrderType, selectedOrderType } =
     useRightViewContext();
 
-  console.log(selectedOrderType);
-
   const handleSelect = (type: string) => {
     setSelectedOrderType(type);
   };

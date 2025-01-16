@@ -91,13 +91,6 @@ export const useProducts = (initialProducts?: Product[]) => {
           }
         );
 
-        console.log("Debug Info:", {
-          currentMenu,
-          totalProducts: parsedData.products?.length || 0,
-          filteredProducts: extractedProducts.length,
-          sampleProduct: extractedProducts[0] || null,
-        });
-
         setState({ products: extractedProducts, loading: false });
       }
     } catch (error) {

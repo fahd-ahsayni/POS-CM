@@ -1,16 +1,16 @@
+import { getCategories } from "@/api/services";
+import { updateOrder } from "@/functions/updateOrder";
+import { OrderType } from "@/types/order.types";
+import { Category } from "@/types/product.types";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { OrderType } from "@/types/order.types";
-import { updateOrder } from "@/functions/updateOrder";
-import { useRightViewContext } from "../contexts/RightViewContext";
-import { getCategories } from "@/api/services";
-import { Category } from "@/types/product.types";
 import {
   COASTER_CALL_VIEW,
   NUMBER_OF_TABLE_VIEW,
   ORDER_SUMMARY_VIEW,
   OWN_DELIVERY_FORM_VIEW,
 } from "../constants";
+import { useRightViewContext } from "../contexts/RightViewContext";
 
 export const useSelectOrderType = () => {
   const dispatch = useDispatch();
@@ -54,49 +54,37 @@ export const useSelectOrderType = () => {
   }, []);
 
   const filterCategoriesByMenu = useCallback((menuId: string) => {
-    console.log("🔍 Filtering categories for menuId:", menuId);
-
     const storedGeneralData = localStorage.getItem("generalData");
     if (!storedGeneralData) {
-      console.warn("❌ No generalData found in localStorage");
       return [];
     }
 
     const { categories } = JSON.parse(storedGeneralData);
-    console.log("📋 Available categories:", categories);
 
     const filtered = categories.filter((category: Category) =>
       category.menu_ids.includes(menuId)
     );
-    console.log("✅ Filtered categories:", filtered);
     return filtered;
   }, []);
 
   const handleOrderTypeSelect = useCallback(
     async (orderType: OrderType) => {
-      console.log("🎯 Selected order type:", orderType);
       setSelectedType(orderType);
-
       if (orderType.children.length > 0) {
-        console.log("👨‍👧‍👦 Showing children types:", orderType.children);
         setDisplayedTypes(orderType.children);
         return;
       }
-
       dispatch(updateOrder({ order_type_id: orderType._id }));
       localStorage.setItem("orderType", JSON.stringify(orderType));
       window.dispatchEvent(new Event("localStorageChange"));
 
       if (orderType.menu_id) {
-        console.log("🍽️ Order type has menu_id:", orderType.menu_id);
         const filteredCategories = filterCategoriesByMenu(orderType.menu_id);
         setCategories(filteredCategories);
       } else {
-        console.log("📚 Loading default categories (no menu_id found)");
         await loadDefaultCategories();
       }
 
-      // Navigate to appropriate view
       const viewMap = {
         select_table: NUMBER_OF_TABLE_VIEW,
         select_client: OWN_DELIVERY_FORM_VIEW,

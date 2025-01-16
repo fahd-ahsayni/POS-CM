@@ -38,9 +38,6 @@ export const useOrderDetails = () => {
       if (ordersStatus !== "loading") {
         dispatch(refreshOrders() as any)
           .unwrap()
-          .then(() => {
-            console.log("Orders refreshed successfully");
-          })
           .catch((error: any) => {
             console.error("Error refreshing orders:", error);
           });

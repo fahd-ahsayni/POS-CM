@@ -66,14 +66,6 @@ const calculateTotalAmount = (orderlines: any[]) => {
       const totalComboPrice =
         (basePrice + supplementsTotal) * (line.quantity || 1);
 
-      console.log("Combo calculation:", {
-        basePrice,
-        supplementsTotal,
-        quantity: line.quantity,
-        totalComboPrice,
-        line,
-      });
-
       return sum + totalComboPrice;
     }
 
@@ -92,13 +84,6 @@ const calculateTotalAmount = (orderlines: any[]) => {
       0;
 
     const lineTotal = unitPrice * (line.quantity || 1);
-
-    console.log("Regular product calculation:", {
-      unitPrice,
-      quantity: line.quantity,
-      lineTotal,
-      line,
-    });
 
     return sum + lineTotal;
   }, 0);

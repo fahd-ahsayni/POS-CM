@@ -38,10 +38,6 @@ export default function OrderDetails() {
     setEditedAmount,
   } = useOrderDetails();
 
-  useEffect(() => {
-    console.log("Selected Order:", selectedOrder);
-  }, [selectedOrder]);
-
   const toggleOrderLineSelection = (orderId: string) => {
     setSelectedOrderlines((prev) =>
       prev.includes(orderId)

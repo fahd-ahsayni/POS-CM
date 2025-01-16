@@ -52,7 +52,6 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
   }, [open, shiftId]);
 
   useEffect(() => {
-    console.log("first");
     const checkForNewOrders = async () => {
       if (!currentShift || !open) return;
 

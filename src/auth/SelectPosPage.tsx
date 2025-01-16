@@ -31,9 +31,6 @@ export default function SelectPosPage() {
   const error = useSelector(selectPosError);
   const { shiftId } = useShift();
 
-  console.log(data.pos);
-
-  // Get authenticated user from localStorage
   const userAuthenticated: User | null = JSON.parse(
     localStorage.getItem("user") || "null"
   );
@@ -53,17 +50,11 @@ export default function SelectPosPage() {
         reOpen={reOpen}
         shiftId={shiftId ?? ""}
       />
-      {/* Left Section */}
       <aside className="lg:w-3/12 w-4/12 h-full bg-secondary-white relative">
         <header className="absolute top-0 left-0 z-10 flex h-16 flex-shrink-0">
           <div className="flex flex-1 justify-between px-4 sm:px-6">
             <div className="flex items-center gap-2">
-              <img
-                // src={theme.theme === "dark" ? logoDarkMode : logoLightMode}
-                src={logoWithoutText}
-                alt="logo"
-                className="w-8 h-auto"
-              />
+              <img src={logoWithoutText} alt="logo" className="w-8 h-auto" />
               <span>
                 <TypographySmall className="font-semibold leading-[0] text-xs text-primary-black">
                   Caisse
@@ -92,7 +83,6 @@ export default function SelectPosPage() {
         </div>
       </aside>
 
-      {/* Main Content */}
       <motion.main className="lg:w-9/12 w-8/12 h-full bg-secondary-white">
         <motion.div
           {...pageAnimations.mainContent}
