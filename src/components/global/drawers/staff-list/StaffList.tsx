@@ -108,10 +108,10 @@ const StaffList = memo(({ open, setOpen, onSelect }: StaffListProps) => {
           )}
         </ul>
 
-        <div className="border-t border-border p-4">
+        <div>
           <Button
             variant="secondary"
-            className="w-full"
+            className="flex-1 dark:bg-white/10 bg-white border border-border w-full"
             onClick={() => setOpen(false)}
           >
             Cancel

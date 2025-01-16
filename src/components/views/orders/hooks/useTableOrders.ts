@@ -124,9 +124,11 @@ export function useTableOrders<T>({
         }
 
         if (sortConfig.key === "total_amount") {
+          const aNum = Number(aValue) || 0;
+          const bNum = Number(bValue) || 0;
           return sortConfig.direction === "ascending"
-            ? Number(aValue) - Number(bValue)
-            : Number(bValue) - Number(aValue);
+            ? aNum - bNum
+            : bNum - aNum;
         }
 
         if (sortConfig.key === "createdAt") {

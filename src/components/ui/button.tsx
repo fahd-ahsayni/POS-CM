@@ -17,7 +17,7 @@ const buttonVariants = cva(
         outline:
           "border border-input bg-background shadow-sm shadow-black/5 hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:bg-[#AAAAAA] disabled:text-[#7E7E7E] disabled:cursor-not-allowed",
         secondary:
-          "dark:bg-secondary-black dark:text-white shadow-sm shadow-black/5 dark:hover:bg-white dark:hover:text-primary-black bg-secondary-white hover:bg-primary-black hover:text-white disabled:pointer-events-none disabled:bg-[#AAAAAA] disabled:text-[#7E7E7E] disabled:cursor-not-allowed",
+          "dark:bg-secondary-black dark:text-white dark:hover:bg-white dark:hover:text-primary-black bg-secondary-white hover:bg-primary-black hover:text-white disabled:pointer-events-none dark:disabled:bg-[#AAAAAA] dark:disabled:text-[#7E7E7E] disabled:bg-[#AAAAAA] disabled:text-[#7E7E7E] disabled:cursor-not-allowed",
         ghost:
           "!text-white disabled:pointer-events-none disabled:bg-[#AAAAAA] disabled:text-[#7E7E7E] disabled:cursor-not-allowed",
         link: "text-primary-black dark:text-white underline-offset-4 hover:underline disabled:pointer-events-none disabled:text-[#7E7E7E] disabled:cursor-not-allowed",

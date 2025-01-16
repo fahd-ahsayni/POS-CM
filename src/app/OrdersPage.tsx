@@ -1,12 +1,11 @@
 import OrderDetails from "@/components/global/drawers/order-details/OrderDetails";
 import OrdersTable from "@/components/views/orders/components/OrdersTable";
-import { TABLE_HEADERS } from "@/components/views/orders/config/table-config";
 import { useTableOrders } from "@/components/views/orders/hooks/useTableOrders";
 import { AppDispatch, RootState } from "@/store";
 import {
   fetchOrders,
   refreshOrders,
-  setFilteredDataLength
+  setFilteredDataLength,
 } from "@/store/slices/data/orders.slice";
 import { FilterCriteria } from "@/types/general";
 import { motion } from "framer-motion";
@@ -40,8 +39,8 @@ export default function OrdersPage() {
     filterCriteria,
     defaultSort: {
       key: "createdAt",
-      direction: "descending"
-    }
+      direction: "descending",
+    },
   });
 
   // Update filtered data length in Redux store
@@ -97,13 +96,7 @@ export default function OrdersPage() {
               <p className="text-gray-500 text-lg">No orders available</p>
             </div>
           ) : (
-            <OrdersTable
-              headers={TABLE_HEADERS}
-              data={filteredOrders}
-              caption="A list of your recent orders."
-              withPrintButton={true}
-              filterCriteria={filterCriteria}
-            />
+            <OrdersTable data={filteredOrders} withPrintButton={true} />
           )}
         </main>
         <Footer ordersLength={filteredOrders.length} />

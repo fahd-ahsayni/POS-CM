@@ -52,12 +52,12 @@ export default function Drawer({
             >
               <TransitionChild
                 as={Fragment}
-                enter="transform transition ease-in-out duration-150"
+                enter="transform transition ease-in-out duration-300"
                 enterFrom={
                   position === "left" ? "-translate-x-full" : "translate-x-full"
                 }
                 enterTo="translate-x-0"
-                leave="transform transition ease-in-out duration-150"
+                leave="transform transition ease-in-out duration-200"
                 leaveFrom="translate-x-0"
                 leaveTo={
                   position === "left" ? "-translate-x-full" : "translate-x-full"
@@ -69,12 +69,12 @@ export default function Drawer({
                   <motion.div
                     layout
                     transition={{
-                      layout: { duration: 0.15, ease: "easeInOut" },
-                      width: { duration: 0.15, ease: "easeInOut" },
+                      layout: { duration: 0.35, ease: "easeInOut" },
+                      width: { duration: 0.35, ease: "easeInOut" },
                     }}
                     className="flex h-full flex-col dark:bg-secondary-black bg-secondary-white py-4 shadow-xl"
                   >
-                    <motion.div layout className="">
+                    <motion.div layout>
                       <div className="flex items-start justify-between px-4 sm:px-6">
                         <DialogTitle className="font-medium dark:text-white text-primary-black">
                           {toTitleCase(title.toLowerCase())}
@@ -95,7 +95,7 @@ export default function Drawer({
                     <motion.div
                       layout
                       transition={{
-                        layout: { duration: 0.3, ease: "easeInOut" },
+                        layout: { duration: 0.5, ease: "easeInOut" },
                       }}
                       className="relative mt-6 flex-1 px-4 sm:px-6 overflow-y-auto"
                     >

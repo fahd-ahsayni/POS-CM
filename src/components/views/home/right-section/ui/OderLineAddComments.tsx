@@ -82,7 +82,7 @@ export default function OderLineAddComments({
         updateOrderLine({
           _id: productId,
           customer_index: customerIndex,
-          notes: filteredComments
+          notes: filteredComments,
         })
       );
     }
@@ -96,7 +96,7 @@ export default function OderLineAddComments({
         updateOrderLine({
           _id: productId,
           customer_index: customerIndex,
-          notes: newComments
+          notes: newComments,
         })
       );
     }
@@ -105,18 +105,18 @@ export default function OderLineAddComments({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-          <Button
-            size="icon"
-            variant="ghost"
-            className="-ms-px rounded h-7 w-7 bg-accent-white/10 hover:bg-accent-white/20 relative"
-          >
-            <CommentIcon className="fill-primary-black dark:fill-white h-4 w-4" />
-            <span className="sr-only">Comments</span>
-            {comments.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-error-color text-white text-[0.6rem] rounded-full h-3 w-3 flex items-center justify-center shadow-md shadow-error-color/50">
-                {comments.length}
-              </span>
-            )}
+        <Button
+          size="icon"
+          variant="ghost"
+          className="-ms-px rounded h-7 w-7 bg-accent-white/10 hover:bg-accent-white/20 relative"
+        >
+          <CommentIcon className="fill-primary-black dark:fill-white h-4 w-4" />
+          <span className="sr-only">Comments</span>
+          {comments.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-error-color text-white text-[0.6rem] rounded-full flex items-center justify-center shadow-md shadow-error-color/50 size-4">
+              <span>{comments.length}</span>
+            </span>
+          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="-ml-52 space-y-2 py-2">

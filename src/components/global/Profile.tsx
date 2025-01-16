@@ -125,7 +125,7 @@ export default function Profile() {
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            className="!text-primary-red font-medium"
+            className="!text-primary-red"
             onClick={handleLogout}
           >
             <LogOut
