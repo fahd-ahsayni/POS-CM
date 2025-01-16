@@ -25,15 +25,15 @@ function SelectTypeOfOrder() {
             <ChevronLeftIcon className="h-6 w-6" />
           </Button>
         )}
-        <TypographyH3 className="font-medium">
+        <TypographyH3 className="font-medium text-balance max-w-lg">
           {selectedType
             ? selectedType.name
             : "What type of order would you like to process?"}
         </TypographyH3>
       </div>
       <div className="flex-1 flex h-full items-center justify-center overflow-hidden relative mt-20">
-        <div className="absolute top-0 left-0 w-full h-12 bg-gradient-to-b from-background to-transparent" />
-        <div className="w-full space-y-6 pb-12 pt-12 h-full overflow-y-auto">
+        <div className="absolute top-0 left-0 w-[calc(100%-0.5rem)] h-6 bg-gradient-to-b from-background to-transparent" />
+        <div className="w-full space-y-6 pb-12 pt-5 pr-3 h-full overflow-y-auto">
           {isLoading ? (
             <OrderCardSkeleton />
           ) : (
@@ -46,22 +46,6 @@ function SelectTypeOfOrder() {
                   isSelected={selectedType?._id === type._id}
                 />
               ))}
-              
-              {categories.length > 0 && (
-                <div className="mt-6">
-                  <TypographyH3>Categories</TypographyH3>
-                  <div className="grid grid-cols-3 gap-4 mt-4">
-                    {categories.map((category) => (
-                      <div
-                        key={category._id}
-                        className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer"
-                      >
-                        {category.name}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </>
           )}
         </div>

@@ -20,16 +20,16 @@ export const useProductSelection = ({
 }: UseProductSelectionProps) => {
   const findVariant = useCallback(
     (product: Product, variantId: string): ProductVariant | undefined => {
-      const orderTypeData = JSON.parse(localStorage.getItem("orderType") || "null");
+      const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
       if (!product?.variants) return undefined;
 
       const variant = product.variants.find((v) => v._id === variantId);
 
-      if (variant && orderTypeData?.menu_id) {
+      if (variant && orderType?.menu_id) {
         const menuPrice = variant.menus?.find(
-          (menu) => menu.menu_id === orderTypeData.menu_id
+          (menu) => menu.menu_id === orderType.menu_id
         )?.price_ttc;
-        return { ...variant, price_ttc: menuPrice || variant.price_ttc };
+        return { ...variant, price_ttc: menuPrice || variant.default_price || variant.price_ttc };
       }
       return variant;
     },
@@ -38,7 +38,13 @@ export const useProductSelection = ({
 
   const createNewProduct = useCallback(
     (product: any, variant: ProductVariant, price?: number): ProductSelected => {
-      const unitPrice = price || variant.price_ttc;
+      const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
+      const menuPrice = variant.menus?.find(
+        (menu) => menu.menu_id === orderType.menu_id
+      )?.price_ttc;
+      
+      const unitPrice = menuPrice || variant.default_price || price || variant.price_ttc;
+      
       return {
         ...product,
         id: uuidv4(),

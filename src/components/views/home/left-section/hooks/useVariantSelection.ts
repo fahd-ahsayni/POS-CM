@@ -40,15 +40,8 @@ const useVariantSelection = ({
 
       try {
         const response = await checkProductAvailability(id);
-
         if (response.status !== 200) {
-          toast.error(
-            createToast(
-              "Product Unavailable",
-              "This product is currently not available",
-              "error"
-            )
-          );
+          toast.error(createToast("Product Unavailable", "This product is currently not available", "error"));
           return;
         }
 
@@ -59,16 +52,17 @@ const useVariantSelection = ({
           return;
         }
 
+        // Get the current menu from localStorage
+        const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
+        const menuId = orderType.menu_id || currentMenu;
+
         // Get the correct price based on menu
-        const variantPrice =
-          variant.menus?.find((menu) => menu.menu_id === currentMenu)
-            ?.price_ttc ??
-          variant.default_price ??
-          price;
+        const variantPrice = variant.menus?.find((menu) => menu.menu_id === menuId)?.price_ttc 
+          ?? variant.default_price 
+          ?? price;
 
         const existingVariant = selectedProducts.find(
-          (p) =>
-            p.product_variant_id === id && p.customer_index === customerIndex
+          (p) => p.product_variant_id === id && p.customer_index === customerIndex
         );
 
         if (!existingVariant) {
@@ -87,23 +81,10 @@ const useVariantSelection = ({
           );
         }
       } catch (error) {
-        toast.error(
-          createToast(
-            "Availability Check Failed",
-            "Unable to verify variant availability",
-            "error"
-          )
-        );
+        toast.error(createToast("Availability Check Failed", "Unable to verify variant availability", "error"));
       }
     },
-    [
-      selectedProduct,
-      addOrUpdateProduct,
-      selectedProducts,
-      customerIndex,
-      setSelectedProducts,
-      currentMenu,
-    ]
+    [selectedProduct, addOrUpdateProduct, selectedProducts, customerIndex, setSelectedProducts, currentMenu]
   );
 
   const handleQuantityChange = useCallback(

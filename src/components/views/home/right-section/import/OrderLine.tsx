@@ -47,17 +47,27 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
   const { currentMenu } = useLeftViewContext();
 
   const prices = useMemo(() => {
-    if (!currentMenu)
-      return calculateProductPrice(
-        item as ProductSelected,
-        null,
-        item.quantity
-      );
-    return calculateProductPrice(
-      item as ProductSelected,
-      currentMenu,
-      item.quantity
-    );
+    const variant = item.variants[0];
+    if (!variant) return { totalPrice: 0 };
+
+    // Get the current menu from localStorage to ensure we're using the latest menu
+    const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
+    const menuId = orderType.menu_id || currentMenu;
+
+    // Find menu-specific price in the variant's menus array
+    if (menuId && variant.menus?.length > 0) {
+      const menuPrice = variant.menus.find(
+        (menu: any) => menu.menu_id === menuId
+      )?.price_ttc;
+
+      if (menuPrice !== undefined) {
+        return { totalPrice: menuPrice * item.quantity };
+      }
+    }
+
+    // If no menu-specific price found, use default_price
+    const defaultPrice = variant.default_price || 0;
+    return { totalPrice: defaultPrice * item.quantity };
   }, [item, currentMenu]);
 
   const itemVariants = useMemo(

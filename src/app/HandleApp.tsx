@@ -13,6 +13,7 @@ import BrokenLink from "@/components/errors/BrokenLink";
 import CustomerDisplay from "@/components/global/Customer-display/CustomerDisplay";
 import SessionExpired from "@/components/errors/SessionExpired";
 import ErrorOccurred from "@/components/errors/ErrorOccurred";
+import Test from "@/test";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = useSelector(
@@ -60,6 +61,7 @@ export default function HandleApp() {
         <Route path="/customer-display" element={<CustomerDisplay />} />
         <Route path="/session-expired" element={<SessionExpired />} />
         <Route path="/error" element={<ErrorOccurred />} />
+        <Route path="/test" element={<Test />} />
         <Route
           path="/"
           element={

@@ -1,9 +1,14 @@
-import Layout from "./Layout";
+import { logoutService } from "@/api/services";
 import { WarningIcon } from "@/assets/plumpy-icons";
 import { Button } from "../ui/button";
+import Layout from "./Layout";
+import { useNavigate } from "react-router-dom";
 
 export default function ErrorOccurred() {
+  const navigate = useNavigate();
   const handleTryAgain = () => {
+    logoutService();
+    navigate("/login");
     window.location.reload();
   };
   return (
