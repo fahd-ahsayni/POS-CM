@@ -12,12 +12,12 @@ import { toTitleCase } from "@/functions/string-transforms";
 import { cn } from "@/lib/utils";
 import { currency } from "@/preferences";
 import { Checkbox as HeadlessUICheckbox } from "@headlessui/react";
+import { useState } from "react";
 import Drawer from "../../Drawer";
 import CancelOrder from "../cancel-order/CancelOrder";
+import EditPrice from "../edit-price/EditPrice";
 import Payments from "../Payments/Payments";
 import { useOrderDetails } from "./hooks/useOrderDetails";
-import { useEffect, useState } from "react";
-import EditPrice from "../edit-price/EditPrice";
 
 export default function OrderDetails() {
   const [editPriceOpen, setEditPriceOpen] = useState(false);
@@ -97,7 +97,6 @@ export default function OrderDetails() {
   };
 
   const calculateTotalPrice = (orderLine: any) => {
-    // Use the price directly from the orderline
     return (orderLine.price * orderLine.quantity).toFixed(
       currency.toFixed || 2
     );
