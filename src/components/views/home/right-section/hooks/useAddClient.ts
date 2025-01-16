@@ -61,7 +61,7 @@ export const useAddClient = (onSuccess?: () => void) => {
       }
     };
     fetchClients();
-  }, []);
+  }, [isOpen]);
 
   const validateForm = (): boolean => {
     try {
@@ -145,6 +145,10 @@ export const useAddClient = (onSuccess?: () => void) => {
 
         if (isDataChanged) {
           await updateClient(existingClient._id, formData);
+          const res = await getClients();
+          if (res.status === 200) {
+            setClients(res.data);
+          }
           toast.info(
             createToast(
               "Client updated",
@@ -152,18 +156,13 @@ export const useAddClient = (onSuccess?: () => void) => {
               "info"
             )
           );
-        } else {
-          toast.success(
-            createToast(
-              "Client selected",
-              "Client selected successfully",
-              "success"
-            )
-          );
         }
-        dispatch(setClientId(existingClient._id));
       } else {
         const response = await createClient(formData);
+        const res = await getClients();
+        if (res.status === 200) {
+          setClients(res.data);
+        }
         dispatch(setClientId(response.data._id));
         toast.success(
           createToast(

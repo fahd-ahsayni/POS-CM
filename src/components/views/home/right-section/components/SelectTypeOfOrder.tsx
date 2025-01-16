@@ -8,7 +8,7 @@ import { OrderType } from "@/types/order.types";
 
 function SelectTypeOfOrder() {
   const {
-    state: { selectedType, displayedTypes, isLoading, categories },
+    state: { selectedType, displayedTypes, isLoading },
     actions: { handleOrderTypeSelect, handleBack },
   } = useSelectOrderType();
 

@@ -33,7 +33,7 @@ const ProductsGrid = memo(function ProductsGrid({
 
   return (
     <motion.div
-      className="w-full grid grid-cols-2 lg:grid-cols-3 gap-3 mt-4"
+      className="w-full grid grid-cols-2 lg:grid-cols-3 gap-3 mt-4 pl-1.5"
       {...animationConfig}
     >
       {productsWithVariants.map((product) => (

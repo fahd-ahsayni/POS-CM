@@ -49,6 +49,17 @@ export interface ProductVariant extends BaseEntity {
     price_ttc: number;
     _id: string;
   }[];
+  supplements?: Array<{
+    _id: string;
+    name: string;
+    price_ttc: number;
+    default_price?: number;
+    quantity?: number;
+    menus?: Array<{
+      menu_id: string;
+      price_ttc: number;
+    }>;
+  }>;
 }
 
 
@@ -97,6 +108,7 @@ export interface ProductSelected extends Product {
     variants: any[];
     supplements: any[];
   };
+  _animation?: "reverse" | string;
 }
 
 export const isComboProduct = (

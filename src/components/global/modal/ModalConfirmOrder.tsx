@@ -1,4 +1,4 @@
-import { BsCheck2Circle } from "react-icons/bs";
+import { IoFastFoodOutline } from "react-icons/io5";
 import BaseModal from "./Layout/BaseModal";
 
 interface ModalConfirmOrderProps {
@@ -20,7 +20,7 @@ export default function ModalConfirmOrder({
       closeModal={() => setOpen(false)}
       title="Confirm Order"
       description="Are you sure you want to proceed with this order?"
-      icon={<BsCheck2Circle className="h-8 w-8 text-success-color" />}
+      icon={<IoFastFoodOutline className="h-6 w-6 text-success-color" />}
       confirmText={isProcessing ? "Processing..." : "Yes, Proceed"}
       onConfirm={onConfirm}
       onCancel={() => setOpen(false)}

@@ -28,23 +28,79 @@ const initialState: OrderSliceState = {
 
 const calculateTotalAmount = (orderlines: any[]) => {
   return orderlines.reduce((sum, line) => {
+    const currentMenu = localStorage.getItem("currentMenu");
+    const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
+    const menuId = orderType.menu_id || currentMenu;
+
     // Handle combo products
     if (line.is_combo && line.combo_items) {
-      const comboBasePrice = line.price || 0;
-      const supplementsTotal =
-        line.combo_items.supplements?.reduce(
-          (suppSum: number, supp: any) =>
-            suppSum + (supp.price_ttc || 0) * (supp.quantity || 1),
-          0
-        ) || 0;
+      // Get base combo price from the variant
+      const comboVariant = line.variants?.[0];
+      let basePrice = 0;
 
-      // Multiply the total combo price by its quantity
-      return sum + (comboBasePrice + supplementsTotal) * (line.quantity || 1);
+      if (comboVariant) {
+        // Get menu-specific price or default price
+        basePrice =
+          comboVariant.menus?.find((menu: any) => menu.menu_id === menuId)
+            ?.price_ttc ||
+          comboVariant.default_price ||
+          comboVariant.price_ttc ||
+          line.price ||
+          0;
+      }
+
+      // Calculate supplements total
+      const supplementsTotal =
+        line.combo_items.supplements?.reduce((suppSum: number, supp: any) => {
+          const suppPrice =
+            supp.menus?.find((menu: any) => menu.menu_id === menuId)
+              ?.price_ttc ||
+            supp.default_price ||
+            supp.price_ttc ||
+            0;
+
+          return suppSum + suppPrice * (supp.quantity || 1);
+        }, 0) || 0;
+
+      // Calculate total combo price including base price and supplements
+      const totalComboPrice =
+        (basePrice + supplementsTotal) * (line.quantity || 1);
+
+      console.log("Combo calculation:", {
+        basePrice,
+        supplementsTotal,
+        quantity: line.quantity,
+        totalComboPrice,
+        line,
+      });
+
+      return sum + totalComboPrice;
     }
 
     // Handle regular products
-    const unitPrice = line.unit_price || line.price / (line.quantity || 1);
-    return sum + unitPrice * (line.quantity || 1);
+    const variant = line.variants?.[0];
+    if (!variant) {
+      console.warn("No variant found for product:", line);
+      return sum + (line.price || 0) * (line.quantity || 1);
+    }
+
+    const unitPrice =
+      variant.menus?.find((menu: any) => menu.menu_id === menuId)?.price_ttc ||
+      variant.default_price ||
+      variant.price_ttc ||
+      line.price ||
+      0;
+
+    const lineTotal = unitPrice * (line.quantity || 1);
+
+    console.log("Regular product calculation:", {
+      unitPrice,
+      quantity: line.quantity,
+      lineTotal,
+      line,
+    });
+
+    return sum + lineTotal;
   }, 0);
 };
 
