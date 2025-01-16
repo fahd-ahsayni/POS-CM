@@ -72,7 +72,6 @@ const calculateTotalAmount = (orderlines: any[]) => {
     // Handle regular products
     const variant = line.variants?.[0];
     if (!variant) {
-      console.warn("No variant found for product:", line);
       return sum + (line.price || 0) * (line.quantity || 1);
     }
 

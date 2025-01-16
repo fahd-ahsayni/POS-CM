@@ -36,7 +36,7 @@ export const OrderCard = memo(
     return (
       <Card
         className={cn(
-          "w-full rounded-md h-24 px-6 py-6 flex space-x-4 items-center justify-between cursor-pointer",
+          "w-full rounded-md h-24 px-8 py-4 flex space-x-4 items-center justify-between cursor-pointer",
           fixedLightDark
             ? "bg-neutral-bright-grey dark:bg-primary-black"
             : "bg-white dark:bg-secondary-black" 

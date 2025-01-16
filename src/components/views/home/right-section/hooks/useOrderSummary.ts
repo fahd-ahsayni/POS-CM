@@ -18,7 +18,7 @@ import { useRightViewContext } from "../contexts/RightViewContext";
 import { useCustomerManagement } from "../hooks/useCustomerManagement";
 import { useCoasterCall } from "./useCoasterCall";
 import { useNumberOfTable } from "./useNumberOfTable";
-
+import { useHoldOrders } from "@/store/hooks/useHoldOrders";
 interface OrderSummaryState {
   openModalConfirmHoldOrder: boolean;
   openDrawerPayments: boolean;
@@ -47,6 +47,8 @@ export const useOrderSummary = () => {
 
   const { setNumber: setCoasterNumber } = useCoasterCall();
   const { setTableNumber } = useNumberOfTable();
+
+  const { handleHoldOrder } = useHoldOrders();
 
   const isActionsDisabled = useMemo(
     () => selectedProducts.length === 0,
@@ -156,7 +158,10 @@ export const useOrderSummary = () => {
           updateState("showTicket", !state.showTicket);
         }
       },
-      handleHoldOrder: () => updateState("openModalConfirmHoldOrder", true),
+      handleHoldOrder: () => {
+        if (isActionsDisabled) return;
+        handleHoldOrder();
+      },
       setOpenModalConfirmHoldOrder: (value: boolean) =>
         updateState("openModalConfirmHoldOrder", value),
       setOpenDrawerPayments: (value: boolean) =>
@@ -180,6 +185,8 @@ export const useOrderSummary = () => {
       isProcessing,
       order,
       resetOrderState,
+      handleHoldOrder,
+      isActionsDisabled
     ]
   );
 

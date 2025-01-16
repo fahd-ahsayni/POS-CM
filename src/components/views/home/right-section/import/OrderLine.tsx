@@ -109,6 +109,11 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
   //   setIsSuitCamand(!isSuitCamand);
   // };
 
+  const getDisplayName = (variant: any) => {
+    if (!variant) return "Unknown Product";
+    return toTitleCase((variant.name || "Unknown Product").toLowerCase());
+  };
+
   return (
     <motion.div
       layout
@@ -127,17 +132,13 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
       <Card className="flex flex-col w-full py-2 pr-2 pl-4 gap-y-2">
         <div className="flex items-center justify-between gap-x-4">
           <div className="flex flex-col">
-            {item.variants.length > 0 ? (
-              <>
-                <TypographyP className="font-medium">
-                  {toTitleCase(
-                    item.variants[0]?.name || item.name.toLowerCase()
-                  )}
-                </TypographyP>
-              </>
+            {item.variants && item.variants.length > 0 ? (
+              <TypographyP className="font-medium">
+                {getDisplayName(item.variants[0])}
+              </TypographyP>
             ) : (
               <TypographyP className="font-medium">
-                {toTitleCase(item.name.toLowerCase())}
+                {getDisplayName({ name: item.name })}
               </TypographyP>
             )}
           </div>

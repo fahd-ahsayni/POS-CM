@@ -29,11 +29,13 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
     const hasSupplements = selections.supplements.length > 0;
 
     if (!hasVariants && !hasSupplements) {
-      toast.error(createToast(
-        "Invalid Combo",
-        "Please select at least one product",
-        "warning"
-      ));
+      toast.error(
+        createToast(
+          "Invalid Combo",
+          "Please select at least one product",
+          "warning"
+        )
+      );
       return;
     }
 
@@ -43,70 +45,97 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
       // Check availability for all selected variants and supplements
       const variantsToCheck = [
         ...selections.variants,
-        ...selections.supplements
+        ...selections.supplements,
       ];
 
       for (const variant of variantsToCheck) {
         const response = await checkProductAvailability(variant._id);
         if (response.status !== 200) {
-          toast.error(createToast(
-            "Product Unavailable",
-            `${variant.name} is currently not available`,
-            "error"
-          ));
+          toast.error(
+            createToast(
+              "Product Unavailable",
+              `${variant.name} is currently not available`,
+              "error"
+            )
+          );
           return;
         }
       }
 
-      // Create combo product with a unique identifier
-      const comboProduct: any = {
-        id: `${selectedCombo._id}_${Date.now()}`,
-        _id: selectedCombo._id,
+      // Get menu price for the combo
+      const menuPrice =
+        selectedCombo.menus?.find(
+          (menu: any) => menu.menu_id === orderType?.menu_id
+        )?.price_ttc || selectedCombo.default_price;
+
+      // Calculate supplements total price
+      const supplementsPrice = selections.supplements.reduce(
+        (total, supp) => total + (supp.price_ttc || 0),
+        0
+      );
+
+      // Create combo product with proper structure
+      const comboProduct = {
+        _id: `${selectedCombo._id}_${Date.now()}`,
         name: selectedCombo.name,
         quantity: 1,
-        price: selectedCombo.price_ttc,
+        price: menuPrice + supplementsPrice,
+        unit_price: menuPrice,
         variants: [selectedCombo],
+        product_variant_id: selectedCombo._id,
         customer_index: customerIndex,
-        product_vaiant_id: selectedCombo._id,
         order_type_id: orderType?._id || "",
+        uom_id: selectedCombo.uom_id?._id || "",
         is_combo: true,
         is_ordered: false,
         is_paid: false,
         combo_items: {
-          variants: selections.variants.map((v) => ({
-            ...v,
+          variants: selections.variants.map((variant, index) => ({
+            _id: variant._id,
+            name: variant.name,
+            price: variant.price_ttc || variant.default_price || 0,
+            quantity: 1,
+            stepIndex: variant.stepIndex || index,
+            product_variant_id: variant._id,
             customer_index: customerIndex,
             order_type_id: orderType?._id || "",
-            suite_commande: false,
+            uom_id: variant.uom_id?._id || "",
           })),
-          supplements: selections.supplements.map((s) => ({
-            ...s,
-            price_ttc: s.price_ttc,
+          supplements: selections.supplements.map((supp, index) => ({
+            _id: supp._id,
+            name: supp.name,
+            price: supp.price_ttc || supp.default_price || 0,
+            quantity: 1,
+            stepIndex: supp.stepIndex || index,
+            product_variant_id: supp._id,
             customer_index: customerIndex,
             order_type_id: orderType?._id || "",
-            suite_commande: false,
+            uom_id: supp.uom_id?._id || "",
+            is_supplement: true,
           })),
         },
         notes: [],
+        discount: null,
         suite_commande: false,
         high_priority: false,
       };
 
-      // Always add as a new product
-      setSelectedProducts((prev) => [...prev, comboProduct]);
+      // Add the combo product to selected products
+      setSelectedProducts((prev: any) => [...prev, comboProduct]);
 
       // Reset combo state
       setSelections({ variants: [], supplements: [] });
       setCurrentStep(0);
       setTotalSupplementsPrice(0);
       setOpenDrawerCombo(false);
-
     } catch (error) {
-      toast.error(createToast(
-        "Availability Check Failed",
-        "Unable to verify product availability",
-        "error"
-      ));
+      toast.error(
+        createToast(
+          "Availability Check Failed",
+          "Unable to verify product availability",
+          "error"
+        )
+      );
     } finally {
       setIsFinishing(false);
     }
@@ -137,7 +166,7 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
     }
   }, [currentStep, selectedStep, setSelections]);
 
-  return { 
+  return {
     getStepDescription: (step: Step): string => {
       if (step.is_required && !step.is_supplement) {
         return "All variants are automatically selected";
@@ -149,8 +178,8 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
         return "Select supplements and adjust quantities as needed";
       }
       return "";
-    }, 
+    },
     handleFinish,
-    isFinishing
+    isFinishing,
   };
 }
