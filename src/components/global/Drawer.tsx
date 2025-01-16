@@ -72,7 +72,7 @@ export default function Drawer({
                       layout: { duration: 0.15, ease: "easeInOut" },
                       width: { duration: 0.15, ease: "easeInOut" },
                     }}
-                    className="flex h-full flex-col overflow-y-scroll dark:bg-secondary-black bg-secondary-white py-4 shadow-xl"
+                    className="flex h-full flex-col dark:bg-secondary-black bg-secondary-white py-4 shadow-xl"
                   >
                     <motion.div layout className="">
                       <div className="flex items-start justify-between px-4 sm:px-6">

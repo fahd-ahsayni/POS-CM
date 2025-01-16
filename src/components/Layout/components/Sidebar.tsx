@@ -1,5 +1,6 @@
 import AddClient from "@/components/global/drawers/add-client/AddClient";
 import Drop from "@/components/global/drawers/drop/Drop";
+import StaffList from "@/components/global/drawers/staff-list/StaffList";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ORDER_SUMMARY_VIEW } from "@/components/views/home/right-section/constants";
@@ -8,13 +9,14 @@ import { useOrderType } from "@/components/views/home/right-section/hooks/useOrd
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/providers/themeProvider";
 import { RefreshCw } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   DISABLED_ITEM_STYLES,
   sidebarNavigation,
   sidebarPagesLink,
 } from "../constants";
+import { useSidebarActions } from "../hooks/useSidebarActions";
 
 interface SidebarItemProps {
   item: {
@@ -77,44 +79,27 @@ export default function Sidebar() {
   const { views } = useRightViewContext();
   const { theme } = useTheme();
   const { pathname } = useLocation();
-  const navigate = useNavigate();
   const [openClientDrawer, setOpenClientDrawer] = useState(false);
   const [openDropDrawer, setOpenDropDrawer] = useState(false);
-  // Used to force re-render when orderType changes
-  const [_, setOrderTypeChanged] = useState(0); // eslint-disable-line @typescript-eslint/no-unused-vars
+  const [openStaffList, setOpenStaffList] = useState(false);
+  const orderType = useOrderType();
+  const storedOrderType = JSON.parse(localStorage.getItem("orderType") || "{}");
 
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setOrderTypeChanged((prev) => prev + 1);
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
-
-  useEffect(() => {
-    setOrderTypeChanged((prev) => prev + 1);
-  }, []);
-
-  const handleClientClick = () => {
-    if (views === ORDER_SUMMARY_VIEW) {
-      setOpenClientDrawer(true);
-    }
-  };
-
-  const handleDropClick = () => {
-    setOpenDropDrawer(true);
-  };
-
-  const handleResetApp = () => {
-    localStorage.removeItem("orderType");
-    navigate(0);
-  };
+  const { handleStaffSelect, handleResetApp } = useSidebarActions(
+    setOpenClientDrawer,
+    setOpenDropDrawer,
+    setOpenStaffList
+  );
 
   return (
     <div className="hidden w-full h-screen md:block z-10">
       <AddClient open={openClientDrawer} setOpen={setOpenClientDrawer} />
       <Drop open={openDropDrawer} setOpen={setOpenDropDrawer} />
+      <StaffList
+        open={openStaffList}
+        setOpen={setOpenStaffList}
+        onSelect={handleStaffSelect}
+      />
       <div className="flex w-full flex-col h-full items-center">
         <div className="w-full flex-1 flex flex-col justify-between py-3 px-2">
           <div className="flex flex-col gap-y-6">
@@ -133,24 +118,30 @@ export default function Sidebar() {
               <SidebarItem
                 key={item.name}
                 item={{
-                  ...item,
+                  name:
+                    item.name === "Waiters"
+                      ? orderType.getWaitersLabel()
+                      : item.name,
+                  route: item.route,
+                  icon: item.icon,
                   isDisabled:
                     item.name === "Clients"
                       ? views !== ORDER_SUMMARY_VIEW
-                      : item.name === "Waiters" || item.name === "Delivery"
-                      ? useOrderType().isWaitersDisabled()
+                      : item.name === "Waiters"
+                      ? !storedOrderType || orderType.isWaitersDisabled()
                       : item.isDisabled,
+                  disabledMessage: item.disabledMessage,
                 }}
                 pathname={pathname}
                 theme={theme}
                 onClick={
-                  item.name === "Clients"
-                    ? views === ORDER_SUMMARY_VIEW
-                      ? handleClientClick
-                      : undefined
+                  item.name === "Waiters"
+                    ? () => setOpenStaffList(true)
                     : item.name === "Drop"
-                    ? handleDropClick
-                    : item.onClick
+                    ? () => setOpenDropDrawer(true)
+                    : item.name === "Clients"
+                    ? () => setOpenClientDrawer(true)
+                    : () => item.onClick?.(setOpenStaffList)
                 }
               />
             ))}

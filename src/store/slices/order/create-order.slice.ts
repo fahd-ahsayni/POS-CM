@@ -130,8 +130,9 @@ const orderSlice = createSlice({
         _id?: string;
         customer_index: number;
         product_variant_id?: string;
-        quantity: number;
-        price: number;
+        quantity?: number;
+        price?: number;
+        notes?: string[];
         combo_prod_ids?: Array<{
           product_variant_id: string;
           quantity: number;
@@ -162,7 +163,7 @@ const orderSlice = createSlice({
       });
 
       if (orderLineIndex !== -1) {
-        if (updateData.quantity <= 0) {
+        if (updateData.quantity !== undefined && updateData.quantity <= 0) {
           // Remove the order line if quantity is 0
           state.data.orderlines.splice(orderLineIndex, 1);
         } else {
@@ -242,7 +243,7 @@ const orderSlice = createSlice({
     setCustomerCount: (state, action: PayloadAction<number>) => {
       state.data.customer_count = Math.max(action.payload, 1);
     },
-    setWaiterId: (state, action: PayloadAction<number | null>) => {
+    setWaiterId: (state, action: PayloadAction<string | null>) => {
       state.data.waiter_id = action.payload;
     },
     setCoasterCall: (state, action: PayloadAction<string | null>) => {

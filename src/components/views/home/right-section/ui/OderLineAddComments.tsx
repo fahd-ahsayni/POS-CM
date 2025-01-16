@@ -81,11 +81,8 @@ export default function OderLineAddComments({
       dispatch(
         updateOrderLine({
           _id: productId,
-          customerIndex,
-          orderLine: {
-            notes: filteredComments,
-            customer_index: customerIndex,
-          },
+          customer_index: customerIndex,
+          notes: filteredComments
         })
       );
     }
@@ -98,11 +95,8 @@ export default function OderLineAddComments({
       dispatch(
         updateOrderLine({
           _id: productId,
-          customerIndex,
-          orderLine: {
-            notes: newComments,
-            customer_index: customerIndex,
-          },
+          customer_index: customerIndex,
+          notes: newComments
         })
       );
     }

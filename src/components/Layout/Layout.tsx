@@ -5,10 +5,10 @@ import { fetchPosData } from "@/store/slices/data/pos.slice";
 import { memo, useEffect, useMemo, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
+import SessionExpired from "../errors/SessionExpired";
 import { LoadingFullScreen } from "../global/loading";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
-import SessionExpired from "../errors/SessionExpired";
 
 const Layout = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -60,20 +60,17 @@ const Layout = () => {
 
   useEffect(() => {
     const isFirstRender = localStorage.getItem("firstRender");
-    const timer = !isFirstRender
-      ? setTimeout(() => {
-          localStorage.setItem("firstRender", "true");
-          setIsLoading(false);
-          // window.location.reload();
-        }, 3000)
-      : setIsLoading(false);
-
-    return () => {
-      if (timer && typeof timer === "number") {
-        clearTimeout(timer);
-      }
-    };
+    if (!isFirstRender) {
+      setIsLoading(true);
+    } else {
+      setIsLoading(false);
+    }
   }, []);
+
+  const handleLoadingComplete = () => {
+    localStorage.setItem("firstRender", "true");
+    setIsLoading(false);
+  };
 
   const BackgroundDecoration = () => (
     <div
@@ -102,7 +99,8 @@ const Layout = () => {
     []
   );
 
-  if (isLoading) return <LoadingFullScreen />;
+  if (isLoading)
+    return <LoadingFullScreen onLoadingComplete={handleLoadingComplete} />;
   if (generalError) return <SessionExpired />;
   return content;
 };

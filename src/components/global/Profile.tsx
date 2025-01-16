@@ -1,6 +1,6 @@
 import { logoutService } from "@/api/services";
 import { unknownUser } from "@/assets";
-import { DisplayIcon, UserIcon } from "@/assets/figma-icons";
+import { DisplayIcon } from "@/assets/figma-icons";
 import CloseShift from "@/auth/CloseShift";
 import {
   DropdownMenu,
@@ -16,7 +16,7 @@ import { AppDispatch } from "@/store";
 import { logout } from "@/store/slices/authentication/auth.slice";
 import { selectPosData } from "@/store/slices/data/pos.slice";
 import { formatDistanceToNow } from "date-fns";
-import { ChevronDown, HelpCircle, LogOut, Power } from "lucide-react";
+import { ChevronDown, LogOut, Power } from "lucide-react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { TypographySmall } from "../ui/typography";
@@ -49,8 +49,6 @@ export default function Profile() {
   };
 
   const menuItems = [
-    { icon: UserIcon, label: "My Profile" },
-    { icon: HelpCircle, label: "Help" },
     {
       icon: DisplayIcon,
       label: "Customer Display",
@@ -102,10 +100,10 @@ export default function Profile() {
             </span>
           </DropdownMenuLabel>
           <DropdownMenuGroup>
-            {menuItems.slice(0, 3).map((item, index) => (
+            {menuItems.slice(0, 1).map((item, index) => (
               <DropdownMenuItem key={index} onClick={item.onClick}>
                 <item.icon
-                  size={16}
+                  size={17}
                   strokeWidth={2}
                   className="opacity-60"
                   aria-hidden="true"
@@ -114,11 +112,10 @@ export default function Profile() {
               </DropdownMenuItem>
             ))}
           </DropdownMenuGroup>
-          <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem onClick={() => setOpen(true)}>
               <Power
-                size={16}
+                size={17}
                 strokeWidth={2}
                 className="opacity-60"
                 aria-hidden="true"
@@ -128,11 +125,11 @@ export default function Profile() {
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            className="!text-primary-red font-semibold"
+            className="!text-primary-red font-medium"
             onClick={handleLogout}
           >
             <LogOut
-              size={16}
+              size={17}
               strokeWidth={2}
               className="opacity-60"
               aria-hidden="true"

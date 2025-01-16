@@ -13,7 +13,7 @@ import BrokenLink from "@/components/errors/BrokenLink";
 import CustomerDisplay from "@/components/global/Customer-display/CustomerDisplay";
 import SessionExpired from "@/components/errors/SessionExpired";
 import ErrorOccurred from "@/components/errors/ErrorOccurred";
-import Test from "@/test";
+import Test from "@/Test";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = useSelector(

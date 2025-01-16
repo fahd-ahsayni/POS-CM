@@ -58,7 +58,7 @@ const OrderSummary = () => {
         onConfirm={handleConfirmOrder}
         isProcessing={isProcessing}
       />
-      <div className="flex flex-col justify-start h-full gap-y-2">
+      <div className="flex flex-col justify-start h-[calc(100%+35px)] gap-y-2">
         <div className="flex items-center justify-between p-1">
           <div className="flex items-center gap-2">
             <OrderBannerOnSummary />

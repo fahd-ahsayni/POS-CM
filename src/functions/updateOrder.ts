@@ -59,7 +59,7 @@ export const updateOrder = (params: OrderUpdateParams): any => {
     Object.entries(params).forEach(([key, value]) => {
       switch (key) {
         case "waiter_id":
-          dispatch(setWaiterId(value as number | null));
+          dispatch(setWaiterId(value as string | null));
           break;
         case "coaster_call":
           dispatch(setCoasterCall(value as string | null));

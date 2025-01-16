@@ -11,14 +11,13 @@ import {
 } from "@/assets/plumpy-icons";
 import { createToast } from "@/components/global/Toasters";
 import { toast } from "react-toastify";
-import { useOrderType } from "@/components/views/home/right-section/hooks/useOrderType";
 
 // Add new interface for sidebar items
 interface SidebarItem {
   name: string;
   route: string;
   icon: React.ComponentType<{ className?: string }>;
-  onClick?: () => void;
+  onClick?: (() => void) | ((setOpen: (open: boolean) => void) => void);
   isDisabled?: boolean;
   disabledMessage?: string;
 }
@@ -60,12 +59,12 @@ export const sidebarNavigation: SidebarItem[] = [
     isDisabled: false,
   },
   {
-    name: useOrderType().getWaitersLabel(),
+    name: "Waiters",
     route: "#",
     icon: WaitersIcon,
-    onClick: () => console.log("Waiters clicked"),
-    isDisabled: useOrderType().isWaitersDisabled(),
-    disabledMessage: "Not available for this order type",
+    onClick: () => {},
+    isDisabled: false,
+    disabledMessage: "Please select an order type first",
   },
   {
     name: "Drop",

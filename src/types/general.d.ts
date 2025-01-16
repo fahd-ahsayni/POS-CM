@@ -1,3 +1,4 @@
+import { OrderType } from "./order.types";
 import { Category, Product } from "./product.types";
 
 export interface GeneralData {
@@ -5,11 +6,11 @@ export interface GeneralData {
   configs: object[];
   categories: Category[];
   defineNote: object[];
-  orderTypes: object[];
+  orderTypes: OrderType[];
   discount: object[];
   paymentMethods: object[];
-  waiters: object[];
-  livreurs: object[];
+  waiters: StaffUser[];
+  livreurs: StaffUser[];
   products: Product[];
 }
 

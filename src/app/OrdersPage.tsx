@@ -8,7 +8,7 @@ import {
   refreshOrders,
   setFilteredDataLength
 } from "@/store/slices/data/orders.slice";
-import { FilterCriteria } from "@/types/general.types";
+import { FilterCriteria } from "@/types/general";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
