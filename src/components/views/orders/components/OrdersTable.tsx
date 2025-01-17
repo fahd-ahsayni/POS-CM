@@ -1,5 +1,11 @@
 import { getOrderById, printOrder } from "@/api/services";
 import { PrinterIcon } from "@/assets/figma-icons";
+import {
+  Table2Seats,
+  Table4Seats,
+  Table6Seats,
+  Table8Seats,
+} from "@/assets/tables-icons";
 import { useOrder } from "@/components/global/drawers/order-details/context/OrderContext";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +16,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { TypographySmall } from "@/components/ui/typography";
+import { cn } from "@/lib/utils";
 import { refreshOrders } from "@/store/slices/data/orders.slice";
 import { Order } from "@/types/order.types";
 import { format } from "date-fns";
@@ -20,6 +28,87 @@ interface OrdersTableProps {
   data: Order[];
   withPrintButton?: boolean;
 }
+
+const OrderTypeCell = ({ order }: { order: any }) => {
+  const orderType = order.order_type_id;
+
+  if (!orderType) return <span>-</span>;
+
+  const renderOrderTypeContent = () => {
+    switch (orderType.type) {
+      case "takeAway":
+        if (order.coaster_call !== null && orderType.select_coaster_call) {
+          return `Coaster Call - N° ${order.coaster_call}`;
+        }
+        if (order.coaster_call === null && !orderType.select_coaster_call) {
+          return "Takeaway";
+        }
+        if (order.coaster_call === null && orderType.select_table) {
+          const tableName =
+            typeof order.table_id === "object"
+              ? order.table_id?.name
+              : order.table_id;
+          return `Table ${tableName || ""} - Takeaway`;
+        }
+        return orderType.name;
+
+      case "delivery":
+        if (order.delivery_guy_id === null && orderType.select_delivery_boy) {
+          return orderType.name;
+        }
+        if (order.delivery_guy_id === null && !orderType.select_delivery_boy) {
+          return "Delivery";
+        }
+        if (order.delivery_guy_id !== null && orderType.select_delivery_boy) {
+          return `${orderType.name} - N° ${order.delivery_guy_id}`;
+        }
+        return orderType.name;
+
+      case "onPlace":
+        const TableIcon =
+          order.table_id?.seats > 7
+            ? Table8Seats
+            : order.table_id?.seats > 5
+            ? Table6Seats
+            : order.table_id?.seats > 3
+            ? Table4Seats
+            : Table2Seats;
+
+        return (
+          <div className="flex items-center space-x-1.5">
+            {order.table_id && (
+              <TableIcon className="w-auto h-5 text-primary-black dark:text-white/80" />
+            )}
+            <TypographySmall className="font-medium">
+              {order.table_id
+                ? `Table N° ${order.table_id.name}`
+                : orderType.name}
+            </TypographySmall>
+          </div>
+        );
+
+      default:
+        return orderType.name;
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      {orderType.image && (
+        <div className="h-6 w-6 rounded-md relative overflow-hidden">
+          <img
+            src={orderType.image}
+            alt="order-type"
+            loading="lazy"
+            crossOrigin="anonymous"
+            className="absolute w-full h-full object-cover top-0 left-0"
+          />
+        </div>
+      )}
+      {renderOrderTypeContent()}
+    </div>
+  );
+};
 
 export default function OrdersTable({
   data = [],
@@ -35,10 +124,14 @@ export default function OrdersTable({
     { key: "ref", label: "Order ID" },
     { key: "createdAt", label: "Date & Time" },
     { key: "created_by.name", label: "Ordered by" },
-    { key: "order_type_id.name", label: "Order Type" },
-    { key: "table_id.name", label: "Table" },
+    { key: "order_type", label: "Order Type", custom: true },
     { key: "status", label: "Status" },
-    { key: "total_amount", label: "Total (Dhs)", isPrice: true },
+    {
+      key: "total_amount",
+      label: "Order Total (Dhs)",
+      isPrice: true,
+      alignRight: true,
+    },
   ];
 
   const handleRowClick = async (order: Order) => {
@@ -84,6 +177,10 @@ export default function OrdersTable({
   };
 
   const renderCell = (order: Order, column: (typeof columns)[0]) => {
+    if (column.key === "order_type") {
+      return <OrderTypeCell order={order} />;
+    }
+
     const value = column.key
       .split(".")
       .reduce((obj: any, key: string) => obj?.[key], order);
@@ -133,9 +230,15 @@ export default function OrdersTable({
             {columns.map((column) => (
               <TableHead
                 key={column.key}
-                className="text-sm text-primary-black dark:text-white"
+                className={`text-sm text-primary-black dark:text-white ${
+                  column.alignRight ? "text-right" : ""
+                }`}
               >
-                <div className="flex items-center justify-between">
+                <div
+                  className={`flex items-center ${
+                    column.alignRight ? "justify-end" : "justify-between"
+                  }`}
+                >
                   {column.label}
                   <SortDesc className="ml-2 h-3.5 w-3.5 text-muted-foreground" />
                 </div>
@@ -154,7 +257,10 @@ export default function OrdersTable({
                 {columns.map((column) => (
                   <TableCell
                     key={`${order._id}-${column.key}`}
-                    className={column.isPrice ? "text-right" : ""}
+                    className={cn(
+                      column.alignRight ? "text-right" : "",
+                      "text-sm"
+                    )}
                   >
                     {renderCell(order, column)}
                   </TableCell>

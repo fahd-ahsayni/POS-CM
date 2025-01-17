@@ -26,7 +26,9 @@ export function useTableOrders<T>({
 
   const ordersVersion = useSelector((state: any) => state.orders.version);
   const ordersStatus = useSelector((state: any) => state.orders.status);
-  const ordersCancellationStatus = useSelector((state: any) => state.orders.cancellationStatus);
+  const ordersCancellationStatus = useSelector(
+    (state: any) => state.orders.cancellationStatus
+  );
 
   // Fetch table data when tableNumber changes
   useEffect(() => {
@@ -47,7 +49,12 @@ export function useTableOrders<T>({
     };
 
     fetchTableData();
-  }, [filterCriteria.tableNumber, ordersVersion, ordersStatus, ordersCancellationStatus]);
+  }, [
+    filterCriteria.tableNumber,
+    ordersVersion,
+    ordersStatus,
+    ordersCancellationStatus,
+  ]);
 
   const handleSort = (key: string) => {
     setSortConfig((prev) => ({
@@ -74,8 +81,10 @@ export function useTableOrders<T>({
 
   const sortedData = useMemo(() => {
     // Ensure we're working with an array
-    let filtered = filterCriteria.tableNumber 
-      ? (Array.isArray(tableData) ? tableData : [])
+    let filtered = filterCriteria.tableNumber
+      ? Array.isArray(tableData)
+        ? tableData
+        : []
       : [...data];
 
     // Apply other filters

@@ -10,6 +10,8 @@ import {
 import { format } from "date-fns";
 import { useWaitingOrders } from "@/components/views/orders/hooks/useWaitingOrders";
 import { motion } from "framer-motion";
+import { currency } from "@/preferences";
+import Header from "./components/Header";
 
 export default function WaitingOrders() {
   const { holdOrders, getOrderTypeName, handleRowClick } = useWaitingOrders();
@@ -21,14 +23,23 @@ export default function WaitingOrders() {
       transition={{ type: "spring", duration: 0.35 }}
       className="flex h-full w-[calc(100vw-80px)] flex-col overflow-hidden px-4 pt-8 sm:px-6"
     >
-      <Table>
+      <Header title="Waiting Orders" />
+      <Table className="mt-6">
         <TableCaption>List of waiting orders</TableCaption>
-        <TableHeader>
+        <TableHeader className="sticky top-0 bg-white dark:bg-secondary-black">
           <TableRow>
-            <TableHead>Date & Time</TableHead>
-            <TableHead>Created By</TableHead>
-            <TableHead>Order Type</TableHead>
-            <TableHead className="text-right">Order Total</TableHead>
+            <TableHead className="text-primary-black dark:text-white">
+              Date & Time
+            </TableHead>
+            <TableHead className="text-primary-black dark:text-white">
+              Created By
+            </TableHead>
+            <TableHead className="text-primary-black dark:text-white">
+              Order Type
+            </TableHead>
+            <TableHead className="text-primary-black dark:text-white text-right">
+              Order Total (Dhs)
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -36,7 +47,7 @@ export default function WaitingOrders() {
             <TableRow
               key={order._id}
               onClick={() => handleRowClick(order)}
-              className="cursor-pointer hover:bg-gray-100"
+              className="cursor-pointer hover:bg-white/50 dark:hover:bg-white/5"
             >
               <TableCell className="font-medium">
                 {format(new Date(order.createdAt), "dd.MM.yyyy - hh:mm a")}
@@ -44,7 +55,7 @@ export default function WaitingOrders() {
               <TableCell>{order.created_by.name}</TableCell>
               <TableCell>{getOrderTypeName(order)}</TableCell>
               <TableCell className="text-right">
-                ${order.total_amount.toFixed(2)}
+                {order.total_amount.toFixed(2)} {currency.currency}
               </TableCell>
             </TableRow>
           ))}

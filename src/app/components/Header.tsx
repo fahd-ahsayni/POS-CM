@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { refreshOrders } from "@/store/slices/data/orders.slice";
 
 interface HeaderProps {
-  handleRefreshOrders: () => void;
+  handleRefreshOrders?: () => void;
   title: string;
   withFilter?: boolean;
   onFilterChange?: (filters: FilterCriteria) => void;

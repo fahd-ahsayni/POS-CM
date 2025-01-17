@@ -64,10 +64,13 @@ export default function Profile() {
           <button className="h-auto p-0 flex">
             <div>
               <Avatar
-                isBordered
                 radius="lg"
                 showFallback={true}
-                fallback={user?.name?.charAt(0)}
+                fallback={
+                  <span className="font-medium text-sm">
+                    {user?.name?.charAt(0)}
+                  </span>
+                }
                 src={user?.image}
               />
             </div>

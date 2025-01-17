@@ -41,7 +41,6 @@ const StaffList = memo(({ open, setOpen, onSelect }: StaffListProps) => {
         <div className="relative flex min-w-0 flex-1 items-center">
           <span className="relative inline-block flex-shrink-0">
             <Avatar
-              isBordered
               radius="lg"
               showFallback={true}
               fallback={
