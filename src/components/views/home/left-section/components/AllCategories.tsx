@@ -31,7 +31,7 @@ export default memo(function AllCategories() {
         )}
       >
         <TypographyP className="text-center text-xl font-medium">
-          All Products
+          All Items
         </TypographyP>
       </Card>
 

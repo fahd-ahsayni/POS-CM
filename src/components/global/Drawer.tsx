@@ -43,7 +43,7 @@ export default function Drawer({
         }}
       >
         <div className="fixed inset-0" />
-        <div className="fixed inset-0 overflow-hidden dark:bg-white/30 bg-primary-black/70 transform-gpu">
+        <div className="fixed inset-0 overflow-hidden bg-black/30 backdrop-blur-[2px] transform-gpu">
           <div className="absolute inset-0 overflow-hidden">
             <div
               className={`pointer-events-none fixed inset-y-0 ${position}-0 flex max-w-full ${
@@ -68,10 +68,6 @@ export default function Drawer({
                 >
                   <motion.div
                     layout
-                    transition={{
-                      layout: { duration: 0.35, ease: "easeInOut" },
-                      width: { duration: 0.35, ease: "easeInOut" },
-                    }}
                     className="flex h-full flex-col dark:bg-secondary-black bg-secondary-white py-4 shadow-xl"
                   >
                     <motion.div layout>
@@ -94,9 +90,6 @@ export default function Drawer({
                     </motion.div>
                     <motion.div
                       layout
-                      transition={{
-                        layout: { duration: 0.5, ease: "easeInOut" },
-                      }}
                       className="relative mt-6 flex-1 px-4 sm:px-6 overflow-y-auto"
                     >
                       {children}

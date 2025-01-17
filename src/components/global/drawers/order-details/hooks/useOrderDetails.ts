@@ -100,6 +100,32 @@ export const useOrderDetails = (
             return null;
           }
 
+          // Find and add names for combo products
+          const comboProducts =
+            line.combo_prod_ids?.map((combo: any) => ({
+              _id: combo._id,
+              quantity: combo.quantity,
+              name: combo.product_variant_id.name,
+              notes: combo.notes || [],
+              suite_commande: combo.suite_commande,
+              order_type_id: combo.order_type_id,
+              price: combo.product_variant_id.default_price,
+              menus: combo.product_variant_id.menus,
+            })) || [];
+
+          // Find and add names for supplements
+          const comboSupplements =
+            line.combo_supp_ids?.map((supp: any) => ({
+              _id: supp._id,
+              quantity: supp.quantity,
+              name: supp.product_variant_id.name,
+              notes: supp.notes || [],
+              suite_commande: supp.suite_commande,
+              order_type_id: supp.order_type_id,
+              price: supp.product_variant_id.default_price,
+              menus: supp.product_variant_id.menus,
+            })) || [];
+
           return {
             ...product,
             id: line._id,
@@ -116,6 +142,13 @@ export const useOrderDetails = (
             is_ordred: line.is_ordred,
             suite_commande: line.suite_commande,
             high_priority: line.high_priority,
+            is_combo: comboProducts.length > 0 || comboSupplements.length > 0,
+            combo_prod_ids: comboProducts,
+            combo_supp_ids: comboSupplements,
+            combo_items: {
+              variants: comboProducts,
+              supplements: comboSupplements,
+            },
           };
         })
         .filter(Boolean);

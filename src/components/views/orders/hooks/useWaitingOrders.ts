@@ -49,100 +49,88 @@ export const useWaitingOrders = () => {
         );
         const products = generalData.products || [];
 
-        const selectedProducts = (
-          order.orderline_ids ||
-          order.orderlines ||
-          []
-        ).map((line: any) => {
-          const product = products.find((p: Product) =>
-            p.variants.some(
-              (v: ProductVariant) =>
-                v._id ===
-                (line.product_variant_id?._id || line.product_variant_id)
-            )
-          );
+        const selectedProducts = order.orderline_ids
+          .map((line: any) => {
+            // Handle both string and object variant IDs
+            const variantId = typeof line.product_variant_id === 'object' 
+              ? line.product_variant_id._id 
+              : line.product_variant_id;
 
-          const variant = product?.variants.find(
-            (v: ProductVariant) =>
-              v._id ===
-              (line.product_variant_id?._id || line.product_variant_id)
-          );
+            // Find the product and variant from generalData
+            const product = products.find((p: Product) =>
+              p.variants.some((v: ProductVariant) => v._id === variantId)
+            );
 
-          // Initialize combo_items structure
-          const combo_items = {
-            variants: [] as any[],
-            supplements: [] as any[],
-          };
+            const variant = product?.variants.find(
+              (v: ProductVariant) => v._id === variantId
+            );
 
-          // Process combo products if this is a menu item
-          if (variant?.is_menu) {
-            // Handle combo products
-            (line.combo_prod_ids || []).forEach((comboProd: any) => {
+            if (!product || !variant) {
+              console.warn("Product or variant not found:", line);
+              return null;
+            }
+
+            // Rest of the mapping remains the same
+            const comboProducts = line.combo_prod_ids?.map((combo: any) => {
+              const comboId = typeof combo.product_variant_id === 'object'
+                ? combo.product_variant_id._id
+                : combo.product_variant_id;
+
               const comboProduct = products.find((p: Product) =>
-                p.variants.some(
-                  (v: ProductVariant) => v._id === comboProd.product_variant_id
-                )
+                p.variants.some((v: ProductVariant) => v._id === comboId)
               );
-
               const comboVariant = comboProduct?.variants.find(
-                (v: ProductVariant) => v._id === comboProd.product_variant_id
+                (v: ProductVariant) => v._id === comboId
               );
 
-              if (comboVariant) {
-                combo_items.variants.push({
-                  ...comboVariant,
-                  name: comboProduct?.name || comboVariant.name,
-                  quantity: comboProd.quantity || 1,
-                  notes: comboProd.notes || [],
-                  stepIndex: comboProd.step_index,
-                });
+              return {
+                _id: combo._id,
+                quantity: combo.quantity || 1,
+                name: comboVariant?.name || 'Unknown Product',
+                notes: combo.notes || [],
+                suite_commande: combo.suite_commande || false,
+                order_type_id: combo.order_type_id,
+                price: comboVariant?.default_price || 0,
+                menus: comboVariant?.menus || [],
+                product_variant_id: comboVariant,
+                variants: [{
+                  _id: comboVariant?._id,
+                  name: comboVariant?.name,
+                  default_price: comboVariant?.default_price,
+                  menus: comboVariant?.menus,
+                  is_menu: comboVariant?.is_menu
+                }]
+              };
+            }) || [];
+
+            return {
+              ...product,
+              id: line._id,
+              name: variant.name,
+              variants: [variant],
+              product_variant_id: variant._id,
+              quantity: line.quantity,
+              price: line.price,
+              unit_price: line.price,
+              customer_index: line.customer_index,
+              order_type_id: line.order_type_id?._id || line.order_type_id || null,
+              uom_id: variant.uom_id?._id || line.uom_id || "",
+              notes: line.notes || [],
+              discount: null,
+              is_paid: line.is_paid || false,
+              is_ordred: line.is_ordred || false,
+              suite_commande: line.suite_commande || false,
+              high_priority: line.high_priority || false,
+              is_combo: comboProducts.length > 0,
+              combo_prod_ids: comboProducts,
+              combo_supp_ids: [],
+              combo_items: {
+                variants: comboProducts,
+                supplements: []
               }
-            });
-
-            // Handle supplements
-            (line.combo_supp_ids || []).forEach((supp: any) => {
-              const suppProduct = products.find((p: Product) =>
-                p.variants.some(
-                  (v: ProductVariant) => v._id === supp.product_variant_id
-                )
-              );
-
-              const suppVariant = suppProduct?.variants.find(
-                (v: ProductVariant) => v._id === supp.product_variant_id
-              );
-
-              if (suppVariant) {
-                combo_items.supplements.push({
-                  ...suppVariant,
-                  name: suppProduct?.name || suppVariant.name,
-                  quantity: supp.quantity || 1,
-                  notes: supp.notes || [],
-                  stepIndex: supp.step_index,
-                  menus: suppVariant.menus,
-                });
-              }
-            });
-          }
-
-          return {
-            ...line,
-            name: product?.name || "Unknown Product",
-            variants: variant ? [variant] : [],
-            quantity: line.quantity || 1,
-            price: line.price || 0,
-            customer_index: line.customer_index || 1,
-            product_variant_id:
-              line.product_variant_id?._id || line.product_variant_id,
-            combo_items,
-            is_menu: variant?.is_menu || false,
-            uom_id:
-              typeof line.uom_id === "object" ? line.uom_id._id : line.uom_id,
-            order_type_id: order.order_type_id?._id || order.order_type_id,
-            notes: line.notes || [],
-            _animation: "reverse",
-            _id: line._id,
-          };
-        });
+            };
+          })
+          .filter(Boolean);
 
         // Create clean order for Redux
         const cleanOrder: OrderState = {

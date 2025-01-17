@@ -69,10 +69,14 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
         )?.price_ttc || selectedCombo.default_price;
 
       // Calculate supplements total price
-      const supplementsPrice = selections.supplements.reduce(
-        (total, supp) => total + (supp.price_ttc || 0),
-        0
-      );
+      const supplementsPrice = selections.supplements.reduce((total, supp) => {
+        const suppPrice = 
+          supp.menus?.find((menu: any) => menu.menu_id === orderType?.menu_id)?.price_ttc || 
+          supp.default_price || 
+          supp.price_ttc || 
+          0;
+        return total + (suppPrice * supp.quantity);
+      }, 0);
 
       // Create combo product with proper structure
       const comboProduct = {
@@ -90,29 +94,36 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
         is_ordered: false,
         is_paid: false,
         combo_items: {
-          variants: selections.variants.map((variant, index) => ({
+          variants: selections.variants.map((variant) => ({
             _id: variant._id,
             name: variant.name,
             price: variant.price_ttc || variant.default_price || 0,
-            quantity: 1,
-            stepIndex: variant.stepIndex || index,
+            quantity: variant.quantity || 1,
+            stepIndex: variant.stepIndex,
             product_variant_id: variant._id,
             customer_index: customerIndex,
             order_type_id: orderType?._id || "",
             uom_id: variant.uom_id?._id || "",
           })),
-          supplements: selections.supplements.map((supp, index) => ({
-            _id: supp._id,
-            name: supp.name,
-            price: supp.price_ttc || supp.default_price || 0,
-            quantity: 1,
-            stepIndex: supp.stepIndex || index,
-            product_variant_id: supp._id,
-            customer_index: customerIndex,
-            order_type_id: orderType?._id || "",
-            uom_id: supp.uom_id?._id || "",
-            is_supplement: true,
-          })),
+          supplements: selections.supplements.map((supp) => {
+            const suppPrice = 
+              supp.menus?.find((menu: any) => menu.menu_id === orderType?.menu_id)?.price_ttc || 
+              supp.default_price || 
+              supp.price_ttc || 
+              0;
+            return {
+              _id: supp._id,
+              name: supp.name,
+              price: suppPrice,
+              quantity: supp.quantity || 1,
+              stepIndex: supp.stepIndex,
+              product_variant_id: supp._id,
+              customer_index: customerIndex,
+              order_type_id: orderType?._id || "",
+              uom_id: supp.uom_id?._id || "",
+              is_supplement: true,
+            };
+          }),
         },
         notes: [],
         discount: null,

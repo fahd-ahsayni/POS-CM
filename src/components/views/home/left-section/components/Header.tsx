@@ -49,7 +49,7 @@ export default function Header() {
           >
             {category
               ? toTitleCase(category.name.toLowerCase())
-              : "All Products"}
+              : "All Items"}
           </TypographyP>
         </Card>
       </motion.div>
