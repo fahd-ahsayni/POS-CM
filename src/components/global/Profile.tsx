@@ -1,5 +1,4 @@
 import { logoutService } from "@/api/services";
-import { unknownUser } from "@/assets";
 import { DisplayIcon } from "@/assets/figma-icons";
 import CloseShift from "@/auth/CloseShift";
 import {
@@ -15,6 +14,7 @@ import { truncateName } from "@/lib/utils";
 import { AppDispatch } from "@/store";
 import { logout } from "@/store/slices/authentication/auth.slice";
 import { selectPosData } from "@/store/slices/data/pos.slice";
+import { Avatar } from "@heroui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { ChevronDown, LogOut, Power } from "lucide-react";
 import { useState } from "react";
@@ -63,10 +63,12 @@ export default function Profile() {
         <DropdownMenuTrigger asChild>
           <button className="h-auto p-0 flex">
             <div>
-              <img
-                className="inline-block size-10 rounded-md border border-border"
-                src={user?.image ? user?.image : unknownUser}
-                alt=""
+              <Avatar
+                isBordered
+                radius="lg"
+                showFallback={true}
+                fallback={user?.name?.charAt(0)}
+                src={user?.image}
               />
             </div>
             <div className="ml-3 md:flex hidden flex-col justify-center items-start h-10">
