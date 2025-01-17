@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getOrdersByDay } from "@/api/services";
 import { Order } from "@/types/order.types";
+import { RootState } from "@/store"; 
 
 interface OrdersState {
   orders: Order[];
@@ -94,6 +95,13 @@ const ordersSlice = createSlice({
   },
 });
 
-export const { setPageSize, setCurrentPage, resetPagination, setFilteredDataLength, orderCancelled } =
-  ordersSlice.actions;
+export const {
+  setPageSize,
+  setCurrentPage,
+  resetPagination,
+  setFilteredDataLength,
+  orderCancelled,
+} = ordersSlice.actions;
 export default ordersSlice.reducer;
+
+export const selectOrders = (state: RootState) => state.orders.orders;

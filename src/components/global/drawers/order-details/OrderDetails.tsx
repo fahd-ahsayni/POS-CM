@@ -8,10 +8,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
+import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
+import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
 import { toTitleCase } from "@/functions/string-transforms";
 import { cn } from "@/lib/utils";
 import { currency } from "@/preferences";
 import { Checkbox as HeadlessUICheckbox } from "@headlessui/react";
+import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import Drawer from "../../Drawer";
 import CancelOrder from "../cancel-order/CancelOrder";
@@ -21,6 +24,8 @@ import { useOrderDetails } from "./hooks/useOrderDetails";
 
 export default function OrderDetails() {
   const [editPriceOpen, setEditPriceOpen] = useState(false);
+  const { setViews: setRightViews } = useRightViewContext();
+  const { setViews: setLeftViews, setSelectedProducts } = useLeftViewContext();
 
   const {
     selectedOrder,
@@ -34,9 +39,9 @@ export default function OrderDetails() {
     setOpenPayments,
     handleProcessPayment,
     handlePaymentComplete,
-    orderAmount,
     setEditedAmount,
-  } = useOrderDetails();
+    handleLoadOrder,
+  } = useOrderDetails(setLeftViews, setRightViews, setSelectedProducts);
 
   const toggleOrderLineSelection = (orderId: string) => {
     setSelectedOrderlines((prev) =>
@@ -82,7 +87,7 @@ export default function OrderDetails() {
     );
   };
 
-  const handlePrintBill = async () => {
+  const handlePrintKitchen = async () => {
     if (!selectedOrder?._id) return;
 
     try {
@@ -92,7 +97,7 @@ export default function OrderDetails() {
         await printOrder(selectedOrder._id);
       }
     } catch (error) {
-      console.error("Error printing order:", error);
+      console.error("Error printing kitchen order:", error);
     }
   };
 
@@ -244,12 +249,20 @@ export default function OrderDetails() {
                     Process Payment
                   </Button>
                 )}
-              <Button size="icon" onClick={handlePrintBill}>
-                <PrinterIcon className="w-5 h-5 dark:!fill-white fill-primary-black -mr-1 mt-0.5" />
+              <Button size="icon" onClick={handlePrintKitchen}>
+                <PrinterIcon className="w-5 h-5 dark:!fill-white fill-primary-black" />
               </Button>
-              <Button size="icon" onClick={handlePrintBill}>
-                <BillIcon className="w-5 h-5 dark:!fill-white fill-primary-black -mr-1 mt-0.5" />
-              </Button>
+              {selectedOrder.status !== "new" && (
+                <Button size="icon">
+                  <BillIcon className="w-5 h-5 dark:!fill-white fill-primary-black -mr-1 mt-0.5" />
+                </Button>
+              )}
+              {selectedOrder.status === "new" && (
+                <Button size="icon" onClick={handleLoadOrder}>
+                  <ChevronDown size={20} />
+                  <span className="sr-only">Load Order</span>
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -265,7 +278,7 @@ export default function OrderDetails() {
         setOpen={setOpenPayments}
         onComplete={handlePaymentComplete}
         selectedOrder={selectedOrder}
-        totalAmount={orderAmount}
+        totalAmount={selectedOrder?.total_amount || 0}
       />
     </>
   );

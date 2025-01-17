@@ -5,7 +5,9 @@ import { toast } from "react-toastify";
 
 export const fetchCashiers = async (): Promise<User[]> => {
   const response = await api.get<User[]>(
-    `${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}/users?position=Cashier`,
+    `${
+      window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL
+    }/users?position=Cashier`,
     {
       timeout: 5000,
       headers: {
@@ -18,7 +20,9 @@ export const fetchCashiers = async (): Promise<User[]> => {
 
 export const fetchManagers = async (): Promise<User[]> => {
   const response = await api.get<User[]>(
-    `${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}/users?position=Manager`,
+    `${
+      window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL
+    }/users?position=Manager`,
     {
       timeout: 5000,
       headers: {
@@ -32,7 +36,9 @@ export const fetchManagers = async (): Promise<User[]> => {
 export const login = async (id: string, password: string) => {
   try {
     const response = await api.post(
-      `${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}/auth/login`,
+      `${
+        window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL
+      }/auth/login`,
       { id, password },
       {
         headers: {
@@ -57,7 +63,9 @@ export const login = async (id: string, password: string) => {
 export const loginWithRfid = async (rfid: string) => {
   try {
     const response = await api.post(
-      `${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}/auth/login-with-rfid`,
+      `${
+        window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL
+      }/auth/login-with-rfid`,
       { rfid },
       {
         headers: {
@@ -104,6 +112,10 @@ export const openShift = async (startingBalance: string, posId: string) => {
 
 export const createOrder = async (data: any) => {
   return api.post("/order/create", data);
+};
+
+export const updateOrder = async (data: any, orderId: string) => {
+  return api.put(`/order/update/${orderId}`, data);
 };
 
 export const getOrdersByDay = async () => {

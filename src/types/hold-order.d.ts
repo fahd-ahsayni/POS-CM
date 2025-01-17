@@ -26,6 +26,7 @@ export interface Order {
   orderline_ids: OrderLine[];
   archived: boolean;
   coaster_call?: string | null;
+  discount?: any | null;
   createdAt: string;
   updatedAt: string;
 }

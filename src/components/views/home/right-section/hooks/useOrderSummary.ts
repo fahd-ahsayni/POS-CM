@@ -1,5 +1,7 @@
-import { createOrderWithOutPayment } from "@/api/services";
+import { createOrderWithOutPayment, updateOrder } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
+import { useHoldOrders } from "@/store/hooks/useHoldOrders";
+import { refreshOrders, selectOrders } from "@/store/slices/data/orders.slice";
 import {
   resetOrder,
   selectOrder,
@@ -8,7 +10,7 @@ import {
   setTableId,
 } from "@/store/slices/order/create-order.slice";
 import { useCallback, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { ALL_CATEGORIES_VIEW } from "../../left-section/constants";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
@@ -18,7 +20,8 @@ import { useRightViewContext } from "../contexts/RightViewContext";
 import { useCustomerManagement } from "../hooks/useCustomerManagement";
 import { useCoasterCall } from "./useCoasterCall";
 import { useNumberOfTable } from "./useNumberOfTable";
-import { useHoldOrders } from "@/store/hooks/useHoldOrders";
+import { useAppDispatch } from "@/store/hooks";
+
 interface OrderSummaryState {
   openModalConfirmHoldOrder: boolean;
   openDrawerPayments: boolean;
@@ -39,7 +42,7 @@ export const useOrderSummary = () => {
   const { setViews: setViewsRight, customerIndex } = useRightViewContext();
   const { handlePaymentComplete, addCustomer } = useCustomerManagement();
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const order = useSelector(selectOrder);
 
   const { selectedProducts } = useLeftViewContext();
@@ -49,6 +52,8 @@ export const useOrderSummary = () => {
   const { setTableNumber } = useNumberOfTable();
 
   const { handleHoldOrder } = useHoldOrders();
+
+  const orders = useSelector(selectOrders);
 
   const isActionsDisabled = useMemo(
     () => selectedProducts.length === 0,
@@ -107,8 +112,50 @@ export const useOrderSummary = () => {
         if (isProcessing || selectedProducts.length === 0) return;
 
         const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
+        const existingOrder = orders.find(o => {
+          const orderTableId = typeof o.table_id === 'object' && o.table_id ? (o.table_id as { _id: string })._id : o.table_id;
+          return orderTableId === order.table_id && 
+                 o.status !== 'canceled' && 
+                 o.status !== 'paid';
+        });
 
-        if (orderType?.creation_order_with_payment) {
+        if (existingOrder) {
+          // Update existing order
+          updateOrder({
+            ...order,
+            orderlines: order.orderlines.map(line => ({
+              product_variant_id: line.product_variant_id,
+              quantity: line.quantity,
+              price: line.price,
+              customer_index: line.customer_index,
+              notes: line.notes,
+              is_paid: line.is_paid,
+              is_ordred: line.is_ordred,
+              suite_commande: line.suite_commande,
+              high_priority: line.high_priority,
+              discount: line.discount,
+              uom_id: line.uom_id,
+              order_type_id: line.order_type_id,
+            }))
+          }, existingOrder._id)
+            .then(() => {
+              resetOrderState();
+              dispatch(refreshOrders());
+              toast.success(createToast(
+                "Order Updated Successfully",
+                "Your order has been updated",
+                "success"
+              ));
+            })
+            .catch(error => {
+              console.error("Order update error:", error);
+              toast.error(createToast(
+                "Order Update Failed",
+                "There was an error updating your order",
+                "error"
+              ));
+            });
+        } else if (orderType?.creation_order_with_payment) {
           // Skip confirmation modal and go straight to payments
           updateState("openDrawerPayments", true);
         } else {
@@ -186,7 +233,9 @@ export const useOrderSummary = () => {
       order,
       resetOrderState,
       handleHoldOrder,
-      isActionsDisabled
+      isActionsDisabled,
+      orders,
+      dispatch,
     ]
   );
 
