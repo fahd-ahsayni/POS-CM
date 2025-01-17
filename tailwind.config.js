@@ -1,10 +1,15 @@
+const {heroui} = require('@heroui/theme');
 /** @type {import('tailwindcss').Config} */
 
 import defaultTheme from "tailwindcss/defaultTheme";
 
 module.exports = {
   darkMode: ["class"],
-  content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
+  content: [
+    "./index.html",
+    "./src/**/*.{ts,tsx,js,jsx}",
+    "./node_modules/@heroui/theme/dist/components/avatar.js"
+  ],
   theme: {
   	extend: {
   		fontFamily: {
@@ -168,5 +173,5 @@ module.exports = {
   		}
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"),heroui()],
 };
