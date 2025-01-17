@@ -1,4 +1,3 @@
-import { unknownUser } from "@/assets";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
@@ -7,6 +6,9 @@ import { StaffUser } from "@/types/staff";
 import { memo, useCallback } from "react";
 import Drawer from "../../Drawer";
 import { GeneralData } from "@/types/general";
+import { Avatar } from "@heroui/avatar";
+import { Phone } from "lucide-react";
+import { UserIcon } from "@/assets/figma-icons";
 
 interface StaffListProps {
   open: boolean;
@@ -40,39 +42,26 @@ const StaffList = memo(({ open, setOpen, onSelect }: StaffListProps) => {
       >
         <div className="relative flex min-w-0 flex-1 items-center">
           <span className="relative inline-block flex-shrink-0">
-            {staff.image ? (
-              <img
-                className="h-10 w-10 rounded-full object-cover"
-                src={staff.image}
-                alt={staff.name}
-              />
-            ) : (
-              <div className="h-10 w-10 rounded-full flex items-center justify-center ring-2 ring-border">
-                <img
-                  src={unknownUser}
-                  alt=""
-                  className="size-full rounded-full object-cover"
-                />
-              </div>
-            )}
-            <span className="flex h-2.5 w-2.5 absolute top-0 right-0">
-              <span
-                className={cn(
-                  "animate-ping absolute inline-flex h-full w-full rounded-full bg-success-color opacity-75",
-                  true ? "bg-success-color" : "bg-neutral-neutral-grey"
-                )}
-              ></span>
-              <span
-                className={cn(
-                  "relative inline-flex rounded-full h-2.5 w-2.5",
-                  true ? "bg-success-color" : "bg-neutral-neutral-grey"
-                )}
-              ></span>
-            </span>
+            <Avatar
+              isBordered
+              radius="lg"
+              showFallback={true}
+              fallback={
+                <span className="font-medium text-sm">
+                  {staff.name?.charAt(0)}
+                </span>
+              }
+              src={staff?.image || undefined}
+            />
           </span>
           <div className="ml-4 truncate space-y-1">
-            <TypographyP className="truncate text-sm">{staff.name}</TypographyP>
-            <TypographySmall className="truncate dark:text-neutral-neutral-grey text-neutral-dark-grey flex items-center gap-1">
+            <TypographyP className="truncate text-sm font-medium tracking-wide flex items-center gap-x-2">
+              {staff.name}
+            </TypographyP>
+            <TypographySmall className="truncate dark:text-neutral-neutral-grey text-neutral-dark-grey flex items-center justify-center gap-x-2">
+              <span>
+                <Phone className="size-3" />
+              </span>
               <span>{staff.phone}</span>
             </TypographySmall>
           </div>
@@ -94,7 +83,7 @@ const StaffList = memo(({ open, setOpen, onSelect }: StaffListProps) => {
           </TypographySmall>
         </div>
 
-        <ul className="flex-1 divide-y divide-gray-50 overflow-y-auto">
+        <ul className="flex-1 overflow-y-auto space-y-4 pr-3">
           {staffList.length > 0 ? (
             staffList.map((staff) => (
               <StaffCard key={staff._id} staff={staff} />
@@ -108,7 +97,7 @@ const StaffList = memo(({ open, setOpen, onSelect }: StaffListProps) => {
           )}
         </ul>
 
-        <div>
+        <div className="pt-4">
           <Button
             variant="secondary"
             className="flex-1 dark:bg-white/10 bg-white border border-border w-full"
