@@ -1,14 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
-import { cn } from "@/lib/utils";
-import { StaffUser } from "@/types/staff";
-import { memo, useCallback } from "react";
-import Drawer from "../../Drawer";
 import { GeneralData } from "@/types/general";
+import { StaffUser } from "@/types/staff";
 import { Avatar } from "@heroui/avatar";
 import { Phone } from "lucide-react";
-import { UserIcon } from "@/assets/figma-icons";
+import { memo, useCallback } from "react";
+import Drawer from "../../Drawer";
 
 interface StaffListProps {
   open: boolean;
