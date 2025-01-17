@@ -82,7 +82,7 @@ export function ProductCard({
             <img
               src={
                 product.image
-                  ? `${import.meta.env.VITE_BASE_URL}${product.image}`
+                  ? `${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}${product.image}`
                   : unknownProduct
               }
               alt={product.name}

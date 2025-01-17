@@ -26,7 +26,7 @@ export const checkOpenDay = createAsyncThunk(
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/days/check-open`,
+        `${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}/days/check-open`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -57,7 +57,7 @@ export const openDay = createAsyncThunk(
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/days/open`,
+        `${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}/days/open`,
         {
           method: "POST",
           headers: {
