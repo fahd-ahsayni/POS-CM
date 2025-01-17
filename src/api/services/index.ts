@@ -32,7 +32,7 @@ export const fetchManagers = async (): Promise<User[]> => {
 export const login = async (id: string, password: string) => {
   try {
     const response = await api.post(
-      `$${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}/auth/login`,
+      `${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}/auth/login`,
       { id, password },
       {
         headers: {
@@ -57,7 +57,7 @@ export const login = async (id: string, password: string) => {
 export const loginWithRfid = async (rfid: string) => {
   try {
     const response = await api.post(
-      `$${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}/auth/login-with-rfid`,
+      `${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}/auth/login-with-rfid`,
       { rfid },
       {
         headers: {
