@@ -122,8 +122,6 @@ export const useOrderSummary = () => {
               o.status !== "paid"
           );
 
-        console.log(existingOrder);
-
         if (existingOrder) {
           // Update existing order
           updateOrder(

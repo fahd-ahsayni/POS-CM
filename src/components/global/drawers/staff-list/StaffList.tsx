@@ -69,10 +69,6 @@ const StaffList = memo(({ open, setOpen, onSelect }: StaffListProps) => {
       setError(null);
       const data = await (isDelivery ? fetchLivreurs() : fetchWaiters());
 
-      if (!data) {
-        console.log("No data received from server");
-      }
-
       setStaffList(data as unknown as StaffUser[]);
     } finally {
       setIsLoading(false);

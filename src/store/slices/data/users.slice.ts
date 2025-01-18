@@ -1,8 +1,8 @@
 // src/store/slices/data/userSlice.ts
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
-import { User } from "@/types/user.types";
 import { fetchCashiers, fetchManagers } from "@/api/services";
+import { User } from "@/types/user.types";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import axios from "axios";
 
 interface UserState {
   users: {
@@ -58,7 +58,6 @@ const userSlice = createSlice({
     },
     setSelectedUser: (state, action: PayloadAction<User>) => {
       state.selectedUser = action.payload;
-      console.log("User selected in Redux:", action.payload);
     },
     clearSelectedUser: (state) => {
       state.selectedUser = null;
