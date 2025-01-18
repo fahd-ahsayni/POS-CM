@@ -16,6 +16,7 @@
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
     "@heroui/avatar": "^2.2.6",
+    "@heroui/checkbox": "^2.3.8",
     "@heroui/system": "^2.4.6",
     "@heroui/theme": "^2.4.5",
     "@radix-ui/react-accordion": "^1.2.2",

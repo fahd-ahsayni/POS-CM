@@ -23,6 +23,7 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
   const [selectedStatus, setSelectedStatus] = useState<string>("");
   const [orderId, setOrderId] = useState<string>("");
   const [tableNumber, setTableNumber] = useState<string>("");
+  const [open, setOpen] = useState(false);
 
   const users = useMemo(
     () => JSON.parse(localStorage.getItem("users") || "[]").cashiers,
@@ -128,6 +129,12 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
       orderId: orderId,
       tableNumber: tableNumber,
     });
+    setSelectedEmployee("");
+    setSelectedOrderType("");
+    setSelectedStatus("");
+    setOrderId("");
+    setTableNumber("");
+    setOpen(false);
   }, [
     onFilterChange,
     selectedEmployee,
@@ -139,7 +146,7 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <Popover>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button size="icon">
             <FilterIcon className="w-4 h-4" />

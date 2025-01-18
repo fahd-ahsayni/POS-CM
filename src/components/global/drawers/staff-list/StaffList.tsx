@@ -2,6 +2,7 @@ import { fetchLivreurs, fetchWaiters } from "@/api/services";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
+import { cn } from "@/lib/utils";
 import { StaffUser } from "@/types/staff";
 import { Avatar } from "@heroui/avatar";
 import { Phone } from "lucide-react";
@@ -18,12 +19,17 @@ const StaffCard = memo(
   ({
     staff,
     onSelect,
+    isSelected,
   }: {
     staff: StaffUser;
     onSelect: (staff: StaffUser) => void;
+    isSelected: boolean;
   }) => (
     <Card
-      className="group relative flex items-center py-6 px-5 cursor-pointer dark:bg-primary-black bg-white"
+      className={cn(
+        "group relative flex items-center py-6 px-5 cursor-pointer dark:bg-primary-black bg-white",
+        isSelected && "ring-2 ring-primary-red"
+      )}
       onClick={() => onSelect(staff)}
     >
       <div className="relative flex min-w-0 flex-1 items-center">
@@ -122,7 +128,11 @@ const StaffList = memo(({ open, setOpen, onSelect }: StaffListProps) => {
 
     return staffList.map((staff) => (
       <li key={staff._id}>
-        <StaffCard staff={staff} onSelect={handleStaffSelect} />
+        <StaffCard
+          staff={staff}
+          onSelect={handleStaffSelect}
+          isSelected={false}
+        />
       </li>
     ));
   };
