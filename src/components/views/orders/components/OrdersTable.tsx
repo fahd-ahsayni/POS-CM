@@ -27,6 +27,8 @@ import { useDispatch, useSelector } from "react-redux";
 interface OrdersTableProps {
   data: Order[];
   withPrintButton?: boolean;
+  onSort?: (key: string) => void;
+  sortConfig?: { key: string; direction: "ascending" | "descending" } | null;
 }
 
 const OrderTypeCell = ({ order }: { order: any }) => {
@@ -113,6 +115,8 @@ const OrderTypeCell = ({ order }: { order: any }) => {
 export default function OrdersTable({
   data = [],
   withPrintButton,
+  onSort,
+  sortConfig,
 }: OrdersTableProps) {
   const dispatch = useDispatch();
   const { setSelectedOrder, setOpenOrderDetails } = useOrder();
@@ -233,6 +237,8 @@ export default function OrdersTable({
                 className={`text-sm text-primary-black dark:text-white ${
                   column.alignRight ? "text-right" : ""
                 }`}
+                onClick={() => onSort?.(column.key)}
+                style={{ cursor: 'pointer' }}
               >
                 <div
                   className={`flex items-center ${
@@ -240,7 +246,17 @@ export default function OrdersTable({
                   }`}
                 >
                   {column.label}
-                  <SortDesc className="ml-2 h-3.5 w-3.5 text-muted-foreground" />
+                  <SortDesc 
+                    className={cn(
+                      "ml-2 h-3.5 w-3.5",
+                      sortConfig?.key === column.key 
+                        ? "text-primary" 
+                        : "text-muted-foreground",
+                      sortConfig?.key === column.key && 
+                      sortConfig.direction === "ascending" && 
+                      "rotate-180"
+                    )}
+                  />
                 </div>
               </TableHead>
             ))}

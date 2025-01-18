@@ -33,8 +33,12 @@ export default function OrdersPage() {
     tableNumber: "",
   });
 
-  // Use the hook instead of direct filtering
-  const { sortedData: filteredOrders } = useTableOrders({
+  // Destructure all the needed values from useTableOrders
+  const {
+    sortedData: filteredOrders,
+    sortConfig,
+    handleSort,
+  } = useTableOrders({
     data: orders,
     filterCriteria,
     defaultSort: {
@@ -96,7 +100,12 @@ export default function OrdersPage() {
               <p className="text-gray-500 text-lg">No orders available</p>
             </div>
           ) : (
-            <OrdersTable data={filteredOrders} withPrintButton={true} />
+            <OrdersTable
+              data={filteredOrders}
+              withPrintButton={true}
+              onSort={handleSort}
+              sortConfig={sortConfig}
+            />
           )}
         </main>
         <Footer ordersLength={filteredOrders.length} />
