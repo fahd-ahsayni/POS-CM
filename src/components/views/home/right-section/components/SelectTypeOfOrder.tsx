@@ -34,10 +34,10 @@ function SelectTypeOfOrder() {
             : "What type of order would you like to process?"}
         </TypographyH3>
       </div>
-      <div className="flex-1 flex h-full items-center justify-center relative pt-20 pr-8">
+      <div className="flex-1 flex h-ful items-center justify-center relative pr-8">
         {isLoading ? (
           <OrderCardSkeleton />
-        ) : displayedTypes.length >= 3 ? (
+        ) : displayedTypes.length > 3 ? (
           <Swiper
             direction="vertical"
             slidesPerView={3}
