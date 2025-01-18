@@ -1,21 +1,12 @@
 import { logoutService } from "@/api/services";
 import { DisplayIcon } from "@/assets/figma-icons";
 import CloseShift from "@/auth/CloseShift";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { truncateName } from "@/lib/utils";
 import { AppDispatch } from "@/store";
 import { logout } from "@/store/slices/authentication/auth.slice";
 import { selectPosData } from "@/store/slices/data/pos.slice";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { Avatar } from "@heroui/avatar";
-import { formatDistanceToNow } from "date-fns";
 import { ChevronDown, LogOut, Power } from "lucide-react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -46,101 +37,94 @@ export default function Profile() {
     }
   };
 
-  const menuItems = [
-    {
-      icon: DisplayIcon,
-      label: "Customer Display",
-      onClick: handleCustomerDisplay,
-    },
-    { icon: Power, label: "End Shift" },
-    { icon: LogOut, label: "Logout" },
-  ];
-
   return (
     <>
       <CloseShift open={open} setOpen={setOpen} />
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button className="h-auto p-0 flex">
-            <div>
-              <Avatar
-                radius="lg"
-                showFallback={true}
-                fallback={
-                  <span className="font-medium text-sm">
-                    {user?.name?.charAt(0)}
-                  </span>
-                }
-                src={user?.image}
-              />
-            </div>
-            <div className="ml-3 md:flex hidden flex-col justify-center items-start h-10">
-              <TypographySmall className="font-medium capitalize">
-                {truncateName(user?.name, 20)}
-              </TypographySmall>
-              <TypographySmall className="text-xs text-neutral-dark-grey">
-                {user?.position}
-              </TypographySmall>
-            </div>
-            <ChevronDown
-              size={20}
-              strokeWidth={1.5}
-              className="ms-2 opacity-60 mt-0.5"
-              aria-hidden="true"
+      <Menu>
+        <MenuButton className="h-auto p-0 flex">
+          <div>
+            <Avatar
+              radius="lg"
+              showFallback={true}
+              fallback={
+                <span className="font-medium text-sm">
+                  {user?.name?.charAt(0)}
+                </span>
+              }
+              src={user?.image}
             />
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="min-w-52 mt-2 -ml-10">
-          <DropdownMenuLabel className="flex items-center justify-between">
-            <span className="truncate text-xs font-medium text-foreground">
-              {pos.pos.find((p: any) => p._id === posId)?.name}
-            </span>
-            <span className="truncate text-xs font-normal text-muted-foreground">
-              {currentShift?.opening_time &&
-                formatDistanceToNow(new Date(currentShift.opening_time), {
-                  addSuffix: true,
-                })}
-            </span>
-          </DropdownMenuLabel>
-          <DropdownMenuGroup>
-            {menuItems.slice(0, 1).map((item, index) => (
-              <DropdownMenuItem key={index} onClick={item.onClick}>
-                <item.icon
+          </div>
+          <div className="ml-3 md:flex hidden flex-col justify-center items-start h-10">
+            <TypographySmall className="font-medium capitalize">
+              {truncateName(user?.name, 20)}
+            </TypographySmall>
+            <TypographySmall className="text-xs text-neutral-dark-grey">
+              {user?.position}
+            </TypographySmall>
+          </div>
+          <ChevronDown
+            size={20}
+            strokeWidth={1.5}
+            className="ms-2 opacity-60 mt-0.5"
+            aria-hidden="true"
+          />
+        </MenuButton>
+
+        <MenuItems
+          anchor="bottom"
+          className="z-[9999] w-52 bg-white dark:bg-primary-black absolute rounded-md ring-1 ring-black ring-opacity-5 focus:outline-none p-3 mt-2 shadow-lg border border-border"
+        >
+          <MenuItem>
+            {({ active }) => (
+              <span
+                onClick={handleCustomerDisplay}
+                className={`${
+                  active ? "bg-gray-100 dark:bg-secondary-black" : ""
+                } group flex w-full items-center px-4 py-2 text-sm rounded`}
+              >
+                <DisplayIcon className="opacity-60 mr-2" aria-hidden="true" />
+                Customer Display
+              </span>
+            )}
+          </MenuItem>
+
+          <MenuItem>
+            {({ active }) => (
+              <span
+                onClick={() => setOpen(true)}
+                className={`${
+                  active ? "bg-gray-100 dark:bg-secondary-black" : ""
+                } group flex w-full items-center px-4 py-2 text-sm rounded`}
+              >
+                <Power
                   size={17}
-                  strokeWidth={2}
-                  className="opacity-60"
+                  className="opacity-60 mr-2"
                   aria-hidden="true"
                 />
-                <span>{item.label}</span>
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuGroup>
-          <DropdownMenuGroup>
-            <DropdownMenuItem onClick={() => setOpen(true)}>
-              <Power
-                size={17}
-                strokeWidth={2}
-                className="opacity-60"
-                aria-hidden="true"
-              />
-              <span>End Shift</span>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            className="!text-primary-red"
-            onClick={handleLogout}
-          >
-            <LogOut
-              size={17}
-              strokeWidth={2}
-              className="opacity-60"
-              aria-hidden="true"
-            />
-            <span>Logout</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+                End Shift
+              </span>
+            )}
+          </MenuItem>
+
+          <MenuItem>
+            {({ active }) => (
+              <span
+                onClick={handleLogout}
+                className={`${
+                  active ? "bg-gray-100 dark:bg-secondary-black" : ""
+                } group flex w-full items-center px-4 py-2 text-sm text-primary-red rounded`}
+              >
+                <LogOut
+                  size={17}
+                  className="opacity-60 mr-2"
+                  aria-hidden="true"
+                />
+                Logout
+              </span>
+            )}
+          </MenuItem>
+        </MenuItems>
+      </Menu>
     </>
   );
 }

@@ -23,7 +23,7 @@ interface LoadingConfig {
 
 const LOADING_CONFIG: LoadingConfig = {
   threshold: 18,
-  delay: 1000,
+  delay: 500,
 };
 
 const ProductGrid = memo(function ProductGrid({

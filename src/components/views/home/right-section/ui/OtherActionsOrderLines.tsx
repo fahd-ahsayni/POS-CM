@@ -1,17 +1,11 @@
 import ApplyDiscount from "@/components/global/drawers/apply-discount/ApplyDiscount";
 import ChangeOrderType from "@/components/global/drawers/change-order-type/ChangeOrderType";
 import ModalOrderComments from "@/components/global/modal/ModalOrderComments";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
 import { updateOrder } from "@/functions/updateOrder";
+import { cn } from "@/lib/utils";
 import { setOneTime, setUrgent } from "@/store/slices/order/create-order.slice";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch } from "react-redux";
@@ -52,49 +46,90 @@ export default function OtherActionsOrderLines() {
         setOpen={setOpenModalOrderComments}
       />
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button size="icon">
+      <Menu as="div" className="relative">
+        <MenuButton>
+          <span
+            className={cn(
+              "inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-medium transition-colors outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+              "bg-primary-red text-white shadow-sm shadow-black/5 hover:bg-[#CE0303] disabled:pointer-events-none disabled:bg-[#AAAAAA] disabled:text-[#7E7E7E] disabled:cursor-not-allowed",
+              "h-8 w-8"
+            )}
+          >
             <BsThreeDotsVertical size={16} />
-            <span className="sr-only">Other actions</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="mt-2 -ml-20 min-w-52">
-          <DropdownMenuItem onClick={() => setOpenModalChangeOrderType(true)}>
-            <span className="text-sm">Change Order Type</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setOpenModalApplyDiscount(true)}>
-            <span className="text-sm">Apply Discount</span>
-          </DropdownMenuItem>
-          {/* <DropdownMenuItem>
-            <span className="text-sm">Cancel Order</span>
-          </DropdownMenuItem> */}
-          <DropdownMenuItem onClick={() => setOpenModalOrderComments(true)}>
-            <span className="text-sm">Add Comment</span>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <span className="text-sm flex items-center w-full justify-between space-x-4">
-              <span>Order Immediately</span>
-              <Switch
-                color="red"
-                checked={isOneTime}
-                onChange={handleOneTimeToggle}
-              />
-            </span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <span className="text-sm flex items-center w-full justify-between space-x-4">
-              <span>Mark as Urgent</span>
-              <Switch
-                color="red"
-                checked={isUrgent}
-                onChange={handleUrgentToggle}
-              />
-            </span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+          </span>
+        </MenuButton>
+
+        <MenuItems className="absolute right-0 mt-2 z-[9999] w-60 origin-top-right rounded-md bg-white dark:bg-primary-black shadow-lg focus:outline-none p-3 border border-border">
+          <MenuItem>
+            {({ active }) => (
+              <button
+                className={`${
+                  active ? "bg-gray-100 dark:bg-secondary-black" : ""
+                } group flex w-full items-center px-4 py-2 text-sm rounded`}
+                onClick={() => setOpenModalChangeOrderType(true)}
+              >
+                Change Order Type
+              </button>
+            )}
+          </MenuItem>
+          <MenuItem>
+            {({ active }) => (
+              <button
+                className={`${
+                  active ? "bg-gray-100 dark:bg-secondary-black" : ""
+                } group flex w-full items-center px-4 py-2 text-sm rounded`}
+                onClick={() => setOpenModalApplyDiscount(true)}
+              >
+                Apply Discount
+              </button>
+            )}
+          </MenuItem>
+          <MenuItem>
+            {({ active }) => (
+              <button
+                className={`${
+                  active ? "bg-gray-100 dark:bg-secondary-black" : ""
+                } group flex w-full items-center px-4 py-2 text-sm rounded`}
+                onClick={() => setOpenModalOrderComments(true)}
+              >
+                Add Comment
+              </button>
+            )}
+          </MenuItem>
+          <MenuItem disabled>
+            {({ active }) => (
+              <div
+                className={`${
+                  active ? "bg-gray-100 dark:bg-secondary-black" : ""
+                } group flex w-full items-center justify-between px-4 py-2 text-sm rounded`}
+              >
+                <span>Order One Time</span>
+                <Switch
+                  color="red"
+                  checked={isOneTime}
+                  onChange={handleOneTimeToggle}
+                />
+              </div>
+            )}
+          </MenuItem>
+          <MenuItem disabled>
+            {({ active }) => (
+              <div
+                className={`${
+                  active ? "bg-gray-100 dark:bg-secondary-black" : ""
+                } group flex w-full items-center justify-between px-4 py-2 text-sm rounded`}
+              >
+                <span>Mark as Urgent</span>
+                <Switch
+                  color="red"
+                  checked={isUrgent}
+                  onChange={handleUrgentToggle}
+                />
+              </div>
+            )}
+          </MenuItem>
+        </MenuItems>
+      </Menu>
     </>
   );
 }

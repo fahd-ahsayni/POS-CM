@@ -6,8 +6,8 @@ import { TypographyH2, TypographySmall } from "@/components/ui/typography";
 import { AppDispatch } from "@/store";
 import { logout } from "@/store/slices/authentication/auth.slice";
 import { selectPosError } from "@/store/slices/data/pos.slice";
-import { User } from "@/types/user.types";
 import { PosData } from "@/types/pos.types";
+import { User } from "@/types/user.types";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { pageAnimations } from "./animation";
@@ -42,7 +42,7 @@ export default function SelectPosPage() {
   if (error) return <SessionExpired />;
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden relative">
       <OpenShift
         open={open}
         setOpen={setOpen}

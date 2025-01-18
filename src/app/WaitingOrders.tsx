@@ -10,7 +10,6 @@ import {
 import { useWaitingOrders } from "@/components/views/orders/hooks/useWaitingOrders";
 import { currency } from "@/preferences";
 import { format } from "date-fns";
-import { motion } from "framer-motion";
 import Header from "./components/Header";
 
 export default function WaitingOrders() {

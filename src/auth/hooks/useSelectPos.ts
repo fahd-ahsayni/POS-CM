@@ -3,6 +3,7 @@ import { useShift } from "@/auth/context/ShiftContext";
 import { createToast } from "@/components/global/Toasters";
 import { AppDispatch, RootState } from "@/store";
 import { checkOpenDay } from "@/store/slices/authentication/open.day.slice";
+import { fetchGeneralData } from "@/store/slices/data/general-data.slice";
 import { fetchPosData, selectPosData } from "@/store/slices/data/pos.slice";
 import { PosData } from "@/types/pos.types";
 import { User } from "@/types/user.types";
@@ -11,17 +12,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const TOAST_MESSAGES = {
-  DAY_NOT_OPEN: "Day is not open",
-  UNAUTHORIZED: "Unauthorized",
-  WELCOME_BACK: "Welcome back",
-} as const;
+enum ToastMessages {
+  DAY_NOT_OPEN = "Day is not open",
+  UNAUTHORIZED = "Unauthorized",
+  WELCOME_BACK = "Welcome back",
+}
 
 interface UseSelectPosReturn {
   data: ReturnType<typeof selectPosData>;
   checkDay: boolean;
   open: boolean;
   reOpen: boolean;
+  isLoading: boolean;
   setOpen: (value: boolean) => void;
   handleOpenDay: () => Promise<void>;
   handleSelectPos: (id: string) => void;
@@ -39,88 +41,115 @@ export const useSelectPos = (): UseSelectPosReturn => {
   const [checkDay, setCheckDay] = useState(false);
   const [open, setOpen] = useState(false);
   const [reOpen, setReOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const userAuthenticated: User | null = JSON.parse(
     localStorage.getItem("user") || "null"
   );
 
   const handleOpenDay = useCallback(async () => {
-    await openDay();
-    window.location.reload();
+    try {
+      setIsLoading(true);
+      await openDay();
+      window.location.reload();
+    } catch (error) {
+      toast.error("Failed to open day");
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   const handleSelectPos = useCallback(
-    (id: string) => {
-      if (!checkDay || !isDayOpen) {
-        toast.warning(
-          createToast(
-            TOAST_MESSAGES.DAY_NOT_OPEN,
-            "Please open the day first",
-            "warning"
-          )
-        );
-        return;
-      }
+    async (id: string) => {
+      try {
+        setIsLoading(true);
 
-      const findPos = data.pos?.find((pos: PosData) => pos._id === id);
-      if (!findPos) return;
+        if (!checkDay || !isDayOpen) {
+          toast.warning(
+            createToast(
+              ToastMessages.DAY_NOT_OPEN,
+              "Please open the day first",
+              "warning"
+            )
+          );
+          return;
+        }
 
-      localStorage.setItem("posId", id);
+        const selectedPos = data.pos?.find((pos: PosData) => pos._id === id);
+        if (!selectedPos) {
+          throw new Error("POS not found");
+        }
 
-      const isAuthorizedUser =
-        findPos.shift?.user_id._id === userAuthenticated?.id ||
-        userAuthenticated?.position === "Manager";
+        localStorage.setItem("posId", id);
 
-      if (isAuthorizedUser) {
-        setShiftId(findPos.shift?._id ?? "");
-        localStorage.setItem("shiftId", findPos.shift?._id ?? "");
-        toast.success(
-          createToast(
-            TOAST_MESSAGES.WELCOME_BACK,
-            "You are authorized to use this POS",
-            "success"
-          )
-        );
+        const isAuthorizedUser =
+          selectedPos.shift?.user_id._id === userAuthenticated?.id ||
+          userAuthenticated?.position === "Manager";
 
-        if (findPos.shift?.status !== "opening_control") {
-          navigate("/");
-        } else {
+        if (isAuthorizedUser) {
+          setShiftId(selectedPos.shift?._id ?? "");
+          localStorage.setItem("shiftId", selectedPos.shift?._id ?? "");
+          toast.success(
+            createToast(
+              ToastMessages.WELCOME_BACK,
+              "You are authorized to use this POS",
+              "success"
+            )
+          );
+
+          if (selectedPos.shift?.status !== "") {
+            await dispatch(fetchGeneralData(id));
+            navigate("/");
+          } else {
+            setOpen(true);
+            setReOpen(true);
+          }
+          return;
+        }
+
+        if (selectedPos.shift !== null && !isAuthorizedUser) {
+          toast.error(
+            createToast(
+              ToastMessages.UNAUTHORIZED,
+              "You are not authorized to use this POS",
+              "error"
+            )
+          );
+          return;
+        }
+
+        if (selectedPos.shift?.status === "opening_control") {
+          toast.info(
+            createToast(
+              `Welcome back ${userAuthenticated?.name}`,
+              "Please open the shift first",
+              "info"
+            )
+          );
           setOpen(true);
           setReOpen(true);
+          return;
         }
-        return;
-      }
 
-      if (findPos.shift !== null && !isAuthorizedUser) {
-        toast.error(
-          createToast(
-            TOAST_MESSAGES.UNAUTHORIZED,
-            "You are not authorized to use this POS",
-            "error"
-          )
-        );
-        return;
-      }
-
-      if (findPos.shift?.status === "opening_control") {
-        toast.info(
-          createToast(
-            `Welcome back ${userAuthenticated?.name}`,
-            "Please open the shift first",
-            "info"
-          )
-        );
-        setOpen(true);
-        setReOpen(true);
-        return;
-      }
-
-      if (findPos.shift === null) {
-        setOpen(true);
-        setReOpen(false);
+        if (selectedPos.shift === null) {
+          setOpen(true);
+          setReOpen(false);
+        }
+      } catch (error) {
+        toast.error("An error occurred while selecting POS");
+      } finally {
+        setIsLoading(false);
       }
     },
-    [data.pos, userAuthenticated, checkDay, isDayOpen, navigate, setShiftId]
+    [
+      data.pos,
+      userAuthenticated,
+      checkDay,
+      isDayOpen,
+      navigate,
+      setShiftId,
+      dispatch,
+    ]
   );
 
   useEffect(() => {
@@ -134,7 +163,6 @@ export const useSelectPos = (): UseSelectPosReturn => {
 
   useEffect(() => {
     localStorage.removeItem("posId");
-    localStorage.removeItem("shiftId");
   }, []);
 
   return {
@@ -142,6 +170,7 @@ export const useSelectPos = (): UseSelectPosReturn => {
     checkDay,
     open,
     reOpen,
+    isLoading,
     setOpen,
     handleOpenDay,
     handleSelectPos,

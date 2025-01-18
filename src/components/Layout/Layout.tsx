@@ -1,31 +1,15 @@
 import { updateOrder } from "@/functions/updateOrder";
-import { AppDispatch, RootState } from "@/store";
-import { fetchGeneralData } from "@/store/slices/data/general-data.slice";
-import { fetchPosData } from "@/store/slices/data/pos.slice";
-import { memo, useEffect, useMemo, useState } from "react";
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { useAppDispatch } from "@/store/hooks";
+import { memo, useEffect, useMemo } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import SessionExpired from "../errors/SessionExpired";
-import { LoadingFullScreen } from "../global/loading";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 
 const Layout = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const {
-    status: generalStatus,
-    error: generalError,
-    data: generalData,
-  } = useSelector(
-    (state: RootState) => ({
-      status: state.generalData.status,
-      error: state.generalData.error,
-      data: state.generalData.data,
-    }),
-    shallowEqual
-  );
+  const generalData = JSON.parse(localStorage.getItem("generalData") || "{}");
 
   useEffect(() => {
     const initializeData = async () => {
@@ -34,27 +18,11 @@ const Layout = () => {
         navigate("/select-pos");
         return;
       }
-
-      try {
-        await Promise.all([
-          dispatch(fetchGeneralData(posId)),
-          dispatch(fetchPosData()),
-        ]);
-      } catch (error) {
-        console.error("Failed to fetch initial data:", error);
-      }
     };
-
     if (!generalData.orderTypes.length || !generalData.paymentMethods.length) {
       initializeData();
     }
-  }, [dispatch, navigate, generalData]);
-
-  useEffect(() => {
-    if (generalStatus === "failed") {
-      navigate("/error");
-    }
-  }, [generalStatus, navigate]);
+  }, []);
 
   useEffect(() => {
     const shiftId = localStorage.getItem("shiftId");
@@ -89,15 +57,6 @@ const Layout = () => {
     ),
     []
   );
-
-  if (
-    generalStatus === "loading" &&
-    (!generalData.orderTypes.length || !generalData.paymentMethods.length)
-  ) {
-    return <LoadingFullScreen />;
-  }
-
-  if (generalError) return <SessionExpired />;
   return content;
 };
 

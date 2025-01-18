@@ -1,5 +1,6 @@
 import { createOrderWithOutPayment, updateOrder } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
+import { useAppDispatch } from "@/store/hooks";
 import { useHoldOrders } from "@/store/hooks/useHoldOrders";
 import { refreshOrders, selectOrders } from "@/store/slices/data/orders.slice";
 import {
@@ -20,7 +21,6 @@ import { useRightViewContext } from "../contexts/RightViewContext";
 import { useCustomerManagement } from "../hooks/useCustomerManagement";
 import { useCoasterCall } from "./useCoasterCall";
 import { useNumberOfTable } from "./useNumberOfTable";
-import { useAppDispatch } from "@/store/hooks";
 
 interface OrderSummaryState {
   openModalConfirmHoldOrder: boolean;
@@ -115,8 +115,8 @@ export const useOrderSummary = () => {
 
         const existingOrder =
           orders &&
-          orders?.find(
-            (o) =>
+          orders?.orders?.find(
+            (o: any) =>
               o._id === order._id &&
               o.status !== "canceled" &&
               o.status !== "paid"

@@ -8,7 +8,6 @@ import {
   setFilteredDataLength,
 } from "@/store/slices/data/orders.slice";
 import { FilterCriteria } from "@/types/general";
-import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BeatLoader } from "react-spinners";

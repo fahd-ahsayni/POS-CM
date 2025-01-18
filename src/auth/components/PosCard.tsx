@@ -7,6 +7,8 @@ import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import { pageAnimations } from "../animation";
+import { TextShimmer } from "@/components/ui/text-shimmer";
+import { useSelectPos } from "../hooks/useSelectPos";
 
 interface PosCardProps {
   pos: PosData;
@@ -14,6 +16,7 @@ interface PosCardProps {
 }
 
 const PosCard = ({ pos, onClick }: PosCardProps) => {
+  const { isLoading } = useSelectPos();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   return (
     <motion.div {...pageAnimations.posCard} onClick={() => onClick(pos._id)}>
@@ -30,16 +33,23 @@ const PosCard = ({ pos, onClick }: PosCardProps) => {
           <BorderBeam
             colorFrom="#FB0000"
             colorTo="#520000"
-            size={140}
+            size={200}
             borderWidth={2}
             duration={5}
           />
         )}
         <div className="flex justify-between items-center">
           <div>
-            <TypographyH3 className="tracking-tight font-medium">
-              {pos.name}
-            </TypographyH3>
+            <div className="flex items-center gap-x-2">
+              <TypographyH3 className="tracking-tight font-medium">
+                <span className="font-semibold">{pos.name}</span>
+              </TypographyH3>
+              {isLoading && (
+                <span className="text-neutral-dark-grey">
+                  <TextShimmer>connecting...</TextShimmer>
+                </span>
+              )}
+            </div>
             {pos.shift?.user_id && (
               <div className="mt-4">
                 <TypographySmall className="text-neutral-dark-grey text-[0.8rem]">

@@ -2,15 +2,15 @@ import { DishIcon } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
-import { calculateProductPrice } from "@/functions/priceCalculations";
 import { toTitleCase } from "@/functions/string-transforms";
 import { currency } from "@/preferences";
 import { ProductSelected } from "@/types/product.types";
 import { motion } from "framer-motion";
 import { Minus, Plus } from "lucide-react";
-import { memo, useCallback, useMemo } from "react";
+import { memo } from "react";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { useRightViewContext } from "../contexts/RightViewContext";
+import { useOrderLine } from "../hooks/useOrderLine";
 import OderLineAddComments from "../ui/OderLineAddComments";
 import OrderLineOtherActions from "../ui/OrderLineOtherActions";
 
@@ -21,42 +21,21 @@ interface OrderLineProps {
 }
 
 export function OrderLine({ item, increment, decrement }: OrderLineProps) {
-  /* TODO SUITE COMMAND: ADD IS SUITE STATE HERE  */
-  // const [isSuitCamand, setIsSuitCamand] = useState(
-  //   item.suite_commande || false
-  // );
   const { customerIndex, setCustomerIndex } = useRightViewContext();
-
-  /* TODO SUITE COMMAND: ADD SELECTED PRODUCTS STATE HERE */
   const { currentMenu } = useLeftViewContext();
 
-  const prices = useMemo(() => {
-    return calculateProductPrice(item, currentMenu, item.quantity);
-  }, [item, currentMenu]);
-
-  const itemVariants = useMemo(
-    () => ({
-      initial: {
-        opacity: 0,
-        x: item._animation === "reverse" ? -20 : 20,
-      },
-      animate: {
-        opacity: 1,
-        x: 0,
-      },
-      exit: {
-        opacity: 0,
-        x: -20,
-      },
-    }),
-    [item._animation]
-  );
-
-  const selectCustomer = useCallback(() => {
-    if (item.customer_index && item.customer_index !== customerIndex) {
-      setCustomerIndex(item.customer_index);
-    }
-  }, [item.customer_index, customerIndex, setCustomerIndex]);
+  const {
+    prices,
+    itemVariants,
+    selectCustomer,
+    getDisplayName,
+    isComboProduct,
+  } = useOrderLine({
+    item,
+    currentMenu,
+    customerIndex,
+    setCustomerIndex,
+  });
 
   const handleIncrement = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -69,54 +48,6 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
     selectCustomer();
     decrement();
   };
-
-  /* TODO SUITE COMMAND: ACTIVATE THIS FUNCTION */
-
-  // const handleSuiteCommandeToggle = () => {
-  //   selectCustomer();
-  //   const currentCustomerIndex = item.customer_index || customerIndex;
-
-  //   const updatedOrderLine = {
-  //     ...item,
-  //     suite_commande: !isSuitCamand,
-  //     high_priority: !isSuitCamand ? false : item.high_priority,
-  //     customer_index: currentCustomerIndex,
-  //   };
-
-  //   dispatch(
-  //     updateOrderLine({
-  //       _id: item._id,
-  //       customerIndex: currentCustomerIndex,
-  //       orderLine: updatedOrderLine,
-  //     })
-  //   );
-
-  //   const updatedProducts = selectedProducts.map((product) => {
-  //     if (
-  //       product._id === item._id &&
-  //       product.customer_index === currentCustomerIndex
-  //     ) {
-  //       return {
-  //         ...product,
-  //         suite_commande: !isSuitCamand,
-  //         high_priority: !isSuitCamand ? false : product.high_priority,
-  //       };
-  //     }
-  //     return product;
-  //   });
-  //   setSelectedProducts(updatedProducts);
-
-  //   setIsSuitCamand(!isSuitCamand);
-  // };
-
-  const getDisplayName = (variant: any) => {
-    if (!variant) return "Unknown Product";
-    return toTitleCase((variant.name || "Unknown Product").toLowerCase());
-  };
-
-  const isComboProduct = useMemo(() => 
-    item.is_combo || (item.variants?.[0]?.is_menu && item.combo_items), 
-  [item]);
 
   return (
     <motion.div
@@ -133,7 +64,7 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
       onClick={selectCustomer}
     >
       <div className="absolute h-full w-1.5 left-0 top-0 bg-interactive-dark-red" />
-      <Card className="flex flex-col w-full py-2 pr-2 pl-4 gap-y-2">
+      <Card className="flex flex-col w-full py-2 pr-2 pl-4 gap-y-2 overflow-visible">
         <div className="flex items-center justify-between gap-x-4">
           <div className="flex flex-col">
             {item.variants && item.variants.length > 0 ? (
@@ -198,11 +129,9 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
                 key={`${variant._id || variant.name}-${idx}`}
                 className="text-sm space-x-2"
               >
-                <span className="font-medium">
-                  x{variant.quantity || 1}
-                </span>
+                <span className="font-medium">x{variant.quantity || 1}</span>
                 <span className="first-letter:uppercase dark:text-neutral-bright-grey text-primary-black/90 tracking-wide">
-                  {toTitleCase(variant.name || '')}
+                  {toTitleCase(variant.name || "")}
                 </span>
               </TypographySmall>
             ))}
@@ -210,12 +139,15 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
             {item.combo_items.supplements?.length > 0 && (
               <div className="mt-1">
                 {item.combo_items.supplements.map((supp: any, idx: number) => {
-                  const suppPrice = supp.price || 
-                    supp.menus?.find((menu: any) => menu.menu_id === currentMenu)?.price_ttc || 
-                    supp.default_price || 
+                  const suppPrice =
+                    supp.price ||
+                    supp.menus?.find(
+                      (menu: any) => menu.menu_id === currentMenu
+                    )?.price_ttc ||
+                    supp.default_price ||
                     0;
                   const price = suppPrice * (supp.quantity || 1);
-                  
+
                   return (
                     <div key={`${supp._id || supp.name}-${idx}`}>
                       <TypographySmall className="text-sm space-x-2">
@@ -223,12 +155,13 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
                           x{supp.quantity || 1}
                         </span>
                         <span className="first-letter:uppercase dark:text-neutral-bright-grey text-primary-black/90 tracking-wide">
-                          {toTitleCase(supp.name || '')}
+                          {toTitleCase(supp.name || "")}
                         </span>
                       </TypographySmall>
                       {price > 0 && (
                         <TypographySmall className="font-medium">
-                          +{price.toFixed(currency.toFixed || 2)} {currency.currency}
+                          +{price.toFixed(currency.toFixed || 2)}{" "}
+                          {currency.currency}
                         </TypographySmall>
                       )}
                     </div>
@@ -249,15 +182,6 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
               customerIndex={item.customer_index || customerIndex}
               initialNotes={item.notes || []}
             />
-            {/* <Button
-              size="icon"
-              variant="ghost"
-              className="-ms-px rounded h-7 w-7 bg-accent-white/10 hover:bg-accent-white/20"
-              onClick={handleSuiteCommandeToggle}
-            >
-              <SuiteCommandIcon className="!text-primary-black dark:!text-white h-4 w-4" />
-            </Button> */}
-
             <OrderLineOtherActions item={item} />
           </div>
         </div>
