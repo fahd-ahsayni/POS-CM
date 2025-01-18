@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { RootState } from "@/store";
 import { useSelector } from "react-redux";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 export default function Ticket() {
   const { selectedProducts, currentMenu } = useLeftViewContext();
@@ -36,6 +36,10 @@ export default function Ticket() {
   }, [selectedProducts, currentMenu, order.data.discount]);
 
   const { toFixed, currency: currencySymbol } = currency;
+
+  useEffect(() => {
+    console.log(calculations.total);
+  }, [calculations]);
 
   return (
     <motion.div

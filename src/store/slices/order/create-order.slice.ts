@@ -1,4 +1,3 @@
-import { calculateProductPrice } from "@/functions/priceCalculations";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../..";
 
@@ -26,66 +25,8 @@ const initialState: OrderSliceState = {
   error: null,
 };
 
-const calculateTotalAmount = (orderlines: any[]) => {
-  return orderlines.reduce((sum, line) => {
-    const currentMenu = localStorage.getItem("currentMenu");
-    const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
-    const menuId = orderType.menu_id || currentMenu;
-
-    // Handle combo products
-    if (line.is_combo && line.combo_items) {
-      // Get base combo price from the variant
-      const comboVariant = line.variants?.[0];
-      let basePrice = 0;
-
-      if (comboVariant) {
-        // Get menu-specific price or default price
-        basePrice =
-          comboVariant.menus?.find((menu: any) => menu.menu_id === menuId)
-            ?.price_ttc ||
-          comboVariant.default_price ||
-          comboVariant.price_ttc ||
-          line.price ||
-          0;
-      }
-
-      // Calculate supplements total
-      const supplementsTotal =
-        line.combo_items.supplements?.reduce((suppSum: number, supp: any) => {
-          const suppPrice =
-            supp.menus?.find((menu: any) => menu.menu_id === menuId)
-              ?.price_ttc ||
-            supp.default_price ||
-            supp.price_ttc ||
-            0;
-
-          return suppSum + suppPrice * (supp.quantity || 1);
-        }, 0) || 0;
-
-      // Calculate total combo price including base price and supplements
-      const totalComboPrice =
-        (basePrice + supplementsTotal) * (line.quantity || 1);
-
-      return sum + totalComboPrice;
-    }
-
-    // Handle regular products
-    const variant = line.variants?.[0];
-    if (!variant) {
-      return sum + (line.price || 0) * (line.quantity || 1);
-    }
-
-    const unitPrice =
-      variant.menus?.find((menu: any) => menu.menu_id === menuId)?.price_ttc ||
-      variant.default_price ||
-      variant.price_ttc ||
-      line.price ||
-      0;
-
-    const lineTotal = unitPrice * (line.quantity || 1);
-
-    return sum + lineTotal;
-  }, 0);
+const calculateTotalFromOrderlines = (orderlines: any[]) => {
+  return orderlines.reduce((total, line) => total + line.price, 0);
 };
 
 const orderSlice = createSlice({
@@ -98,7 +39,9 @@ const orderSlice = createSlice({
   reducers: {
     setOrderData: (state, action: PayloadAction<OrderState>) => {
       state.data = action.payload;
-      state.data.total_amount = calculateTotalAmount(state.data.orderlines);
+      state.data.total_amount = calculateTotalFromOrderlines(
+        state.data.orderlines
+      );
     },
     resetOrder: (state) => {
       const currentShiftId = state.data.shift_id;
@@ -106,7 +49,9 @@ const orderSlice = createSlice({
         ...initialOrderState,
         shift_id: currentShiftId,
       };
-      state.data.total_amount = calculateTotalAmount(state.data.orderlines);
+      state.data.total_amount = calculateTotalFromOrderlines(
+        state.data.orderlines
+      );
     },
     updateOrderLine: (
       state,
@@ -162,44 +107,31 @@ const orderSlice = createSlice({
         }
       }
 
-      // Recalculate total amount
-      state.data.total_amount = calculateTotalAmount(state.data.orderlines);
+      // Update total amount directly from orderlines
+      state.data.total_amount = calculateTotalFromOrderlines(
+        state.data.orderlines
+      );
     },
     addOrderLine: (state, action: PayloadAction<any[]>) => {
-      const currentMenu = localStorage.getItem("currentMenu");
       const newOrderLines = action.payload.map((line) => {
-        // If price is already set and valid, keep it
         if (line.price && line.price > 0) {
           return line;
         }
 
-        // Handle combo products
+        // For combo products
         if (line.is_combo && line.combo_items) {
-          const priceCalc = calculateProductPrice(
-            line,
-            currentMenu,
-            line.quantity || 1
-          );
           return {
             ...line,
-            price: priceCalc.totalPrice,
+            price: line.price || 0,
             quantity: line.quantity || 1,
           };
         }
 
-        // Handle regular products with variants
+        // For regular products
         const variant = line.variants?.[0];
-        if (!variant)
-          return { ...line, price: 0, quantity: line.quantity || 1 };
-
-        const priceCalc = calculateProductPrice(
-          line,
-          currentMenu,
-          line.quantity || 1
-        );
         return {
           ...line,
-          price: priceCalc.totalPrice,
+          price: variant?.price || 0,
           quantity: line.quantity || 1,
         };
       });
@@ -216,13 +148,17 @@ const orderSlice = createSlice({
         return existingLine ? { ...existingLine, ...newLine } : newLine;
       });
 
-      state.data.total_amount = calculateTotalAmount(state.data.orderlines);
+      state.data.total_amount = calculateTotalFromOrderlines(
+        state.data.orderlines
+      );
     },
     removeOrderLine: (state, action: PayloadAction<number>) => {
       state.data.orderlines = state.data.orderlines.filter(
         (_: any, index: number) => index !== action.payload
       );
-      state.data.total_amount = calculateTotalAmount(state.data.orderlines);
+      state.data.total_amount = calculateTotalFromOrderlines(
+        state.data.orderlines
+      );
     },
     updateTotalAmount: (state, action: PayloadAction<number>) => {
       state.data.total_amount = action.payload;
@@ -360,5 +296,5 @@ export const selectOrderError = (state: RootState) => state.createOrder.error;
 export const selectOrderLines = (state: RootState) =>
   state.createOrder.data.orderlines;
 export const selectTotalAmount = (state: RootState) => {
-  return calculateTotalAmount(state.createOrder.data.orderlines);
+  return calculateTotalFromOrderlines(state.createOrder.data.orderlines);
 };
