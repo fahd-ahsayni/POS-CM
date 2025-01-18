@@ -6,7 +6,6 @@ import {
 } from "@/assets/tables-icons";
 import { TypographySmall } from "@/components/ui/typography";
 import { getTableById } from "@/functions/getTableById";
-import { currency } from "@/preferences";
 import { selectOrder } from "@/store/slices/order/create-order.slice";
 import { ProductVariant } from "@/types/product.types";
 import { useSelector } from "react-redux";
@@ -73,7 +72,7 @@ const DeliveryOrder: React.FC<{ order: any; orderType: OrderType }> = ({
       orderType.select_delivery_boy &&
       orderType.delivery_product_variant_id
     ) {
-      return `${orderType.name} - Tax : ${orderType.delivery_product_variant_id.default_price} ${currency.currency}`;
+      return `${orderType.name}`;
     }
     return "";
   };

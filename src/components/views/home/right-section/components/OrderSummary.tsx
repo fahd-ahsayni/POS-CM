@@ -13,6 +13,8 @@ import Ticket from "../layouts/Ticket";
 import { OrderBannerOnSummary } from "../ui/OrderInfo";
 import OtherActionsOrderLines from "../ui/OtherActionsOrderLines";
 import ModalConfirmOrder from "@/components/global/modal/ModalConfirmOrder";
+import { currency } from "@/preferences";
+import { Badge } from "@/components/ui/badge";
 
 const OrderSummary = () => {
   const { selectedProducts } = useLeftViewContext();
@@ -45,6 +47,9 @@ const OrderSummary = () => {
     }
   };
 
+  const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
+  const taxDelivery = orderType?.delivery_product_variant_id?.default_price;
+
   return (
     <>
       <Payments open={openDrawerPayments} setOpen={setOpenDrawerPayments} />
@@ -62,6 +67,11 @@ const OrderSummary = () => {
         <div className="flex items-center justify-between p-1">
           <div className="flex items-center gap-2">
             <OrderBannerOnSummary />
+            {taxDelivery && (
+              <Badge className="text-xs">
+                {`+${taxDelivery} ${currency.currency} Tax`}
+              </Badge>
+            )}
           </div>
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-x-3">
