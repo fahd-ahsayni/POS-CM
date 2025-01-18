@@ -112,19 +112,20 @@ export const useOrderSummary = () => {
         if (isProcessing || selectedProducts.length === 0) return;
 
         const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
+
+        console.log(orders);
+        console.log(order);
+
         const existingOrder =
           orders &&
-          orders.find((o) => {
-            const orderTableId =
-              typeof o.table_id === "object" && o.table_id
-                ? (o.table_id as { _id: string })._id
-                : o.table_id;
-            return (
-              orderTableId === order.table_id &&
+          orders?.find(
+            (o) =>
+              o._id === order._id &&
               o.status !== "canceled" &&
               o.status !== "paid"
-            );
-          });
+          );
+
+        console.log(existingOrder);
 
         if (existingOrder) {
           // Update existing order

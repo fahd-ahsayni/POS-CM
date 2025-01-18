@@ -53,6 +53,7 @@ export interface OrderLine extends BaseEntity {
 }
 
 export interface Order extends BaseEntity {
+  _id: string;
   ref: string;
   order_number: number;
   orderline_ids: OrderLine[];

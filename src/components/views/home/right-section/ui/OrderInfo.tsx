@@ -66,7 +66,7 @@ const DeliveryOrder: React.FC<{ order: any; orderType: OrderType }> = ({
       return "Delivery";
     }
     if (order.delivery_guy_id !== null && orderType.select_delivery_boy) {
-      return `${orderType.name} - N° ${order.delivery_guy_id}`;
+      return `${orderType.name}`;
     }
     return "";
   };

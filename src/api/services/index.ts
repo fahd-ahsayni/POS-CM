@@ -115,7 +115,7 @@ export const createOrder = async (data: any) => {
 };
 
 export const updateOrder = async (data: any, orderId: string) => {
-  return api.put(`/order/update/${orderId}`, data);
+  return api.patch(`/order/update/${orderId}`, data);
 };
 
 export const getOrdersByDay = async () => {

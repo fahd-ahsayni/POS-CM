@@ -60,7 +60,7 @@ const OrderTypeCell = ({ order }: { order: any }) => {
           return "Delivery";
         }
         if (order.delivery_guy_id !== null && orderType.select_delivery_boy) {
-          return `${orderType.name} - N° ${order.delivery_guy_id}`;
+          return `${orderType.name}`;
         }
         return orderType.name;
 

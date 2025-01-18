@@ -154,6 +154,7 @@ export const useOrderDetails = (
         .filter(Boolean);
 
       const cleanOrder = {
+        _id: selectedOrder._id,
         waiter_id: selectedOrder.waiter_id,
         coaster_call: selectedOrder.coaster_call?.toString() || null,
         urgent: selectedOrder.urgent,
@@ -167,7 +168,11 @@ export const useOrderDetails = (
             ? (selectedOrder.table_id as { _id: string })._id
             : selectedOrder.table_id
           : null,
-        delivery_guy_id: selectedOrder.delivery_guy_id,
+        delivery_guy_id: selectedOrder.delivery_guy_id
+          ? typeof selectedOrder.delivery_guy_id === "object"
+            ? (selectedOrder.delivery_guy_id as { _id: string })._id
+            : selectedOrder.delivery_guy_id
+          : null,
         discount: selectedOrder.discount_amount || null,
         client_id: selectedOrder.client_id
           ? typeof selectedOrder.client_id === "object"
