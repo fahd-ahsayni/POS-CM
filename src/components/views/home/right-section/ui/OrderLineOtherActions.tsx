@@ -95,7 +95,7 @@ export default function OrderLineOtherActions({
       />
 
       <Menu as="div" className="relative">
-        <MenuButton className="relative">
+        <Menu.Button className="relative">
           <span className={cn(
             "inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-medium transition-colors",
             "bg-accent-white/10 hover:bg-accent-white/20",
@@ -103,10 +103,10 @@ export default function OrderLineOtherActions({
           )}>
             <BsThreeDotsVertical className="text-primary-black dark:text-white" />
           </span>
-        </MenuButton>
+        </Menu.Button>
 
-        <MenuItems className="absolute right-0 mt-2 w-52 origin-top-right rounded-md bg-white dark:bg-primary-black shadow-lg focus:outline-none p-3 border border-border">
-          <MenuItem>
+        <Menu.Items className="absolute right-0 mt-2 w-52 origin-top-right rounded-md bg-white dark:bg-primary-black shadow-lg focus:outline-none p-3 border border-border z-50">
+          <Menu.Item>
             {({ active }) => (
               <button
                 className={`${
@@ -117,7 +117,7 @@ export default function OrderLineOtherActions({
                 Remove Order Line
               </button>
             )}
-          </MenuItem>
+          </Menu.Item>
           <MenuItem>
             {({ active }) => (
               <button
@@ -147,7 +147,7 @@ export default function OrderLineOtherActions({
               </div>
             )}
           </MenuItem>
-        </MenuItems>
+        </Menu.Items>
       </Menu>
     </>
   );

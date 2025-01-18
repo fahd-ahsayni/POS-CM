@@ -60,11 +60,11 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
         duration: 0.2,
         ease: "easeOut",
       }}
-      className="flex relative cursor-pointer items-center justify-start h-full w-full rounded-lg overflow-hidden"
+      className="flex relative cursor-pointer items-center justify-start h-full w-full rounded-r-lg"
       onClick={selectCustomer}
     >
-      <div className="absolute h-full w-1.5 left-0 top-0 bg-interactive-dark-red" />
-      <Card className="flex flex-col w-full py-2 pr-2 pl-4 gap-y-2 overflow-visible">
+      <div className="absolute h-full w-1.5 left-0 top-0 bg-interactive-dark-red rounded-l-lg" />
+      <Card className="flex flex-col w-full py-2 pr-2 pl-4 gap-y-2 !rounded-l-md">
         <div className="flex items-center justify-between gap-x-4">
           <div className="flex flex-col">
             {item.variants && item.variants.length > 0 ? (
