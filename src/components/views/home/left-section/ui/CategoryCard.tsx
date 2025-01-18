@@ -1,4 +1,3 @@
-import BlurFade from "@/components/ui/blur-fade";
 import { Card } from "@/components/ui/card";
 import { TypographyP } from "@/components/ui/typography";
 import { toTitleCase } from "@/functions/string-transforms";
@@ -18,7 +17,7 @@ export const CategoryCard = memo(function CategoryCard({
   onClick,
 }: CategoryCardProps) {
   return (
-    <BlurFade className="h-24">
+    <div className="h-24">
       <Card
         onClick={onClick}
         className={cn(
@@ -27,7 +26,9 @@ export const CategoryCard = memo(function CategoryCard({
         )}
       >
         <img
-          src={`${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}${category.image}`}
+          src={`${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}${
+            category.image
+          }`}
           alt={category.name}
           crossOrigin="anonymous"
           className={cn(
@@ -41,6 +42,6 @@ export const CategoryCard = memo(function CategoryCard({
           {toTitleCase(category.name.toLowerCase())}
         </TypographyP>
       </Card>
-    </BlurFade>
+    </div>
   );
 });

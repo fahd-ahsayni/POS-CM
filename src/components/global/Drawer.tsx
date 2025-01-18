@@ -1,25 +1,41 @@
-import { cn } from "@/lib/utils";
+import * as React from "react";
 import {
-  Dialog,
-  DialogPanel,
-  DialogTitle,
-  Transition,
-  TransitionChild,
-} from "@headlessui/react";
+  DrawerContent,
+  DrawerOverlay,
+  DrawerPortal,
+  Drawer as DrawerPrimitive,
+  DrawerTitle,
+} from "@/components/ui/drawer";
+import { cva } from "class-variance-authority";
+import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
-import { Fragment, ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
 import { toTitleCase } from "@/functions/string-transforms";
+import { motion } from "framer-motion";
 
 interface DrawerProps {
-  children: ReactNode;
+  children: React.ReactNode;
   open: boolean;
   setOpen: (open: boolean) => void;
   title: string;
   classNames?: string;
   position?: "left" | "right";
 }
+
+const drawerContentVariants = cva(
+  "fixed z-50 flex h-auto flex-col bg-background w-full",
+  {
+    variants: {
+      direction: {
+        right: "ml-24 right-0 rounded-l-[10px] inset-y-0",
+        left: "mr-24 left-0 rounded-r-[10px] inset-y-0",
+      },
+    },
+    defaultVariants: {
+      direction: "right",
+    },
+  }
+);
 
 export default function Drawer({
   children,
@@ -30,77 +46,44 @@ export default function Drawer({
   position = "right",
 }: DrawerProps) {
   return (
-    <Transition show={open} as={Fragment}>
-      <Dialog
-        as="div"
-        className="relative z-10"
-        onClose={(value) => {
-          const target = event?.target as HTMLElement;
-          if (target?.closest('[data-keyboard="true"]')) {
-            return;
-          }
-          setOpen(value);
-        }}
-      >
-        <div className="fixed inset-0" />
-        <div className="fixed inset-0 overflow-hidden bg-black/30 backdrop-blur-[2px] transform-gpu">
-          <div className="absolute inset-0 overflow-hidden">
-            <div
-              className={`pointer-events-none fixed inset-y-0 ${position}-0 flex max-w-full ${
-                position === "left" ? "pr-10" : "pl-10"
-              }`}
-            >
-              <TransitionChild
-                as={Fragment}
-                enter="transform transition ease-in-out duration-300"
-                enterFrom={
-                  position === "left" ? "-translate-x-full" : "translate-x-full"
-                }
-                enterTo="translate-x-0"
-                leave="transform transition ease-in-out duration-200"
-                leaveFrom="translate-x-0"
-                leaveTo={
-                  position === "left" ? "-translate-x-full" : "translate-x-full"
-                }
-              >
-                <DialogPanel
-                  className={cn("pointer-events-auto w-screen", classNames)}
-                >
-                  <motion.div
-                    layout
-                    className="flex h-full flex-col dark:bg-secondary-black bg-secondary-white py-4 shadow-xl"
+    <DrawerPrimitive open={open} onOpenChange={setOpen} direction={position}>
+      <DrawerPortal>
+        <DrawerOverlay className="fixed inset-0 z-50 bg-black/30" />
+        <DrawerContent
+          className={cn(
+            drawerContentVariants({ direction: position }),
+            "dark:bg-secondary-black bg-secondary-white",
+            classNames
+          )}
+        >
+          <motion.div layout className="flex h-full flex-col py-4 shadow-xl">
+            <motion.div layout>
+              <div className="flex items-start justify-between px-4 sm:px-6">
+                <DrawerTitle className="font-medium dark:text-white text-primary-black">
+                  {toTitleCase(title.toLowerCase())}
+                </DrawerTitle>
+                <div className="ml-3 flex h-7 items-center">
+                  <Button
+                    variant="link"
+                    size="icon"
+                    className="text-primary-black dark:text-white"
+                    onClick={() => setOpen(false)}
                   >
-                    <motion.div layout>
-                      <div className="flex items-start justify-between px-4 sm:px-6">
-                        <DialogTitle className="font-medium dark:text-white text-primary-black">
-                          {toTitleCase(title.toLowerCase())}
-                        </DialogTitle>
-                        <div className="ml-3 flex h-7 items-center">
-                          <Button
-                            variant="link"
-                            size="icon"
-                            className="text-primary-black dark:text-white"
-                            onClick={() => setOpen(false)}
-                          >
-                            <span className="sr-only">Close panel</span>
-                            <X className="h-5 w-5" aria-hidden="true" />
-                          </Button>
-                        </div>
-                      </div>
-                    </motion.div>
-                    <motion.div
-                      layout
-                      className="relative mt-6 flex-1 px-4 sm:px-6 overflow-y-auto"
-                    >
-                      {children}
-                    </motion.div>
-                  </motion.div>
-                </DialogPanel>
-              </TransitionChild>
-            </div>
-          </div>
-        </div>
-      </Dialog>
-    </Transition>
+                    <span className="sr-only">Close panel</span>
+                    <X className="h-5 w-5" aria-hidden="true" />
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+            <motion.div
+              layout
+              className="relative mt-6 flex-1 px-4 sm:px-6 overflow-y-auto"
+            >
+              {children}
+            </motion.div>
+          </motion.div>
+        </DrawerContent>
+      </DrawerPortal>
+    </DrawerPrimitive>
   );
 }

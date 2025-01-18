@@ -1,11 +1,11 @@
 import { Card } from "@/components/ui/card";
 import { TypographyP } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
+import { Category } from "@/types/product.types";
 import { motion } from "framer-motion";
 import { memo } from "react";
 import { useCategories } from "../hooks/useCategories";
 import { CategoryCard } from "../ui/CategoryCard";
-import { Category } from "@/types/product.types";
 
 export default memo(function AllCategories() {
   const {
@@ -21,7 +21,7 @@ export default memo(function AllCategories() {
       animate={{ opacity: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.35 }}
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 mt-4 pb-16 scrollbar-hide"
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5 mt-4 pb-16 scrollbar-hide"
     >
       <Card
         onClick={handleAllProductsClick}

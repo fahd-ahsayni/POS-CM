@@ -42,7 +42,7 @@ const ProductGrid = memo(function ProductGrid({
 
   return (
     <motion.div
-      className="w-full grid grid-cols-3 gap-3 px-2"
+      className="w-full grid grid-cols-3 gap-3 px-2 pb-6"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.35 }}
@@ -162,7 +162,7 @@ export default memo(function ProductsByCategory() {
           </>
         )}
       </div>
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden">
         <div className="flex items-center justify-between relative flex-shrink-0 mt-4 w-full">
           <TypographyP className="pr-4 bg-background font-medium text-sm">
             Products
@@ -170,18 +170,20 @@ export default memo(function ProductsByCategory() {
           <Separator className="h-[0.5px]" />
         </div>
 
-        <div className="w-full relative pt-6">
-          <Combo />
-          <ProductsVariants />
-          {loading ? (
-            <ProductsLoadingSkeleton />
-          ) : (
-            <ProductGrid
-              products={products}
-              selectedProducts={selectedProducts}
-              handleProductClick={handleProductClick}
-            />
-          )}
+        <div className="flex-1 overflow-y-auto">
+          <div className="pt-6">
+            <Combo />
+            <ProductsVariants />
+            {loading ? (
+              <ProductsLoadingSkeleton />
+            ) : (
+              <ProductGrid
+                products={products}
+                selectedProducts={selectedProducts}
+                handleProductClick={handleProductClick}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>

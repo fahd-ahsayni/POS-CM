@@ -7,10 +7,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { format } from "date-fns";
 import { useWaitingOrders } from "@/components/views/orders/hooks/useWaitingOrders";
-import { motion } from "framer-motion";
 import { currency } from "@/preferences";
+import { format } from "date-fns";
+import { motion } from "framer-motion";
 import Header from "./components/Header";
 
 export default function WaitingOrders() {
@@ -25,7 +25,9 @@ export default function WaitingOrders() {
     >
       <Header title="Waiting Orders" />
       <Table className="mt-6">
-        <TableCaption>List of waiting orders</TableCaption>
+        {holdOrders.length === 0 && (
+          <TableCaption>List of waiting orders</TableCaption>
+        )}
         <TableHeader className="sticky top-0 bg-white dark:bg-secondary-black">
           <TableRow>
             <TableHead className="text-primary-black dark:text-white">

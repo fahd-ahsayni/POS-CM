@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { DialogTitle } from "@headlessui/react";
+import { TypographyH3 } from "@/components/ui/typography";
 import ModalLayout from "./index";
 
 interface BaseModalProps {
@@ -52,12 +52,9 @@ export default function BaseModal({
           </div>
         )}
         <div className="mt-1 text-center sm:mt-3">
-          <DialogTitle
-            as="h3"
-            className="text-xl font-semibold leading-6 dark:text-white text-primary-black"
-          >
+          <TypographyH3 className="text-xl font-semibold leading-6 dark:text-white text-primary-black">
             {title}
-          </DialogTitle>
+          </TypographyH3>
           <div className="mt-4">
             <p className="text-[0.8rem] dark:text-secondary-white/90 text-secondary-black/90">
               {description}
