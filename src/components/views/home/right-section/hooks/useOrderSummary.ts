@@ -113,9 +113,6 @@ export const useOrderSummary = () => {
 
         const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
 
-        console.log(orders);
-        console.log(order);
-
         const existingOrder =
           orders &&
           orders?.find(

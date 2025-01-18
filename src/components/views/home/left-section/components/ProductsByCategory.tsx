@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { TypographyP } from "@/components/ui/typography";
+import { toTitleCase } from "@/functions/string-transforms";
 import { Category, Product, ProductSelected } from "@/types/product.types";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
@@ -14,7 +15,6 @@ import { ProductCard } from "../ui/ProductCard";
 import { ProductsLoadingSkeleton } from "../ui/ProductsLoadingSkeleton";
 import Header from "./Header";
 import ProductsVariants from "./ProductsVariants";
-import { toTitleCase } from "@/functions/string-transforms";
 
 interface LoadingConfig {
   threshold: number;

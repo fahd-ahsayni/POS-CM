@@ -3,13 +3,14 @@ import { createToast } from "@/components/global/Toasters";
 import {
   addOrderLine,
   updateOrderLine,
+  setCustomerCount,
 } from "@/store/slices/order/create-order.slice";
 import { Product, ProductSelected } from "@/types/product.types";
 import { useCallback, useEffect, useMemo } from "react";
-import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { useLeftViewContext } from "../contexts/LeftViewContext";
 import { calculateProductPrice } from "@/functions/priceCalculations";
+import { useAppDispatch } from "@/store/hooks";
 
 interface UseVariantSelectionProps {
   selectedProduct: Product | null;
@@ -27,9 +28,25 @@ const useVariantSelection = ({
   customerIndex,
   addOrUpdateProduct,
 }: UseVariantSelectionProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const { currentMenu } = useLeftViewContext();
+
+  // Add function to calculate max customer index
+  const updateCustomerCount = useCallback(
+    (products: ProductSelected[]) => {
+      if (products.length === 0) {
+        dispatch(setCustomerCount(1));
+        return;
+      }
+
+      const maxCustomerIndex = Math.max(
+        ...products.map((product) => product.customer_index)
+      );
+      dispatch(setCustomerCount(maxCustomerIndex));
+    },
+    [dispatch]
+  );
 
   const handleSelectVariant = useCallback(
     async (id: string, price: number) => {
@@ -41,7 +58,13 @@ const useVariantSelection = ({
       try {
         const response = await checkProductAvailability(id);
         if (response.status !== 200) {
-          toast.error(createToast("Product Unavailable", "This product is currently not available", "error"));
+          toast.error(
+            createToast(
+              "Product Unavailable",
+              "This product is currently not available",
+              "error"
+            )
+          );
           return;
         }
 
@@ -57,12 +80,14 @@ const useVariantSelection = ({
         const menuId = orderType.menu_id || currentMenu;
 
         // Get the correct price based on menu
-        const variantPrice = variant.menus?.find((menu) => menu.menu_id === menuId)?.price_ttc 
-          ?? variant.default_price 
-          ?? price;
+        const variantPrice =
+          variant.menus?.find((menu) => menu.menu_id === menuId)?.price_ttc ??
+          variant.default_price ??
+          price;
 
         const existingVariant = selectedProducts.find(
-          (p) => p.product_variant_id === id && p.customer_index === customerIndex
+          (p) =>
+            p.product_variant_id === id && p.customer_index === customerIndex
         );
 
         if (!existingVariant) {
@@ -81,16 +106,29 @@ const useVariantSelection = ({
           );
         }
       } catch (error) {
-        toast.error(createToast("Availability Check Failed", "Unable to verify variant availability", "error"));
+        toast.error(
+          createToast(
+            "Availability Check Failed",
+            "Unable to verify variant availability",
+            "error"
+          )
+        );
       }
     },
-    [selectedProduct, addOrUpdateProduct, selectedProducts, customerIndex, setSelectedProducts, currentMenu]
+    [
+      selectedProduct,
+      addOrUpdateProduct,
+      selectedProducts,
+      customerIndex,
+      setSelectedProducts,
+      currentMenu,
+    ]
   );
 
   const handleQuantityChange = useCallback(
     (variantId: string, increment: boolean) => {
-      setSelectedProducts((prev) =>
-        prev
+      setSelectedProducts((prev) => {
+        const updatedProducts = prev
           .map((product) => {
             if (
               (product.is_combo
@@ -120,12 +158,14 @@ const useVariantSelection = ({
                     quantity: (v.quantity / product.quantity) * newQuantity,
                     notes: v.notes || [],
                   })),
-                  supplements: product.combo_items.supplements.map((s: any) => ({
-                    product_variant_id: s._id,
-                    quantity: (s.quantity / product.quantity) * newQuantity,
-                    notes: s.notes || [],
-                    suite_commande: s.suite_commande || false,
-                  })),
+                  supplements: product.combo_items.supplements.map(
+                    (s: any) => ({
+                      product_variant_id: s._id,
+                      quantity: (s.quantity / product.quantity) * newQuantity,
+                      notes: s.notes || [],
+                      suite_commande: s.suite_commande || false,
+                    })
+                  ),
                 };
 
                 const updatedComboOrder = {
@@ -176,10 +216,21 @@ const useVariantSelection = ({
             }
             return product;
           })
-          .filter((product) => product.quantity > 0)
-      );
+          .filter((product) => product.quantity > 0);
+
+        // Update customer count after filtering products
+        updateCustomerCount(updatedProducts);
+        return updatedProducts;
+      });
     },
-    [customerIndex, currentMenu, setSelectedProducts, dispatch, selectedProduct]
+    [
+      customerIndex,
+      currentMenu,
+      setSelectedProducts,
+      dispatch,
+      selectedProduct,
+      updateCustomerCount,
+    ]
   );
 
   const orderlineData = useMemo(
