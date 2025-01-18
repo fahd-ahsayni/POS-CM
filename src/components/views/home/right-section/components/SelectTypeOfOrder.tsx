@@ -1,13 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { TypographyH3 } from "@/components/ui/typography";
+import { cn } from "@/lib/utils";
+import { OrderType } from "@/types/order.types";
 import { ChevronLeftIcon } from "lucide-react";
 import { memo } from "react";
+import "swiper/css/pagination";
+import { Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { useSelectOrderType } from "../hooks/useSelectOrderType";
 import { OrderCard, OrderCardSkeleton } from "../ui/OrderTypeCards";
-import { OrderType } from "@/types/order.types";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper/modules";
-import "swiper/css/pagination";
 
 function SelectTypeOfOrder() {
   const {
@@ -34,15 +35,19 @@ function SelectTypeOfOrder() {
             : "What type of order would you like to process?"}
         </TypographyH3>
       </div>
-      <div className="flex-1 flex h-ful items-center justify-center relative pr-8">
+      <div
+        className={cn(
+          "flex-1 flex h-full items-center justify-center relative pr-8",
+          displayedTypes.length > 3 ? "pl-3" : ""
+        )}
+      >
         {isLoading ? (
           <OrderCardSkeleton />
         ) : displayedTypes.length > 3 ? (
           <Swiper
             direction="vertical"
             slidesPerView={3}
-            spaceBetween={16}
-            className="w-full h-[80%] pr-3 products-swiper"
+            className="w-full h-[80%] products-swiper"
             modules={[Pagination]}
             pagination={{
               clickable: true,
@@ -50,13 +55,13 @@ function SelectTypeOfOrder() {
             }}
           >
             {displayedTypes.map((type) => (
-              <SwiperSlide key={type._id} className="pl-6">
+              <SwiperSlide key={type._id} className="pl-3">
                 <OrderCard orderType={type} onSelect={handleTypeSelect(type)} />
               </SwiperSlide>
             ))}
           </Swiper>
         ) : (
-          <div className="flex flex-col gap-4 w-full pl-6">
+          <div className="flex flex-col gap-4 w-full">
             {displayedTypes.map((type) => (
               <OrderCard
                 key={type._id}

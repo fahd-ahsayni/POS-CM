@@ -126,7 +126,7 @@
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: theme("colors.secondary-black");
+  background: theme("colors.background");
   border-radius: 10px;
 }
 

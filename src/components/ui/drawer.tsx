@@ -1,8 +1,8 @@
 "use client";
 
+import { cva } from "class-variance-authority";
 import * as React from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
-import { cva } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
@@ -50,10 +50,10 @@ const drawerContentVariants = cva(
   {
     variants: {
       direction: {
-        right: "ml-24 right-0 rounded-l-[10px] inset-y-0",
-        top: "mb-24 top-0 rounded-b-[10px] inset-x-0",
-        bottom: "mt-24 rounded-t-[10px] bottom-0 inset-x-0",
-        left: "mr-24 left-0 rounded-r-[10px] inset-y-0",
+        right: "ml-24 right-0 inset-y-0",
+        top: "mb-24 top-0 inset-x-0",
+        bottom: "mt-24 inset-x-0",
+        left: "mr-24 left-0 inset-y-0",
       },
     },
     defaultVariants: {
@@ -77,7 +77,6 @@ const DrawerContent = React.forwardRef<
         aria-describedby={undefined}
         {...props}
       >
-        {/* <div className='mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted' /> */}
         {children}
       </DrawerPrimitive.Content>
     </DrawerPortal>
@@ -134,14 +133,7 @@ const DrawerDescription = React.forwardRef<
 ));
 
 export {
-  Drawer,
-  DrawerPortal,
-  DrawerOverlay,
-  DrawerTrigger,
-  DrawerClose,
-  DrawerContent,
-  DrawerHeader,
-  DrawerFooter,
-  DrawerTitle,
-  DrawerDescription,
+  Drawer, DrawerClose,
+  DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerPortal, DrawerTitle, DrawerTrigger
 };
+

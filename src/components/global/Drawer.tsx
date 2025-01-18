@@ -27,8 +27,8 @@ const drawerContentVariants = cva(
   {
     variants: {
       direction: {
-        right: "ml-24 right-0 rounded-l-[10px] inset-y-0",
-        left: "mr-24 left-0 rounded-r-[10px] inset-y-0",
+        right: "ml-24 right-0 inset-y-0",
+        left: "mr-24 left-0 inset-y-0",
       },
     },
     defaultVariants: {

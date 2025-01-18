@@ -4,6 +4,7 @@ import { toTitleCase } from "@/functions/string-transforms";
 import { cn } from "@/lib/utils";
 import { Category } from "@/types/product.types";
 import { memo } from "react";
+import { Image } from "@unpic/react";
 
 interface CategoryCardProps {
   category: Category;
@@ -25,11 +26,13 @@ export const CategoryCard = memo(function CategoryCard({
           isDisabled && "pointer-events-none"
         )}
       >
-        <img
+        <Image
           src={`${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}${
             category.image
           }`}
           alt={category.name}
+          layout="fullWidth"
+          loading="eager"
           crossOrigin="anonymous"
           className={cn(
             "object-cover transition-all duration-500",
