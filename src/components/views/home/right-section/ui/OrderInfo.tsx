@@ -6,7 +6,9 @@ import {
 } from "@/assets/tables-icons";
 import { TypographySmall } from "@/components/ui/typography";
 import { getTableById } from "@/functions/getTableById";
+import { currency } from "@/preferences";
 import { selectOrder } from "@/store/slices/order/create-order.slice";
+import { ProductVariant } from "@/types/product.types";
 import { useSelector } from "react-redux";
 
 interface OrderType {
@@ -16,6 +18,7 @@ interface OrderType {
   select_table?: boolean;
   select_delivery_boy?: boolean;
   image?: string;
+  delivery_product_variant_id?: ProductVariant;
 }
 
 const OrderBadge: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -65,8 +68,12 @@ const DeliveryOrder: React.FC<{ order: any; orderType: OrderType }> = ({
     if (order.delivery_guy_id === null && !orderType.select_delivery_boy) {
       return "Delivery";
     }
-    if (order.delivery_guy_id !== null && orderType.select_delivery_boy) {
-      return `${orderType.name}`;
+    if (
+      order.delivery_guy_id !== null &&
+      orderType.select_delivery_boy &&
+      orderType.delivery_product_variant_id
+    ) {
+      return `${orderType.name} - Tax : ${orderType.delivery_product_variant_id.default_price} ${currency.currency}`;
     }
     return "";
   };
