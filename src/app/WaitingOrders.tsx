@@ -17,12 +17,7 @@ export default function WaitingOrders() {
   const { holdOrders, getOrderTypeName, handleRowClick } = useWaitingOrders();
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 100 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ type: "spring", duration: 0.35 }}
-      className="flex h-full w-[calc(100vw-80px)] flex-col overflow-hidden px-4 pt-8 sm:px-6"
-    >
+    <div className="flex h-full w-[calc(100vw-80px)] flex-col overflow-hidden px-4 pt-8 sm:px-6">
       <Header title="Waiting Orders" />
       <Table className="mt-6">
         {holdOrders.length === 0 && (
@@ -63,6 +58,6 @@ export default function WaitingOrders() {
           ))}
         </TableBody>
       </Table>
-    </motion.div>
+    </div>
   );
 }

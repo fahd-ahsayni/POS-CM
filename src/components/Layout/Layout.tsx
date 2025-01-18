@@ -14,15 +14,18 @@ const Layout = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  const { status: generalStatus, error: generalError } = useSelector(
+  const {
+    status: generalStatus,
+    error: generalError,
+    data: generalData,
+  } = useSelector(
     (state: RootState) => ({
       status: state.generalData.status,
       error: state.generalData.error,
+      data: state.generalData.data,
     }),
     shallowEqual
   );
-
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const initializeData = async () => {
@@ -42,8 +45,10 @@ const Layout = () => {
       }
     };
 
-    initializeData();
-  }, [dispatch, navigate]);
+    if (!generalData.orderTypes.length || !generalData.paymentMethods.length) {
+      initializeData();
+    }
+  }, [dispatch, navigate, generalData]);
 
   useEffect(() => {
     if (generalStatus === "failed") {
@@ -57,20 +62,6 @@ const Layout = () => {
       dispatch(updateOrder({ shift_id: shiftId }));
     }
   }, [dispatch]);
-
-  useEffect(() => {
-    const isFirstRender = localStorage.getItem("firstRender");
-    if (!isFirstRender) {
-      setIsLoading(true);
-    } else {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const handleLoadingComplete = () => {
-    localStorage.setItem("firstRender", "true");
-    setIsLoading(false);
-  };
 
   const BackgroundDecoration = () => (
     <div
@@ -99,8 +90,13 @@ const Layout = () => {
     []
   );
 
-  if (isLoading)
-    return <LoadingFullScreen onLoadingComplete={handleLoadingComplete} />;
+  if (
+    generalStatus === "loading" &&
+    (!generalData.orderTypes.length || !generalData.paymentMethods.length)
+  ) {
+    return <LoadingFullScreen />;
+  }
+
   if (generalError) return <SessionExpired />;
   return content;
 };
