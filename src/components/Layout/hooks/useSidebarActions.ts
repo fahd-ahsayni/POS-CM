@@ -1,10 +1,11 @@
-import { useCallback } from "react";
-import { useDispatch } from "react-redux";
-import { StaffUser } from "@/types/staff";
+import { useAppDispatch } from "@/store/hooks";
+import { fetchGeneralData } from "@/store/slices/data/general-data.slice";
 import {
-  setWaiterId,
   setDeliveryGuyId,
+  setWaiterId,
 } from "@/store/slices/order/create-order.slice";
+import { StaffUser } from "@/types/staff";
+import { useCallback } from "react";
 
 interface UseSidebarActionsReturn {
   handleStaffSelect: (staff: StaffUser) => void;
@@ -18,7 +19,7 @@ export const useSidebarActions = (
   setOpenDropDrawer: (open: boolean) => void,
   setOpenStaffList: (open: boolean) => void
 ): UseSidebarActionsReturn => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const handleStaffSelect = useCallback(
     (staff: StaffUser) => {
@@ -49,10 +50,20 @@ export const useSidebarActions = (
     setOpenDropDrawer(true);
   }, [setOpenDropDrawer]);
 
-  const handleResetApp = useCallback(() => {
+  const handleResetApp = useCallback(async () => {
+    const posId = localStorage.getItem("posId");
     localStorage.removeItem("orderType");
+
+    if (posId) {
+      try {
+        await dispatch(fetchGeneralData(posId));
+      } catch (error) {
+        console.error("Failed to fetch general data:", error);
+      }
+    }
+
     window.location.reload();
-  }, []);
+  }, [dispatch]);
 
   return {
     handleStaffSelect,

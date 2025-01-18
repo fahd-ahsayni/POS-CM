@@ -35,7 +35,7 @@ export default function HandleApp() {
   return (
     <>
       <ToastContainer
-        position="bottom-left"
+        position="top-left"
         autoClose={5000}
         hideProgressBar={false}
         newestOnTop={false}
