@@ -252,6 +252,10 @@ const orderSlice = createSlice({
       state.data.changed_price_reason = action.payload.reason;
       state.data.changed_price_confirmed_by = action.payload.confirmed_by;
     },
+    resetStaffIds: (state) => {
+      state.data.waiter_id = null;
+      state.data.delivery_guy_id = null;
+    },
   },
 });
 
@@ -279,6 +283,7 @@ export const {
   resetTableId,
   resetClientId,
   setChangedPrice,
+  resetStaffIds,
 } = orderSlice.actions;
 
 export default orderSlice.reducer;

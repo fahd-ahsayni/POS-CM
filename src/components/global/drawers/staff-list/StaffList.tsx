@@ -1,70 +1,32 @@
 import { fetchLivreurs, fetchWaiters } from "@/api/services";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
-import { cn } from "@/lib/utils";
+import { useAppDispatch } from "@/store/hooks";
+import {
+  setDeliveryGuyId,
+  setWaiterId,
+} from "@/store/slices/order/create-order.slice";
 import { StaffUser } from "@/types/staff";
 import { Avatar } from "@heroui/avatar";
 import { Phone } from "lucide-react";
-import { memo, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import Drawer from "../../Drawer";
 
 interface StaffListProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  onSelect: (staff: StaffUser) => void;
 }
 
-const StaffCard = memo(
-  ({
-    staff,
-    onSelect,
-    isSelected,
-  }: {
-    staff: StaffUser;
-    onSelect: (staff: StaffUser) => void;
-    isSelected: boolean;
-  }) => (
-    <Card
-      className={cn(
-        "group relative flex items-center py-6 px-5 cursor-pointer dark:bg-primary-black bg-white",
-        isSelected && "ring-2 ring-primary-red"
-      )}
-      onClick={() => onSelect(staff)}
-    >
-      <div className="relative flex min-w-0 flex-1 items-center">
-        <span className="relative inline-block flex-shrink-0">
-          <Avatar
-            radius="lg"
-            showFallback={true}
-            fallback={
-              <span className="font-medium text-sm">
-                {staff.name?.charAt(0)}
-              </span>
-            }
-            src={staff?.image || undefined}
-          />
-        </span>
-        <div className="ml-4 truncate space-y-1">
-          <TypographyP className="truncate text-sm font-medium tracking-wide flex items-center gap-x-2">
-            {staff.name}
-          </TypographyP>
-          <TypographySmall className="truncate dark:text-neutral-neutral-grey text-neutral-dark-grey flex items-center justify-center gap-x-2">
-            <Phone className="size-3" />
-            <span>{staff.phone}</span>
-          </TypographySmall>
-        </div>
-      </div>
-    </Card>
-  )
-);
-
-StaffCard.displayName = "StaffCard";
-
-const StaffList = memo(({ open, setOpen, onSelect }: StaffListProps) => {
+const StaffList = ({ open, setOpen }: StaffListProps) => {
   const [staffList, setStaffList] = useState<StaffUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedStaffId, setSelectedStaffId] = useState<string>("");
+  const id = useId();
+
+  const dispatch = useAppDispatch();
 
   const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
   const isDelivery = orderType?.select_delivery_boy;
@@ -74,7 +36,6 @@ const StaffList = memo(({ open, setOpen, onSelect }: StaffListProps) => {
       setIsLoading(true);
       setError(null);
       const response = await (isDelivery ? fetchLivreurs() : fetchWaiters());
-
       setStaffList(response.data);
     } catch (error) {
       setError("Failed to fetch staff list");
@@ -90,54 +51,77 @@ const StaffList = memo(({ open, setOpen, onSelect }: StaffListProps) => {
     }
   }, [open, fetchStaffList]);
 
-  const handleStaffSelect = useCallback(
-    (staff: StaffUser) => {
-      onSelect(staff);
+  const handleConfirm = () => {
+    const selectedStaff = staffList.find((s) => s._id === selectedStaffId);
+    if (selectedStaff) {
+      if (isDelivery) {
+        dispatch(setDeliveryGuyId(selectedStaff._id));
+        dispatch(setWaiterId(null));
+      } else {
+        dispatch(setWaiterId(selectedStaff._id));
+        dispatch(setDeliveryGuyId(null));
+      }
       setOpen(false);
-    },
-    [onSelect, setOpen]
-  );
+    }
+  };
+
+  const handleStaffSelection = (staffId: string) => {
+    setSelectedStaffId(staffId);
+  };
+
+  const handleReset = () => {
+    setSelectedStaffId("");
+    dispatch(setWaiterId(null));
+    dispatch(setDeliveryGuyId(null));
+    setOpen(false);
+  };
 
   const renderContent = () => {
-    if (isLoading) {
-      return (
-        <li className="p-6">
-          <TypographyP className="text-center text-gray-500">
-            Loading...
-          </TypographyP>
-        </li>
-      );
-    }
+    if (isLoading) return <LoadingState />;
+    if (error) return <ErrorState error={error} />;
+    if (staffList.length === 0) return <EmptyState isDelivery={isDelivery} />;
 
-    if (error) {
-      return (
-        <li className="p-6">
-          <TypographyP className="text-center text-red-500">
-            {error}
-          </TypographyP>
-        </li>
-      );
-    }
-
-    if (staffList.length === 0) {
-      return (
-        <li className="p-6">
-          <TypographyP className="text-center text-gray-500">
-            No {isDelivery ? "delivery boys" : "waiters"} available
-          </TypographyP>
-        </li>
-      );
-    }
-
-    return staffList.map((staff) => (
-      <li key={staff._id}>
-        <StaffCard
-          staff={staff}
-          onSelect={handleStaffSelect}
-          isSelected={false}
-        />
-      </li>
-    ));
+    return (
+      <RadioGroup
+        className="gap-2"
+        value={selectedStaffId}
+        onValueChange={handleStaffSelection}
+      >
+        {staffList.map((staff) => (
+          <div
+            key={staff._id}
+            className="relative flex w-full items-start gap-4 rounded-lg border border-input p-4 shadow-sm shadow-black/5 has-[[data-state=checked]]:border-primary-red dark:bg-primary-black bg-white"
+          >
+            <RadioGroupItem
+              value={staff._id}
+              id={`${id}-${staff._id}`}
+              className="order-1 after:absolute after:inset-0"
+            />
+            <div className="flex grow items-start gap-5">
+              <Avatar
+                radius="lg"
+                size="sm"
+                showFallback={true}
+                fallback={
+                  <span className="font-medium text-sm">
+                    {staff.name?.charAt(0)}
+                  </span>
+                }
+                src={staff?.image || undefined}
+                className="shrink-0"
+              />
+              <div className="grid grow gap-2">
+                <Label htmlFor={`${id}-${staff._id}`}>{staff.name}</Label>
+                <p className="text-xs text-muted-foreground flex items-center gap-x-2">
+                  <Phone className="size-3" />
+                  <span>{staff.phone}</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </RadioGroup>
+    );
   };
 
   return (
@@ -154,23 +138,52 @@ const StaffList = memo(({ open, setOpen, onSelect }: StaffListProps) => {
           </TypographySmall>
         </div>
 
-        <ul className="flex-1 overflow-y-auto space-y-4 pr-3">
+        <div className="flex-1 overflow-y-auto space-y-4 pr-3">
           {renderContent()}
-        </ul>
+        </div>
 
-        <div className="pt-4">
+        <div className="pt-4 flex items-center justify-center gap-2">
           <Button
             variant="secondary"
-            className="flex-1 dark:bg-white/10 bg-white border border-border w-full"
-            onClick={() => setOpen(false)}
+            className="dark:bg-white/10 bg-white border border-border"
+            onClick={handleReset}
           >
-            Cancel
+            Reset
+          </Button>
+          <Button
+            variant="default"
+            className="flex-1"
+            onClick={handleConfirm}
+            disabled={!selectedStaffId}
+          >
+            Confirm Selection
           </Button>
         </div>
       </div>
     </Drawer>
   );
-});
+};
+
+// Helper components for different states
+const LoadingState = () => (
+  <div className="p-6">
+    <TypographyP className="text-center text-gray-500">Loading...</TypographyP>
+  </div>
+);
+
+const ErrorState = ({ error }: { error: string }) => (
+  <div className="p-6">
+    <TypographyP className="text-center text-red-500">{error}</TypographyP>
+  </div>
+);
+
+const EmptyState = ({ isDelivery }: { isDelivery: boolean }) => (
+  <div className="p-6">
+    <TypographyP className="text-center text-gray-500">
+      No {isDelivery ? "delivery boys" : "waiters"} available
+    </TypographyP>
+  </div>
+);
 
 StaffList.displayName = "StaffList";
 

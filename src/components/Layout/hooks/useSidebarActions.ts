@@ -17,7 +17,6 @@ interface UseSidebarActionsReturn {
 export const useSidebarActions = (
   setOpenClientDrawer: (open: boolean) => void,
   setOpenDropDrawer: (open: boolean) => void,
-  setOpenStaffList: (open: boolean) => void
 ): UseSidebarActionsReturn => {
   const dispatch = useAppDispatch();
 
@@ -35,11 +34,8 @@ export const useSidebarActions = (
         dispatch(setWaiterId(staff._id));
         dispatch(setDeliveryGuyId(null));
       }
-
-      // Close the staff list drawer after selection
-      setOpenStaffList(false);
     },
-    [dispatch, setOpenStaffList]
+    [dispatch]
   );
 
   const handleClientClick = useCallback(() => {
