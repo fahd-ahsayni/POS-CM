@@ -1,5 +1,7 @@
+import { createToast } from "@/components/global/Toasters";
 import { ProductVariant, Step } from "@/types/product.types";
 import { createContext, useCallback, useContext, useState } from "react";
+import { toast } from "react-toastify";
 
 interface SelectionState {
   variants: SelectedVariant[];
@@ -104,15 +106,24 @@ export function ComboProvider({ children }: { children: React.ReactNode }) {
           0
         );
 
-        if (totalQuantity < maxProducts) {
-          return {
-            ...prev,
-            variants: [
-              ...prev.variants,
-              { ...variant, quantity: 1, stepIndex: currentStep },
-            ],
-          };
+        if (totalQuantity >= maxProducts) {
+          toast.warning(
+            createToast(
+              "Selection Limit Reached",
+              `You can only select up to ${maxProducts} items`,
+              "warning"
+            )
+          );
+          return prev;
         }
+
+        return {
+          ...prev,
+          variants: [
+            ...prev.variants,
+            { ...variant, quantity: 1, stepIndex: currentStep },
+          ],
+        };
       }
 
       return prev;
