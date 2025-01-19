@@ -1,8 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { TypographyH3 } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
-import { useAppSelector } from "@/store/hooks";
-import { setOrderData } from "@/store/slices/order/create-order.slice";
 import { OrderType } from "@/types/order.types";
 import { ChevronLeftIcon } from "lucide-react";
 import { memo } from "react";
@@ -12,6 +10,7 @@ import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useSelectOrderType } from "../hooks/useSelectOrderType";
 import { OrderCard, OrderCardSkeleton } from "../ui/OrderTypeCards";
+import { updateOrder } from "@/functions/updateOrder";
 
 function SelectTypeOfOrder() {
   const {
@@ -19,15 +18,13 @@ function SelectTypeOfOrder() {
     actions: { handleOrderTypeSelect, handleBack },
   } = useSelectOrderType();
 
-  const initialOrderState = useAppSelector((state) => state.createOrder.data);
-
   const dispatch = useDispatch();
 
   const handleTypeSelect = (type: OrderType) => (event: React.MouseEvent) => {
     event.preventDefault();
     const shiftId = localStorage.getItem("shiftId") || "";
     handleOrderTypeSelect(type);
-    dispatch(setOrderData({ ...initialOrderState, shift_id: shiftId }));
+    dispatch(updateOrder({shift_id: shiftId}));
   };
 
   return (

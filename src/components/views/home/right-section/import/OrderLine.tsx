@@ -184,10 +184,10 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
                   -
                   {JSON.parse(
                     localStorage.getItem("generalData") || "{}"
-                  )?.discount?.find(
+                  )?.discount.find(
                     (d: any) => d._id === item.discount?.discount_id
-                  )?.percentage || 0}
-                  %
+                  )?.value || 0}
+                 %
                 </Badge>
               )}
           </div>

@@ -1,5 +1,5 @@
 import { getCategories } from "@/api/services";
-import { updateOrder } from "@/functions/updateOrder";
+import { setOrderTypeId } from "@/store/slices/order/create-order.slice";
 import { OrderType } from "@/types/order.types";
 import { Category } from "@/types/product.types";
 import { useCallback, useEffect, useState } from "react";
@@ -13,6 +13,7 @@ import {
 import { useRightViewContext } from "../contexts/RightViewContext";
 import { useAppSelector } from "@/store/hooks";
 import { RootState } from "@/store";
+import { updateOrder } from "@/functions/updateOrder";
 
 export const useSelectOrderType = () => {
   const dispatch = useDispatch();
@@ -79,7 +80,9 @@ export const useSelectOrderType = () => {
         setDisplayedTypes(orderType.children);
         return;
       }
+
       dispatch(updateOrder({ order_type_id: orderType._id }));
+
       localStorage.setItem("orderType", JSON.stringify(orderType));
       window.dispatchEvent(new Event("localStorageChange"));
 

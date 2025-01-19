@@ -211,9 +211,7 @@ const orderSlice = createSlice({
       state,
       action: PayloadAction<SetOrderTypePayload | string | null>
     ) => {
-      // Handle both simple string/null input and complex payload
       if (typeof action.payload === "string" || action.payload === null) {
-        // Reset all related fields when only order_type_id is provided
         state.data = {
           ...state.data,
           order_type_id: action.payload,
@@ -222,9 +220,7 @@ const orderSlice = createSlice({
           coaster_call: null,
         };
       } else {
-        // Keep provided values and only reset those that weren't specified
-        const { order_type_id, table_id, client_id, coaster_call } =
-          action.payload;
+        const { order_type_id, table_id, client_id, coaster_call } = action.payload;
         state.data = {
           ...state.data,
           order_type_id,

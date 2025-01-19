@@ -139,8 +139,8 @@ export const useProductSelection = ({
       try {
         // Check availability before adding
         const response = await checkProductAvailability(variantId);
-
-        if (response.status !== 200) {
+  
+        if (response?.status !== 200 || !response?.data?.availability) {
           toast.error(
             createToast(
               "Product Unavailable",
@@ -150,7 +150,7 @@ export const useProductSelection = ({
           );
           return;
         }
-
+  
         setSelectedProducts((prevSelected) => {
           const variant = findVariant(product, variantId);
           if (!variant) {
@@ -163,17 +163,17 @@ export const useProductSelection = ({
             );
             return prevSelected;
           }
-
+  
           const existingProduct = prevSelected.find(
             (p: any) =>
               p.product_variant_id === variantId &&
               p.customer_index === customerIndex
           );
-
+  
           const newProducts = existingProduct
             ? updateExistingProduct(prevSelected, variantId, price, notes)
             : [...prevSelected, createNewProduct(product, variant, price)];
-
+  
           updateCustomerCount(newProducts);
           updateProductsAndDisplay(newProducts);
           return newProducts;
@@ -182,7 +182,7 @@ export const useProductSelection = ({
         toast.error(
           createToast(
             "Availability Check Failed",
-            "Unable to verify product availability",
+            "Unable to verify product availability. Please try again later.",
             "error"
           )
         );
@@ -197,6 +197,7 @@ export const useProductSelection = ({
       updateCustomerCount,
     ]
   );
+  
 
   return {
     addOrUpdateProduct,
