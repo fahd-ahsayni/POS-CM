@@ -1,19 +1,25 @@
-import SelectPosPage from "@/auth/SelectPosPage";
-import Layout from "@/components/Layout/Layout";
 import { useTheme } from "@/providers/themeProvider";
 import { RootState } from "@/store";
+import { Suspense, lazy } from "react";
 import { useSelector } from "react-redux";
 import { Navigate, Route, Routes } from "react-router-dom";
+import { BeatLoader } from "react-spinners";
 import { Bounce, ToastContainer } from "react-toastify";
-import LogInPage from "../auth/LogInPage";
-import HomePage from "./HomePage";
-import OrdersPage from "./OrdersPage";
-import WaitingOrders from "./WaitingOrders";
-import BrokenLink from "@/components/errors/BrokenLink";
-import CustomerDisplay from "@/components/global/Customer-display/CustomerDisplay";
-import SessionExpired from "@/components/errors/SessionExpired";
-import ErrorOccurred from "@/components/errors/ErrorOccurred";
-import Test from "@/Test";
+
+// Lazy load components
+const LogInPage = lazy(() => import("../auth/LogInPage"));
+const SelectPosPage = lazy(() => import("@/auth/SelectPosPage"));
+const Layout = lazy(() => import("@/components/Layout/Layout"));
+const HomePage = lazy(() => import("./HomePage"));
+const OrdersPage = lazy(() => import("./OrdersPage"));
+const WaitingOrders = lazy(() => import("./WaitingOrders"));
+const CustomerDisplay = lazy(
+  () => import("@/components/global/Customer-display/CustomerDisplay")
+);
+const SessionExpired = lazy(() => import("@/components/errors/SessionExpired"));
+const ErrorOccurred = lazy(() => import("@/components/errors/ErrorOccurred"));
+const BrokenLink = lazy(() => import("@/components/errors/BrokenLink"));
+const Test = lazy(() => import("@/Test"));
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = useSelector(
@@ -48,34 +54,42 @@ export default function HandleApp() {
         transition={Bounce}
         closeButton={false}
       />
-      <Routes>
-        <Route path="/login" element={<LogInPage />} />
-        <Route
-          path="/select-pos"
-          element={
-            <ProtectedRoute>
-              <SelectPosPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/customer-display" element={<CustomerDisplay />} />
-        <Route path="/session-expired" element={<SessionExpired />} />
-        <Route path="/error" element={<ErrorOccurred />} />
-        <Route path="/test" element={<Test />} />
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Layout />
-            </ProtectedRoute>
-          }
-        >
-          <Route path="/" element={<HomePage />} />
-          <Route path="/orders" element={<OrdersPage />} />
-          <Route path="/waiting-orders" element={<WaitingOrders />} />
-        </Route>
-        <Route path="*" element={<BrokenLink />} />
-      </Routes>
+      <Suspense
+        fallback={
+          <div className="bg-background w-screen h-screen">
+            <BeatLoader color="#FB0000" size={10} />
+          </div>
+        }
+      >
+        <Routes>
+          <Route path="/login" element={<LogInPage />} />
+          <Route
+            path="/select-pos"
+            element={
+              <ProtectedRoute>
+                <SelectPosPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/customer-display" element={<CustomerDisplay />} />
+          <Route path="/session-expired" element={<SessionExpired />} />
+          <Route path="/error" element={<ErrorOccurred />} />
+          <Route path="/test" element={<Test />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Layout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/" element={<HomePage />} />
+            <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/waiting-orders" element={<WaitingOrders />} />
+          </Route>
+          <Route path="*" element={<BrokenLink />} />
+        </Routes>
+      </Suspense>
     </>
   );
 }

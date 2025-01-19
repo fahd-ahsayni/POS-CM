@@ -1,17 +1,23 @@
-import { memo, useCallback } from "react";
 import { checkIsNewOrders } from "@/api/services";
 import { CashWithCoinsIcon } from "@/assets/figma-icons";
 import { useShift } from "@/auth/context/ShiftContext";
 import Drawer from "@/components/global/Drawer";
 import InputComponent from "@/components/global/InputField";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { TypographyP } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useId, useState } from "react";
 import { BeatLoader } from "react-spinners";
-import SelectNextCashier from "./components/ui/SelectNextCashier";
 import { CurrencyQuantityData } from "./constants";
 import { useCloseShift } from "./hooks/useCloseShift";
 
@@ -38,12 +44,14 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
     handleReset,
     handleValidate,
     isLoading,
+    availableCashiers,
   } = useCloseShift();
   const [isNewOrders, setIsNewOrders] = useState(false);
   const { shiftId } = useShift();
   const [currentShift, setCurrentShift] = useState(
     shiftId ? shiftId : localStorage.getItem("shiftId")
   );
+  const selectId = useId();
 
   useEffect(() => {
     if (open) {
@@ -141,10 +149,32 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
                   >
                     <div className="space-y-6 h-full relative px-1">
                       {(isNewOrders || requiredNextCashier) && (
-                        <SelectNextCashier
-                          selectedPerson={selectedCashier}
-                          setSelectedPerson={setSelectedCashier}
-                        />
+                        <div className="space-y-2">
+                          <Label htmlFor={selectId}>Select next cashier</Label>
+                          <Select
+                            value={selectedCashier?._id || ""}
+                            onValueChange={(value) => {
+                              const cashier = availableCashiers.find(
+                                (c) => c._id === value
+                              );
+                              setSelectedCashier(cashier || null);
+                            }}
+                          >
+                            <SelectTrigger className="w-full" id={selectId}>
+                              <SelectValue placeholder="Select next cashier" />
+                            </SelectTrigger>
+                            <SelectContent className="w-52">
+                              {availableCashiers.map((cashier) => (
+                                <SelectItem
+                                  key={cashier._id}
+                                  value={cashier._id}
+                                >
+                                  {cashier.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
                       )}
 
                       {paymentMethods.map(renderPaymentMethod)}

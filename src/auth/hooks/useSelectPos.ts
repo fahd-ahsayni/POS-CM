@@ -1,6 +1,7 @@
 import { openDay } from "@/api/services";
 import { useShift } from "@/auth/context/ShiftContext";
 import { createToast } from "@/components/global/Toasters";
+import { updateOrder } from "@/functions/updateOrder";
 import { AppDispatch, RootState } from "@/store";
 import { checkOpenDay } from "@/store/slices/authentication/open.day.slice";
 import { fetchGeneralData } from "@/store/slices/data/general-data.slice";
@@ -99,6 +100,7 @@ export const useSelectPos = (): UseSelectPosReturn => {
 
           if (selectedPos.shift?.status !== "") {
             await dispatch(fetchGeneralData(id));
+            dispatch(updateOrder({ shift_id: selectedPos.shift?._id ?? "" }));
             navigate("/");
           } else {
             setOpen(true);

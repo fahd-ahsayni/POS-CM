@@ -45,6 +45,11 @@ export const useCloseShift = () => {
   const [savedTotal, setSavedTotal] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
 
+  const availableCashiers: User[] = (() => {
+    const users = JSON.parse(localStorage.getItem("users") || "{}");
+    return users.cashiers || [];
+  })();
+
   const orders = useSelector((state: RootState) => state.orders.orders);
 
   const paymentMethods: PaymentMethod[] =
@@ -63,9 +68,9 @@ export const useCloseShift = () => {
   }, [orders]);
 
   const handleAmountChange = (methodId: string, value: string) => {
-    const cleanValue = value.replace(/[^\d.]/g, '');
-    const numericValue = cleanValue === '' ? 0 : parseFloat(cleanValue);
-    
+    const cleanValue = value.replace(/[^\d.]/g, "");
+    const numericValue = cleanValue === "" ? 0 : parseFloat(cleanValue);
+
     setPaymentAmounts((prev) => ({
       ...prev,
       [methodId]: isNaN(numericValue) ? 0 : numericValue,
@@ -76,7 +81,7 @@ export const useCloseShift = () => {
     denomination: number,
     value: string | number | null
   ) => {
-    const numericValue = value === null || value === '' ? 0 : Number(value);
+    const numericValue = value === null || value === "" ? 0 : Number(value);
     const newQuantity = isNaN(numericValue) ? 0 : numericValue;
 
     const updatedQuantities = {
@@ -89,7 +94,7 @@ export const useCloseShift = () => {
     if (cashMethod) {
       const newTotal = Object.entries(updatedQuantities).reduce(
         (total, [denom, qty]) => {
-          return total + (Number(denom) * Number(qty));
+          return total + Number(denom) * Number(qty);
         },
         0
       );
@@ -174,11 +179,7 @@ export const useCloseShift = () => {
       }
     } catch (error) {
       toast.error(
-        createToast(
-          "Failed to close shift",
-          "Please try again",
-          "error"
-        )
+        createToast("Failed to close shift", "Please try again", "error")
       );
     } finally {
       setIsLoading(false);
@@ -206,6 +207,22 @@ export const useCloseShift = () => {
     setOpenCurrencyQuantity(false);
   };
 
+  const resetAllInputs = () => {
+    setSelectedCashier(null);
+    setPaymentAmounts({});
+    setCurrencyQuantities({});
+    setOpenCurrencyQuantity(false);
+    setFocusedDenomination(null);
+    setFocusedMethod(null);
+    setSavedTotal(0);
+  };
+
+  useEffect(() => {
+    if (!open) {
+      resetAllInputs();
+    }
+  }, [open]);
+
   return {
     selectedCashier,
     setSelectedCashier,
@@ -225,5 +242,7 @@ export const useCloseShift = () => {
     handleReset,
     handleValidate,
     isLoading,
+    availableCashiers,
+    resetAllInputs,
   } as const;
 };
