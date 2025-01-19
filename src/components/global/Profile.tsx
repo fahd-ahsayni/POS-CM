@@ -4,12 +4,11 @@ import CloseShift from "@/auth/CloseShift";
 import { truncateName } from "@/lib/utils";
 import { AppDispatch } from "@/store";
 import { logout } from "@/store/slices/authentication/auth.slice";
-import { selectPosData } from "@/store/slices/data/pos.slice";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { Avatar } from "@heroui/avatar";
 import { ChevronDown, LogOut, Power } from "lucide-react";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { TypographySmall } from "../ui/typography";
 import {
   isCustomerDisplayOpen,
@@ -20,8 +19,6 @@ export default function Profile() {
   const [open, setOpen] = useState(false);
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const dispatch = useDispatch<AppDispatch>();
-  const posId = localStorage.getItem("posId");
-  const pos = useSelector(selectPosData);
 
   const handleLogout = () => {
     dispatch(logout());
