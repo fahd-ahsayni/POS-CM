@@ -2,7 +2,7 @@ import { fetchLivreurs, fetchWaiters } from "@/api/services";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { TypographyP, TypographySmall } from "@/components/ui/typography";
+import { TypographyP } from "@/components/ui/typography";
 import { useAppDispatch } from "@/store/hooks";
 import {
   setDeliveryGuyId,

@@ -7,7 +7,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TypographyP } from "@/components/ui/typography";
 import { ProductSelected } from "@/types/product.types";
 import { useApplyProductDiscount } from "../hooks/useApplyProductDiscount";
 

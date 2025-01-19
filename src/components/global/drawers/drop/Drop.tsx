@@ -53,7 +53,7 @@ export default function Drop({
     <Drawer open={open} setOpen={setOpen} title="Register a Cash Drop">
       <div className="flex flex-col gap-4 h-full relative">
         <div className="flex flex-col gap-2 h-full">
-          <div className="flex flex-col gap-y-6">
+          <div className="flex flex-col gap-y-6 px-4">
             <InputComponent
               config={{
                 label: "Total amount",
@@ -71,7 +71,7 @@ export default function Drop({
               value={comment}
             />
           </div>
-          <div className="w-full absolute bottom-0">
+          <div className="w-full absolute bottom-0 px-4">
             <Button className="w-full" onClick={handleSubmit}>
               Submit Cash Drop
             </Button>
