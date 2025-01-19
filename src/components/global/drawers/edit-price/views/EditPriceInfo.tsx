@@ -1,15 +1,19 @@
-import ComboboxSelect from "@/components/global/ComboboxSelect";
 import { createToast } from "@/components/global/Toasters";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { TypographyP } from "@/components/ui/typography";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { currency } from "@/preferences";
 import {
   selectOrder,
   setChangedPrice,
   updateTotalAmount,
 } from "@/store/slices/order/create-order.slice";
-import { CheckIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -80,11 +84,7 @@ export default function EditPriceInfo({
   const handleApplyNewPrice = useCallback(() => {
     if (!isValidPrice) {
       toast.error(
-        createToast(
-          "Invalid price",
-          "Please enter a valid price",
-          "error"
-        )
+        createToast("Invalid price", "Please enter a valid price", "error")
       );
       return;
     }
@@ -115,11 +115,7 @@ export default function EditPriceInfo({
       setOpen(false);
     } catch (error) {
       toast.error(
-        createToast(
-          "Update Price failed",
-          "Please try again",
-          "error"
-        )
+        createToast("Update Price failed", "Please try again", "error")
       );
       setAuthorization(false);
     }
@@ -137,10 +133,7 @@ export default function EditPriceInfo({
 
   return (
     <section className="overflow-hidden h-full flex flex-col items-start gap-8 relative w-full">
-      <TypographyP className="text-sm pt-10 text-start px-2">
-        Enter the new price and provide a reason for the change.
-      </TypographyP>
-      <div className="flex-1 pt-4 flex items-center justify-start flex-col space-y-8 w-full px-2">
+      <div className="flex-1  flex items-center justify-start flex-col space-y-8 w-full px-2">
         <div className="w-full space-y-2">
           <label className="text-sm font-medium">
             New Price ({currency.symbol})
@@ -154,23 +147,21 @@ export default function EditPriceInfo({
           />
         </div>
 
-        <ComboboxSelect
-          label="Select a reason"
-          items={reasons}
-          value={reasons.find((r: any) => r.value === selectedReason) || null}
-          onChange={(item) => handleReasonSelect(item?.value || "")}
-          displayValue={(item) => item?.label || ""}
-          placeholder="Reason for price change"
-          filterFunction={(query, item) =>
-            item.label.toLowerCase().includes(query.toLowerCase())
-          }
-          renderOption={(item, _, selected) => (
-            <div className="flex items-center justify-between">
-              <span>{item.label}</span>
-              {selected && <CheckIcon className="h-4 w-4 text-primary-red" />}
-            </div>
-          )}
-        />
+        <div className="w-full space-y-2">
+          <label className="text-sm font-medium">Select a reason</label>
+          <Select value={selectedReason} onValueChange={handleReasonSelect}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Reason for price change" />
+            </SelectTrigger>
+            <SelectContent>
+              {reasons.map((reason: any) => (
+                <SelectItem key={reason.value} value={reason.value}>
+                  {reason.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div className="flex justify-center gap-4 w-full px-4">
         <Button

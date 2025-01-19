@@ -14,19 +14,19 @@ const ApplyDiscount = memo(
       setAdmin({});
     }, [setOpen]);
 
-
     return (
       <Drawer
         open={open}
         setOpen={handleClose}
         title="Authorize discount"
-        classNames="max-w-lg"
+        classNames="max-w-md"
+        description="Provide the discount details to finalize the authorization."
       >
         {authorization ? (
-          <ApplyDiscountInfo 
-            admin={admin} 
+          <ApplyDiscountInfo
+            admin={admin}
             setOpen={handleClose}
-            setAuthorization={setAuthorization} 
+            setAuthorization={setAuthorization}
           />
         ) : (
           <Authorization

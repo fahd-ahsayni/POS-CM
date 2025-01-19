@@ -1,16 +1,16 @@
 import { memo, useCallback, useState } from "react";
 import Drawer from "../../Drawer";
 import Authorization from "../auth/Authorization";
-import EditPriceInfo from "./views/EditPriceInfo";
 import { useOrder } from "../order-details/context/OrderContext";
+import EditPriceInfo from "./views/EditPriceInfo";
 
 const EditPrice = memo(
-  ({ 
-    open, 
-    setOpen, 
-    onPriceChange 
-  }: { 
-    open: boolean; 
+  ({
+    open,
+    setOpen,
+    onPriceChange,
+  }: {
+    open: boolean;
     setOpen: (open: boolean) => void;
     onPriceChange?: (price: number) => void;
   }) => {
@@ -29,7 +29,8 @@ const EditPrice = memo(
         open={open}
         setOpen={handleClose}
         title="Authorize Price Edit"
-        classNames="max-w-lg"
+        classNames="max-w-md"
+        description="Enter admin credentials to edit price"
       >
         {authorization ? (
           <EditPriceInfo

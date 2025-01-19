@@ -26,7 +26,8 @@ const ApplyProductDiscount = memo(({ open, setOpen, orderLine }: ApplyProductDis
       open={open}
       setOpen={handleClose}
       title="Authorize Product Discount"
-      classNames="max-w-lg"
+      classNames="max-w-md"
+      description="Apply discount to selected product."
     >
       {authorization ? (
         <ApplyProductDiscountInfo 

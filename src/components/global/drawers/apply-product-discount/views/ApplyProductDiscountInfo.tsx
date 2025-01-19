@@ -41,9 +41,6 @@ export default function ApplyProductDiscountInfo({
 
   return (
     <section className="overflow-hidden h-full flex flex-col items-start gap-8 relative w-full">
-      <TypographyP className="text-sm pt-10 text-start px-2">
-        Apply discount to selected product.
-      </TypographyP>
       <div className="flex-1 pt-4 flex items-center justify-start flex-col space-y-8 w-full px-2">
         <div className="w-full space-y-2">
           <Label className="pl-2">Select a discount</Label>

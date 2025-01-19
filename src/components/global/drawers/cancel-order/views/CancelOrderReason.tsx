@@ -1,12 +1,16 @@
 import { cancelOrder } from "@/api/services";
-import ComboboxSelect from "@/components/global/ComboboxSelect";
-import { Button } from "@/components/ui/button";
-import { TypographyP } from "@/components/ui/typography";
-import { CheckIcon } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
-import { useOrder } from "../../order-details/context/OrderContext";
-import { toast } from "react-toastify";
 import { createToast } from "@/components/global/Toasters";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useCallback, useMemo, useState } from "react";
+import { toast } from "react-toastify";
+import { useOrder } from "../../order-details/context/OrderContext";
 
 interface DefineNote {
   type: string;
@@ -74,11 +78,7 @@ export default function CancelOrderReason({
       }
     } catch (error) {
       toast.error(
-        createToast(
-          "Cancel Order failed",
-          "Please try again",
-          "error"
-        )
+        createToast("Cancel Order failed", "Please try again", "error")
       );
       setAuthorization(false);
     }
@@ -92,27 +92,19 @@ export default function CancelOrderReason({
 
   return (
     <section className="overflow-hidden h-full flex flex-col items-start gap-8 relative w-full">
-      <TypographyP className="text-sm pt-10 text-start px-2">
-        Select a reason to cancel this order.
-      </TypographyP>
-      <div className="flex-1 pt-4 flex items-center justify-start flex-col space-y-8 w-full px-2">
-        <ComboboxSelect
-          label="Select a reason"
-          items={reasons}
-          value={reasons.find((r) => r.value === selectedReason) || null}
-          onChange={(item) => handleReasonSelect(item?.value || "")}
-          displayValue={(item) => item?.label || ""}
-          placeholder="Reason for cancellation"
-          filterFunction={(query, item) =>
-            item.label.toLowerCase().includes(query.toLowerCase())
-          }
-          renderOption={(item, _, selected) => (
-            <div className="flex items-center justify-between">
-              <span>{item.label}</span>
-              {selected && <CheckIcon className="h-4 w-4 text-primary-red" />}
-            </div>
-          )}
-        />
+      <div className="flex-1 flex items-center justify-start flex-col space-y-8 w-full px-2">
+        <Select value={selectedReason} onValueChange={handleReasonSelect}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Reason for cancellation" />
+          </SelectTrigger>
+          <SelectContent>
+            {reasons.map((reason) => (
+              <SelectItem key={reason.value} value={reason.value}>
+                {reason.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       <div className="flex justify-center gap-4 w-full px-4">
         <Button

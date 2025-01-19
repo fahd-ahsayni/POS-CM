@@ -13,6 +13,7 @@ import {
 import { FilterCriteria } from "@/types/general";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
+import { TextShimmer } from "@/components/ui/text-shimmer";
 
 export default function OrdersPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -71,17 +72,14 @@ export default function OrdersPage() {
   };
 
   // Handle RFID input
-  const handleRfidSubmit = useCallback(
-    (orderId: string) => {
-      setFilterCriteria((prev) => ({
-        ...prev,
-        orderId,
-      }));
-      setIsScanning(false);
-      setRfidInput("");
-    },
-    []
-  );
+  const handleRfidSubmit = useCallback((orderId: string) => {
+    setFilterCriteria((prev) => ({
+      ...prev,
+      orderId,
+    }));
+    setIsScanning(false);
+    setRfidInput("");
+  }, []);
 
   // Listen for RFID input
   useEffect(() => {
@@ -90,11 +88,10 @@ export default function OrdersPage() {
     const handleKeyPress = (e: KeyboardEvent) => {
       setIsScanning(true);
       setRfidInput((prev) => prev + e.key);
-      
 
       if (e.key === "Enter" && rfidInput) {
         clearTimeout(rfidTimeout);
-        console.log(rfidInput)
+        console.log(rfidInput);
         handleRfidSubmit(rfidInput);
       }
     };
@@ -138,8 +135,8 @@ export default function OrdersPage() {
         </main>
         <Footer ordersLength={filteredOrders.length} />
         {isScanning && (
-          <div className="absolute bottom-4 right-4 p-3 bg-white rounded shadow-lg">
-            <p className="text-gray-600">Scanning RFID...</p>
+          <div className="absolute flex items-center justify-center w-screen h-screen bg-black/90 bottom-0 left-0 p-3 rounded shadow-lg z-[99] ">
+            <TextShimmer>Scanning Order ID...</TextShimmer>
           </div>
         )}
       </div>

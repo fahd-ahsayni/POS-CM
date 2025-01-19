@@ -53,11 +53,10 @@ export default function Authorization({
 
   return (
     <section className="overflow-hidden h-full flex flex-col items-center gap-8 relative">
-      <TypographyP className="text-sm pt-10">
-        Enter the admin passcode or scan an admin badge to proceed with the
-        cancellation.
-      </TypographyP>
       <div className="flex-1 pt-12 flex items-center justify-center flex-col space-y-8">
+        <TypographyP className="text-sm text-center max-w-sm pb-8 dark:text-white/70 text-primary-black/70">
+          Enter admin code or scan badge to continue.
+        </TypographyP>
         <CirclesAnimation
           currentLength={passcode.length}
           isFixedLightDark={true}
@@ -68,7 +67,7 @@ export default function Authorization({
           fixLightDark
         />
       </div>
-      <div className="flex justify-center gap-4 w-full px-8">
+      <div className="flex justify-center gap-4 w-full px-8 pb-8">
         <ShineBorder
           className={cn(
             "flex cursor-pointer justify-center items-center gap-4 py-2.5 px-4"

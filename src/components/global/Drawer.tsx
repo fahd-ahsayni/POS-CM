@@ -1,6 +1,8 @@
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
+  SheetHeader,
   SheetOverlay,
   SheetPortal,
   SheetTitle,
@@ -16,6 +18,7 @@ interface DrawerProps {
   title: string;
   classNames?: string;
   position?: "left" | "right";
+  description?: string;
 }
 
 export default function Drawer({
@@ -25,6 +28,7 @@ export default function Drawer({
   title = "",
   classNames = "max-w-md",
   position = "right",
+  description = "",
 }: DrawerProps) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -33,19 +37,18 @@ export default function Drawer({
         <SheetContent
           side={position}
           className={cn(
-            "p-0 dark:bg-secondary-black bg-secondary-white w-full !sm:max-w-none",
+            "p-0 dark:bg-secondary-black bg-secondary-white w-full h-full !sm:max-w-none",
             classNames
           )}
         >
-          <div className="flex h-full flex-col py-4 shadow-xl">
-            <div>
-              <div className="flex items-start justify-between px-4 sm:px-6">
-                <SheetTitle className="font-medium dark:text-white text-primary-black">
-                  {toTitleCase(title.toLowerCase())}
-                </SheetTitle>
-              </div>
-            </div>
-            <div className="relative mt-6 flex-1 px-4 sm:px-6 overflow-y-auto">
+          <div className="flex h-full flex-col pb-4">
+            <SheetHeader className="max-w-md pt-4 px-4">
+              <SheetTitle>{toTitleCase(title.toLowerCase())}</SheetTitle>
+              <SheetDescription className="text-[0.8rem] pr-8">
+                {description}
+              </SheetDescription>
+            </SheetHeader>
+            <div className="relative mt-6 flex-1 px-3 overflow-y-auto">
               {children}
             </div>
           </div>

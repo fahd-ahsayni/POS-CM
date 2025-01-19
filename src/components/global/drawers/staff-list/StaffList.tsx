@@ -130,14 +130,11 @@ const StaffList = ({ open, setOpen }: StaffListProps) => {
       setOpen={setOpen}
       title={isDelivery ? "Delivery Boys" : "Waiters"}
       classNames="focus:outline-none max-w-md"
+      description={`Select a ${
+        isDelivery ? "delivery boy" : "waiter"
+      } to assign`}
     >
       <div className="flex h-full flex-col">
-        <div className="py-3">
-          <TypographySmall>
-            Select a {isDelivery ? "delivery boy" : "waiter"} to assign
-          </TypographySmall>
-        </div>
-
         <div className="flex-1 overflow-y-auto space-y-4 pr-3">
           {renderContent()}
         </div>

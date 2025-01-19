@@ -19,7 +19,8 @@ const CancelOrder = memo(
         open={open}
         setOpen={handleClose}
         title="Cancel order"
-        classNames="max-w-lg"
+        classNames="max-w-md"
+        description="Enter the reason for cancellation."
       >
         {authorization ? (
           <CancelOrderReason

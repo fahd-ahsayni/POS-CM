@@ -13,7 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { TypographyP } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { memo, useCallback, useEffect, useId, useState } from "react";
@@ -129,12 +128,9 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
       setOpen={setOpen}
       title="End Shift"
       classNames={drawerClassNames}
+      description="Count your cash and enter totals for each denomination, then continue to add other payment methods."
     >
       <div className="h-full overflow-hidden w-full relative">
-        <TypographyP className="text-[0.8rem] max-w-lg">
-          Count your cash and enter totals for each denomination, then continue
-          to add other payment methods.
-        </TypographyP>
         <div className="flex h-full mt-8">
           <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
             <div className="relative z-0 flex flex-1 overflow-hidden space-x-8">
