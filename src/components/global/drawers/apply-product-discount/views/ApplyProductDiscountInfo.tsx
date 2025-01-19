@@ -71,12 +71,12 @@ export default function ApplyProductDiscountInfo({
         confirmed_by: admin.user.id,
       };
 
-      // Update Redux store
+      // Update Redux store with discount info
       dispatch(
         updateOrderLine({
           _id: orderLine._id,
           customer_index: orderLine.customer_index,
-          discount: discountInfo,
+          discount: discountInfo
         })
       );
 
@@ -85,7 +85,10 @@ export default function ApplyProductDiscountInfo({
         prevProducts.map((product) =>
           product._id === orderLine._id &&
           product.customer_index === orderLine.customer_index
-            ? { ...product, discount: discountInfo }
+            ? {
+                ...product,
+                discount: discountInfo,
+              }
             : product
         )
       );

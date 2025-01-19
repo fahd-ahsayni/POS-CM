@@ -1,11 +1,11 @@
+import { checkProductAvailability } from "@/api/services";
+import { createToast } from "@/components/global/Toasters";
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
 import { Step } from "@/types/product.types";
 import { useCallback, useEffect, useState } from "react";
-import { useCombo } from "../context/ComboContext";
-import { checkProductAvailability } from "@/api/services";
-import { createToast } from "@/components/global/Toasters";
 import { toast } from "react-toastify";
+import { useCombo } from "../context/ComboContext";
 
 export function useComboLogic(currentStep: number, selectedStep?: Step) {
   const [isFinishing, setIsFinishing] = useState(false);
@@ -70,12 +70,13 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
 
       // Calculate supplements total price
       const supplementsPrice = selections.supplements.reduce((total, supp) => {
-        const suppPrice = 
-          supp.menus?.find((menu: any) => menu.menu_id === orderType?.menu_id)?.price_ttc || 
-          supp.default_price || 
-          supp.price_ttc || 
+        const suppPrice =
+          supp.menus?.find((menu: any) => menu.menu_id === orderType?.menu_id)
+            ?.price_ttc ||
+          supp.default_price ||
+          supp.price_ttc ||
           0;
-        return total + (suppPrice * supp.quantity);
+        return total + suppPrice * supp.quantity;
       }, 0);
 
       // Create combo product with proper structure
@@ -84,7 +85,6 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
         name: selectedCombo.name,
         quantity: 1,
         price: menuPrice + supplementsPrice,
-        unit_price: menuPrice,
         variants: [selectedCombo],
         product_variant_id: selectedCombo._id,
         customer_index: customerIndex,
@@ -106,10 +106,12 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
             uom_id: variant.uom_id?._id || "",
           })),
           supplements: selections.supplements.map((supp) => {
-            const suppPrice = 
-              supp.menus?.find((menu: any) => menu.menu_id === orderType?.menu_id)?.price_ttc || 
-              supp.default_price || 
-              supp.price_ttc || 
+            const suppPrice =
+              supp.menus?.find(
+                (menu: any) => menu.menu_id === orderType?.menu_id
+              )?.price_ttc ||
+              supp.default_price ||
+              supp.price_ttc ||
               0;
             return {
               _id: supp._id,

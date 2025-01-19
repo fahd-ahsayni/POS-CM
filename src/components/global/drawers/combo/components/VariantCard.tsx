@@ -34,15 +34,7 @@ export function VariantCard({
   customerIndex,
 }: VariantCardProps) {
   const { currentMenu } = useLeftViewContext();
-  /* TODO SUITE COMMAND COMBO: ADD "updateVariantSuiteCommande" */
   const { updateVariantNotes } = useCombo();
-
-  /* TODO SUITE COMMAND COMBO: ADD "suiteCommande" STATE */
-
-  // const [suiteCommande, setSuiteCommande] = useState(
-  //   variant.suite_commande || false
-  // );
-
   const variantPrice =
     variant.menus?.find((menu) => menu.menu_id === currentMenu)?.price_ttc ??
     variant.default_price ??
@@ -53,15 +45,6 @@ export function VariantCard({
     e.stopPropagation();
     onQuantityChange?.(increment);
   };
-
-  /* TODO SUITE COMMAND COMBO: ACTIVATE THIS FUNCTION */
-  // const handleSuiteCommandeToggle = (e: React.MouseEvent) => {
-  //   e.preventDefault();
-  //   e.stopPropagation();
-  //   const newValue = !suiteCommande;
-  //   setSuiteCommande(newValue);
-  //   updateVariantSuiteCommande(variant._id, newValue, step.is_supplement);
-  // };
 
   const handleNotesUpdate = (notes: string[]) => {
     updateVariantNotes(variant._id, notes, step.is_supplement);

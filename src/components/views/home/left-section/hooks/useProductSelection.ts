@@ -56,7 +56,6 @@ export const useProductSelection = ({
         product_variant_id: variant._id,
         quantity: 1,
         price: unitPrice,
-        unit_price: unitPrice,
         customer_index: customerIndex,
         order_type_id: orderType || "",
         uom_id: variant.uom_id ? variant.uom_id._id : "",

@@ -62,3 +62,10 @@ export const calculateProductPrice = (
     totalPrice,
   };
 };
+
+export const calculateTotalFromOrderlines = (orderlines: any[]) => {
+  return orderlines.reduce((total, line) => {
+    const linePrice = (line.price || 0) * (line.quantity || 1);
+    return total + linePrice;
+  }, 0);
+};

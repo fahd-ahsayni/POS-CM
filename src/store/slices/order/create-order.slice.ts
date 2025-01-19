@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../..";
+import { calculateTotalFromOrderlines } from "@/functions/priceCalculations";
 
 const initialOrderState: OrderState = {
   waiter_id: null,
@@ -23,30 +24,6 @@ const initialState: OrderSliceState = {
   data: initialOrderState,
   status: "idle",
   error: null,
-};
-
-const calculateTotalFromOrderlines = (orderlines: any[]) => {
-  return orderlines.reduce((total, line) => {
-    let linePrice = line.price;
-
-    // If there's a discount on the line item
-    if (line.discount?.discount_id) {
-      // Find the discount percentage from generalData
-      const generalData = JSON.parse(
-        localStorage.getItem("generalData") || "{}"
-      );
-      const discount = generalData.discount?.find(
-        (d: any) => d._id === line.discount.discount_id
-      );
-
-      if (discount?.percentage) {
-        // Apply the discount percentage
-        linePrice = linePrice * (1 - discount.percentage / 100);
-      }
-    }
-
-    return total + (linePrice || 0);
-  }, 0);
 };
 
 const orderSlice = createSlice({

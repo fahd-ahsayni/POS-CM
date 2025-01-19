@@ -94,6 +94,7 @@ export interface ProductSelected extends Product {
   product_variant_id: string;
   quantity: number;
   discount?: OrderLineDiscount;
+  price_ttc?: number;
   price: number;
   customer_index: number;
   order_type_id: string;

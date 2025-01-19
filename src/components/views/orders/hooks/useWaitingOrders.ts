@@ -52,9 +52,10 @@ export const useWaitingOrders = () => {
         const selectedProducts = order.orderline_ids
           .map((line: any) => {
             // Handle both string and object variant IDs
-            const variantId = typeof line.product_variant_id === 'object' 
-              ? line.product_variant_id._id 
-              : line.product_variant_id;
+            const variantId =
+              typeof line.product_variant_id === "object"
+                ? line.product_variant_id._id
+                : line.product_variant_id;
 
             // Find the product and variant from generalData
             const product = products.find((p: Product) =>
@@ -71,37 +72,41 @@ export const useWaitingOrders = () => {
             }
 
             // Rest of the mapping remains the same
-            const comboProducts = line.combo_prod_ids?.map((combo: any) => {
-              const comboId = typeof combo.product_variant_id === 'object'
-                ? combo.product_variant_id._id
-                : combo.product_variant_id;
+            const comboProducts =
+              line.combo_prod_ids?.map((combo: any) => {
+                const comboId =
+                  typeof combo.product_variant_id === "object"
+                    ? combo.product_variant_id._id
+                    : combo.product_variant_id;
 
-              const comboProduct = products.find((p: Product) =>
-                p.variants.some((v: ProductVariant) => v._id === comboId)
-              );
-              const comboVariant = comboProduct?.variants.find(
-                (v: ProductVariant) => v._id === comboId
-              );
+                const comboProduct = products.find((p: Product) =>
+                  p.variants.some((v: ProductVariant) => v._id === comboId)
+                );
+                const comboVariant = comboProduct?.variants.find(
+                  (v: ProductVariant) => v._id === comboId
+                );
 
-              return {
-                _id: combo._id,
-                quantity: combo.quantity || 1,
-                name: comboVariant?.name || 'Unknown Product',
-                notes: combo.notes || [],
-                suite_commande: combo.suite_commande || false,
-                order_type_id: combo.order_type_id,
-                price: comboVariant?.default_price || 0,
-                menus: comboVariant?.menus || [],
-                product_variant_id: comboVariant,
-                variants: [{
-                  _id: comboVariant?._id,
-                  name: comboVariant?.name,
-                  default_price: comboVariant?.default_price,
-                  menus: comboVariant?.menus,
-                  is_menu: comboVariant?.is_menu
-                }]
-              };
-            }) || [];
+                return {
+                  _id: combo._id,
+                  quantity: combo.quantity || 1,
+                  name: comboVariant?.name || "Unknown Product",
+                  notes: combo.notes || [],
+                  suite_commande: combo.suite_commande || false,
+                  order_type_id: combo.order_type_id,
+                  price: comboVariant?.default_price || 0,
+                  menus: comboVariant?.menus || [],
+                  product_variant_id: comboVariant,
+                  variants: [
+                    {
+                      _id: comboVariant?._id,
+                      name: comboVariant?.name,
+                      default_price: comboVariant?.default_price,
+                      menus: comboVariant?.menus,
+                      is_menu: comboVariant?.is_menu,
+                    },
+                  ],
+                };
+              }) || [];
 
             return {
               ...product,
@@ -111,9 +116,9 @@ export const useWaitingOrders = () => {
               product_variant_id: variant._id,
               quantity: line.quantity,
               price: line.price,
-              unit_price: line.price,
               customer_index: line.customer_index,
-              order_type_id: line.order_type_id?._id || line.order_type_id || null,
+              order_type_id:
+                line.order_type_id?._id || line.order_type_id || null,
               uom_id: variant.uom_id?._id || line.uom_id || "",
               notes: line.notes || [],
               discount: null,
@@ -126,8 +131,8 @@ export const useWaitingOrders = () => {
               combo_supp_ids: [],
               combo_items: {
                 variants: comboProducts,
-                supplements: []
-              }
+                supplements: [],
+              },
             };
           })
           .filter(Boolean);

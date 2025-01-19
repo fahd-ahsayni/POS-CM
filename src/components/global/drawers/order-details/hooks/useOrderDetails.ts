@@ -132,7 +132,6 @@ export const useOrderDetails = (
             product_variant_id: variant._id,
             quantity: line.quantity,
             price: line.price,
-            unit_price: line.price,
             customer_index: line.customer_index,
             order_type_id: line.order_type_id?._id || null,
             uom_id: variant.uom_id?._id || "",
