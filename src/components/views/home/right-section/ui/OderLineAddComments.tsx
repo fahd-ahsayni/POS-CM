@@ -1,20 +1,15 @@
 import { CommentIcon, DeleteCommentIcon } from "@/assets/figma-icons";
 import ComboboxSelectOnChange from "@/components/global/ComboboxSelectOnChange";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { updateOrderLine } from "@/store/slices/order/create-order.slice";
+import { Menu } from "@headlessui/react";
 import { CheckIcon } from "lucide-react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { updateOrderLine } from "@/store/slices/order/create-order.slice";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
-import { useRightViewContext } from "../contexts/RightViewContext";
 import { useProductSelection } from "../../left-section/hooks/useProductSelection";
+import { useRightViewContext } from "../contexts/RightViewContext";
 
 interface OderLineAddCommentsProps {
   productId: string;
@@ -103,23 +98,23 @@ export default function OderLineAddComments({
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          size="icon"
-          variant="ghost"
-          className="-ms-px rounded h-7 w-7 bg-accent-white/10 hover:bg-accent-white/20 relative"
-        >
-          <CommentIcon className="fill-primary-black dark:fill-white h-4 w-4" />
-          <span className="sr-only">Comments</span>
-          {comments.length > 0 && (
-            <span className="absolute -top-1 -right-1 bg-error-color text-white text-[0.6rem] rounded-full flex items-center justify-center shadow-md shadow-error-color/50 size-4">
-              <span>{comments.length}</span>
-            </span>
-          )}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="-ml-52 space-y-2 py-2">
+    <Menu as="div" className="relative">
+      <Menu.Button
+        as={Button}
+        size="icon"
+        variant="ghost"
+        className="-ms-px rounded h-7 w-7 bg-accent-white/10 hover:bg-accent-white/20 relative"
+      >
+        <CommentIcon className="fill-primary-black dark:fill-white h-4 w-4" />
+        <span className="sr-only">Comments</span>
+        {comments.length > 0 && (
+          <span className="absolute -top-1 -right-1 bg-error-color text-white text-[0.6rem] rounded-full flex items-center justify-center shadow-md shadow-error-color/50 size-4">
+            <span>{comments.length}</span>
+          </span>
+        )}
+      </Menu.Button>
+
+      <Menu.Items className="absolute right-0 mt-4 w-[250px] origin-top-right rounded-md bg-white dark:bg-primary-black shadow-lg focus:outline-none p-3 border border-border z-50 space-y-2">
         {[...comments, ""].map((comment, index) => (
           <div key={index} className="flex items-center gap-2">
             <ComboboxSelectOnChange
@@ -131,18 +126,7 @@ export default function OderLineAddComments({
               renderOption={renderOption}
               placeholder="Add a comment"
             />
-            <motion.span
-              initial={{ opacity: 0, width: 0 }}
-              animate={{
-                opacity: comment ? 1 : 0,
-                width: comment ? "auto" : 0,
-              }}
-              transition={{ duration: 0.15 }}
-              className={cn(
-                comment ? "cursor-pointer" : "cursor-not-allowed",
-                "flex items-center"
-              )}
-            >
+            <div className="flex items-center">
               <Button
                 size="icon"
                 variant="link"
@@ -156,10 +140,10 @@ export default function OderLineAddComments({
                 />
                 <span className="sr-only">Delete</span>
               </Button>
-            </motion.span>
+            </div>
           </div>
         ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </Menu.Items>
+    </Menu>
   );
 }

@@ -1,24 +1,15 @@
-import ComboboxSelect from "@/components/global/ComboboxSelect";
-import { createToast } from "@/components/global/Toasters";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { TypographyP } from "@/components/ui/typography";
-import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
-import { updateOrderLine } from "@/store/slices/order/create-order.slice";
 import { ProductSelected } from "@/types/product.types";
-import { CheckIcon } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
-
-interface Discount {
-  _id: string;
-  name: string;
-}
-
-interface DefineNote {
-  type: string;
-  text: string;
-}
+import { useApplyProductDiscount } from "../hooks/useApplyProductDiscount";
 
 interface ApplyProductDiscountInfoProps {
   admin: any;
@@ -33,94 +24,20 @@ export default function ApplyProductDiscountInfo({
   setAuthorization,
   orderLine,
 }: ApplyProductDiscountInfoProps) {
-  const dispatch = useDispatch();
-  const { setSelectedProducts } = useLeftViewContext();
-  const [selectedDiscount, setSelectedDiscount] = useState<string>("");
-  const [selectedReason, setSelectedReason] = useState<string>("");
-
-  const generalData = useMemo(() => {
-    return JSON.parse(localStorage.getItem("generalData") || "{}");
-  }, []);
-
-  const discounts = useMemo(() => {
-    const discountData: Discount[] = generalData.discount || [];
-    return discountData.map((discount) => ({
-      value: discount._id,
-      label: discount.name,
-    }));
-  }, [generalData]);
-
-  const reasons = useMemo(() => {
-    const reasonsData: DefineNote[] =
-      generalData.defineNote?.filter(
-        (item: DefineNote) => item.type === "discount"
-      ) || [];
-    return reasonsData.map((reason) => ({
-      value: reason.text,
-      label: reason.text,
-    }));
-  }, [generalData]);
-
-  const handleApplyDiscount = useCallback(() => {
-    try {
-      if (!selectedDiscount || !selectedReason) return;
-
-      const discountInfo = {
-        discount_id: selectedDiscount,
-        reason: selectedReason,
-        confirmed_by: admin.user.id,
-      };
-
-      // Update Redux store with discount info
-      dispatch(
-        updateOrderLine({
-          _id: orderLine._id,
-          customer_index: orderLine.customer_index,
-          discount: discountInfo
-        })
-      );
-
-      // Update selected products
-      setSelectedProducts((prevProducts) =>
-        prevProducts.map((product) =>
-          product._id === orderLine._id &&
-          product.customer_index === orderLine.customer_index
-            ? {
-                ...product,
-                discount: discountInfo,
-              }
-            : product
-        )
-      );
-
-      toast.success(
-        createToast(
-          "Discount applied",
-          "Product discount applied successfully",
-          "success"
-        )
-      );
-      setOpen(false);
-    } catch (error) {
-      toast.error(
-        createToast(
-          "Apply Product Discount failed",
-          "Please try again",
-          "error"
-        )
-      );
-      setAuthorization(false);
-    }
-  }, [
-    dispatch,
+  const {
     selectedDiscount,
+    setSelectedDiscount,
     selectedReason,
-    admin.user.id,
-    orderLine,
+    setSelectedReason,
+    discounts,
+    reasons,
+    handleApplyDiscount,
+  } = useApplyProductDiscount({
+    admin,
     setOpen,
     setAuthorization,
-    setSelectedProducts,
-  ]);
+    orderLine,
+  });
 
   return (
     <section className="overflow-hidden h-full flex flex-col items-start gap-8 relative w-full">
@@ -128,41 +45,37 @@ export default function ApplyProductDiscountInfo({
         Apply discount to selected product.
       </TypographyP>
       <div className="flex-1 pt-4 flex items-center justify-start flex-col space-y-8 w-full px-2">
-        <ComboboxSelect
-          label="Select a discount"
-          items={discounts}
-          value={discounts.find((d) => d.value === selectedDiscount) || null}
-          onChange={(item) => setSelectedDiscount(item?.value || "")}
-          displayValue={(item) => item?.label || ""}
-          placeholder="Select a discount"
-          filterFunction={(query, item) =>
-            item.label.toLowerCase().includes(query.toLowerCase())
-          }
-          renderOption={(item, _, selected) => (
-            <div className="flex items-center justify-between">
-              <span>{item.label}</span>
-              {selected && <CheckIcon className="h-4 w-4 text-primary-red" />}
-            </div>
-          )}
-        />
+        <div className="w-full space-y-2">
+          <Label className="pl-2">Select a discount</Label>
+          <Select value={selectedDiscount} onValueChange={setSelectedDiscount}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select a discount" />
+            </SelectTrigger>
+            <SelectContent>
+              {discounts.map((discount) => (
+                <SelectItem key={discount.value} value={discount.value}>
+                  {discount.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-        <ComboboxSelect
-          label="Select a reason"
-          items={reasons}
-          value={reasons.find((r) => r.value === selectedReason) || null}
-          onChange={(item) => setSelectedReason(item?.value || "")}
-          displayValue={(item) => item?.label || ""}
-          placeholder="Reason for discount"
-          filterFunction={(query, item) =>
-            item.label.toLowerCase().includes(query.toLowerCase())
-          }
-          renderOption={(item, _, selected) => (
-            <div className="flex items-center justify-between">
-              <span>{item.label}</span>
-              {selected && <CheckIcon className="h-4 w-4 text-primary-red" />}
-            </div>
-          )}
-        />
+        <div className="w-full space-y-2">
+          <Label className="pl-2">Select a reason</Label>
+          <Select value={selectedReason} onValueChange={setSelectedReason}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Reason for discount" />
+            </SelectTrigger>
+            <SelectContent>
+              {reasons.map((reason) => (
+                <SelectItem key={reason.value} value={reason.value}>
+                  {reason.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div className="flex justify-center gap-4 w-full px-4">
         <Button
