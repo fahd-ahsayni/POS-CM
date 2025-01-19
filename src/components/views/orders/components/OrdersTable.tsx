@@ -227,9 +227,9 @@ export default function OrdersTable({
   );
 
   return (
-    <div className="rounded-md h-full relative overflow-y-auto pr-3">
+    <div className="rounded-md h-full relative pr-3 [&>div]:max-h-[490px]">
       <Table>
-        <TableHeader className="dark:bg-secondary-black bg-white sticky top-0 z-10">
+        <TableHeader className="sticky top-0 z-10 dark:bg-secondary-black bg-white">
           <TableRow>
             {columns.map((column) => (
               <TableHead

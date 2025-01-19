@@ -73,9 +73,12 @@ const StaffList = memo(({ open, setOpen, onSelect }: StaffListProps) => {
     try {
       setIsLoading(true);
       setError(null);
-      const data = await (isDelivery ? fetchLivreurs() : fetchWaiters());
+      const response = await (isDelivery ? fetchLivreurs() : fetchWaiters());
 
-      setStaffList(data as unknown as StaffUser[]);
+      setStaffList(response.data);
+    } catch (error) {
+      setError("Failed to fetch staff list");
+      console.error("Error fetching staff list:", error);
     } finally {
       setIsLoading(false);
     }
@@ -142,6 +145,7 @@ const StaffList = memo(({ open, setOpen, onSelect }: StaffListProps) => {
       open={open}
       setOpen={setOpen}
       title={isDelivery ? "Delivery Boys" : "Waiters"}
+      classNames="focus:outline-none max-w-md"
     >
       <div className="flex h-full flex-col">
         <div className="py-3">

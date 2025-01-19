@@ -24,8 +24,14 @@ const fetchUsersByPosition = async (
 
 export const fetchCashiers = () => fetchUsersByPosition("Cashier");
 export const fetchManagers = () => fetchUsersByPosition("Manager");
-export const fetchWaiters = () => fetchUsersByPosition("Waiter");
-export const fetchLivreurs = () => fetchUsersByPosition("Livreur");
+
+export const fetchWaiters = () => {
+  return api.get("/users/with-token?position=Waiter");
+};
+
+export const fetchLivreurs = () => {
+  return api.get("users/with-token?position=Livreur");
+};
 
 export const login = async (id: string, password: string) => {
   try {
