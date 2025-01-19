@@ -21,10 +21,12 @@ export default function LeftSection() {
           <TabsContent
             key={value}
             value={value}
-            className={cn("w-full h-[calc(100%-35px)] overflow-hidden relative", className)}
+            className={cn(
+              "w-full h-[calc(100%-35px)] overflow-hidden relative",
+              className
+            )}
           >
             {component}
-            <div className="h-6 absolute bottom-0 left-0 w-[calc(100%-10px)] bg-gradient-to-t from-background to-transparent" />
           </TabsContent>
         ))}
       </Tabs>

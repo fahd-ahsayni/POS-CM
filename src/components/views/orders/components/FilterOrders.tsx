@@ -23,6 +23,7 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
   const [selectedStatus, setSelectedStatus] = useState<string>("");
   const [orderId, setOrderId] = useState<string>("");
   const [tableNumber, setTableNumber] = useState<string>("");
+  const [open, setOpen] = useState(false);
 
   const users = useMemo(
     () => JSON.parse(localStorage.getItem("users") || "[]").cashiers,
@@ -61,29 +62,19 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
 
   const handleEmployeeSelect = useCallback((value: string) => {
     setSelectedEmployee(value);
-    console.log("Selected employee:", value);
   }, []);
 
   const handleOrderTypeSelect = useCallback((value: string) => {
     setSelectedOrderType(value);
-    console.log("Selected order type:", value);
   }, []);
 
   const handleStatusSelect = useCallback((value: string) => {
     setSelectedStatus(value);
-    console.log("Selected status:", value);
   }, []);
 
   const handleOrderIdChange = useCallback((value: string | number | null) => {
     setOrderId(value?.toString() || "");
   }, []);
-
-  const handleTableNumberChange = useCallback(
-    (value: string | number | null) => {
-      setTableNumber(value?.toString() || "");
-    },
-    []
-  );
 
   const handleClearFilter = useCallback(
     (
@@ -138,6 +129,12 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
       orderId: orderId,
       tableNumber: tableNumber,
     });
+    setSelectedEmployee("");
+    setSelectedOrderType("");
+    setSelectedStatus("");
+    setOrderId("");
+    setTableNumber("");
+    setOpen(false);
   }, [
     onFilterChange,
     selectedEmployee,
@@ -149,7 +146,7 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <Popover>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button size="icon">
             <FilterIcon className="w-4 h-4" />
@@ -158,9 +155,10 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
         <PopoverContent
           align="start"
           className="w-72 mr-[6.5rem] dark:bg-secondary-black bg-secondary-white"
+          onOpenAutoFocus={(e) => e.preventDefault()}
         >
           <h2 className="mb-4 text-sm font-semibold">Filter Orders</h2>
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
             <div>
               <div className="mb-1 flex items-center justify-between gap-1">
                 <Label className="pl-2">Order ID</Label>
@@ -177,26 +175,6 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
                   placeholder: "Enter Order ID",
                   value: orderId,
                   setValue: handleOrderIdChange,
-                }}
-              />
-            </div>
-
-            <div>
-              <div className="mb-1 flex items-center justify-between gap-1">
-                <Label className="pl-2">Table Number</Label>
-                <span
-                  className="text-xs font-medium text-error-color cursor-pointer"
-                  onClick={() => handleClearFilter("tableNumber")}
-                >
-                  Clear
-                </span>
-              </div>
-              <InputComponent
-                config={{
-                  type: "text",
-                  placeholder: "Enter Table Number",
-                  value: tableNumber,
-                  setValue: handleTableNumberChange,
                 }}
               />
             </div>

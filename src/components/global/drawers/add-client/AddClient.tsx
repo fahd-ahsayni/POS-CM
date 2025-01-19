@@ -34,16 +34,20 @@ export default function AddClient({
     });
   };
 
-  const handleAddComplete = () => {
-    handleSubmit();
-    setOpen(false);
-    setFormData({
-      name: "",
-      phone: "",
-      address: "",
-      email: "",
-      ice: "",
-    });
+  const handleAddComplete = async () => {
+    try {
+      await handleSubmit();
+      setOpen(false);
+      setFormData({
+        name: "",
+        phone: "",
+        address: "",
+        email: "",
+        ice: "",
+      });
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
   };
 
   return (

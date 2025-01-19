@@ -1,10 +1,10 @@
-import BlurFade from "@/components/ui/blur-fade";
 import { Card } from "@/components/ui/card";
 import { TypographyP } from "@/components/ui/typography";
 import { toTitleCase } from "@/functions/string-transforms";
 import { cn } from "@/lib/utils";
 import { Category } from "@/types/product.types";
 import { memo } from "react";
+import { Image } from "@unpic/react";
 
 interface CategoryCardProps {
   category: Category;
@@ -18,7 +18,7 @@ export const CategoryCard = memo(function CategoryCard({
   onClick,
 }: CategoryCardProps) {
   return (
-    <BlurFade className="h-24">
+    <div className="h-24">
       <Card
         onClick={onClick}
         className={cn(
@@ -26,9 +26,13 @@ export const CategoryCard = memo(function CategoryCard({
           isDisabled && "pointer-events-none"
         )}
       >
-        <img
-          src={`${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}${category.image}`}
+        <Image
+          src={`${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}${
+            category.image
+          }`}
           alt={category.name}
+          layout="fullWidth"
+          loading="eager"
           crossOrigin="anonymous"
           className={cn(
             "object-cover transition-all duration-500",
@@ -41,6 +45,6 @@ export const CategoryCard = memo(function CategoryCard({
           {toTitleCase(category.name.toLowerCase())}
         </TypographyP>
       </Card>
-    </BlurFade>
+    </div>
   );
 });

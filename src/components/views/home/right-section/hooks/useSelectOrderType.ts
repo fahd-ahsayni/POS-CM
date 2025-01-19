@@ -11,6 +11,8 @@ import {
   OWN_DELIVERY_FORM_VIEW,
 } from "../constants";
 import { useRightViewContext } from "../contexts/RightViewContext";
+import { useAppSelector } from "@/store/hooks";
+import { RootState } from "@/store";
 
 export const useSelectOrderType = () => {
   const dispatch = useDispatch();
@@ -21,19 +23,22 @@ export const useSelectOrderType = () => {
   const { setViews } = useRightViewContext();
   const [categories, setCategories] = useState<Category[]>([]);
 
+  const generalData = useAppSelector(
+    (state: RootState) => state.generalData.data
+  );
+
   useEffect(() => {
     const loadOrderTypes = () => {
       setIsLoading(true);
       try {
-        const storedGeneralData = localStorage.getItem("generalData");
-        if (storedGeneralData) {
-          const parsedData = JSON.parse(storedGeneralData);
-          const rootOrderTypes = parsedData.orderTypes.filter(
-            (type: OrderType) => !type.parent_id
-          );
-          setOrderTypes(rootOrderTypes);
-          setDisplayedTypes(rootOrderTypes);
-        }
+        const storedGeneralData = generalData
+          ? generalData
+          : JSON.parse(localStorage.getItem("generalData") || "{}");
+        const rootOrderTypes = storedGeneralData.orderTypes.filter(
+          (type: OrderType) => !type.parent_id
+        );
+        setOrderTypes(rootOrderTypes);
+        setDisplayedTypes(rootOrderTypes);
       } catch (error) {
         console.error("Error loading order types:", error);
       } finally {

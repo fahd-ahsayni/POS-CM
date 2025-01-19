@@ -1,14 +1,14 @@
-import { ORDER_SUMMARY_VIEW, TYPE_OF_ORDER_VIEW } from "./../constants/index";
-import { useState, useEffect } from "react";
 import { createClient, getClients, updateClient } from "@/api/services";
-import { toast } from "react-toastify";
-import { z } from "zod";
 import { createToast } from "@/components/global/Toasters";
-import { useDispatch } from "react-redux";
+import { formatAddress } from "@/lib/utils";
 import { setClientId } from "@/store/slices/order/create-order.slice";
 import { Client } from "@/types/clients.types";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
+import { z } from "zod";
 import { useRightViewContext } from "../contexts/RightViewContext";
-import { formatAddress } from "@/lib/utils";
+import { ORDER_SUMMARY_VIEW, TYPE_OF_ORDER_VIEW } from "./../constants/index";
 
 const clientSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -157,6 +157,7 @@ export const useAddClient = (onSuccess?: () => void) => {
             )
           );
         }
+        dispatch(setClientId(existingClient._id));
       } else {
         const response = await createClient(formData);
         const res = await getClients();

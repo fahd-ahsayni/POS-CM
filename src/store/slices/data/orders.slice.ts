@@ -1,7 +1,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getOrdersByDay } from "@/api/services";
 import { Order } from "@/types/order.types";
-import { RootState } from "@/store"; 
+import { RootState } from "@/store";
+import { createSelector } from "reselect";
 
 interface OrdersState {
   orders: Order[];
@@ -104,4 +105,12 @@ export const {
 } = ordersSlice.actions;
 export default ordersSlice.reducer;
 
-export const selectOrders = (state: RootState) => state.orders.orders;
+export const selectOrders = createSelector(
+  [(state: RootState) => state.orders],
+  (orders) => ({
+    ...orders,
+    // Add any transformations or derived data here
+    ordersCount: orders.orders.length,
+    hasOrders: orders.orders.length > 0,
+  })
+);

@@ -8,7 +8,6 @@ import {
   setFilteredDataLength,
 } from "@/store/slices/data/orders.slice";
 import { FilterCriteria } from "@/types/general";
-import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BeatLoader } from "react-spinners";
@@ -33,8 +32,12 @@ export default function OrdersPage() {
     tableNumber: "",
   });
 
-  // Use the hook instead of direct filtering
-  const { sortedData: filteredOrders } = useTableOrders({
+  // Destructure all the needed values from useTableOrders
+  const {
+    sortedData: filteredOrders,
+    sortConfig,
+    handleSort,
+  } = useTableOrders({
     data: orders,
     filterCriteria,
     defaultSort: {
@@ -73,12 +76,7 @@ export default function OrdersPage() {
   return (
     <>
       <OrderDetails />
-      <motion.div
-        initial={{ opacity: 0, y: 100 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ type: "spring", duration: 0.35 }}
-        className="flex h-full w-[calc(100vw-80px)] flex-col overflow-hidden px-4 pt-8 sm:px-6"
-      >
+      <div className="flex h-full w-[calc(100vw-80px)] flex-col overflow-hidden px-4 pt-8 sm:px-6">
         <Header
           handleRefreshOrders={handleRefreshOrders}
           title="Orders"
@@ -96,11 +94,16 @@ export default function OrdersPage() {
               <p className="text-gray-500 text-lg">No orders available</p>
             </div>
           ) : (
-            <OrdersTable data={filteredOrders} withPrintButton={true} />
+            <OrdersTable
+              data={filteredOrders}
+              withPrintButton={true}
+              onSort={handleSort}
+              sortConfig={sortConfig}
+            />
           )}
         </main>
         <Footer ordersLength={filteredOrders.length} />
-      </motion.div>
+      </div>
     </>
   );
 }

@@ -7,25 +7,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { format } from "date-fns";
 import { useWaitingOrders } from "@/components/views/orders/hooks/useWaitingOrders";
-import { motion } from "framer-motion";
 import { currency } from "@/preferences";
+import { format } from "date-fns";
 import Header from "./components/Header";
 
 export default function WaitingOrders() {
   const { holdOrders, getOrderTypeName, handleRowClick } = useWaitingOrders();
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 100 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ type: "spring", duration: 0.35 }}
-      className="flex h-full w-[calc(100vw-80px)] flex-col overflow-hidden px-4 pt-8 sm:px-6"
-    >
+    <div className="flex h-full w-[calc(100vw-80px)] flex-col overflow-hidden px-4 pt-8 sm:px-6">
       <Header title="Waiting Orders" />
       <Table className="mt-6">
-        <TableCaption>List of waiting orders</TableCaption>
+        {holdOrders.length === 0 && (
+          <TableCaption>List of waiting orders</TableCaption>
+        )}
         <TableHeader className="sticky top-0 bg-white dark:bg-secondary-black">
           <TableRow>
             <TableHead className="text-primary-black dark:text-white">
@@ -61,6 +57,6 @@ export default function WaitingOrders() {
           ))}
         </TableBody>
       </Table>
-    </motion.div>
+    </div>
   );
 }

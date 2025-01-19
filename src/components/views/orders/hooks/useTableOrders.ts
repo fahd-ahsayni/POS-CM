@@ -56,18 +56,32 @@ export function useTableOrders<T>({
     ordersCancellationStatus,
   ]);
 
+  const getNestedValue = (obj: any, path: string) => {
+    if (!obj) return "";
+    // Handle special case for order_type column
+    if (path === "order_type") {
+      return obj.order_type_id?.type || "";
+    }
+    return path.split(".").reduce((acc, part) => {
+      if (acc === null || acc === undefined) return "";
+      return acc[part];
+    }, obj);
+  };
+
   const handleSort = (key: string) => {
+    // Normalize the key for certain columns
+    let sortKey = key;
+    if (key === "order_type") {
+      sortKey = "order_type_id.type";
+    }
+
     setSortConfig((prev) => ({
-      key,
+      key: sortKey,
       direction:
-        prev?.key === key && prev.direction === "ascending"
+        prev?.key === sortKey && prev.direction === "ascending"
           ? "descending"
           : "ascending",
     }));
-  };
-
-  const getNestedValue = (obj: any, path: string) => {
-    return path.split(".").reduce((acc, part) => acc?.[part], obj) ?? "";
   };
 
   const normalizeStatus = (status: string) => {
@@ -124,34 +138,49 @@ export function useTableOrders<T>({
         let bValue = getNestedValue(b, sortConfig.key);
 
         // Handle different data types
-        if (sortConfig.key === "ref") {
-          const aNum = extractOrderNumber(aValue);
-          const bNum = extractOrderNumber(bValue);
-          return sortConfig.direction === "ascending"
-            ? aNum - bNum
-            : bNum - aNum;
-        }
+        switch (sortConfig.key) {
+          case "ref":
+            const orderNumA = extractOrderNumber(aValue);
+            const orderNumB = extractOrderNumber(bValue);
+            return sortConfig.direction === "ascending"
+              ? orderNumA - orderNumB
+              : orderNumB - orderNumA;
 
-        if (sortConfig.key === "total_amount") {
-          const aNum = Number(aValue) || 0;
-          const bNum = Number(bValue) || 0;
-          return sortConfig.direction === "ascending"
-            ? aNum - bNum
-            : bNum - aNum;
-        }
+          case "total_amount":
+            const amountA = parseFloat(aValue) || 0;
+            const amountB = parseFloat(bValue) || 0;
+            return sortConfig.direction === "ascending"
+              ? amountA - amountB
+              : amountB - amountA;
 
-        if (sortConfig.key === "createdAt") {
-          return sortConfig.direction === "ascending"
-            ? new Date(aValue).getTime() - new Date(bValue).getTime()
-            : new Date(bValue).getTime() - new Date(aValue).getTime();
-        }
+          case "createdAt":
+            const aDate = new Date(aValue).getTime();
+            const bDate = new Date(bValue).getTime();
+            return sortConfig.direction === "ascending"
+              ? aDate - bDate
+              : bDate - aDate;
 
-        if (sortConfig.key === "status") {
-          aValue = normalizeStatus(aValue);
-          bValue = normalizeStatus(bValue);
+          case "status":
+            aValue = normalizeStatus(aValue);
+            bValue = normalizeStatus(bValue);
+            break;
+
+          case "order_type_id.type":
+            aValue = String(aValue).toLowerCase();
+            bValue = String(bValue).toLowerCase();
+            break;
+
+          case "created_by.name":
+            aValue = String(aValue || "").toLowerCase();
+            bValue = String(bValue || "").toLowerCase();
+            break;
         }
 
         // Default string comparison
+        if (aValue === bValue) return 0;
+        if (aValue === null || aValue === undefined) return 1;
+        if (bValue === null || bValue === undefined) return -1;
+
         const comparison = String(aValue).localeCompare(String(bValue));
         return sortConfig.direction === "ascending" ? comparison : -comparison;
       });

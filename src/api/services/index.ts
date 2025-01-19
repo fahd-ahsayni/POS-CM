@@ -3,11 +3,15 @@ import { createToast } from "@/components/global/Toasters";
 import { User } from "@/types/user.types";
 import { toast } from "react-toastify";
 
-export const fetchCashiers = async (): Promise<User[]> => {
+type UserPosition = "Cashier" | "Manager" | "Waiter" | "Livreur";
+
+const fetchUsersByPosition = async (
+  position: UserPosition
+): Promise<User[]> => {
   const response = await api.get<User[]>(
     `${
       window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL
-    }/users?position=Cashier`,
+    }/users?position=${position}`,
     {
       timeout: 5000,
       headers: {
@@ -18,20 +22,10 @@ export const fetchCashiers = async (): Promise<User[]> => {
   return response.data;
 };
 
-export const fetchManagers = async (): Promise<User[]> => {
-  const response = await api.get<User[]>(
-    `${
-      window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL
-    }/users?position=Manager`,
-    {
-      timeout: 5000,
-      headers: {
-        Authorization: `Api-Key ${import.meta.env.VITE_API_KEY}`,
-      },
-    }
-  );
-  return response.data;
-};
+export const fetchCashiers = () => fetchUsersByPosition("Cashier");
+export const fetchManagers = () => fetchUsersByPosition("Manager");
+export const fetchWaiters = () => fetchUsersByPosition("Waiter");
+export const fetchLivreurs = () => fetchUsersByPosition("Livreur");
 
 export const login = async (id: string, password: string) => {
   try {
@@ -115,7 +109,7 @@ export const createOrder = async (data: any) => {
 };
 
 export const updateOrder = async (data: any, orderId: string) => {
-  return api.put(`/order/update/${orderId}`, data);
+  return api.patch(`/order/update/${orderId}`, data);
 };
 
 export const getOrdersByDay = async () => {

@@ -1,8 +1,8 @@
 import { unknownUser } from "@/assets";
 import ComboboxSelect from "@/components/global/ComboboxSelect";
-import { User } from "@/types/user.types";
-import { CheckIcon } from "@heroicons/react/20/solid";
 import { cn } from "@/lib/utils";
+import { User } from "@/types/user.types";
+import { Check } from "lucide-react";
 
 const users = JSON.parse(localStorage.getItem("users") || "[]").cashiers;
 
@@ -44,7 +44,7 @@ export default function SelectNextCashier({
                 "text-primary-red"
               )}
             >
-              <CheckIcon className="h-4 w-4" aria-hidden="true" />
+              <Check className="h-4 w-4" aria-hidden="true" />
             </span>
           )}
         </>

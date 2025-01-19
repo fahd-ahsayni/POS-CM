@@ -1,5 +1,6 @@
 import { createOrderWithOutPayment, updateOrder } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
+import { useAppDispatch } from "@/store/hooks";
 import { useHoldOrders } from "@/store/hooks/useHoldOrders";
 import { refreshOrders, selectOrders } from "@/store/slices/data/orders.slice";
 import {
@@ -20,7 +21,6 @@ import { useRightViewContext } from "../contexts/RightViewContext";
 import { useCustomerManagement } from "../hooks/useCustomerManagement";
 import { useCoasterCall } from "./useCoasterCall";
 import { useNumberOfTable } from "./useNumberOfTable";
-import { useAppDispatch } from "@/store/hooks";
 
 interface OrderSummaryState {
   openModalConfirmHoldOrder: boolean;
@@ -112,48 +112,58 @@ export const useOrderSummary = () => {
         if (isProcessing || selectedProducts.length === 0) return;
 
         const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
-        const existingOrder = orders.find(o => {
-          const orderTableId = typeof o.table_id === 'object' && o.table_id ? (o.table_id as { _id: string })._id : o.table_id;
-          return orderTableId === order.table_id && 
-                 o.status !== 'canceled' && 
-                 o.status !== 'paid';
-        });
+
+        const existingOrder =
+          orders &&
+          orders?.orders?.find(
+            (o: any) =>
+              o._id === order._id &&
+              o.status !== "canceled" &&
+              o.status !== "paid"
+          );
 
         if (existingOrder) {
           // Update existing order
-          updateOrder({
-            ...order,
-            orderlines: order.orderlines.map(line => ({
-              product_variant_id: line.product_variant_id,
-              quantity: line.quantity,
-              price: line.price,
-              customer_index: line.customer_index,
-              notes: line.notes,
-              is_paid: line.is_paid,
-              is_ordred: line.is_ordred,
-              suite_commande: line.suite_commande,
-              high_priority: line.high_priority,
-              discount: line.discount,
-              uom_id: line.uom_id,
-              order_type_id: line.order_type_id,
-            }))
-          }, existingOrder._id)
+          updateOrder(
+            {
+              ...order,
+              orderlines: order.orderlines.map((line) => ({
+                product_variant_id: line.product_variant_id,
+                quantity: line.quantity,
+                price: line.price,
+                customer_index: line.customer_index,
+                notes: line.notes,
+                is_paid: line.is_paid,
+                is_ordred: line.is_ordred,
+                suite_commande: line.suite_commande,
+                high_priority: line.high_priority,
+                discount: line.discount,
+                uom_id: line.uom_id,
+                order_type_id: line.order_type_id,
+              })),
+            },
+            existingOrder._id
+          )
             .then(() => {
               resetOrderState();
               dispatch(refreshOrders());
-              toast.success(createToast(
-                "Order Updated Successfully",
-                "Your order has been updated",
-                "success"
-              ));
+              toast.success(
+                createToast(
+                  "Order Updated Successfully",
+                  "Your order has been updated",
+                  "success"
+                )
+              );
             })
-            .catch(error => {
+            .catch((error) => {
               console.error("Order update error:", error);
-              toast.error(createToast(
-                "Order Update Failed",
-                "There was an error updating your order",
-                "error"
-              ));
+              toast.error(
+                createToast(
+                  "Order Update Failed",
+                  "There was an error updating your order",
+                  "error"
+                )
+              );
             });
         } else if (orderType?.creation_order_with_payment) {
           // Skip confirmation modal and go straight to payments

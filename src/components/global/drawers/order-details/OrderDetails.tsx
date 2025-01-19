@@ -13,7 +13,7 @@ import { useRightViewContext } from "@/components/views/home/right-section/conte
 import { toTitleCase } from "@/functions/string-transforms";
 import { cn } from "@/lib/utils";
 import { currency } from "@/preferences";
-import { Checkbox as HeadlessUICheckbox } from "@headlessui/react";
+import { Checkbox } from "@heroui/checkbox";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import Drawer from "../../Drawer";
@@ -129,7 +129,7 @@ export default function OrderDetails() {
                         Customer {Number(customerIndex)}
                       </span>
                     </TypographySmall>
-                    <HeadlessUICheckbox
+                    <Checkbox
                       checked={(lines as any[]).every((line) =>
                         selectedOrderlines.includes(line._id)
                       )}
@@ -139,29 +139,8 @@ export default function OrderDetails() {
                           lines as any[]
                         )
                       }
-                      className={({ checked }) => `
-                      group block size-5 rounded border p-0.5
-                      ${
-                        checked
-                          ? "bg-primary-red border-primary-red"
-                          : "bg-secondary-white dark:bg-secondary-black border-border"
-                      }
-                      transition-colors duration-200
-                    `}
-                    >
-                      <svg
-                        className="stroke-white opacity-0 group-data-[checked]:opacity-100"
-                        viewBox="0 0 14 14"
-                        fill="none"
-                      >
-                        <path
-                          d="M3 8L6 11L11 3.5"
-                          strokeWidth={2}
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </HeadlessUICheckbox>
+                      color="primary"
+                    />
                   </div>
                 </div>
                 <div className="w-full space-y-2">
@@ -171,7 +150,7 @@ export default function OrderDetails() {
                       className={cn(
                         "flex flex-col gap-4 w-full dark:bg-primary-black bg-neutral-bright-grey py-4 px-4 cursor-pointer",
                         selectedOrderlines.includes(orderLine._id) &&
-                          "ring-1 ring-primary-red"
+                          "ring-2 ring-primary-red"
                       )}
                       onClick={() => toggleOrderLineSelection(orderLine._id)}
                     >

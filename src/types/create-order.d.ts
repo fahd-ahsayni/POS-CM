@@ -1,4 +1,5 @@
 interface OrderState {
+  _id?: string;
   waiter_id: string | null;
   coaster_call: string | null;
   urgent: boolean | false;

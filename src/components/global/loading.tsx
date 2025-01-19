@@ -1,14 +1,21 @@
+import { useEffect } from "react";
 import TrueFocus from "../design/TrueFocus";
 import Logo from "../Layout/components/Logo";
-import CountUp from "../ui/countUp";
 import { TextShimmer } from "../ui/text-shimmer";
-import { TypographyH1, TypographyP } from "../ui/typography";
+import { TypographyP } from "../ui/typography";
 
 export function LoadingFullScreen({
   onLoadingComplete,
 }: {
   onLoadingComplete?: () => void;
 }) {
+  useEffect(() => {
+    if (onLoadingComplete) {
+      const timer = setTimeout(onLoadingComplete, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [onLoadingComplete]);
+
   return (
     <div className="flex flex-col items-center justify-center w-screen h-screen overflow-hidden relative">
       <div className="fixed top-8 left-0 w-full flex items-center justify-center">
@@ -30,15 +37,6 @@ export function LoadingFullScreen({
         <TypographyP className="text-sm">
           <TextShimmer duration={2}>installing in progress</TextShimmer>
         </TypographyP>
-        <TypographyH1>
-          <CountUp
-            to={100}
-            from={0}
-            direction="up"
-            duration={6}
-            onEnd={onLoadingComplete}
-          />
-        </TypographyH1>
       </div>
     </div>
   );

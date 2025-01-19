@@ -2,17 +2,20 @@ import { logoWithoutText } from "@/assets";
 import { AddUserIcon, BillIcon, ExpandListIcon } from "@/assets/figma-icons";
 import Payments from "@/components/global/drawers/Payments/Payments";
 import ModalConfirmHoldOrder from "@/components/global/modal/ModalConfirmHoldOrder";
+import ModalConfirmOrder from "@/components/global/modal/ModalConfirmOrder";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { currency } from "@/preferences";
 import { AnimatePresence, motion } from "framer-motion";
-import { memo } from "react";
+import debounce from 'lodash/debounce';
+import { memo, useMemo } from "react";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { useOrderSummary } from "../hooks/useOrderSummary";
 import OrderLines from "../import/OrderLines";
 import Ticket from "../layouts/Ticket";
 import { OrderBannerOnSummary } from "../ui/OrderInfo";
 import OtherActionsOrderLines from "../ui/OtherActionsOrderLines";
-import ModalConfirmOrder from "@/components/global/modal/ModalConfirmOrder";
 
 const OrderSummary = () => {
   const { selectedProducts } = useLeftViewContext();
@@ -45,6 +48,19 @@ const OrderSummary = () => {
     }
   };
 
+  const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
+  const taxDelivery = orderType?.delivery_product_variant_id?.default_price;
+
+  const debouncedHandleProceedOrder = useMemo(
+    () => debounce(handleProceedOrder, 300),
+    [handleProceedOrder]
+  );
+
+  const debouncedHandleToggle = useMemo(
+    () => debounce(handleToggleAll, 300),
+    [handleToggleAll]
+  );
+
   return (
     <>
       <Payments open={openDrawerPayments} setOpen={setOpenDrawerPayments} />
@@ -62,11 +78,16 @@ const OrderSummary = () => {
         <div className="flex items-center justify-between p-1">
           <div className="flex items-center gap-2">
             <OrderBannerOnSummary />
+            {taxDelivery && (
+              <Badge className="text-xs">
+                {`+${taxDelivery} ${currency.currency} Tax`}
+              </Badge>
+            )}
           </div>
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-x-3">
               <OtherActionsOrderLines />
-              <Button size="icon" onClick={handleToggleAll}>
+              <Button size="icon" onClick={debouncedHandleToggle}>
                 <ExpandListIcon
                   className={`w-[1.2rem] h-auto fill-white transition-transform duration-200 ${
                     Object.values(expandedCustomers).every((value) => value)
@@ -129,7 +150,7 @@ const OrderSummary = () => {
             Hold Order
           </Button>
           <Button
-            onClick={handleProceedOrder}
+            onClick={debouncedHandleProceedOrder}
             className="flex-1"
             disabled={isActionsDisabled}
           >

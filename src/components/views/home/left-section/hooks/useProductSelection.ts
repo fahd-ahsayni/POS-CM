@@ -5,6 +5,8 @@ import { useCallback } from "react";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 import { updateCustomerDisplay } from "@/components/global/Customer-display/useCustomerDisplay";
+import { setCustomerCount } from "@/store/slices/order/create-order.slice";
+import { useAppDispatch } from "@/store/hooks";
 
 interface UseProductSelectionProps {
   selectedProducts: ProductSelected[];
@@ -18,6 +20,8 @@ export const useProductSelection = ({
   customerIndex,
   orderType,
 }: UseProductSelectionProps) => {
+  const dispatch = useAppDispatch();
+
   const findVariant = useCallback(
     (product: Product, variantId: string): ProductVariant | undefined => {
       const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
@@ -113,6 +117,18 @@ export const useProductSelection = ({
     [setSelectedProducts]
   );
 
+  const updateCustomerCount = useCallback((products: ProductSelected[]) => {
+    if (products.length === 0) {
+      dispatch(setCustomerCount(1));
+      return;
+    }
+
+    const maxCustomerIndex = Math.max(
+      ...products.map(product => product.customer_index)
+    );
+    dispatch(setCustomerCount(maxCustomerIndex));
+  }, [dispatch]);
+
   const addOrUpdateProduct = useCallback(
     async (
       product: Product,
@@ -158,6 +174,7 @@ export const useProductSelection = ({
             ? updateExistingProduct(prevSelected, variantId, price, notes)
             : [...prevSelected, createNewProduct(product, variant, price)];
 
+          updateCustomerCount(newProducts);
           updateProductsAndDisplay(newProducts);
           return newProducts;
         });
@@ -177,6 +194,7 @@ export const useProductSelection = ({
       updateExistingProduct,
       customerIndex,
       updateProductsAndDisplay,
+      updateCustomerCount,
     ]
   );
 
