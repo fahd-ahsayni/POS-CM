@@ -1,22 +1,49 @@
-# Base stage
-FROM node:18-alpine AS base
+# Step 1: Build the application
+FROM node:20-alpine as build
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
+
+# Install build dependencies - fixing package names
+RUN apk add --no-cache \
+    autoconf \
+    automake \
+    libtool \
+    nasm \
+    make \
+    g++ \
+    python3 \
+    pkgconfig \
+    build-base \
+    yasm \
+    jpeg-dev \
+    zlib-dev
+
+# Copy package.json and package-lock.json
+COPY package.json package-lock.json ./
+
+# Install dependencies with legacy peer deps to handle compatibility issues
+RUN npm install --legacy-peer-deps
+
+# Copy the rest of the application files
 COPY . .
 
-# Development stage
-FROM base AS development
-EXPOSE 5173
-CMD ["npm", "run", "dev"]
-
-# Production build stage
-FROM base AS build
+# Build the application
 RUN npm run build
 
-# Production stage with nginx
-FROM nginx:stable-alpine AS production
-COPY --from=build /app/dist /usr/share/nginx/html
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 3001
+# Step 2: Serve with Nginx
+FROM nginx:stable-alpine
+WORKDIR /usr/share/nginx/html
+
+# Remove default Nginx static files
+RUN rm -rf ./*
+
+# Copy the built app from the previous stage
+COPY --from=build /app/dist .
+
+# Copy custom Nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose port
+EXPOSE 80
+
+# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
