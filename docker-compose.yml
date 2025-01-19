@@ -1,24 +1,7 @@
-version: '3.8'
-
 services:
-  front-dev:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: development # Default target
-    volumes:
-      - .:/app
-      - /app/node_modules
-    ports:
-      - "5173:5173" 
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-
   front-prod:
     build:
       context: .
       dockerfile: Dockerfile
-      target: production
     ports:
-      - "3001:3001"
-    restart: always  # Restart policy
+      - "8080:80"
