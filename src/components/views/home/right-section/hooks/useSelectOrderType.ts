@@ -1,5 +1,5 @@
 import { getCategories } from "@/api/services";
-import { setOrderTypeId } from "@/store/slices/order/create-order.slice";
+// import { setOrderTypeId } from "@/store/slices/order/create-order.slice";
 import { OrderType } from "@/types/order.types";
 import { Category } from "@/types/product.types";
 import { useCallback, useEffect, useState } from "react";
