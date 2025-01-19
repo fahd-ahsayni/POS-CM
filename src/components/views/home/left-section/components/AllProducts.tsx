@@ -1,6 +1,5 @@
 import Combo from "@/components/global/drawers/combo/Combo";
 import { Product, ProductSelected } from "@/types/product.types";
-import { motion } from "framer-motion";
 import { memo, useEffect, useMemo } from "react";
 import { useProducts } from "../hooks/useProducts";
 import { ProductCard, ProductCardSkeleton } from "../ui/ProductCard";
@@ -12,31 +11,16 @@ interface ProductsGridProps {
   onProductClick: (product: Product) => void;
 }
 
-const LOADING_DELAY = 1000;
 const SKELETON_COUNT = 9;
-
-const animationConfig = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1 },
-  transition: { duration: 0.35 },
-};
 
 const ProductsGrid = memo(function ProductsGrid({
   products,
   selectedProducts,
   onProductClick,
 }: ProductsGridProps) {
-  const productsWithVariants = useMemo(
-    () => products.filter((p) => p.variants.length > 0),
-    [products]
-  );
-
   return (
-    <motion.div
-      className="w-full grid grid-cols-2 lg:grid-cols-3 gap-3 mt-4 pl-1.5"
-      {...animationConfig}
-    >
-      {productsWithVariants.map((product) => (
+    <div className="w-full grid grid-cols-2 lg:grid-cols-3 gap-3 mt-4 pl-1.5">
+      {products.map((product) => (
         <ProductCard
           key={product._id}
           product={product}
@@ -44,20 +28,17 @@ const ProductsGrid = memo(function ProductsGrid({
           onProductClick={onProductClick}
         />
       ))}
-    </motion.div>
+    </div>
   );
 });
 
 export const ProductsLoadingSkeleton = memo(function ProductsLoadingSkeleton() {
   return (
-    <motion.div
-      className="grid grid-cols-2 lg:grid-cols-3 gap-3 p-2"
-      {...animationConfig}
-    >
+    <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 p-2">
       {Array.from({ length: SKELETON_COUNT }, (_, index) => (
         <ProductCardSkeleton key={index} />
       ))}
-    </motion.div>
+    </div>
   );
 });
 
@@ -70,9 +51,13 @@ const AllProducts = memo(function AllProducts() {
     loadProducts,
   } = useProducts();
 
+  const productsWithVariants = useMemo(
+    () => products.filter((p) => p.variants.length > 0),
+    [products]
+  );
+
   useEffect(() => {
-    const timer = setTimeout(loadProducts, LOADING_DELAY);
-    return () => clearTimeout(timer);
+    loadProducts();
   }, [loadProducts]);
 
   if (loading) {
@@ -84,7 +69,7 @@ const AllProducts = memo(function AllProducts() {
       <Combo />
       <ProductsVariants />
       <ProductsGrid
-        products={products}
+        products={productsWithVariants}
         selectedProducts={selectedProducts}
         onProductClick={handleProductClick}
       />

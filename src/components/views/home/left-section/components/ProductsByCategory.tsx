@@ -163,28 +163,32 @@ export default memo(function ProductsByCategory() {
         )}
       </div>
       <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex items-center justify-between relative flex-shrink-0 mt-4 w-full">
-          <TypographyP className="pr-4 bg-background font-medium text-sm">
-            Products
-          </TypographyP>
-          <Separator className="h-[0.5px]" />
-        </div>
+        {products.length > 0 && (
+          <>
+            <div className="flex items-center justify-between relative flex-shrink-0 mt-4 w-full">
+              <TypographyP className="pr-4 bg-background font-medium text-sm">
+                Products
+              </TypographyP>
+              <Separator className="h-[0.5px]" />
+            </div>
 
-        <div className="flex-1 overflow-y-auto">
-          <div className="pt-6">
-            <Combo />
-            <ProductsVariants />
-            {loading ? (
-              <ProductsLoadingSkeleton />
-            ) : (
-              <ProductGrid
-                products={products}
-                selectedProducts={selectedProducts}
-                handleProductClick={handleProductClick}
-              />
-            )}
-          </div>
-        </div>
+            <div className="flex-1 overflow-y-auto">
+              <div className="pt-6">
+                <Combo />
+                <ProductsVariants />
+                {loading ? (
+                  <ProductsLoadingSkeleton />
+                ) : (
+                  <ProductGrid
+                    products={products}
+                    selectedProducts={selectedProducts}
+                    handleProductClick={handleProductClick}
+                  />
+                )}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

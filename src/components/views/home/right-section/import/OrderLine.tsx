@@ -1,4 +1,5 @@
 import { DishIcon } from "@/assets/figma-icons";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
@@ -173,9 +174,23 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
         )}
 
         <div className="flex items-center justify-between w-full mt-4">
-          <TypographyP className="text-sm font-medium">
-            {prices.totalPrice.toFixed(2)} {currency.currency}
-          </TypographyP>
+          <div className="flex items-center gap-x-2">
+            <TypographyP className="text-sm font-medium">
+              {prices.totalPrice.toFixed(2)} {currency.currency}
+            </TypographyP>
+            {item.discount?.discount_id &&
+              localStorage.getItem("generalData") && (
+                <Badge>
+                  -
+                  {JSON.parse(
+                    localStorage.getItem("generalData") || "{}"
+                  )?.discount?.find(
+                    (d: any) => d._id === item.discount?.discount_id
+                  )?.percentage || 0}
+                  %
+                </Badge>
+              )}
+          </div>
           <div className="flex items-center gap-x-3">
             <OderLineAddComments
               productId={item._id}

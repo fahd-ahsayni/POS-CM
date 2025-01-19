@@ -22,9 +22,6 @@ export default function Profile() {
   const dispatch = useDispatch<AppDispatch>();
   const posId = localStorage.getItem("posId");
   const pos = useSelector(selectPosData);
-  const currentShift = pos.pos.find((p: any) => p._id === posId)?.shift;
-
-  localStorage.setItem("shiftId", currentShift?._id || "");
 
   const handleLogout = () => {
     dispatch(logout());

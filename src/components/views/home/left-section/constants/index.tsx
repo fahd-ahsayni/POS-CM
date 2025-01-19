@@ -29,8 +29,7 @@ export const tabsConfig = [
           <Separator />
         </div>
         <div className="w-full h-[90%] relative">
-          <div className="h-6 bg-gradient-to-b from-background to-transparent w-[calc(100%-0.5rem)] absolute top-0 left-0" />
-          <div className="h-full overflow-auto pt-3 pr-3 pb-52">
+          <div className="h-full overflow-auto pr-3 pb-52">
             <AllProducts />
           </div>
         </div>

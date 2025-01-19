@@ -88,8 +88,10 @@ export const useSelectPos = (): UseSelectPosReturn => {
           userAuthenticated?.position === "Manager";
 
         if (isAuthorizedUser) {
-          setShiftId(selectedPos.shift?._id ?? "");
-          localStorage.setItem("shiftId", selectedPos.shift?._id ?? "");
+          const shiftId = selectedPos.shift?._id ?? "";
+          setShiftId(shiftId);
+          localStorage.setItem("shiftId", shiftId);
+          dispatch(updateOrder({ shift_id: shiftId }));
           toast.success(
             createToast(
               ToastMessages.WELCOME_BACK,
@@ -100,7 +102,6 @@ export const useSelectPos = (): UseSelectPosReturn => {
 
           if (selectedPos.shift?.status !== "") {
             await dispatch(fetchGeneralData(id));
-            dispatch(updateOrder({ shift_id: selectedPos.shift?._id ?? "" }));
             navigate("/");
           } else {
             setOpen(true);

@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
+import { toTitleCase } from "@/functions/string-transforms";
 import { cn } from "@/lib/utils";
 import { OrderType } from "@/types/order.types";
 import { ChevronRightIcon } from "lucide-react";
@@ -39,7 +40,7 @@ export const OrderCard = memo(
           "w-full rounded-md h-24 px-8 py-4 flex space-x-4 items-center justify-between cursor-pointer",
           fixedLightDark
             ? "bg-neutral-bright-grey dark:bg-primary-black"
-            : "bg-white dark:bg-secondary-black" 
+            : "bg-white dark:bg-secondary-black"
         )}
         onClick={onSelect}
       >
@@ -55,7 +56,7 @@ export const OrderCard = memo(
           )}
           <div>
             <TypographyP className="font-medium text-lg">
-              {orderType.name}
+              {toTitleCase(orderType.name.toLowerCase())}
             </TypographyP>
             {showDescription && (
               <TypographySmall className="text-xs text-neutral-dark-grey pt-0.5 tracking-tight">

@@ -5,7 +5,7 @@ const initialOrderState: OrderState = {
   waiter_id: null,
   coaster_call: null,
   urgent: false,
-  shift_id: localStorage.getItem("shift_id") || "",
+  shift_id: localStorage.getItem("shiftId") || "",
   table_id: null,
   delivery_guy_id: null,
   discount: null,
@@ -26,7 +26,27 @@ const initialState: OrderSliceState = {
 };
 
 const calculateTotalFromOrderlines = (orderlines: any[]) => {
-  return orderlines.reduce((total, line) => total + line.price, 0);
+  return orderlines.reduce((total, line) => {
+    let linePrice = line.price;
+
+    // If there's a discount on the line item
+    if (line.discount?.discount_id) {
+      // Find the discount percentage from generalData
+      const generalData = JSON.parse(
+        localStorage.getItem("generalData") || "{}"
+      );
+      const discount = generalData.discount?.find(
+        (d: any) => d._id === line.discount.discount_id
+      );
+
+      if (discount?.percentage) {
+        // Apply the discount percentage
+        linePrice = linePrice * (1 - discount.percentage / 100);
+      }
+    }
+
+    return total + (linePrice || 0);
+  }, 0);
 };
 
 const orderSlice = createSlice({
