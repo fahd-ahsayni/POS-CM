@@ -56,7 +56,7 @@ export default function HandleApp() {
       />
       <Suspense
         fallback={
-          <div className="bg-background w-screen h-screen">
+          <div className="bg-background w-screen h-screen flex items-center justify-center">
             <BeatLoader color="#FB0000" size={10} />
           </div>
         }

@@ -23,7 +23,7 @@ export default function NumberOfTabel() {
         Enter the table number to start the order:
       </TypographyH3>
       <div className="flex flex-col justify-center items-center px-1 relative h-full">
-        <div className="-mt-20 w-full">
+        <div className="w-full">
           <ClientForm
             formData={formData}
             errors={errors}

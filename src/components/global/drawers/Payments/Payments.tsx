@@ -11,18 +11,18 @@ import {
 import { cn } from "@/lib/utils";
 import { currency } from "@/preferences/index";
 import { selectOrder } from "@/store/slices/order/create-order.slice";
+import { Order } from "@/types/order.types";
 import { AnimatePresence, motion } from "framer-motion";
 import { Pencil, X } from "lucide-react";
-import { useEffect, useRef, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { BeatLoader } from "react-spinners";
 import type { Swiper as SwiperType } from "swiper";
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Drawer from "../../Drawer";
-import { usePayments } from "./hooks/usePayments";
-import { BeatLoader } from "react-spinners";
-import { Order } from "@/types/order.types";
 import EditPrice from "../edit-price/EditPrice";
+import { usePayments } from "./hooks/usePayments";
 
 interface PaymentMethod {
   _id: string;

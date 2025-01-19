@@ -54,9 +54,9 @@ export default function InputLikeTextarea({
   };
 
   return (
-    <div className={cn("space-y-1", className)}>
+    <div className={cn("space-y-2", className)}>
       <div className="flex justify-between items-center">
-        <Label>
+        <Label className="pl-1.5">
           {label}
           {required && <span className="text-primary-red pl-0.5">*</span>}
         </Label>
@@ -74,7 +74,7 @@ export default function InputLikeTextarea({
         rows={rows || defaultRows}
         className={cn(
           "min-h-[none] h-9 w-full resize-none scrollbar-hide",
-          error && "ring-[1.25px] ring-primary-red",
+          error && "ring-2 ring-primary-red",
           disabled && "opacity-50 cursor-not-allowed"
         )}
         maxLength={maxLength}

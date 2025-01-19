@@ -24,6 +24,10 @@ interface ComboboxSelectOnChangeProps<T> {
   ) => React.ReactElement;
   placeholder?: string;
   required?: boolean;
+  errorMessage?: string;
+  hasError?: boolean;
+  helperText?: string;
+  optionalText?: string;
 }
 
 export default function ComboboxSelectOnChange<T>({
@@ -36,6 +40,10 @@ export default function ComboboxSelectOnChange<T>({
   renderOption,
   placeholder = "Select an option...",
   required = false,
+  errorMessage,
+  hasError = false,
+  helperText,
+  optionalText,
 }: ComboboxSelectOnChangeProps<T>) {
   const [query, setQuery] = useState("");
 
@@ -52,25 +60,44 @@ export default function ComboboxSelectOnChange<T>({
     <Combobox className="w-full" as="div" value={value} onChange={onChange}>
       {({ open }) => (
         <>
-          {label && (
-            <Label className="pl-1">
-              {label}
-              {required && <span className="text-destructive">*</span>}
-            </Label>
-          )}
-          <div className="relative mt-0.5">
+          <div className="flex items-center justify-between gap-x-1">
+            {label && (
+              <Label className="pl-2">
+                {label}
+                {required && <span className="text-primary-red pl-0.5">*</span>}
+              </Label>
+            )}
+            {optionalText && (
+              <span className="text-[0.65rem] text-neutral-dark-grey">
+                {optionalText}
+              </span>
+            )}
+          </div>
+          <div className="relative mt-1.5">
             <ComboboxInput
-              className="w-full h-9 rounded-lg border border-input dark:bg-white/5 bg-primary-black/5 px-3 py-2 text-[.8rem] text-foreground shadow-sm shadow-black/5 transition-shadow placeholder:text-muted-foreground/70 dark:focus-visible:border-white/80 focus-visible:border-primary-black/40 focus-visible:outline-none focus-visible:ring-[3px] dark:focus-visible:ring-ring/20 focus-visible:ring-ring/10 disabled:cursor-not-allowed disabled:opacity-50"
+              className={cn(
+                "w-full h-9 rounded-md border border-input dark:bg-white/5 bg-primary-black/5 px-3 py-2 text-[.8rem] text-foreground shadow-sm shadow-black/5 transition-shadow placeholder:text-muted-foreground/70 dark:focus-visible:border-white/80 focus-visible:border-primary-black/40 focus-visible:outline-none focus-visible:ring-[3px] dark:focus-visible:ring-ring/20 focus-visible:ring-ring/10 disabled:cursor-not-allowed disabled:opacity-50",
+                hasError && "!border-none ring-2 ring-primary-red"
+              )}
               onChange={handleInputChange}
               displayValue={(item: any) => {
                 if (typeof item === "string") return item;
                 return displayValue(item);
               }}
               placeholder={placeholder}
+              aria-invalid={hasError}
+              aria-describedby={
+                helperText || errorMessage ? `${label}-description` : undefined
+              }
             />
             <ComboboxButton className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
               <ChevronDown
-                className="h-5 w-5 text-primary-black dark:text-white"
+                className={cn(
+                  "h-4 w-4",
+                  hasError
+                    ? "text-primary-red"
+                    : "text-primary-black/70 dark:text-white/70"
+                )}
                 aria-hidden="true"
               />
             </ComboboxButton>
@@ -98,6 +125,19 @@ export default function ComboboxSelectOnChange<T>({
               </ComboboxOptions>
             )}
           </div>
+          
+          {(helperText || errorMessage) && (
+            <p
+              id={`${label}-description`}
+              className={cn(
+                "mt-2 text-xs font-medium pl-2",
+                hasError ? "text-primary-red" : "text-neutral-dark-grey"
+              )}
+              role={hasError ? "alert" : "region"}
+            >
+              {hasError ? errorMessage : helperText}
+            </p>
+          )}
         </>
       )}
     </Combobox>

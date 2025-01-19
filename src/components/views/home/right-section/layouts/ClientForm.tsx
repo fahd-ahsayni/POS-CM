@@ -54,6 +54,9 @@ export default function ClientForm({
             <span className="font-medium">{client.phone}</span>
           </div>
         )}
+        required
+        hasError={!!errors.phone}
+        errorMessage={errors.phone}
       />
 
       <InputComponent

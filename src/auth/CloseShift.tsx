@@ -149,8 +149,10 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
                   >
                     <div className="space-y-6 h-full relative px-1">
                       {(isNewOrders || requiredNextCashier) && (
-                        <div className="space-y-2">
-                          <Label htmlFor={selectId}>Select next cashier</Label>
+                        <div className="space-y-1">
+                          <Label className="pl-1" htmlFor={selectId}>
+                            Select next cashier
+                          </Label>
                           <Select
                             value={selectedCashier?._id || ""}
                             onValueChange={(value) => {

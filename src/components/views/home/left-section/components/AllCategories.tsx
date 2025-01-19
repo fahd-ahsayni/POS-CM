@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { TypographyP } from "@/components/ui/typography";
+import { TypographyH4 } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { Category } from "@/types/product.types";
 import { motion } from "framer-motion";
@@ -26,13 +26,13 @@ export default memo(function AllCategories() {
       <Card
         onClick={handleAllProductsClick}
         className={cn(
-          "flex cursor-pointer relative flex-col items-center h-full !rounded-lg overflow-hidden justify-center",
+          "flex cursor-pointer h-24 relative flex-col items-center h-full !rounded-lg overflow-hidden justify-center",
           isInteractionDisabled && "pointer-events-none"
         )}
       >
-        <TypographyP className="text-center text-xl font-medium">
+        <TypographyH4 className="text-center">
           All Items
-        </TypographyP>
+        </TypographyH4>
       </Card>
 
       {categories.map((category: Category) => (

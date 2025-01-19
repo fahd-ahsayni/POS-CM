@@ -118,7 +118,7 @@ export default function OrderDetails() {
         position="left"
       >
         <div className="h-full relative">
-          <div className="h-full p-1.5 w-full overflow-y-auto space-y-4 pb-32">
+          <div className="h-full p-1.5 w-full overflow-y-auto space-y-4 pb-32 pr-4">
             {Object.entries(groupedOrderLines).map(([customerIndex, lines]) => (
               <div key={customerIndex} className="mb-8">
                 <div className="flex items-center gap-2 mb-2">

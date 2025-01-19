@@ -1,14 +1,14 @@
 import { CashIcon, DishIcon, TrashIcon, UserIcon } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
 import { TypographySmall } from "@/components/ui/typography";
+import { calculateProductPrice } from "@/functions/priceCalculations";
+import { currency } from "@/preferences";
+import { ProductSelected } from "@/types/product.types";
 import { ChevronDown } from "lucide-react";
-import { memo, useMemo, useCallback } from "react";
+import { memo, useCallback, useMemo } from "react";
+import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { useRightViewContext } from "../contexts/RightViewContext";
 import OrderLine from "./OrderLine";
-import { ProductSelected } from "@/types/product.types";
-import { currency } from "@/preferences";
-import { calculateProductPrice } from "@/functions/priceCalculations";
-import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 
 interface OrderLineIndexProps {
   customerIndex: number;
@@ -99,7 +99,7 @@ const OrderLineIndex = ({
         >
           <div className="flex items-center gap-x-2">
             <UserIcon className="w-4 h-auto fill-primary-black dark:fill-white" />
-            <TypographySmall className="text-sm">
+            <TypographySmall className="text-sm font-medium">
               Customer {customerIndex}
             </TypographySmall>
           </div>

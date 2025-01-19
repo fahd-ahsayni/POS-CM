@@ -1,5 +1,4 @@
 import { FilterIcon } from "@/assets/figma-icons";
-import ComboboxSelect from "@/components/global/ComboboxSelect";
 import InputComponent from "@/components/global/InputField";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -8,8 +7,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { FilterCriteria } from "@/types/general.d";
-import { CheckIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
 interface FilterOrdersProps {
@@ -160,7 +165,7 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
           <h2 className="mb-4 text-sm font-semibold">Filter Orders</h2>
           <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
             <div>
-              <div className="mb-1 flex items-center justify-between gap-1">
+              <div className="flex items-center justify-between">
                 <Label className="pl-2">Order ID</Label>
                 <span
                   className="text-xs font-medium text-error-color cursor-pointer"
@@ -180,7 +185,7 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
             </div>
 
             <div>
-              <div className="mb-1 flex items-center justify-between gap-1">
+              <div className="mb-2 flex items-center justify-between gap-1">
                 <Label className="pl-2">Users</Label>
                 <span
                   className="text-xs font-medium text-error-color cursor-pointer"
@@ -189,64 +194,46 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
                   Clear
                 </span>
               </div>
-              <ComboboxSelect
-                items={employees}
-                value={
-                  employees.find((e: any) => e.value === selectedEmployee) ||
-                  null
-                }
-                onChange={(item) => handleEmployeeSelect(item?.value || "")}
-                displayValue={(item) => item?.label || ""}
-                placeholder="Select an employee"
-                filterFunction={(query, item) =>
-                  item.label.toLowerCase().includes(query.toLowerCase())
-                }
-                renderOption={(item, _, selected) => (
-                  <div className="flex items-center justify-between">
-                    <span>{item.label}</span>
-                    {selected && (
-                      <CheckIcon className="h-4 w-4 text-primary-red" />
-                    )}
-                  </div>
-                )}
-              />
+              <Select value={selectedEmployee} onValueChange={handleEmployeeSelect}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select an employee" />
+                </SelectTrigger>
+                <SelectContent>
+                  {employees.map((employee: any) => (
+                    <SelectItem key={employee.value} value={employee.value}>
+                      {employee.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
-              <div className="mb-1 flex items-center justify-between gap-1">
+              <div className="mb-2 flex items-center justify-between gap-1">
                 <Label className="pl-2">Order Type</Label>
                 <span
-                  className="text-xs font- text-error-color cursor-pointer"
+                  className="text-xs font-medium text-error-color cursor-pointer"
                   onClick={() => handleClearFilter("orderType")}
                 >
                   Clear
                 </span>
               </div>
-              <ComboboxSelect
-                items={orderTypes}
-                value={
-                  orderTypes.find((t: any) => t.value === selectedOrderType) ||
-                  null
-                }
-                onChange={(item) => handleOrderTypeSelect(item?.value || "")}
-                displayValue={(item) => item?.label || ""}
-                placeholder="Select an order type"
-                filterFunction={(query, item) =>
-                  item.label.toLowerCase().includes(query.toLowerCase())
-                }
-                renderOption={(item, _, selected) => (
-                  <div className="flex items-center justify-between">
-                    <span>{item.label}</span>
-                    {selected && (
-                      <CheckIcon className="h-4 w-4 text-primary-red" />
-                    )}
-                  </div>
-                )}
-              />
+              <Select value={selectedOrderType} onValueChange={handleOrderTypeSelect}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select an order type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {orderTypes.map((type: any) => (
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
-              <div className="mb-0.5 flex items-center justify-between gap-1">
+              <div className="mb-2 flex items-center justify-between gap-1">
                 <Label className="pl-2">Status</Label>
                 <span
                   className="text-xs font-medium text-error-color cursor-pointer"
@@ -255,24 +242,18 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
                   Clear
                 </span>
               </div>
-              <ComboboxSelect
-                items={statuses}
-                value={statuses.find((s) => s.value === selectedStatus) || null}
-                onChange={(item) => handleStatusSelect(item?.value || "")}
-                displayValue={(item) => item?.label || ""}
-                placeholder="Select a status"
-                filterFunction={(query, item) =>
-                  item.label.toLowerCase().includes(query.toLowerCase())
-                }
-                renderOption={(item, _, selected) => (
-                  <div className="flex items-center justify-between">
-                    <span>{item.label}</span>
-                    {selected && (
-                      <CheckIcon className="h-4 w-4 text-primary-red" />
-                    )}
-                  </div>
-                )}
-              />
+              <Select value={selectedStatus} onValueChange={handleStatusSelect}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a status" />
+                </SelectTrigger>
+                <SelectContent>
+                  {statuses.map((status) => (
+                    <SelectItem key={status.value} value={status.value}>
+                      {status.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </form>
           <div className="flex justify-end gap-x-2 mt-6">

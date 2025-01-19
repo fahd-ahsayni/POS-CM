@@ -59,7 +59,7 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
   const toggleVisibility = () => setIsVisible((prevState) => !prevState);
 
   return (
-    <div className={cn("space-y-1", className)}>
+    <div className={cn("space-y-2", className)}>
       <div className="flex items-center justify-between gap-x-1">
         <Label className="pl-1">
           {label}
@@ -82,7 +82,7 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
         <Input
           className={cn(
             "w-full",
-            hasError && "border-primary-red",
+            hasError && "ring-2 ring-primary-red !border-none",
             startIcon && "ps-9",
             suffix && "pe-9",
             isPasswordToggleable && "pe-9",

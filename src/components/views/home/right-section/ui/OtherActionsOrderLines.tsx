@@ -9,6 +9,8 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch } from "react-redux";
+import { TYPE_OF_ORDER_VIEW } from "../constants";
+import { useRightViewContext } from "../contexts/RightViewContext";
 
 export default function OtherActionsOrderLines() {
   const dispatch = useDispatch();
@@ -18,6 +20,8 @@ export default function OtherActionsOrderLines() {
   const [openModalApplyDiscount, setOpenModalApplyDiscount] = useState(false);
   const [isUrgent, setIsUrgent] = useState(false);
   const [isOneTime, setIsOneTime] = useState(false);
+
+  const { setViews } = useRightViewContext();
 
   const handleUrgentToggle = (value: boolean) => {
     setIsUrgent(value);
@@ -66,7 +70,7 @@ export default function OtherActionsOrderLines() {
                 className={`${
                   active ? "bg-gray-100 dark:bg-secondary-black" : ""
                 } group flex w-full items-center px-4 py-2 text-sm rounded`}
-                onClick={() => setOpenModalChangeOrderType(true)}
+                onClick={() => setViews(TYPE_OF_ORDER_VIEW)}
               >
                 Change Order Type
               </button>

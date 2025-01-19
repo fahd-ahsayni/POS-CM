@@ -1,10 +1,10 @@
 import { Card } from "@/components/ui/card";
-import { TypographyP } from "@/components/ui/typography";
+import { TypographyH4 } from "@/components/ui/typography";
 import { toTitleCase } from "@/functions/string-transforms";
 import { cn } from "@/lib/utils";
 import { Category } from "@/types/product.types";
-import { memo } from "react";
 import { Image } from "@unpic/react";
+import { memo } from "react";
 
 interface CategoryCardProps {
   category: Category;
@@ -32,7 +32,7 @@ export const CategoryCard = memo(function CategoryCard({
           }`}
           alt={category.name}
           layout="fullWidth"
-          loading="eager"
+          loading="lazy"
           crossOrigin="anonymous"
           className={cn(
             "object-cover transition-all duration-500",
@@ -41,9 +41,9 @@ export const CategoryCard = memo(function CategoryCard({
               : "dark:brightness-[0.5] brightness-[0.6]"
           )}
         />
-        <TypographyP className="text-center group text-lg font-medium absolute text-white px-6 line-clamp-2">
+        <TypographyH4 className="text-center absolute text-white px-4 line-clamp-2">
           {toTitleCase(category.name.toLowerCase())}
-        </TypographyP>
+        </TypographyH4>
       </Card>
     </div>
   );
