@@ -94,9 +94,7 @@ export default function ComboboxSelectOnChange<T>({
               <ChevronDown
                 className={cn(
                   "h-4 w-4",
-                  hasError
-                    ? "text-primary-red"
-                    : "text-primary-black/70 dark:text-white/70"
+                  "text-primary-black/70 dark:text-white/70"
                 )}
                 aria-hidden="true"
               />
@@ -125,7 +123,7 @@ export default function ComboboxSelectOnChange<T>({
               </ComboboxOptions>
             )}
           </div>
-          
+
           {(helperText || errorMessage) && (
             <p
               id={`${label}-description`}

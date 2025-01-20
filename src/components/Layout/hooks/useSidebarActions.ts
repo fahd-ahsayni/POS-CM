@@ -57,6 +57,7 @@ export const useSidebarActions = (
   const handleResetApp = useCallback(async () => {
     const posId = localStorage.getItem("posId");
     localStorage.removeItem("orderType");
+    localStorage.removeItem("genralData");
 
     // Reset Right View Context
     rightViewContext.setViews(TYPE_OF_ORDER_VIEW);
@@ -85,6 +86,7 @@ export const useSidebarActions = (
     // Fetch fresh general data if posId exists
     if (posId) {
       try {
+        localStorage.removeItem("generalData");
         await dispatch(fetchGeneralData(posId));
       } catch (error) {
         console.error("Failed to fetch general data:", error);

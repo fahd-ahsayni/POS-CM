@@ -6,11 +6,12 @@ import ModalConfirmOrder from "@/components/global/modal/ModalConfirmOrder";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { currency } from "@/preferences";
+import { currency, loadingColors } from "@/preferences";
 import { useAppSelector } from "@/store/hooks";
 import { AnimatePresence, motion } from "framer-motion";
 import debounce from "lodash/debounce";
 import { memo, useMemo } from "react";
+import { BeatLoader } from "react-spinners";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { useOrderSummary } from "../hooks/useOrderSummary";
 import OrderLines from "../import/OrderLines";
@@ -29,6 +30,7 @@ const OrderSummary = () => {
       expandedCustomers,
       openModalConfirmOrder,
       isProcessing,
+      isUpdating,
     },
     actions: {
       setOpenModalConfirmHoldOrder,
@@ -174,20 +176,39 @@ const OrderSummary = () => {
             className="flex-1"
             variant="secondary"
             onClick={handleHoldOrder}
-            disabled={isActionsDisabled}
+            disabled={isActionsDisabled || isProcessing || isUpdating}
           >
             Hold Order
           </Button>
           <Button
             onClick={debouncedHandleProceedOrder}
             className="flex-1"
-            disabled={isActionsDisabled || (!!loadedOrder && !hasOrderChanges)}
+            disabled={
+              isActionsDisabled ||
+              isProcessing ||
+              isUpdating ||
+              (!!loadedOrder && !hasOrderChanges)
+            }
           >
-            {!!loadedOrder ? "Update Order" : "Proceed Order"}
+            {isUpdating ? (
+              <>
+                <BeatLoader color={loadingColors.primary} size={8} />
+                Updating...
+              </>
+            ) : isProcessing ? (
+              <>
+                <BeatLoader color={loadingColors.primary} size={8} />
+                Processing...
+              </>
+            ) : !!loadedOrder ? (
+              "Update Order"
+            ) : (
+              "Proceed Order"
+            )}
           </Button>
           <Button
             size="icon"
-            disabled={isActionsDisabled}
+            disabled={isActionsDisabled || isProcessing || isUpdating}
             onClick={handleShowTicket}
           >
             <BillIcon

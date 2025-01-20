@@ -14,6 +14,7 @@ import { FilterCriteria } from "@/types/general";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import { TextShimmer } from "@/components/ui/text-shimmer";
+import { loadingColors } from "@/preferences";
 
 export default function OrdersPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -118,7 +119,7 @@ export default function OrdersPage() {
         <main className="mt-6 flex-1 overflow-hidden">
           {loading ? (
             <div className="flex items-center justify-center h-full">
-              <BeatLoader color="#fb0000" size={10} />
+              <BeatLoader color={loadingColors.primary} size={10} />
             </div>
           ) : orders.length === 0 ? (
             <div className="flex items-center justify-center h-full">

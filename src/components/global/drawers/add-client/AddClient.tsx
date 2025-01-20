@@ -4,6 +4,7 @@ import Drawer from "../../Drawer";
 import { Button } from "@/components/ui/button";
 import { useAddClient } from "@/components/views/home/right-section/hooks/useAddClient";
 import { BeatLoader } from "react-spinners";
+import { loadingColors } from "@/preferences";
 export default function AddClient({
   open,
   setOpen,
@@ -71,7 +72,7 @@ export default function AddClient({
             Cancel
           </Button>
           <Button className="flex-1" onClick={handleAddComplete}>
-            {isLoading ? <BeatLoader color="#fff" size={8} /> : "Save"}
+            {isLoading ? <BeatLoader color={loadingColors.primary} size={8} /> : "Save"}
           </Button>
         </div>
       </div>

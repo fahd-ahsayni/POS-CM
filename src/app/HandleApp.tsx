@@ -1,3 +1,4 @@
+import { loadingColors } from "@/preferences";
 import { useTheme } from "@/providers/themeProvider";
 import { useAppSelector } from "@/store/hooks";
 import { Suspense, lazy } from "react";
@@ -64,7 +65,7 @@ export default function HandleApp() {
       <Suspense
         fallback={
           <div className="bg-background w-screen h-screen flex items-center justify-center">
-            <BeatLoader color="#FB0000" size={10} />
+            <BeatLoader color={loadingColors.primary} size={10} />
           </div>
         }
       >

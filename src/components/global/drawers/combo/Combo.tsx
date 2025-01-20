@@ -6,6 +6,7 @@ import Drawer from "../../Drawer";
 import { StepContent } from "./components/StepContent";
 import { ComboProvider, useCombo } from "./context/ComboContext";
 import { useComboLogic } from "./hooks/useComboLogic";
+import { loadingColors } from "@/preferences";
 
 function ComboContent() {
   const { selectedCombo } = useLeftViewContext();
@@ -68,7 +69,7 @@ function ComboContent() {
         >
           {isLastStep ? (
             isFinishing ? (
-              <BeatLoader color="#fff" size={8} />
+              <BeatLoader color={loadingColors.primary} size={8} />
             ) : (
               "Finish"
             )

@@ -3,6 +3,7 @@ import { TypographyH3 } from "@/components/ui/typography";
 import { BeatLoader } from "react-spinners";
 import { useNumberOfTable } from "../hooks/useNumberOfTable";
 import { TableNumberDisplay } from "../layouts/TableNumberDisplay";
+import { loadingColors } from "@/preferences";
 
 export default function NumberOfTable() {
   const {
@@ -43,7 +44,7 @@ export default function NumberOfTable() {
           >
             {isLoading ? (
               <>
-                <BeatLoader color="#fff" size={8} />
+                <BeatLoader color={loadingColors.primary} size={8} />
               </>
             ) : (
               "Confirm"

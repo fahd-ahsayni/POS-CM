@@ -75,6 +75,13 @@ export default memo(function ProductsByCategory() {
   const { loadProducts } = useProducts();
   const [loading, setLoading] = useState(true);
 
+  // Sort subcategories by sequence
+  const sortedSubCategories = useMemo(() => {
+    return [...subCategories].sort(
+      (a, b) => (a.sequence || 0) - (b.sequence || 0)
+    );
+  }, [subCategories]);
+
   useEffect(() => {
     let timer: NodeJS.Timeout;
 
@@ -123,8 +130,8 @@ export default memo(function ProductsByCategory() {
                   <ArrowLeft className="text-white" />
                 </Button>
                 <div className="flex gap-3 overflow-x-auto w-full scrollbar-hide">
-                  {subCategories.length > 0 ? (
-                    subCategories.map((subCategory, index) => (
+                  {sortedSubCategories.length > 0 ? (
+                    sortedSubCategories.map((subCategory, index) => (
                       <motion.div
                         key={`${subCategory._id}-${index}`}
                         initial={{ opacity: 0, x: 30 }}

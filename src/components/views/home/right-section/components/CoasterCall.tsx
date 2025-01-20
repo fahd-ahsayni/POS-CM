@@ -7,6 +7,7 @@ import { BeatLoader } from "react-spinners";
 import { ORDER_SUMMARY_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
 import { useRightViewContext } from "../contexts/RightViewContext";
 import { useCoasterCall } from "../hooks/useCoasterCall";
+import { loadingColors } from "@/preferences";
 
 export default function CoasterCall() {
   const { setViews } = useRightViewContext();
@@ -49,7 +50,7 @@ export default function CoasterCall() {
           >
             {isLoading ? (
               <>
-                <BeatLoader color="#fff" size={8} />
+                <BeatLoader color={loadingColors.primary} size={8} />
               </>
             ) : (
               "Confirm"

@@ -5,7 +5,7 @@ import NumberPad from "@/components/global/NumberPad";
 import { createToast } from "@/components/global/Toasters";
 import { Button } from "@/components/ui/button";
 import { TypographyH2 } from "@/components/ui/typography";
-import { currency } from "@/preferences";
+import { currency, loadingColors } from "@/preferences";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
@@ -86,7 +86,11 @@ export default function OpenShift({
             onClick={handleOpenShift}
             disabled={isLoading || !amount}
           >
-            {isLoading ? <BeatLoader color="#fff" size={8} /> : "Open Session"}
+            {isLoading ? (
+              <BeatLoader color={loadingColors.primary} size={8} />
+            ) : (
+              "Open Session"
+            )}
           </Button>
         </div>
       </section>

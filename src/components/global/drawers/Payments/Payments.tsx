@@ -9,7 +9,7 @@ import {
   TypographySmall,
 } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
-import { currency } from "@/preferences/index";
+import { currency, loadingColors } from "@/preferences/index";
 import { selectOrder } from "@/store/slices/order/create-order.slice";
 import { Order } from "@/types/order.types";
 import { AnimatePresence, motion } from "framer-motion";
@@ -331,7 +331,7 @@ export default function Payments({
               onClick={handleComplete}
             >
               {isProcessing ? (
-                <BeatLoader color="#fff" size={8} />
+                <BeatLoader color={loadingColors.primary} size={8} />
               ) : (
                 "Complete Payment"
               )}

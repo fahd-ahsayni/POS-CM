@@ -37,6 +37,7 @@ export const useOrderSummary = () => {
     openModalConfirmOrder: false,
   });
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const { setViews: setViewsLeft, setSelectedProducts } = useLeftViewContext();
   const { setViews: setViewsRight, customerIndex } = useRightViewContext();
@@ -108,7 +109,7 @@ export const useOrderSummary = () => {
           toggleAllCustomers();
         }
       },
-      handleProceedOrder: () => {
+      handleProceedOrder: async () => {
         if (isProcessing || selectedProducts.length === 0) return;
 
         const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
@@ -125,35 +126,38 @@ export const useOrderSummary = () => {
           );
 
         if (loadedOrder && existingOrder) {
-          // Update existing order
-          updateOrder(
-            {
-              orderlines: order.orderlines,
-            },
-            loadedOrder._id
-          )
-            .then(() => {
-              localStorage.removeItem("loadedOrder");
-              resetOrderState();
-              dispatch(refreshOrders());
-              toast.success(
-                createToast(
-                  "Order Updated Successfully",
-                  "Your order has been updated",
-                  "success"
-                )
-              );
-            })
-            .catch((error) => {
-              console.error("Order update error:", error);
-              toast.error(
-                createToast(
-                  "Order Update Failed",
-                  "There was an error updating your order",
-                  "error"
-                )
-              );
-            });
+          setIsUpdating(true);
+          try {
+            // Update existing order
+            await updateOrder(
+              {
+                orderlines: order.orderlines,
+              },
+              loadedOrder._id
+            );
+
+            localStorage.removeItem("loadedOrder");
+            resetOrderState();
+            dispatch(refreshOrders());
+            toast.success(
+              createToast(
+                "Order Updated Successfully",
+                "Your order has been updated",
+                "success"
+              )
+            );
+          } catch (error) {
+            console.error("Order update error:", error);
+            toast.error(
+              createToast(
+                "Order Update Failed",
+                "There was an error updating your order",
+                "error"
+              )
+            );
+          } finally {
+            setIsUpdating(false);
+          }
         } else if (orderType?.creation_order_with_payment) {
           // Skip confirmation modal and go straight to payments
           updateState("openDrawerPayments", true);
@@ -235,6 +239,7 @@ export const useOrderSummary = () => {
       isActionsDisabled,
       orders,
       dispatch,
+      isUpdating,
     ]
   );
 
@@ -244,6 +249,7 @@ export const useOrderSummary = () => {
       isActionsDisabled,
       expandedCustomers,
       isProcessing,
+      isUpdating,
     },
     actions: handlers,
   };

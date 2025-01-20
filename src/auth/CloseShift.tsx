@@ -177,9 +177,9 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
 
                       {paymentMethods.map(renderPaymentMethod)}
                       <div className="absolute bottom-20 left-0 w-full">
-                        <Button className="w-full" onClick={handleCloseShift}>
+                        <Button className="w-full" onClick={handleCloseShift} disabled={isLoading}>
                           {isLoading ? (
-                            <BeatLoader color="#fff" size={8} />
+                            <BeatLoader color="#FB0000" size={8} />
                           ) : (
                             "End Shift"
                           )}

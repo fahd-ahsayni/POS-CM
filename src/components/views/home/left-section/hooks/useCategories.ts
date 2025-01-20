@@ -19,7 +19,8 @@ interface MenuResponse {
 }
 
 export const useCategories = () => {
-  const { setViews, setCategory, setCurrentMenu, setBreadcrumbs } = useLeftViewContext();
+  const { setViews, setCategory, setCurrentMenu, setBreadcrumbs } =
+    useLeftViewContext();
   const { views } = useRightViewContext();
   const [orderTypeChanged, setOrderTypeChanged] = useState(0);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -30,10 +31,12 @@ export const useCategories = () => {
     const categoryMap = new Map<string, Category>();
     const rootCategories: Category[] = [];
 
+    // First pass: Create category map
     categories.forEach((category) => {
       categoryMap.set(category._id, { ...category, children: [] });
     });
 
+    // Second pass: Build tree structure
     categories.forEach((category) => {
       const currentCategory = categoryMap.get(category._id);
       if (currentCategory) {
@@ -48,16 +51,19 @@ export const useCategories = () => {
       }
     });
 
-    const sortBySequence = (cats: Category[]) => {
-      cats.sort((a, b) => (a.sequence || 0) - (b.sequence || 0));
-      cats.forEach((cat) => {
-        if (cat.children?.length > 0) {
-          sortBySequence(cat.children);
-        }
-      });
+    // Sort function for categories
+    const sortCategories = (a: Category, b: Category) => {
+      return (a.sequence || 0) - (b.sequence || 0);
     };
 
-    sortBySequence(rootCategories);
+    // Sort root categories and their children
+    rootCategories.sort(sortCategories);
+    rootCategories.forEach((category) => {
+      if (category.children?.length > 0) {
+        category.children.sort(sortCategories);
+      }
+    });
+
     return rootCategories;
   }, []);
 
@@ -67,18 +73,23 @@ export const useCategories = () => {
       setError(null);
 
       try {
-        const orderType = JSON.parse(localStorage.getItem("orderType") || "null");
-        
+        const orderType = JSON.parse(
+          localStorage.getItem("orderType") || "null"
+        );
+
         // Try to get categories from defaultMenu first
         const defaultMenuData = localStorage.getItem("defaultMenu");
         let categoriesData: Category[] = [];
 
         if (orderType?.menu_id) {
           // If we have an orderType with menu_id, use generalData
-          const generalData = JSON.parse(localStorage.getItem("generalData") || "{}");
+          const generalData = JSON.parse(
+            localStorage.getItem("generalData") || "{}"
+          );
           if (generalData.categories) {
-            categoriesData = generalData.categories.filter((category: Category) =>
-              category.menu_ids?.includes(orderType.menu_id)
+            categoriesData = generalData.categories.filter(
+              (category: Category) =>
+                category.menu_ids?.includes(orderType.menu_id)
             );
           }
         }
@@ -98,10 +109,13 @@ export const useCategories = () => {
             }
 
             // Store default menu data separately
-            localStorage.setItem("defaultMenu", JSON.stringify({
-              menu: data.menu,
-              categories: data.categories
-            }));
+            localStorage.setItem(
+              "defaultMenu",
+              JSON.stringify({
+                menu: data.menu,
+                categories: data.categories,
+              })
+            );
 
             categoriesData = data.categories;
           }
@@ -110,13 +124,12 @@ export const useCategories = () => {
         const categoriesTree = buildCategoryTree(categoriesData);
         setCategories(categoriesTree);
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : "Failed to load categories";
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to load categories";
         setError(errorMessage);
-        toast.error(createToast(
-          "Error Loading Categories",
-          errorMessage,
-          "error"
-        ));
+        toast.error(
+          createToast("Error Loading Categories", errorMessage, "error")
+        );
         setCategories([]);
       } finally {
         setIsLoading(false);
@@ -142,7 +155,10 @@ export const useCategories = () => {
     window.addEventListener("storage", handleStorageChange);
 
     return () => {
-      window.removeEventListener("localStorageChange", handleLocalStorageChange);
+      window.removeEventListener(
+        "localStorageChange",
+        handleLocalStorageChange
+      );
       window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
@@ -158,7 +174,9 @@ export const useCategories = () => {
 
   const handleAllProductsClick = useCallback(() => {
     setCategory(null);
-    setCurrentMenu(JSON.parse(localStorage.getItem("orderType") || "null")?.menu_id || null);
+    setCurrentMenu(
+      JSON.parse(localStorage.getItem("orderType") || "null")?.menu_id || null
+    );
     setViews(ALL_PRODUCTS_VIEW);
   }, [setCategory, setCurrentMenu, setViews]);
 

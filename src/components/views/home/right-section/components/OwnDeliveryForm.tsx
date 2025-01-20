@@ -3,6 +3,7 @@ import { TypographyH3 } from "@/components/ui/typography";
 import { BeatLoader } from "react-spinners";
 import { useAddClient } from "../hooks/useAddClient";
 import ClientForm from "../layouts/ClientForm";
+import { loadingColors } from "@/preferences";
 
 export default function NumberOfTabel() {
   const {
@@ -48,7 +49,7 @@ export default function NumberOfTabel() {
             onClick={handleSubmit}
             disabled={isLoading}
           >
-            {isLoading ? <BeatLoader color="#fff" size={8} /> : "Confirm"}
+            {isLoading ? <BeatLoader color={loadingColors.primary} size={8} /> : "Confirm"}
           </Button>
         </div>
       </div>

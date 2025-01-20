@@ -1,6 +1,7 @@
 import ComboboxSelectOnChange from "@/components/global/ComboboxSelectOnChange";
 import InputComponent from "@/components/global/InputField";
 import InputLikeTextarea from "@/components/global/InputLikeTextarea";
+import { loadingColors } from "@/preferences";
 import { Client, ClientFormData } from "@/types/clients.types";
 import { BeatLoader } from "react-spinners";
 
@@ -28,7 +29,7 @@ export default function ClientForm({
   if (isFetching || isSubmitting) {
     return (
       <div className="w-full h-full flex items-center justify-center">
-        <BeatLoader color="#fb0000" size={10} />
+        <BeatLoader color={loadingColors.primary} size={10} />
       </div>
     );
   }

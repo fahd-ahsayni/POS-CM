@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import { createToast } from "@/components/global/Toasters";
 import { BeatLoader } from "react-spinners";
 import { TypographySmall } from "@/components/ui/typography";
+import { loadingColors } from "@/preferences";
 
 export default function Passcode() {
   const [passcode, setPasscode] = useState<string>("");
@@ -138,7 +139,7 @@ export default function Passcode() {
         </div>
         <div className="mt-10 px-4">
           <Button onClick={handleLogin} className="w-full">
-            {loading ? <BeatLoader color="white" size={8} /> : "Log In"}
+            {loading ? <BeatLoader color={loadingColors.primary} size={8} /> : "Log In"}
           </Button>
           <div className="flex justify-between items-center mt-4">
             <TypographySmall className="text-neutral-700 dark:text-neutral-400">
