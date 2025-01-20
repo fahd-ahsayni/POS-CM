@@ -86,7 +86,7 @@ export default function OpenShift({
             onClick={handleOpenShift}
             disabled={isLoading || !amount}
           >
-            {isLoading ? <BeatLoader color="#fff" size={10} /> : "Open Session"}
+            {isLoading ? <BeatLoader color="#fff" size={8} /> : "Open Session"}
           </Button>
         </div>
       </section>

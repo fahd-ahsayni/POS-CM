@@ -179,7 +179,7 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
                       <div className="absolute bottom-20 left-0 w-full">
                         <Button className="w-full" onClick={handleCloseShift}>
                           {isLoading ? (
-                            <BeatLoader color="#fff" size={10} />
+                            <BeatLoader color="#fff" size={8} />
                           ) : (
                             "End Shift"
                           )}

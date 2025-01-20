@@ -13,6 +13,7 @@ interface ClientFormProps {
   handlePhoneSelect: (selectedClient: Client | null) => void;
   clients: Client[];
   isFetching: boolean;
+  isSubmitting?: boolean;
 }
 
 export default function ClientForm({
@@ -22,8 +23,9 @@ export default function ClientForm({
   handlePhoneSelect,
   clients,
   isFetching,
+  isSubmitting = false,
 }: ClientFormProps) {
-  if (isFetching) {
+  if (isFetching || isSubmitting) {
     return (
       <div className="w-full h-full flex items-center justify-center">
         <BeatLoader color="#fb0000" size={10} />

@@ -71,7 +71,7 @@ export default function AddClient({
             Cancel
           </Button>
           <Button className="flex-1" onClick={handleAddComplete}>
-            {isLoading ? <BeatLoader color="#fff" size={10} /> : "Save"}
+            {isLoading ? <BeatLoader color="#fff" size={8} /> : "Save"}
           </Button>
         </div>
       </div>

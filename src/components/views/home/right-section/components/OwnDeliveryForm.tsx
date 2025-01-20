@@ -31,6 +31,7 @@ export default function NumberOfTabel() {
             handlePhoneSelect={handlePhoneSelect}
             clients={clients}
             isFetching={isFetching}
+            isSubmitting={isLoading}
           />
         </div>
         <div className="flex gap-x-2 w-full absolute bottom-0">
@@ -47,7 +48,7 @@ export default function NumberOfTabel() {
             onClick={handleSubmit}
             disabled={isLoading}
           >
-            {isLoading ? <BeatLoader color="#fff" size={10} /> : "Confirm"}
+            {isLoading ? <BeatLoader color="#fff" size={8} /> : "Confirm"}
           </Button>
         </div>
       </div>
