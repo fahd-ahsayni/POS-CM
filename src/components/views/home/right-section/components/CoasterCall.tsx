@@ -3,15 +3,23 @@ import { TypographyH3 } from "@/components/ui/typography";
 import CoasterCallNumberDisplay from "@/components/views/home/right-section/layouts/CoasterCallNumberDisplay";
 import { selectOrder } from "@/store/slices/order/create-order.slice";
 import { useSelector } from "react-redux";
+import { BeatLoader } from "react-spinners";
 import { ORDER_SUMMARY_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
 import { useRightViewContext } from "../contexts/RightViewContext";
+import { useCoasterCall } from "../hooks/useCoasterCall";
 
 export default function CoasterCall() {
   const { setViews } = useRightViewContext();
   const order = useSelector(selectOrder);
+  const { isLoading, handleConfirm } = useCoasterCall();
 
-  const handleConfirm = () => {
-    if (order.coaster_call !== null) setViews(ORDER_SUMMARY_VIEW);
+  const handleConfirmClick = async () => {
+    if (order.coaster_call !== null) {
+      const success = await handleConfirm();
+      if (success) {
+        setViews(ORDER_SUMMARY_VIEW);
+      }
+    }
   };
 
   const handleCancel = () => {
@@ -30,15 +38,22 @@ export default function CoasterCall() {
             className="flex-1"
             variant="secondary"
             onClick={() => handleCancel()}
+            disabled={isLoading}
           >
             Cancel
           </Button>
           <Button
             className="flex-1"
-            onClick={handleConfirm}
-            disabled={order.coaster_call === null}
+            onClick={handleConfirmClick}
+            disabled={order.coaster_call === null || isLoading}
           >
-            Confirm
+            {isLoading ? (
+              <>
+                <BeatLoader color="#fff" size={8} />
+              </>
+            ) : (
+              "Confirm"
+            )}
           </Button>
         </div>
       </div>

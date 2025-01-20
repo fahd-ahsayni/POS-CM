@@ -6,6 +6,7 @@ export const useCoasterCall = () => {
   const dispatch = useDispatch();
   const orderState = useSelector(selectOrder);
   const [number, setNumber] = useState(orderState.coaster_call || "");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleNumberClick = (value: string) => {
     if (value === "C") {
@@ -24,9 +25,25 @@ export const useCoasterCall = () => {
     }
   };
 
+  const handleConfirm = async () => {
+    setIsLoading(true);
+    try {
+      // Simulate API call with timeout
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return true;
+    } catch (error) {
+      console.error('Error confirming coaster call:', error);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     number,
     setNumber,
     handleNumberClick,
+    isLoading,
+    handleConfirm,
   };
 };

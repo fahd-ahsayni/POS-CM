@@ -10,6 +10,7 @@ type TableValidState = "valid" | "invalid" | "not-found";
 export const useNumberOfTable = () => {
   const { tableNumber, setTableNumber, setViews } = useRightViewContext();
   const [tableValid, setTableValid] = useState<TableValidState>("valid");
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const data = JSON.parse(localStorage.getItem("generalData") || "{}").floors;
 
@@ -38,6 +39,7 @@ export const useNumberOfTable = () => {
   };
 
   const handleConfirm = async (number: string) => {
+    setIsLoading(true);
     try {
       const response = await getByTableName(number);
 
@@ -53,6 +55,8 @@ export const useNumberOfTable = () => {
       }
     } catch (error) {
       setTableValid("not-found");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -74,6 +78,7 @@ export const useNumberOfTable = () => {
   return {
     tableNumber,
     tableValid,
+    isLoading,
     handleNumberClick,
     handleConfirm,
     handleCancel,
