@@ -227,7 +227,7 @@ export default function OrdersTable({
   );
 
   return (
-    <div className="rounded-md h-full relative pr-3 [&>div]:max-h-[490px]">
+    <div className="rounded-md h-full relative pr-3 [&>div]:max-h-[530px]">
       <Table>
         <TableHeader className="sticky top-0 z-10 dark:bg-secondary-black bg-white">
           <TableRow>

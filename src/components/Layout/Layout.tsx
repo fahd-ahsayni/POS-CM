@@ -22,6 +22,7 @@ const Layout = () => {
     if (!generalData.orderTypes.length || !generalData.paymentMethods.length) {
       initializeData();
     }
+    localStorage.removeItem("loadedOrder");
   }, []);
 
   useEffect(() => {
