@@ -87,8 +87,7 @@ export default function Sidebar() {
 
   const { handleStaffSelect, handleResetApp } = useSidebarActions(
     setOpenClientDrawer,
-    setOpenDropDrawer,
-    setOpenStaffList
+    setOpenDropDrawer
   );
 
   return (

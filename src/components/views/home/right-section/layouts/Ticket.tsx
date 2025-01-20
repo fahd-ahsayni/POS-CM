@@ -1,19 +1,24 @@
 import { TypographyP } from "@/components/ui/typography";
 import { calculateProductPrice } from "@/functions/priceCalculations";
 import { currency } from "@/preferences";
-import { motion } from "framer-motion";
-import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { RootState } from "@/store";
+import { motion } from "framer-motion";
+import { useMemo } from "react";
 import { useSelector } from "react-redux";
-import { useEffect, useMemo } from "react";
+import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 
 export default function Ticket() {
   const { selectedProducts, currentMenu } = useLeftViewContext();
   const order = useSelector((state: RootState) => state.createOrder);
-  
+  const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
+
   const calculations = useMemo(() => {
     const subtotal = selectedProducts.reduce((total, product) => {
-      const price = calculateProductPrice(product, currentMenu, product.quantity);
+      const price = calculateProductPrice(
+        product,
+        currentMenu,
+        product.quantity
+      );
       return total + price.totalPrice;
     }, 0);
 
@@ -30,16 +35,17 @@ export default function Ticket() {
       : 0;
 
     const tax = (subtotal * 10) / 110; // Assuming 10% tax rate
-    const total = subtotal - discountAmount;
+    const total =
+      orderType.delivery_product_variant_id && order.data.delivery_guy_id
+        ? subtotal -
+          discountAmount +
+          orderType.delivery_product_variant_id.default_price
+        : subtotal - discountAmount;
 
     return { subtotal, discountAmount, tax, total };
   }, [selectedProducts, currentMenu, order.data.discount]);
 
   const { toFixed, currency: currencySymbol } = currency;
-
-  useEffect(() => {
-    console.log(calculations.total);
-  }, [calculations]);
 
   return (
     <motion.div
@@ -64,7 +70,8 @@ export default function Ticket() {
               Discount sales
             </TypographyP>
             <TypographyP className="text-sm dark:text-primary-black text-white">
-              {calculations.discountAmount.toFixed(toFixed ?? 2)} {currencySymbol}
+              {calculations.discountAmount.toFixed(toFixed ?? 2)}{" "}
+              {currencySymbol}
             </TypographyP>
           </div>
           <div className="flex items-center justify-between w-full">

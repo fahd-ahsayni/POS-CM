@@ -16,7 +16,8 @@ import Drawer from "../../Drawer";
 
 interface StaffListProps {
   open: boolean;
-  setOpen: (open: boolean) => void;
+  setOpen: (value: boolean) => void;
+  onSelect?: (staff: StaffUser) => void;
 }
 
 const StaffList = ({ open, setOpen }: StaffListProps) => {

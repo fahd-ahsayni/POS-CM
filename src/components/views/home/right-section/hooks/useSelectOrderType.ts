@@ -1,5 +1,8 @@
 import { getCategories } from "@/api/services";
 // import { setOrderTypeId } from "@/store/slices/order/create-order.slice";
+import { updateOrder } from "@/functions/updateOrder";
+import { RootState } from "@/store";
+import { useAppSelector } from "@/store/hooks";
 import { OrderType } from "@/types/order.types";
 import { Category } from "@/types/product.types";
 import { useCallback, useEffect, useState } from "react";
@@ -11,9 +14,6 @@ import {
   OWN_DELIVERY_FORM_VIEW,
 } from "../constants";
 import { useRightViewContext } from "../contexts/RightViewContext";
-import { useAppSelector } from "@/store/hooks";
-import { RootState } from "@/store";
-import { updateOrder } from "@/functions/updateOrder";
 
 export const useSelectOrderType = () => {
   const dispatch = useDispatch();

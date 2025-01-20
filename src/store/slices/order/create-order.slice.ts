@@ -1,6 +1,6 @@
+import { calculateTotalFromOrderlines } from "@/functions/priceCalculations";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../..";
-import { calculateTotalFromOrderlines } from "@/functions/priceCalculations";
 
 const initialOrderState: OrderState = {
   waiter_id: null,
@@ -37,7 +37,8 @@ const orderSlice = createSlice({
     setOrderData: (state, action: PayloadAction<OrderState>) => {
       state.data = action.payload;
       state.data.total_amount = calculateTotalFromOrderlines(
-        state.data.orderlines
+        state.data.orderlines,
+        state.data.delivery_guy_id || ""
       );
     },
     resetOrder: (state) => {
@@ -47,7 +48,8 @@ const orderSlice = createSlice({
         shift_id: currentShiftId,
       };
       state.data.total_amount = calculateTotalFromOrderlines(
-        state.data.orderlines
+        state.data.orderlines,
+        state.data.delivery_guy_id || ""
       );
     },
     updateOrderLine: (
@@ -106,7 +108,8 @@ const orderSlice = createSlice({
 
       // Update total amount directly from orderlines
       state.data.total_amount = calculateTotalFromOrderlines(
-        state.data.orderlines
+        state.data.orderlines,
+        state.data.delivery_guy_id || ""
       );
     },
     addOrderLine: (state, action: PayloadAction<any[]>) => {
@@ -146,7 +149,8 @@ const orderSlice = createSlice({
       });
 
       state.data.total_amount = calculateTotalFromOrderlines(
-        state.data.orderlines
+        state.data.orderlines,
+        state.data.delivery_guy_id || ""
       );
     },
     removeOrderLine: (state, action: PayloadAction<number>) => {
@@ -154,7 +158,8 @@ const orderSlice = createSlice({
         (_: any, index: number) => index !== action.payload
       );
       state.data.total_amount = calculateTotalFromOrderlines(
-        state.data.orderlines
+        state.data.orderlines,
+        state.data.delivery_guy_id || ""
       );
     },
     updateTotalAmount: (state, action: PayloadAction<number>) => {
@@ -197,7 +202,8 @@ const orderSlice = createSlice({
           coaster_call: null,
         };
       } else {
-        const { order_type_id, table_id, client_id, coaster_call } = action.payload;
+        const { order_type_id, table_id, client_id, coaster_call } =
+          action.payload;
         state.data = {
           ...state.data,
           order_type_id,
@@ -294,5 +300,8 @@ export const selectOrderError = (state: RootState) => state.createOrder.error;
 export const selectOrderLines = (state: RootState) =>
   state.createOrder.data.orderlines;
 export const selectTotalAmount = (state: RootState) => {
-  return calculateTotalFromOrderlines(state.createOrder.data.orderlines);
+  return calculateTotalFromOrderlines(
+    state.createOrder.data.orderlines,
+    state.createOrder.data.delivery_guy_id || ""
+  );
 };

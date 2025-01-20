@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { currency } from "@/preferences";
+import { useAppSelector } from "@/store/hooks";
 import { AnimatePresence, motion } from "framer-motion";
 import debounce from "lodash/debounce";
 import { memo, useMemo } from "react";
@@ -43,6 +44,7 @@ const OrderSummary = () => {
   } = useOrderSummary();
 
   const loadedOrder = localStorage.getItem("loadedOrder");
+  const order = useAppSelector((state) => state.createOrder.data);
 
   const hasOrderChanges = useMemo(() => {
     if (!loadedOrder) return true;
@@ -105,7 +107,7 @@ const OrderSummary = () => {
         <div className="flex items-center justify-between p-1">
           <div className="flex items-center gap-2">
             <OrderBannerOnSummary />
-            {taxDelivery && (
+            {taxDelivery && order.delivery_guy_id && (
               <Badge className="text-xs">
                 {`+${taxDelivery} ${currency.currency} Tax`}
               </Badge>

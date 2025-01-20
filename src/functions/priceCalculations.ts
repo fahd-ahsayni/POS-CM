@@ -63,9 +63,19 @@ export const calculateProductPrice = (
   };
 };
 
-export const calculateTotalFromOrderlines = (orderlines: any[]) => {
-  return orderlines.reduce((total, line) => {
-    const linePrice = (line.price || 0) * (line.quantity || 1);
-    return total + linePrice;
-  }, 0);
+export const calculateTotalFromOrderlines = (
+  orderlines: any[],
+  deliveryGuyId: string
+) => {
+  const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
+  const deliveryTax =
+    orderType.delivery_product_variant_id && deliveryGuyId
+      ? orderType.delivery_product_variant_id.default_price
+      : 0;
+  return (
+    orderlines.reduce((total, line) => {
+      const linePrice = (line.price || 0) * (line.quantity || 1);
+      return total + linePrice;
+    }, 0) + deliveryTax
+  );
 };
