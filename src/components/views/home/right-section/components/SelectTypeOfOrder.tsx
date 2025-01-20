@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { TypographyH3 } from "@/components/ui/typography";
+import { updateOrder } from "@/functions/updateOrder";
 import { cn } from "@/lib/utils";
 import { OrderType } from "@/types/order.types";
 import { ChevronLeftIcon } from "lucide-react";
@@ -10,7 +11,6 @@ import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useSelectOrderType } from "../hooks/useSelectOrderType";
 import { OrderCard, OrderCardSkeleton } from "../ui/OrderTypeCards";
-import { updateOrder } from "@/functions/updateOrder";
 
 function SelectTypeOfOrder() {
   const {
@@ -24,7 +24,7 @@ function SelectTypeOfOrder() {
     event.preventDefault();
     const shiftId = localStorage.getItem("shiftId") || "";
     handleOrderTypeSelect(type);
-    dispatch(updateOrder({shift_id: shiftId}));
+    dispatch(updateOrder({ shift_id: shiftId }));
   };
 
   return (
@@ -43,7 +43,7 @@ function SelectTypeOfOrder() {
       </div>
       <div
         className={cn(
-          "flex-1 flex h-full items-center justify-center relative pr-8",
+          "flex-1 flex h-full py-32 items-center justify-center relative pr-8",
           displayedTypes.length > 3 ? "pl-3" : ""
         )}
       >
@@ -53,7 +53,7 @@ function SelectTypeOfOrder() {
           <Swiper
             direction="vertical"
             slidesPerView={3}
-            className="w-full h-[80%] products-swiper"
+            className="w-full h-full products-swiper"
             modules={[Pagination]}
             pagination={{
               clickable: true,
@@ -61,7 +61,7 @@ function SelectTypeOfOrder() {
             }}
           >
             {displayedTypes.map((type) => (
-              <SwiperSlide key={type._id} className="pl-3">
+              <SwiperSlide key={type._id} className="pl-5">
                 <OrderCard orderType={type} onSelect={handleTypeSelect(type)} />
               </SwiperSlide>
             ))}

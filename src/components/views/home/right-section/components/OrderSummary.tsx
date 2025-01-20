@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { currency } from "@/preferences";
 import { AnimatePresence, motion } from "framer-motion";
-import debounce from 'lodash/debounce';
+import debounce from "lodash/debounce";
 import { memo, useMemo } from "react";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { useOrderSummary } from "../hooks/useOrderSummary";
@@ -41,6 +41,33 @@ const OrderSummary = () => {
       setOpenModalConfirmOrder,
     },
   } = useOrderSummary();
+
+  const loadedOrder = localStorage.getItem("loadedOrder");
+
+  const hasOrderChanges = useMemo(() => {
+    if (!loadedOrder) return true;
+
+    const originalOrder = JSON.parse(loadedOrder);
+    const originalOrderLines = originalOrder.orderline_ids;
+
+    if (originalOrderLines.length !== selectedProducts.length) return true;
+
+    return selectedProducts.some((newLine) => {
+      const originalLine = originalOrderLines.find(
+        (line: any) =>
+          line.product_variant_id._id === newLine.product_variant_id
+      );
+
+      if (!originalLine) return true;
+
+      return (
+        originalLine.quantity !== newLine.quantity ||
+        originalLine.price !== newLine.price ||
+        originalLine.customer_index !== newLine.customer_index ||
+        JSON.stringify(originalLine.notes) !== JSON.stringify(newLine.notes)
+      );
+    });
+  }, [selectedProducts, loadedOrder]);
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
@@ -152,9 +179,9 @@ const OrderSummary = () => {
           <Button
             onClick={debouncedHandleProceedOrder}
             className="flex-1"
-            disabled={isActionsDisabled}
+            disabled={isActionsDisabled || (!!loadedOrder && !hasOrderChanges)}
           >
-            Proceed Order
+            {!!loadedOrder ? "Update Order" : "Proceed Order"}
           </Button>
           <Button
             size="icon"

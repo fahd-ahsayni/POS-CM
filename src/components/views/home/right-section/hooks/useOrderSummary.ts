@@ -112,12 +112,19 @@ export const useOrderSummary = () => {
         if (isProcessing || selectedProducts.length === 0) return;
 
         const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
-
         const loadedOrder = JSON.parse(
           localStorage.getItem("loadedOrder") || "{}"
         );
+        const existingOrder =
+          orders &&
+          orders?.orders?.find(
+            (o: any) =>
+              o._id === order._id &&
+              o.status !== "canceled" &&
+              o.status !== "paid"
+          );
 
-        if (loadedOrder) {
+        if (loadedOrder && existingOrder) {
           // Update existing order
           updateOrder(
             {
@@ -126,6 +133,7 @@ export const useOrderSummary = () => {
             loadedOrder._id
           )
             .then(() => {
+              localStorage.removeItem("loadedOrder");
               resetOrderState();
               dispatch(refreshOrders());
               toast.success(
