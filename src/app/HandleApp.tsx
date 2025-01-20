@@ -1,7 +1,6 @@
 import { useTheme } from "@/providers/themeProvider";
-import { RootState } from "@/store";
+import { useAppSelector } from "@/store/hooks";
 import { Suspense, lazy } from "react";
-import { useSelector } from "react-redux";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
 import { Bounce, ToastContainer } from "react-toastify";
@@ -21,8 +20,16 @@ const ErrorOccurred = lazy(() => import("@/components/errors/ErrorOccurred"));
 const BrokenLink = lazy(() => import("@/components/errors/BrokenLink"));
 const Test = lazy(() => import("@/Test"));
 
+interface AuthState {
+  isAuthenticated: boolean;
+}
+
+interface RootState {
+  auth: AuthState;
+}
+
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const isAuthenticated = useSelector(
+  const isAuthenticated = useAppSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
 
