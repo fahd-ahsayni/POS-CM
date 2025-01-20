@@ -116,7 +116,7 @@ export const useOrderSummary = () => {
           localStorage.getItem("loadedOrder") || "{}"
         );
         const existingOrder =
-          orders &&
+          orders.orders &&
           orders?.orders?.find(
             (o: any) =>
               o._id === order._id &&
