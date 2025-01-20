@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAddClient } from "@/components/views/home/right-section/hooks/useAddClient";
 import { BeatLoader } from "react-spinners";
 import { loadingColors } from "@/preferences";
+
 export default function AddClient({
   open,
   setOpen,
@@ -25,19 +26,7 @@ export default function AddClient({
   } = useAddClient();
 
   const handleCancel = () => {
-    setOpen(false);
-    setFormData({
-      name: "",
-      phone: "",
-      address: "",
-      email: "",
-      ice: "",
-    });
-  };
-
-  const handleAddComplete = async () => {
-    try {
-      await handleSubmit();
+    if (!isLoading) {
       setOpen(false);
       setFormData({
         name: "",
@@ -46,23 +35,52 @@ export default function AddClient({
         email: "",
         ice: "",
       });
+    }
+  };
+
+  const handleAddComplete = async () => {
+    try {
+      const success = await handleSubmit();
+      if (success) {
+        setOpen(false);
+        setFormData({
+          name: "",
+          phone: "",
+          address: "",
+          email: "",
+          ice: "",
+        });
+      }
     } catch (error) {
       console.error("Error submitting form:", error);
     }
   };
 
   return (
-    <Drawer open={open} setOpen={setOpen} title="Client">
+    <Drawer
+      open={open}
+      setOpen={(newOpen) => {
+        // Prevent closing if loading
+        if (!isLoading) {
+          setOpen(newOpen);
+        }
+      }}
+      title="Add New Client"
+      description="Add a new client to manage their orders and information"
+    >
       <div className="relative h-full">
-        <ClientForm
-          formData={formData}
-          errors={errors}
-          handleInputChange={handleInputChange}
-          handlePhoneSelect={handlePhoneSelect}
-          clients={clients}
-          isFetching={isFetching}
-        />
-        <div className="flex gap-x-4 pb-2 absolute bottom-0 w-full">
+        <div className="px-4">
+          <ClientForm
+            formData={formData}
+            errors={errors}
+            handleInputChange={handleInputChange}
+            handlePhoneSelect={handlePhoneSelect}
+            clients={clients}
+            isFetching={isFetching}
+            isSubmitting={isLoading}
+          />
+        </div>
+        <div className="flex gap-x-4 pb-2 absolute bottom-0 w-full px-4">
           <Button
             variant="secondary"
             className="flex-1 dark:bg-white/10 bg-white border border-border"
@@ -71,8 +89,16 @@ export default function AddClient({
           >
             Cancel
           </Button>
-          <Button className="flex-1" onClick={handleAddComplete}>
-            {isLoading ? <BeatLoader color={loadingColors.primary} size={8} /> : "Save"}
+          <Button 
+            className="flex-1" 
+            onClick={handleAddComplete}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <BeatLoader color={loadingColors.primary} size={8} />
+            ) : (
+              "Save"
+            )}
           </Button>
         </div>
       </div>

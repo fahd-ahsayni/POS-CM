@@ -43,7 +43,7 @@ export default function Drawer({
         >
           <div className="flex h-full flex-col pb-4">
             <SheetHeader className="max-w-md pt-4 px-4">
-              <SheetTitle>{toTitleCase(title.toLowerCase())}</SheetTitle>
+              <SheetTitle className="-mb-1">{toTitleCase(title.toLowerCase())}</SheetTitle>
               <SheetDescription className="text-[0.8rem] pr-8">
                 {description}
               </SheetDescription>

@@ -109,6 +109,7 @@ export default function ClientForm({
           errorMessage: errors.ice,
           hasError: !!errors.ice,
           optionalText: "Optional",
+          helperText: "Required for businesses. Skip for individual clients.",
         }}
       />
     </div>

@@ -120,7 +120,7 @@ export const useAddClient = (onSuccess?: () => void) => {
     setViews(TYPE_OF_ORDER_VIEW);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<boolean> => {
     if (!validateForm()) {
       toast.warning(
         createToast(
@@ -129,12 +129,13 @@ export const useAddClient = (onSuccess?: () => void) => {
           "warning"
         )
       );
-      return;
+      return false;
     }
 
     setIsLoading(true);
     try {
       const existingClient = clients.find((c) => c.phone === formData.phone);
+      
       if (existingClient) {
         const isDataChanged =
           existingClient.name !== formData.name ||
@@ -149,6 +150,13 @@ export const useAddClient = (onSuccess?: () => void) => {
           if (res.status === 200) {
             setClients(res.data);
           }
+        }
+        
+        dispatch(setClientId(existingClient._id));
+        setViews(ORDER_SUMMARY_VIEW);
+        
+        // Show toast after state updates
+        if (isDataChanged) {
           toast.info(
             createToast(
               "Client updated",
@@ -156,15 +164,26 @@ export const useAddClient = (onSuccess?: () => void) => {
               "info"
             )
           );
+        } else {
+          toast.success(
+            createToast(
+              "Client selected",
+              "Client selected successfully",
+              "success"
+            )
+          );
         }
-        dispatch(setClientId(existingClient._id));
       } else {
         const response = await createClient(formData);
         const res = await getClients();
         if (res.status === 200) {
           setClients(res.data);
         }
+        
         dispatch(setClientId(response.data._id));
+        setViews(ORDER_SUMMARY_VIEW);
+        
+        // Show toast after state updates
         toast.success(
           createToast(
             "Client created",
@@ -173,8 +192,9 @@ export const useAddClient = (onSuccess?: () => void) => {
           )
         );
       }
-      setViews(ORDER_SUMMARY_VIEW);
+
       onSuccess?.();
+      return true;
     } catch (error) {
       toast.error(
         createToast(
@@ -183,6 +203,7 @@ export const useAddClient = (onSuccess?: () => void) => {
           "error"
         )
       );
+      return false;
     } finally {
       setIsLoading(false);
     }
