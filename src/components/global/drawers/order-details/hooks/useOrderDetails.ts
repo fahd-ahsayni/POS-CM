@@ -2,7 +2,11 @@ import { createToast } from "@/components/global/Toasters";
 import { ALL_CATEGORIES_VIEW } from "@/components/views/home/left-section/constants";
 import { ORDER_SUMMARY_VIEW } from "@/components/views/home/right-section/constants";
 import { refreshOrders } from "@/store/slices/data/orders.slice";
-import { setOrderData } from "@/store/slices/order/create-order.slice";
+import {
+  setDeliveryGuyId,
+  setOrderData,
+  setWaiterId,
+} from "@/store/slices/order/create-order.slice";
 import { Product, ProductVariant } from "@/types/product.types";
 import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -68,6 +72,23 @@ export const useOrderDetails = (
       );
       const products = generalData.products || [];
 
+      // Save the loaded order to localStorage
+      localStorage.setItem("loadedOrder", JSON.stringify(selectedOrder));
+
+      // Update order type in localStorage
+      if (selectedOrder.order_type_id) {
+        localStorage.setItem(
+          "orderType",
+          JSON.stringify({
+            ...selectedOrder.order_type_id,
+            select_delivery_boy:
+              selectedOrder.order_type_id.type === "delivery",
+            select_waiter: selectedOrder.order_type_id.type !== "delivery",
+          })
+        );
+      }
+
+      // Handle table selection
       if (selectedOrder.table_id) {
         const tableName =
           typeof selectedOrder.table_id === "object"
@@ -76,6 +97,15 @@ export const useOrderDetails = (
         localStorage.setItem("tableNumber", tableName.toString());
       } else {
         localStorage.removeItem("tableNumber");
+      }
+
+      // Update staff selection based on order type
+      if (selectedOrder.order_type_id?.type === "delivery") {
+        dispatch(setWaiterId(null));
+        dispatch(setDeliveryGuyId(selectedOrder.delivery_guy_id || null));
+      } else {
+        dispatch(setDeliveryGuyId(null));
+        dispatch(setWaiterId(selectedOrder.waiter_id || null));
       }
 
       const selectedProducts = selectedOrder.orderline_ids
@@ -206,6 +236,9 @@ export const useOrderDetails = (
       setRightViews(ORDER_SUMMARY_VIEW);
       setOpenOrderDetails(false);
       navigate("/");
+
+      // Trigger window refresh instead of page reload
+      window.dispatchEvent(new Event("storage"));
     } catch (error) {
       console.error("Error loading order:", error);
       toast.error(

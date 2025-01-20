@@ -113,36 +113,17 @@ export const useOrderSummary = () => {
 
         const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
 
-        const existingOrder =
-          orders &&
-          orders?.orders?.find(
-            (o: any) =>
-              o._id === order._id &&
-              o.status !== "canceled" &&
-              o.status !== "paid"
-          );
+        const loadedOrder = JSON.parse(
+          localStorage.getItem("loadedOrder") || "{}"
+        );
 
-        if (existingOrder) {
+        if (loadedOrder) {
           // Update existing order
           updateOrder(
             {
-              ...order,
-              orderlines: order.orderlines.map((line) => ({
-                product_variant_id: line.product_variant_id,
-                quantity: line.quantity,
-                price: line.price,
-                customer_index: line.customer_index,
-                notes: line.notes,
-                is_paid: line.is_paid,
-                is_ordred: line.is_ordred,
-                suite_commande: line.suite_commande,
-                high_priority: line.high_priority,
-                discount: line.discount,
-                uom_id: line.uom_id,
-                order_type_id: line.order_type_id,
-              })),
+              orderlines: order.orderlines,
             },
-            existingOrder._id
+            loadedOrder._id
           )
             .then(() => {
               resetOrderState();

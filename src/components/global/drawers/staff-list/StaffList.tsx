@@ -1,4 +1,4 @@
-import { fetchLivreurs, fetchWaiters } from "@/api/services";
+import { fetchLivreurs, fetchWaiters, updateOrder } from "@/api/services";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -51,9 +51,38 @@ const StaffList = ({ open, setOpen }: StaffListProps) => {
     }
   }, [open, fetchStaffList]);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     const selectedStaff = staffList.find((s) => s._id === selectedStaffId);
+    const loadedOrder = localStorage.getItem("loadedOrder");
+
     if (selectedStaff) {
+      if (loadedOrder) {
+        // Handle loaded order update
+        const order = JSON.parse(loadedOrder);
+        try {
+          if (isDelivery) {
+            await updateOrder(
+              {
+                waiter_id: null,
+                delivery_guy_id: selectedStaff._id,
+              },
+              order._id
+            );
+          } else {
+            await updateOrder(
+              {
+                waiter_id: selectedStaff._id,
+                delivery_guy_id: null,
+              },
+              order._id
+            );
+          }
+        } catch (error) {
+          console.error("Error updating order staff:", error);
+        }
+      }
+
+      // Update Redux state
       if (isDelivery) {
         dispatch(setDeliveryGuyId(selectedStaff._id));
         dispatch(setWaiterId(null));
@@ -61,6 +90,7 @@ const StaffList = ({ open, setOpen }: StaffListProps) => {
         dispatch(setWaiterId(selectedStaff._id));
         dispatch(setDeliveryGuyId(null));
       }
+
       setOpen(false);
     }
   };
