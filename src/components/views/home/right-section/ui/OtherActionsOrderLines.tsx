@@ -22,6 +22,7 @@ export default function OtherActionsOrderLines() {
   const [isOneTime, setIsOneTime] = useState(false);
 
   const { setViews } = useRightViewContext();
+  const loadedOrder = localStorage.getItem("loadedOrder");
 
   const handleUrgentToggle = (value: boolean) => {
     setIsUrgent(value);
@@ -64,13 +65,16 @@ export default function OtherActionsOrderLines() {
         </MenuButton>
 
         <MenuItems className="absolute right-0 mt-2 z-[9999] w-60 origin-top-right rounded-md bg-white dark:bg-primary-black shadow-lg focus:outline-none p-3 border border-border">
-          <MenuItem>
+          <MenuItem disabled={!!loadedOrder}>
             {({ active }) => (
               <button
                 className={`${
                   active ? "bg-gray-100 dark:bg-secondary-black" : ""
-                } group flex w-full items-center px-4 py-2 text-sm rounded`}
+                } group flex w-full items-center px-4 py-2 text-sm rounded ${
+                  loadedOrder ? "opacity-50 cursor-not-allowed" : ""
+                }`}
                 onClick={() => setViews(TYPE_OF_ORDER_VIEW)}
+                disabled={!!loadedOrder}
               >
                 Change Order Type
               </button>
@@ -88,13 +92,16 @@ export default function OtherActionsOrderLines() {
               </button>
             )}
           </MenuItem>
-          <MenuItem>
+          <MenuItem disabled={!!loadedOrder}>
             {({ active }) => (
               <button
                 className={`${
                   active ? "bg-gray-100 dark:bg-secondary-black" : ""
-                } group flex w-full items-center px-4 py-2 text-sm rounded`}
+                } group flex w-full items-center px-4 py-2 text-sm rounded ${
+                  loadedOrder ? "opacity-50 cursor-not-allowed" : ""
+                }`}
                 onClick={() => setOpenModalOrderComments(true)}
+                disabled={!!loadedOrder}
               >
                 Add Comment
               </button>
@@ -105,13 +112,16 @@ export default function OtherActionsOrderLines() {
               <div
                 className={`${
                   active ? "bg-gray-100 dark:bg-secondary-black" : ""
-                } group flex w-full items-center justify-between px-4 py-2 text-sm rounded`}
+                } group flex w-full items-center justify-between px-4 py-2 text-sm rounded ${
+                  loadedOrder ? "opacity-50" : ""
+                }`}
               >
                 <span>Order One Time</span>
                 <Switch
                   color="red"
                   checked={isOneTime}
                   onChange={handleOneTimeToggle}
+                  disabled={!!loadedOrder}
                 />
               </div>
             )}
@@ -121,13 +131,16 @@ export default function OtherActionsOrderLines() {
               <div
                 className={`${
                   active ? "bg-gray-100 dark:bg-secondary-black" : ""
-                } group flex w-full items-center justify-between px-4 py-2 text-sm rounded`}
+                } group flex w-full items-center justify-between px-4 py-2 text-sm rounded ${
+                  loadedOrder ? "opacity-50" : ""
+                }`}
               >
                 <span>Mark as Urgent</span>
                 <Switch
                   color="red"
                   checked={isUrgent}
                   onChange={handleUrgentToggle}
+                  disabled={!!loadedOrder}
                 />
               </div>
             )}
