@@ -22,7 +22,7 @@ interface OrderType {
 
 const OrderBadge: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="h-8 flex-1 flex items-center justify-center">
-    <span className="font-medium text-md">{children}</span>
+    <span className="font-medium text-sm lg:text-base">{children}</span>
   </div>
 );
 

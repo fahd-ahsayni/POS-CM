@@ -42,7 +42,7 @@ const ProductGrid = memo(function ProductGrid({
 
   return (
     <motion.div
-      className="w-full grid grid-cols-3 gap-3 px-2 pb-6"
+      className="w-full grid grid-cols-2 lg:grid-cols-3 gap-3 px-2 pb-6"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.35 }}

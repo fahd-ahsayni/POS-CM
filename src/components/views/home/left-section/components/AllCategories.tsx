@@ -21,7 +21,9 @@ export default memo(function AllCategories() {
       animate={{ opacity: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.35 }}
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5 mt-4 pb-16 scrollbar-hide"
+      className={cn(
+        "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5 mt-4 scrollbar-hide"
+      )}
     >
       <Card
         onClick={handleAllProductsClick}
@@ -30,9 +32,7 @@ export default memo(function AllCategories() {
           isInteractionDisabled && "pointer-events-none"
         )}
       >
-        <TypographyH4 className="text-center">
-          All Items
-        </TypographyH4>
+        <TypographyH4 className="text-center">All Items</TypographyH4>
       </Card>
 
       {categories.map((category: Category) => (
