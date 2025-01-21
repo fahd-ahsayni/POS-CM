@@ -56,7 +56,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
         isActive
           ? "!bg-primary-red text-white !border-interactive-vivid-red shadow-md shadow-primary-red/60 dark:shadow-primary-red/50"
           : "shadow-md shadow-primary-black/20 dark:shadow-black/70",
-        "group w-full p-2 rounded-md flex flex-col items-center text-xs font-medium transition-all duration-150",
+        "group w-full p-2 rounded-md flex flex-col items-center text-xs font-medium",
         item.isDisabled && DISABLED_ITEM_STYLES
       )}
     >

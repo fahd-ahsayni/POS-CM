@@ -20,6 +20,6 @@ export const currency: Currency = {
 };
 
 export const loadingColors: loadingColors = {
-  primary: "#FB0000",
+  primary: "#FFF",
   secondary: "#FFF",
 };

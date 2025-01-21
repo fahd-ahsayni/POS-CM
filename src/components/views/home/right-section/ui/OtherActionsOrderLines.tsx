@@ -1,5 +1,4 @@
 import ApplyDiscount from "@/components/global/drawers/apply-discount/ApplyDiscount";
-import ChangeOrderType from "@/components/global/drawers/change-order-type/ChangeOrderType";
 import ModalOrderComments from "@/components/global/modal/ModalOrderComments";
 import { Switch } from "@/components/ui/switch";
 import { updateOrder } from "@/functions/updateOrder";
@@ -15,8 +14,7 @@ import { useRightViewContext } from "../contexts/RightViewContext";
 export default function OtherActionsOrderLines() {
   const dispatch = useDispatch();
   const [openModalOrderComments, setOpenModalOrderComments] = useState(false);
-  const [openModalChangeOrderType, setOpenModalChangeOrderType] =
-    useState(false);
+
   const [openModalApplyDiscount, setOpenModalApplyDiscount] = useState(false);
   const [isUrgent, setIsUrgent] = useState(false);
   const [isOneTime, setIsOneTime] = useState(false);
@@ -41,10 +39,6 @@ export default function OtherActionsOrderLines() {
       <ApplyDiscount
         open={openModalApplyDiscount}
         setOpen={setOpenModalApplyDiscount}
-      />
-      <ChangeOrderType
-        open={openModalChangeOrderType}
-        setOpen={setOpenModalChangeOrderType}
       />
       <ModalOrderComments
         isOpen={openModalOrderComments}
