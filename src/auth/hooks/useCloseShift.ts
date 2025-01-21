@@ -125,10 +125,6 @@ export const useCloseShift = () => {
   };
 
   const validateForm = (): boolean => {
-    const hasCashAmount = paymentMethods
-      .filter((method) => method.is_cash)
-      .some((method) => paymentAmounts[method._id]);
-
     if (requiredNextCashier && !selectedCashier) {
       toast.error(
         createToast(
