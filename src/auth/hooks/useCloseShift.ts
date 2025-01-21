@@ -129,17 +129,6 @@ export const useCloseShift = () => {
       .filter((method) => method.is_cash)
       .some((method) => paymentAmounts[method._id]);
 
-    if (!hasCashAmount) {
-      toast.error(
-        createToast(
-          "Cash amount is required",
-          "Enter the total cash amount",
-          "error"
-        )
-      );
-      return false;
-    }
-
     if (requiredNextCashier && !selectedCashier) {
       toast.error(
         createToast(
