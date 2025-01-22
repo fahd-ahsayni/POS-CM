@@ -3,7 +3,7 @@ import {
   DropdownDivider,
   DropdownItem,
   DropdownLabel,
-  DropdownMenu
+  DropdownMenu,
 } from "@/components/catalyst/dropdown";
 import ApplyDiscount from "@/components/global/drawers/apply-discount/ApplyDiscount";
 import ModalOrderComments from "@/components/global/modal/ModalOrderComments";
@@ -85,31 +85,34 @@ export default function OtherActionsOrderLines() {
 
           <DropdownDivider />
 
-          <DropdownItem>
+          <div className="flex flex-col gap-y-2 px-3.5 py-2.5 sm:px-3 sm:py-1.5">
             <div className="flex items-center justify-between w-full">
-              <DropdownLabel>Order One Time</DropdownLabel>
-              <Switch
-                color="red"
-                checked={isOneTime}
-                onChange={handleOneTimeToggle}
-                disabled={!!loadedOrder}
-                className="-mr-8"
-              />
+              <span>Order One Time</span>
+              <span className="-mr-10">
+                <Switch
+                  color="red"
+                  checked={isOneTime}
+                  onChange={handleOneTimeToggle}
+                  disabled={!!loadedOrder}
+                />
+              </span>
             </div>
-          </DropdownItem>
 
-          <DropdownItem>
-            <div className="flex items-center justify-between">
-              <DropdownLabel>Mark as Urgent</DropdownLabel>
-              <Switch
-                color="red"
-                checked={isUrgent}
-                onChange={handleUrgentToggle}
-                disabled={!!loadedOrder}
-                className="-mr-8"
-              />
+            <div
+              className="flex items-center justify-between w-full"
+              onClick={() => handleUrgentToggle(!isUrgent)}
+            >
+              <span>Mark as Urgent</span>
+              <span className="-mr-10">
+                <Switch
+                  color="red"
+                  checked={isUrgent}
+                  onChange={handleUrgentToggle}
+                  disabled={!!loadedOrder}
+                />
+              </span>
             </div>
-          </DropdownItem>
+          </div>
         </DropdownMenu>
       </Dropdown>
     </>

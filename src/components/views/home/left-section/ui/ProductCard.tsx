@@ -52,21 +52,29 @@ export function ProductCard({
   }, [product.variants, currentMenu]);
 
   // Get all variants of this product across all customers
-  const selectedProductVariants = selectedProducts.filter((p) => {
-    // For combos, check by product ID
-    if (product.variants[0].is_menu) {
-      return p._id === product.variants[0]._id;
-    }
-    // For regular products with multiple variants, check if variant belongs to this product
-    return product.variants.some(
-      (variant) => variant._id === p.product_variant_id
-    );
-  });
+  const selectedProductVariants = useMemo(() => {
+    return selectedProducts.filter((p) => {
+      // For regular products, check if variant belongs to this product
+      const isRegularProduct = product.variants.some(
+        (variant) => variant._id === p.product_variant_id && !variant.is_menu
+      );
+
+      // For combos, check if any variant of this product is a combo and matches the selected product
+      const isComboProduct = product.variants.some(
+        (variant) => 
+          variant.is_menu && 
+          p.is_combo && 
+          p.product_variant_id === variant._id
+      );
+
+      return isRegularProduct || isComboProduct;
+    });
+  }, [product.variants, selectedProducts]);
 
   // Calculate total quantity across all variants and customers
-  const totalQuantity = selectedProductVariants.reduce(
-    (sum, p) => sum + (p.quantity || 0),
-    0
+  const totalQuantity = useMemo(() => 
+    selectedProductVariants.reduce((sum, p) => sum + (p.quantity || 0), 0),
+    [selectedProductVariants]
   );
 
   return (

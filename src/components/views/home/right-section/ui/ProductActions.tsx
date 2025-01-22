@@ -1,5 +1,10 @@
 import { TrashRegularIcon } from "@/assets/figma-icons";
-import { Dropdown, DropdownDivider, DropdownItem, DropdownLabel, DropdownMenu } from "@/components/catalyst/dropdown";
+import {
+  Dropdown,
+  DropdownDivider,
+  DropdownItem,
+  DropdownMenu,
+} from "@/components/catalyst/dropdown";
 import ApplyProductDiscount from "@/components/global/drawers/apply-product-discount/ApplyProductDiscount";
 import BaseModal from "@/components/global/modal/Layout/BaseModal";
 import { Switch } from "@/components/ui/switch";
@@ -13,7 +18,7 @@ import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext"
 import { useRightViewContext } from "../contexts/RightViewContext";
 
 interface ProductActionsProps {
-  item: any; // Add proper typing based on your item structure
+  item: any;
 }
 
 export default function ProductActions({ item }: ProductActionsProps) {
@@ -25,8 +30,6 @@ export default function ProductActions({ item }: ProductActionsProps) {
 
   const handleUrgentToggle = (enabled: boolean) => {
     const currentCustomerIndex = item.customer_index || customerIndex;
-
-    // If enabling high_priority, ensure suite_commande is false
     dispatch(
       updateOrderLine({
         _id: item._id,
@@ -36,7 +39,6 @@ export default function ProductActions({ item }: ProductActionsProps) {
       })
     );
 
-    // Update selected products in LeftViewContext
     const updatedProducts = selectedProducts.map((product) => {
       if (
         product._id === item._id &&
@@ -45,7 +47,7 @@ export default function ProductActions({ item }: ProductActionsProps) {
         return {
           ...product,
           high_priority: enabled,
-          suite_commande: enabled ? false : product.suite_commande, // Force suite_commande to false if high_priority is true
+          suite_commande: enabled ? false : product.suite_commande,
         };
       }
       return product;
@@ -53,11 +55,10 @@ export default function ProductActions({ item }: ProductActionsProps) {
     setSelectedProducts(updatedProducts);
   };
 
-  // Disable the urgent toggle if suite_commande is true
   const isUrgentDisabled = item.suite_commande;
 
   const handleRemoveOrderLine = () => {
-    setIsConfirmModalOpen(true); // Open confirmation modal instead of direct removal
+    setIsConfirmModalOpen(true);
   };
 
   const confirmRemove = () => {
@@ -94,7 +95,7 @@ export default function ProductActions({ item }: ProductActionsProps) {
       />
 
       <Dropdown>
-        <MenuButton>
+        <MenuButton as="div" className="cursor-pointer">
           <span
             className={cn(
               "inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-medium transition-colors",
@@ -107,32 +108,32 @@ export default function ProductActions({ item }: ProductActionsProps) {
         </MenuButton>
 
         <DropdownMenu className="z-[9999] -ml-20 p-3">
-          <DropdownItem
-            onClick={handleRemoveOrderLine}
-          >
+          <DropdownItem onClick={handleRemoveOrderLine}>
             Remove Order Line
           </DropdownItem>
 
-          <DropdownItem
-            onClick={() => setIsDiscountDrawerOpen(true)}
-          >
+          <DropdownItem onClick={() => setIsDiscountDrawerOpen(true)}>
             Apply Discount
           </DropdownItem>
 
           <DropdownDivider />
 
-          <DropdownItem>
+          <div
+            className="px-3.5 py-2.5 sm:px-3 sm:py-1.5"
+            onClick={() => handleUrgentToggle(!item.high_priority)}
+          >
             <div className="flex items-center justify-between w-full">
-              <DropdownLabel>Mark as Urgent</DropdownLabel>
-              <Switch
-                color="red"
-                checked={item.high_priority || false}
-                onChange={handleUrgentToggle}
-                disabled={isUrgentDisabled}
-                className="-mr-8"
-              />
+              <span className="text-sm">Mark as Urgent</span>
+              <span className="-mr-10">
+                <Switch
+                  color="red"
+                  checked={item.high_priority || false}
+                  onChange={handleUrgentToggle}
+                  disabled={isUrgentDisabled}
+                />
+              </span>
             </div>
-          </DropdownItem>
+          </div>
         </DropdownMenu>
       </Dropdown>
     </>

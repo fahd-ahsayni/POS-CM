@@ -27,6 +27,8 @@ export default function ProductsVariants() {
     selectedProduct,
     selectedProducts,
     setSelectedProducts,
+    setOpenDrawerCombo,
+    setSelectedCombo,
   } = useLeftViewContext();
 
   const { customerIndex, setViews, orderType } = useRightViewContext();
@@ -38,7 +40,7 @@ export default function ProductsVariants() {
     orderType,
   });
 
-  const { handleSelectVariant, handleQuantityChange } = useVariantSelection({
+  const { handleSelectVariant: handleVariantSelect, handleQuantityChange } = useVariantSelection({
     selectedProduct,
     selectedProducts,
     setSelectedProducts,
@@ -52,9 +54,22 @@ export default function ProductsVariants() {
     setViews(ORDER_SUMMARY_VIEW);
   }, [setOpenDrawerVariants, setViews]);
 
+  const handleSelectVariant = useCallback(
+    async (variant: ProductVariant) => {
+      if (variant.is_menu) {
+        setSelectedCombo(variant);
+        setOpenDrawerCombo(true);
+        setOpenDrawerVariants(false);
+      } else {
+        handleVariantSelect(variant._id, variant.price_ttc);
+      }
+    },
+    [setSelectedCombo, setOpenDrawerCombo, setOpenDrawerVariants, handleVariantSelect]
+  );
+
   const variantCards = useMemo(
     () =>
-      selectedProduct?.variants.map((variant: any, index: any) => {
+      selectedProduct?.variants.map((variant: ProductVariant, index: number) => {
         const selectedVariant = selectedProducts.find(
           (p: any) =>
             p.product_variant_id === variant._id &&
@@ -67,7 +82,7 @@ export default function ProductsVariants() {
             variant={variant}
             isSelected={!!selectedVariant}
             quantity={selectedVariant?.quantity || 0}
-            onSelect={() => handleSelectVariant(variant._id, variant.price_ttc)}
+            onSelect={() => handleSelectVariant(variant)}
             onQuantityChange={handleQuantityChange}
           />
         );
@@ -132,8 +147,11 @@ const VariantCard = memo<VariantCardProps>(
           <div className="flex items-center justify-between mb-4">
             <TypographyP className="font-semibold capitalize text-sm">
               {variant.name.toLowerCase()}
+              {variant.is_menu && (
+                <span className="ml-2 text-xs text-primary-red">(Combo)</span>
+              )}
             </TypographyP>
-            {isSelected && (
+            {isSelected && !variant.is_menu && (
               <div className="flex items-center gap-2">
                 <Button
                   slot="decrement"

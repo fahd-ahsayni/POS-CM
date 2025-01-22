@@ -105,8 +105,8 @@ export const useProducts = (initialProducts?: Product[]) => {
 
   const handleProductClick = useCallback(
     (product: Product) => {
-      const variant = product.variants[0];
       if (product.variants.length === 1) {
+        const variant = product.variants[0];
         if (variant.is_menu) {
           setSelectedCombo(variant);
           setOpenDrawerCombo(true);
@@ -114,8 +114,20 @@ export const useProducts = (initialProducts?: Product[]) => {
           addOrUpdateProduct(product, variant._id);
         }
       } else if (product.variants.length > 1) {
-        setSelectedProduct(product);
-        setOpenDrawerVariants(true);
+        // Check if any variant is a combo menu
+        const hasComboVariant = product.variants.some(variant => variant.is_menu);
+        if (hasComboVariant) {
+          // Find the first combo variant
+          const comboVariant = product.variants.find(variant => variant.is_menu);
+          if (comboVariant) {
+            setSelectedCombo(comboVariant);
+            setOpenDrawerCombo(true);
+          }
+        } else {
+          // Regular variants handling
+          setSelectedProduct(product);
+          setOpenDrawerVariants(true);
+        }
       }
     },
     [

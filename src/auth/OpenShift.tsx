@@ -54,7 +54,10 @@ export default function OpenShift({
           localStorage.setItem("shiftId", res.data.shift._id);
         }
       } else if (shiftId) {
-        await updateShift({ starting_balance: amountNumber.toString() }, shiftId);
+        await updateShift(
+          { starting_balance: amountNumber.toString() },
+          shiftId
+        );
       }
       toast.success(
         createToast("Shift opened", "You can now start selling", "success")
