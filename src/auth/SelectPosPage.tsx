@@ -8,9 +8,7 @@ import { logout } from "@/store/slices/authentication/auth.slice";
 import { selectPosError } from "@/store/slices/data/pos.slice";
 import { PosData } from "@/types/pos.types";
 import { User } from "@/types/user.types";
-import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
-import { pageAnimations } from "./animation";
 import PosCard from "./components/PosCard";
 import UserCard from "./components/ui/UserCard";
 import { useSelectPos } from "./hooks/useSelectPos";
@@ -67,7 +65,7 @@ export default function SelectPosPage() {
           </div>
         </header>
         <div className="h-full flex flex-col items-center justify-center">
-          <motion.div {...pageAnimations.userCard}>
+          <div>
             {userAuthenticated && (
               <UserCard
                 withRole={true}
@@ -76,18 +74,15 @@ export default function SelectPosPage() {
                 className="scale-105"
               />
             )}
-          </motion.div>
+          </div>
           <div className="pt-16">
             <Button onClick={handleChangeAccount}>Change Account</Button>
           </div>
         </div>
       </aside>
 
-      <motion.main className="lg:w-9/12 w-8/12 h-full bg-secondary-white">
-        <motion.div
-          {...pageAnimations.mainContent}
-          className="bg-primary-black flex flex-col items-start justify-center h-full w-full px-10 lg:px-20 -pt-10"
-        >
+      <main className="lg:w-9/12 w-8/12 h-full bg-secondary-white">
+        <div className="bg-primary-black flex flex-col items-start justify-center h-full w-full px-10 lg:px-20 -pt-10">
           <header className="flex justify-between items-start w-full">
             <div>
               <TypographyH2 className="text-white">
@@ -107,8 +102,8 @@ export default function SelectPosPage() {
               <PosCard key={pos._id} pos={pos} onClick={handleSelectPos} />
             ))}
           </div>
-        </motion.div>
-      </motion.main>
+        </div>
+      </main>
     </div>
   );
 }

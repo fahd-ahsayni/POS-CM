@@ -66,8 +66,6 @@ export default function Profile() {
     }
   };
 
-  console.log(currentPos);
-
   return (
     <>
       <CloseShift open={open} setOpen={setOpen} />

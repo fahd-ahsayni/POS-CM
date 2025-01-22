@@ -1,13 +1,11 @@
 import { BorderBeam } from "@/components/ui/border-beam";
 import { Card } from "@/components/ui/card";
+import { TextShimmer } from "@/components/ui/text-shimmer";
 import { TypographyH3, TypographySmall } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { PosData } from "@/types/pos.types";
 import { format } from "date-fns";
-import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
-import { pageAnimations } from "../animation";
-import { TextShimmer } from "@/components/ui/text-shimmer";
 import { useSelectPos } from "../hooks/useSelectPos";
 
 interface PosCardProps {
@@ -19,7 +17,7 @@ const PosCard = ({ pos, onClick }: PosCardProps) => {
   const { isLoading } = useSelectPos();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   return (
-    <motion.div {...pageAnimations.posCard} onClick={() => onClick(pos._id)}>
+    <div onClick={() => onClick(pos._id)}>
       <Card
         className={cn(
           "w-full cursor-pointer px-8 group relative",
@@ -89,7 +87,7 @@ const PosCard = ({ pos, onClick }: PosCardProps) => {
           <ChevronRight className="w-7 h-7 text-neutral-dark-grey group-hover:translate-x-1 transition-all duration-300" />
         </div>
       </Card>
-    </motion.div>
+    </div>
   );
 };
 

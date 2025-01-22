@@ -51,7 +51,6 @@ export default function OtherActionsOrderLines() {
         isOpen={openModalOrderComments}
         setOpen={setOpenModalOrderComments}
       />
-
       <Dropdown>
         <Headless.MenuButton>
           <span

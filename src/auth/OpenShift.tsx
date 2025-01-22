@@ -42,18 +42,19 @@ export default function OpenShift({
   }, []);
 
   const handleOpenShift = async () => {
-    if (!amount) return;
+    const amountNumber = parseFloat(amount);
+    if (isNaN(amountNumber)) return;
 
     try {
       setIsLoading(true);
       if (!reOpen) {
-        const res = await openShift(amount, posId);
+        const res = await openShift(amountNumber.toString(), posId);
         if (res.status === 200) {
           setShiftId(res.data.shift._id);
           localStorage.setItem("shiftId", res.data.shift._id);
         }
       } else if (shiftId) {
-        await updateShift({ starting_balance: amount }, shiftId);
+        await updateShift({ starting_balance: amountNumber.toString() }, shiftId);
       }
       toast.success(
         createToast("Shift opened", "You can now start selling", "success")
