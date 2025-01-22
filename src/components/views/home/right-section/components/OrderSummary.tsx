@@ -16,8 +16,8 @@ import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext"
 import { useOrderSummary } from "../hooks/useOrderSummary";
 import OrderLines from "../import/OrderLines";
 import Ticket from "../layouts/Ticket";
+import OrderActions from "../ui/OrderActions";
 import { OrderBannerOnSummary } from "../ui/OrderInfo";
-import OtherActionsOrderLines from "../ui/OtherActionsOrderLines";
 
 const OrderSummary = () => {
   const { selectedProducts } = useLeftViewContext();
@@ -117,7 +117,7 @@ const OrderSummary = () => {
           </div>
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-x-3">
-              <OtherActionsOrderLines />
+              <OrderActions />
               <Button size="icon" onClick={debouncedHandleToggle}>
                 <ExpandListIcon
                   className={`w-[1.2rem] h-auto fill-white transition-transform duration-200 ${

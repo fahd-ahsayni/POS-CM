@@ -1,24 +1,59 @@
 import { logoutService } from "@/api/services";
 import { DisplayIcon } from "@/assets/figma-icons";
 import CloseShift from "@/auth/CloseShift";
+import {
+  Dropdown,
+  DropdownDivider,
+  DropdownHeader,
+  DropdownItem,
+  DropdownLabel,
+  DropdownMenu,
+} from "@/components/catalyst/dropdown";
 import { truncateName } from "@/lib/utils";
-import { AppDispatch } from "@/store";
+import { AppDispatch, RootState } from "@/store";
 import { logout } from "@/store/slices/authentication/auth.slice";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { fetchPosData } from "@/store/slices/data/pos.slice";
+import { PosData } from "@/types/pos.types";
+import * as Headless from "@headlessui/react";
 import { Avatar } from "@heroui/avatar";
+import { formatDistanceToNow } from "date-fns";
 import { ChevronDown, LogOut, Power } from "lucide-react";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { TypographySmall } from "../ui/typography";
 import {
   isCustomerDisplayOpen,
   openCustomerDisplay,
 } from "./Customer-display/useCustomerDisplay";
 
+interface UserData {
+  id: string;
+  name: string;
+  image?: string;
+  position: string;
+}
+
 export default function Profile() {
   const [open, setOpen] = useState(false);
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const [currentPos, setCurrentPos] = useState<PosData | null>(null);
+  const [user, setUser] = useState<UserData | null>(null);
   const dispatch = useDispatch<AppDispatch>();
+  const pos = useSelector((state: RootState) => state.pos.data.pos);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}") as UserData;
+    setUser(user);
+    dispatch(fetchPosData());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (pos && user?.id) {
+      const currentPos = pos.find(
+        (p: PosData) => p.shift?.user_id?._id === user.id
+      );
+      setCurrentPos(currentPos || null);
+    }
+  }, [pos, user]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -31,26 +66,29 @@ export default function Profile() {
     }
   };
 
+  console.log(currentPos);
+
   return (
     <>
       <CloseShift open={open} setOpen={setOpen} />
-      <Menu>
-        <MenuButton className="h-auto p-0 flex">
-          <div>
-            <Avatar
-              radius="lg"
-              showFallback={true}
-              fallback={
-                <span className="font-medium text-sm">
-                  {user?.name?.charAt(0)}
-                </span>
-              }
-              src={user?.image}
-            />
-          </div>
-          <div className="ml-3 md:flex hidden flex-col justify-center items-start h-10">
+      <Dropdown>
+        <Headless.MenuButton
+          className="flex items-center gap-3 rounded-xl border border-transparent"
+          aria-label="Account options"
+        >
+          <Avatar
+            radius="lg"
+            showFallback={true}
+            fallback={
+              <span className="font-medium text-sm">
+                {user?.name?.charAt(0) || ""}
+              </span>
+            }
+            src={user?.image}
+          />
+          <div className="md:flex hidden flex-col justify-center items-start">
             <TypographySmall className="font-medium capitalize">
-              {truncateName(user?.name, 20)}
+              {truncateName(user?.name ?? "", 20)}
             </TypographySmall>
             <TypographySmall className="text-xs text-neutral-dark-grey">
               {user?.position}
@@ -59,66 +97,47 @@ export default function Profile() {
           <ChevronDown
             size={20}
             strokeWidth={1.5}
-            className="ms-2 opacity-60 mt-0.5"
+            className="ml-auto mr-1 size-4 shrink-0 stroke-zinc-400"
             aria-hidden="true"
           />
-        </MenuButton>
+        </Headless.MenuButton>
 
-        <MenuItems
-          anchor="bottom"
-          className="z-[9999] w-52 bg-white dark:bg-primary-black absolute rounded-md ring-1 ring-black ring-opacity-5 focus:outline-none p-3 mt-2 shadow-lg border border-border"
-        >
-          <MenuItem>
-            {({ active }) => (
-              <span
-                onClick={handleCustomerDisplay}
-                className={`${
-                  active ? "bg-gray-100 dark:bg-secondary-black" : ""
-                } group flex w-full items-center px-4 py-2 text-sm rounded`}
-              >
-                <DisplayIcon className="opacity-60 mr-2" aria-hidden="true" />
-                Customer Display
-              </span>
-            )}
-          </MenuItem>
+        <DropdownMenu className="min-w-[--button-width] z-[9999] p-2 -ml-10">
+          <DropdownHeader>
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-xs text-zinc-800 dark:text-white flex-1">
+                {currentPos?.name || ""}
+              </div>
+              <div className="text-xs text-zinc-500 dark:text-zinc-400 flex-1 text-end">
+                {currentPos?.shift?.opening_time
+                  ? formatDistanceToNow(
+                      new Date(currentPos.shift.opening_time),
+                      { addSuffix: true }
+                    )
+                  : ""}
+              </div>
+            </div>
+          </DropdownHeader>
+          <DropdownDivider />
 
-          <MenuItem>
-            {({ active }) => (
-              <span
-                onClick={() => setOpen(true)}
-                className={`${
-                  active ? "bg-gray-100 dark:bg-secondary-black" : ""
-                } group flex w-full items-center px-4 py-2 text-sm rounded`}
-              >
-                <Power
-                  size={17}
-                  className="opacity-60 mr-2"
-                  aria-hidden="true"
-                />
-                End Shift
-              </span>
-            )}
-          </MenuItem>
+          <DropdownItem onClick={handleCustomerDisplay}>
+            <DisplayIcon className="opacity-60" aria-hidden="true" />
+            <DropdownLabel className="pl-2">Customer Display</DropdownLabel>
+          </DropdownItem>
 
-          <MenuItem>
-            {({ active }) => (
-              <span
-                onClick={handleLogout}
-                className={`${
-                  active ? "bg-gray-100 dark:bg-secondary-black" : ""
-                } group flex w-full items-center px-4 py-2 text-sm text-primary-red rounded`}
-              >
-                <LogOut
-                  size={17}
-                  className="opacity-60 mr-2"
-                  aria-hidden="true"
-                />
-                Logout
-              </span>
-            )}
-          </MenuItem>
-        </MenuItems>
-      </Menu>
+          <DropdownDivider />
+
+          <DropdownItem onClick={() => setOpen(true)}>
+            <Power size={17} className="opacity-60" aria-hidden="true" />
+            <DropdownLabel className="pl-2">End Shift</DropdownLabel>
+          </DropdownItem>
+
+          <DropdownItem onClick={handleLogout}>
+            <LogOut size={17} className="opacity-60 text-primary-red" aria-hidden="true" />
+            <DropdownLabel className="pl-2 text-primary-red">Logout</DropdownLabel>
+          </DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
     </>
   );
 }

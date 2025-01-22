@@ -6,6 +6,7 @@ export interface PosData {
   name: string;
   printer_ip: string;
   order_types: string[];
+  user_id?: User;
   createdAt: string;
   updatedAt: string;
   shift: Shift | null;

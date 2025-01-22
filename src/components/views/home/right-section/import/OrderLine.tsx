@@ -13,7 +13,7 @@ import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext"
 import { useRightViewContext } from "../contexts/RightViewContext";
 import { useOrderLine } from "../hooks/useOrderLine";
 import OderLineAddComments from "../ui/OderLineAddComments";
-import OrderLineOtherActions from "../ui/OrderLineOtherActions";
+import ProductActions from "../ui/ProductActions";
 
 interface OrderLineProps {
   item: ProductSelected;
@@ -187,7 +187,7 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
                   )?.discount.find(
                     (d: any) => d._id === item.discount?.discount_id
                   )?.value || 0}
-                 %
+                  %
                 </Badge>
               )}
           </div>
@@ -197,7 +197,7 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
               customerIndex={item.customer_index || customerIndex}
               initialNotes={item.notes || []}
             />
-            <OrderLineOtherActions item={item} />
+            <ProductActions item={item} />
           </div>
         </div>
       </Card>

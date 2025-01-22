@@ -1,23 +1,22 @@
 import { TrashRegularIcon } from "@/assets/figma-icons";
+import { Dropdown, DropdownDivider, DropdownItem, DropdownLabel, DropdownMenu } from "@/components/catalyst/dropdown";
 import ApplyProductDiscount from "@/components/global/drawers/apply-product-discount/ApplyProductDiscount";
 import BaseModal from "@/components/global/modal/Layout/BaseModal";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { updateOrderLine } from "@/store/slices/order/create-order.slice";
-import { Menu, MenuItem } from "@headlessui/react";
+import { MenuButton } from "@headlessui/react";
 import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch } from "react-redux";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { useRightViewContext } from "../contexts/RightViewContext";
 
-interface OrderLineOtherActionsProps {
+interface ProductActionsProps {
   item: any; // Add proper typing based on your item structure
 }
 
-export default function OrderLineOtherActions({
-  item,
-}: OrderLineOtherActionsProps) {
+export default function ProductActions({ item }: ProductActionsProps) {
   const dispatch = useDispatch();
   const { selectedProducts, setSelectedProducts } = useLeftViewContext();
   const { customerIndex } = useRightViewContext();
@@ -94,61 +93,48 @@ export default function OrderLineOtherActions({
         orderLine={item}
       />
 
-      <Menu as="div" className="relative">
-        <Menu.Button className="relative">
-          <span className={cn(
-            "inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-medium transition-colors",
-            "bg-accent-white/10 hover:bg-accent-white/20",
-            "h-7 w-7"
-          )}>
+      <Dropdown>
+        <MenuButton>
+          <span
+            className={cn(
+              "inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-medium transition-colors",
+              "bg-accent-white/10 hover:bg-accent-white/20",
+              "h-7 w-7"
+            )}
+          >
             <BsThreeDotsVertical className="text-primary-black dark:text-white" />
           </span>
-        </Menu.Button>
+        </MenuButton>
 
-        <Menu.Items className="absolute right-0 mt-2 w-52 origin-top-right rounded-md bg-white dark:bg-primary-black shadow-lg focus:outline-none p-3 border border-border z-50">
-          <Menu.Item>
-            {({ active }) => (
-              <button
-                className={`${
-                  active ? "bg-gray-100 dark:bg-secondary-black" : ""
-                } group flex w-full items-center px-4 py-2 text-sm rounded`}
-                onClick={handleRemoveOrderLine}
-              >
-                Remove Order Line
-              </button>
-            )}
-          </Menu.Item>
-          <MenuItem>
-            {({ active }) => (
-              <button
-                className={`${
-                  active ? "bg-gray-100 dark:bg-secondary-black" : ""
-                } group flex w-full items-center px-4 py-2 text-sm rounded`}
-                onClick={() => setIsDiscountDrawerOpen(true)}
-              >
-                Apply Discount
-              </button>
-            )}
-          </MenuItem>
-          <MenuItem disabled>
-            {({ active }) => (
-              <div
-                className={`${
-                  active ? "bg-gray-100 dark:bg-secondary-black" : ""
-                } group flex w-full items-center justify-between px-4 py-2 text-sm rounded`}
-              >
-                <span>Mark as Urgent</span>
-                <Switch
-                  color="red"
-                  checked={item.high_priority || false}
-                  onChange={handleUrgentToggle}
-                  disabled={isUrgentDisabled}
-                />
-              </div>
-            )}
-          </MenuItem>
-        </Menu.Items>
-      </Menu>
+        <DropdownMenu className="z-[9999] -ml-20 p-3">
+          <DropdownItem
+            onClick={handleRemoveOrderLine}
+          >
+            Remove Order Line
+          </DropdownItem>
+
+          <DropdownItem
+            onClick={() => setIsDiscountDrawerOpen(true)}
+          >
+            Apply Discount
+          </DropdownItem>
+
+          <DropdownDivider />
+
+          <DropdownItem>
+            <div className="flex items-center justify-between w-full">
+              <DropdownLabel>Mark as Urgent</DropdownLabel>
+              <Switch
+                color="red"
+                checked={item.high_priority || false}
+                onChange={handleUrgentToggle}
+                disabled={isUrgentDisabled}
+                className="-mr-8"
+              />
+            </div>
+          </DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
     </>
   );
 }

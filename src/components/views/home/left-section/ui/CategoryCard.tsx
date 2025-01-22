@@ -35,10 +35,10 @@ export const CategoryCard = memo(function CategoryCard({
           loading="lazy"
           crossOrigin="anonymous"
           className={cn(
-            "object-cover transition-all duration-500",
+            "object-cover grayscale brightness-[0.3] transition-all duration-150",
             isDisabled
-              ? "grayscale dark:brightness-[0.30] brightness-[0.6]"
-              : "dark:brightness-[0.5] brightness-[0.6]"
+              ? "grayscale"
+              : "grayscale-0"
           )}
         />
         <TypographyH4 className="text-center absolute text-white px-4 line-clamp-2">
