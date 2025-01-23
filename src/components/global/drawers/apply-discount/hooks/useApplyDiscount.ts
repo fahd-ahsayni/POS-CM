@@ -58,36 +58,22 @@ export function useApplyDiscount(
     try {
       if (!selectedDiscount || !selectedReason) return;
 
-      dispatch(
-        setDiscount({
-          discount_id: selectedDiscount,
-          reason: selectedReason,
-          confirmed_by: admin.user.id,
-        })
-      );
+      const discountData = {
+        discount_id: selectedDiscount,
+        reason: selectedReason,
+        confirmed_by: admin.user.id
+      };
 
-      toast.success(
-        createToast(
-          "Discount applied",
-          "Discount applied successfully",
-          "success"
-        )
-      );
+      console.log('Applying discount:', discountData); // Debug log
+      dispatch(setDiscount(discountData));
+
       setOpen(false);
     } catch (error) {
-      toast.error(
-        createToast("Apply Discount failed", "Please try again", "error")
-      );
+      console.error('Discount error:', error); // Debug log
+      toast.error(createToast("Apply Discount failed", "Please try again", "error"));
       setAuthorization(false);
     }
-  }, [
-    dispatch,
-    selectedDiscount,
-    selectedReason,
-    admin.user.id,
-    setOpen,
-    setAuthorization,
-  ]);
+  }, [selectedDiscount, selectedReason, admin.user.id, dispatch, setOpen, setAuthorization]);
 
   return {
     selectedDiscount,

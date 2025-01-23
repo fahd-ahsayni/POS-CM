@@ -2,6 +2,35 @@ import { calculateTotalFromOrderlines } from "@/functions/priceCalculations";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../..";
 
+interface DiscountData {
+  id: string;
+  name: string;
+  type: "percentage" | "fixed";
+  value: number;
+  reason?: string;
+  confirmed_by: string;
+}
+
+interface OrderState {
+  waiter_id: string | null;
+  coaster_call: string | null;
+  urgent: boolean;
+  shift_id: string;
+  table_id: string | null;
+  delivery_guy_id: string | null;
+  discount: DiscountData | null;
+  client_id: string | null;
+  customer_count: number;
+  notes: string;
+  one_time: boolean;
+  total_amount: number;
+  changed_price: number | null;
+  changed_price_reason?: string;
+  changed_price_confirmed_by?: string;
+  order_type_id: string | null;
+  orderlines: any[];
+}
+
 const initialOrderState: OrderState = {
   waiter_id: null,
   coaster_call: null,
@@ -38,7 +67,8 @@ const orderSlice = createSlice({
       state.data = action.payload;
       state.data.total_amount = calculateTotalFromOrderlines(
         state.data.orderlines,
-        state.data.delivery_guy_id || ""
+        state.data.delivery_guy_id || "",
+        state.data.discount?.id || ""
       );
     },
     resetOrder: (state) => {
@@ -49,7 +79,8 @@ const orderSlice = createSlice({
       };
       state.data.total_amount = calculateTotalFromOrderlines(
         state.data.orderlines,
-        state.data.delivery_guy_id || ""
+        state.data.delivery_guy_id || "",
+        state.data.discount?.id || ""
       );
     },
     updateOrderLine: (
@@ -77,7 +108,8 @@ const orderSlice = createSlice({
         }>;
       }>
     ) => {
-      const { _id, customer_index, product_variant_id, ...updateData } = action.payload;
+      const { _id, customer_index, product_variant_id, ...updateData } =
+        action.payload;
 
       // Find the index of the existing order line
       const orderLineIndex = state.data.orderlines.findIndex((ol) => {
@@ -113,24 +145,27 @@ const orderSlice = createSlice({
       // Update total amount
       state.data.total_amount = calculateTotalFromOrderlines(
         state.data.orderlines,
-        state.data.delivery_guy_id || ""
+        state.data.delivery_guy_id || "",
+        state.data.discount?.id || ""
       );
     },
     addOrderLine: (state, action: PayloadAction<any[]>) => {
       const newOrderLines = action.payload.map((line) => {
         if (line.is_combo && line.combo_items) {
           // Generate a unique ID for each combo
-          const uniqueId = `combo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+          const uniqueId = `combo_${Date.now()}_${Math.random()
+            .toString(36)
+            .substr(2, 9)}`;
           return {
             ...line,
             id: uniqueId, // Use the unique ID
             combo_prod_ids: line.combo_items.variants.map((v: any) => ({
               ...v,
-              combo_id: uniqueId // Add combo_id to track relationship
+              combo_id: uniqueId, // Add combo_id to track relationship
             })),
             combo_supp_ids: line.combo_items.supplements.map((s: any) => ({
               ...s,
-              combo_id: uniqueId // Add combo_id to track relationship
+              combo_id: uniqueId, // Add combo_id to track relationship
             })),
             price: line.price || 0,
             quantity: line.quantity || 1,
@@ -150,7 +185,8 @@ const orderSlice = createSlice({
       // Update total amount
       state.data.total_amount = calculateTotalFromOrderlines(
         state.data.orderlines,
-        state.data.delivery_guy_id || ""
+        state.data.delivery_guy_id || "",
+        state.data.discount?.id || ""
       );
     },
     removeOrderLine: (state, action: PayloadAction<number>) => {
@@ -159,7 +195,8 @@ const orderSlice = createSlice({
       );
       state.data.total_amount = calculateTotalFromOrderlines(
         state.data.orderlines,
-        state.data.delivery_guy_id || ""
+        state.data.delivery_guy_id || "",
+        state.data.discount?.id || ""
       );
     },
     updateTotalAmount: (state, action: PayloadAction<number>) => {
@@ -220,7 +257,17 @@ const orderSlice = createSlice({
       state.data.urgent = action.payload;
     },
     setDiscount: (state, action: PayloadAction<any | null>) => {
+      console.log('Setting discount:', action.payload); // Debug log
       state.data.discount = action.payload;
+      
+      const newTotal = calculateTotalFromOrderlines(
+        state.data.orderlines,
+        state.data.delivery_guy_id || "",
+        state.data.discount
+      );
+      console.log('New total after discount:', newTotal); // Debug log
+      
+      state.data.total_amount = newTotal;
     },
     holdOrder: (state) => {
       const holdOrders = JSON.parse(localStorage.getItem("holdOrders") || "[]");
@@ -302,6 +349,7 @@ export const selectOrderLines = (state: RootState) =>
 export const selectTotalAmount = (state: RootState) => {
   return calculateTotalFromOrderlines(
     state.createOrder.data.orderlines,
-    state.createOrder.data.delivery_guy_id || ""
+    state.createOrder.data.delivery_guy_id || "",
+    state.createOrder.data.discount?.id || ""
   );
 };
