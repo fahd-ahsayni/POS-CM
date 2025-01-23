@@ -64,7 +64,6 @@ export function useApplyDiscount(
         confirmed_by: admin.user.id
       };
 
-      console.log('Applying discount:', discountData); // Debug log
       dispatch(setDiscount(discountData));
 
       setOpen(false);
