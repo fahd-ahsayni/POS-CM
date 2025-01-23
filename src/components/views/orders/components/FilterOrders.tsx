@@ -49,10 +49,15 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
   );
   const orderTypes = useMemo(
     () =>
-      orderTypesData?.map((type: any) => ({
-        value: type.type,
-        label: type.name,
-      })),
+      orderTypesData?.map((type: any, index: number) => {
+        const uniqueId = `${type.type}_${index}`;
+        return {
+          value: uniqueId,
+          label: type.name,
+          key: uniqueId,
+          originalType: type.type
+        };
+      }),
     [orderTypesData]
   );
 
@@ -70,7 +75,8 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
   }, []);
 
   const handleOrderTypeSelect = useCallback((value: string) => {
-    setSelectedOrderType(value);
+    const originalType = value.split('_')[0];
+    setSelectedOrderType(originalType);
   }, []);
 
   const handleStatusSelect = useCallback((value: string) => {
@@ -224,7 +230,7 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
                 </SelectTrigger>
                 <SelectContent>
                   {orderTypes.map((type: any) => (
-                    <SelectItem key={type.value} value={type.value}>
+                    <SelectItem key={type.key} value={type.value}>
                       {type.label}
                     </SelectItem>
                   ))}

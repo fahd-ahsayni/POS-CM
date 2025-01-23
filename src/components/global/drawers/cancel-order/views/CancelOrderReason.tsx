@@ -8,7 +8,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { refreshOrders } from "@/store/slices/data/orders.slice";
 import { useCallback, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { useOrder } from "../../order-details/context/OrderContext";
 
@@ -32,7 +34,8 @@ export default function CancelOrderReason({
   setOpen,
   setAuthorization,
 }: CancelOrderReasonProps) {
-  const { selectedOrder } = useOrder();
+  const { selectedOrder, setOpenOrderDetails } = useOrder();
+  const dispatch = useDispatch();
   const [selectedReason, setSelectedReason] = useState<string>("");
 
   const generalData = useMemo(() => {
@@ -44,9 +47,18 @@ export default function CancelOrderReason({
       generalData.defineNote?.filter(
         (item: DefineNote) => item.type === "cancel"
       ) || [];
-    return reasonsData.map((reason) => ({
+    // Filter out duplicates based on text property
+    const uniqueReasons = reasonsData.reduce((acc: DefineNote[], current) => {
+      const isDuplicate = acc.find((item) => item.text === current.text);
+      if (!isDuplicate) {
+        acc.push(current);
+      }
+      return acc;
+    }, []);
+    return uniqueReasons.map((reason, index) => ({
       value: reason.text,
       label: reason.text,
+      key: `${reason.text}-${index}`,
     }));
   }, [generalData]);
 
@@ -73,6 +85,8 @@ export default function CancelOrderReason({
           )
         );
         setOpen(false);
+        setOpenOrderDetails(false);
+        dispatch(refreshOrders() as any);
       } else {
         throw new Error("Failed to cancel order");
       }
@@ -87,11 +101,13 @@ export default function CancelOrderReason({
     selectedReason,
     admin.user.id,
     setOpen,
+    setOpenOrderDetails,
+    dispatch,
     setAuthorization,
   ]);
 
   return (
-    <section className="overflow-hidden h-full flex flex-col items-start gap-8 relative w-full">
+    <section className="overflow-hidden h-full flex flex-col items-start gap-8 relative w-full pt-2">
       <div className="flex-1 flex items-center justify-start flex-col space-y-8 w-full px-2">
         <Select value={selectedReason} onValueChange={handleReasonSelect}>
           <SelectTrigger className="w-full">
@@ -99,7 +115,7 @@ export default function CancelOrderReason({
           </SelectTrigger>
           <SelectContent>
             {reasons.map((reason) => (
-              <SelectItem key={reason.value} value={reason.value}>
+              <SelectItem key={reason.key} value={reason.value}>
                 {reason.label}
               </SelectItem>
             ))}

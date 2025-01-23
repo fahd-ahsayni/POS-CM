@@ -128,10 +128,26 @@ export const useOrderSummary = () => {
         if (loadedOrder && existingOrder) {
           setIsUpdating(true);
           try {
-            // Update existing order
+            const updatedOrderlines = selectedProducts.map((product) => ({
+              _id: product._id,
+              product_variant_id: product.product_variant_id,
+              quantity: product.quantity,
+              price: product.price,
+              customer_index: product.customer_index,
+              notes: product.notes || [],
+              is_ordred: product.is_ordred || false,
+              is_paid: product.is_paid || false,
+              suite_commande: product.suite_commande || false,
+              high_priority: product.high_priority || false,
+              discount: product.discount || null,
+              uom_id: product.uom_id,
+              order_type_id: product.order_type_id,
+              // Add any other necessary fields
+            }));
+
             await updateOrder(
               {
-                orderlines: order.orderlines,
+                orderlines: updatedOrderlines,
               },
               loadedOrder._id
             );

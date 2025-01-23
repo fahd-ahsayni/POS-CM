@@ -25,18 +25,14 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
   const { customerIndex, setCustomerIndex } = useRightViewContext();
   const { currentMenu } = useLeftViewContext();
 
-  const {
-    prices,
-    itemVariants,
-    selectCustomer,
-    getDisplayName,
-    isComboProduct,
-  } = useOrderLine({
-    item,
-    currentMenu,
-    customerIndex,
-    setCustomerIndex,
-  });
+  const { prices, itemVariants, selectCustomer, getDisplayName } = useOrderLine(
+    {
+      item,
+      currentMenu,
+      customerIndex,
+      setCustomerIndex,
+    }
+  );
 
   const handleIncrement = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -72,9 +68,8 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
             {item.combo_items.supplements.map((supp: any, idx: number) => {
               const suppPrice =
                 supp.price ||
-                supp.menus?.find(
-                  (menu: any) => menu.menu_id === currentMenu
-                )?.price_ttc ||
+                supp.menus?.find((menu: any) => menu.menu_id === currentMenu)
+                  ?.price_ttc ||
                 supp.default_price ||
                 0;
               const price = suppPrice * (supp.quantity || 1);
@@ -82,9 +77,7 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
               return (
                 <div key={`${supp._id || supp.name}-${idx}`}>
                   <TypographySmall className="text-sm space-x-2">
-                    <span className="font-medium">
-                      x{supp.quantity || 1}
-                    </span>
+                    <span className="font-medium">x{supp.quantity || 1}</span>
                     <span className="first-letter:uppercase dark:text-neutral-bright-grey text-primary-black/90 tracking-wide">
                       {toTitleCase(supp.name || "")}
                     </span>
@@ -133,8 +126,7 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
             )}
           </div>
           <div className="flex items-center gap-x-2">
-            {/* TODO SUITE COMMAND: ADD IS SUITE STATE HERE  */}
-            {false ? (
+            {item.is_ordred ? (
               <div className="flex items-center">
                 <TypographyP className="px-1.5 font-medium">
                   {item.quantity}

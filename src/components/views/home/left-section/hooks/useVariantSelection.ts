@@ -1,16 +1,14 @@
 import { checkProductAvailability } from "@/api/services";
-import { createToast } from "@/components/global/Toasters";
+import { calculateProductPrice } from "@/functions/priceCalculations";
+import { useAppDispatch } from "@/store/hooks";
 import {
   addOrderLine,
-  updateOrderLine,
   setCustomerCount,
+  updateOrderLine,
 } from "@/store/slices/order/create-order.slice";
 import { Product, ProductSelected } from "@/types/product.types";
 import { useCallback, useEffect, useMemo } from "react";
-import { toast } from "react-toastify";
 import { useLeftViewContext } from "../contexts/LeftViewContext";
-import { calculateProductPrice } from "@/functions/priceCalculations";
-import { useAppDispatch } from "@/store/hooks";
 
 interface UseVariantSelectionProps {
   selectedProduct: Product | null;
@@ -285,3 +283,4 @@ const useVariantSelection = ({
 };
 
 export { useVariantSelection };
+

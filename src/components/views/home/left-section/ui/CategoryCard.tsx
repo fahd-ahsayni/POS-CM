@@ -35,7 +35,7 @@ export const CategoryCard = memo(function CategoryCard({
           loading="lazy"
           crossOrigin="anonymous"
           className={cn(
-            "object-cover grayscale brightness-[0.3] transition-all duration-150",
+            "object-cover grayscale brightness-[0.3] transition-all duration-150 size-full",
             isDisabled
               ? "grayscale"
               : "grayscale-0"

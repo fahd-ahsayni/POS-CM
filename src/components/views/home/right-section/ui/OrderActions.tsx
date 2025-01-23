@@ -2,7 +2,6 @@ import {
   Dropdown,
   DropdownDivider,
   DropdownItem,
-  DropdownLabel,
   DropdownMenu,
 } from "@/components/catalyst/dropdown";
 import ApplyDiscount from "@/components/global/drawers/apply-discount/ApplyDiscount";

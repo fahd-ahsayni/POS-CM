@@ -234,7 +234,7 @@ export default function OrdersTable({
             {columns.map((column) => (
               <TableHead
                 key={column.key}
-                className={`text-sm text-primary-black dark:text-white ${
+                className={`text-[0.8rem] text-primary-black dark:text-white ${
                   column.alignRight ? "text-right" : ""
                 }`}
                 onClick={() => onSort?.(column.key)}
@@ -248,7 +248,7 @@ export default function OrdersTable({
                   {column.label}
                   <SortDesc 
                     className={cn(
-                      "ml-2 h-3.5 w-3.5",
+                      "h-3 w-3",
                       sortConfig?.key === column.key 
                         ? "text-primary" 
                         : "text-muted-foreground",
