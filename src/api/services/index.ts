@@ -1,6 +1,5 @@
 import { api } from "@/api/axios";
 import { createToast } from "@/components/global/Toasters";
-import { useSidebarActions } from "@/components/Layout/hooks/useSidebarActions";
 import { User } from "@/types/user.types";
 import { toast } from "react-toastify";
 
@@ -84,10 +83,7 @@ export const loginWithRfid = async (rfid: string) => {
 
 export const logoutService = async () => {
   try {
-    useSidebarActions(
-      () => {},
-      () => {}
-    ).handleResetApp();
+   
     localStorage.clear();
   } catch (error) {
     toast.error(

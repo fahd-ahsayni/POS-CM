@@ -40,14 +40,15 @@ export default function ProductsVariants() {
     orderType,
   });
 
-  const { handleSelectVariant: handleVariantSelect, handleQuantityChange } = useVariantSelection({
-    selectedProduct,
-    selectedProducts,
-    setSelectedProducts,
-    customerIndex,
-    orderType,
-    addOrUpdateProduct,
-  });
+  const { handleSelectVariant: handleVariantSelect, handleQuantityChange } =
+    useVariantSelection({
+      selectedProduct,
+      selectedProducts,
+      setSelectedProducts,
+      customerIndex,
+      orderType,
+      addOrUpdateProduct,
+    });
 
   const handleConfirm = useCallback(() => {
     setOpenDrawerVariants(false);
@@ -64,29 +65,36 @@ export default function ProductsVariants() {
         handleVariantSelect(variant._id, variant.price_ttc);
       }
     },
-    [setSelectedCombo, setOpenDrawerCombo, setOpenDrawerVariants, handleVariantSelect]
+    [
+      setSelectedCombo,
+      setOpenDrawerCombo,
+      setOpenDrawerVariants,
+      handleVariantSelect,
+    ]
   );
 
   const variantCards = useMemo(
     () =>
-      selectedProduct?.variants.map((variant: ProductVariant, index: number) => {
-        const selectedVariant = selectedProducts.find(
-          (p: any) =>
-            p.product_variant_id === variant._id &&
-            p.customer_index === customerIndex
-        );
+      selectedProduct?.variants.map(
+        (variant: ProductVariant, index: number) => {
+          const selectedVariant = selectedProducts.find(
+            (p: any) =>
+              p.product_variant_id === variant._id &&
+              p.customer_index === customerIndex
+          );
 
-        return (
-          <VariantCard
-            key={`${variant._id}-${customerIndex}-${index}`}
-            variant={variant}
-            isSelected={!!selectedVariant}
-            quantity={selectedVariant?.quantity || 0}
-            onSelect={() => handleSelectVariant(variant)}
-            onQuantityChange={handleQuantityChange}
-          />
-        );
-      }),
+          return (
+            <VariantCard
+              key={`${variant._id}-${customerIndex}-${index}`}
+              variant={variant}
+              isSelected={!!selectedVariant}
+              quantity={selectedVariant?.quantity || 0}
+              onSelect={() => handleSelectVariant(variant)}
+              onQuantityChange={handleQuantityChange}
+            />
+          );
+        }
+      ),
     [
       selectedProduct,
       selectedProducts,
@@ -121,7 +129,6 @@ const VariantCard = memo<VariantCardProps>(
   ({ variant, isSelected, quantity, onSelect, onQuantityChange }) => {
     const { currentMenu } = useLeftViewContext();
 
-    // Use the same price calculation logic as OrderLine
     const variantPrice = useMemo(() => {
       const menuPrice = variant.menus?.find(
         (menu) => menu.menu_id === currentMenu
@@ -130,14 +137,7 @@ const VariantCard = memo<VariantCardProps>(
     }, [variant, currentMenu]);
 
     return (
-      <div
-        onClick={() => !isSelected && onSelect()}
-        tabIndex={0}
-        role="button"
-        onKeyPress={(e) => {
-          if (e.key === "Enter" && !isSelected) onSelect();
-        }}
-      >
+      <div onClick={() => onSelect()} tabIndex={0} role="button">
         <Card
           className={cn(
             "w-full h-full px-4 py-4 rounded-lg dark:bg-primary-black bg-neutral-bright-grey",

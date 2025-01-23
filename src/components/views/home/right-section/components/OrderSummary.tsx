@@ -151,7 +151,7 @@ const OrderSummary = () => {
               </motion.div>
             )}
           </AnimatePresence>
-          <div className="flex-border flex-grow relative flex items-center justify-center pt-4 overflow-y-auto h-full p-1">
+          <div className="flex-border flex-grow relative flex items-center justify-center overflow-y-auto h-full p-1">
             <AnimatePresence>
               {selectedProducts.length < 1 && (
                 <motion.img
