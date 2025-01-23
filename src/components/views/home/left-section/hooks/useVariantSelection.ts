@@ -18,7 +18,11 @@ interface UseVariantSelectionProps {
   setSelectedProducts: React.Dispatch<React.SetStateAction<ProductSelected[]>>;
   customerIndex: number;
   orderType: string | null;
-  addOrUpdateProduct: (product: Product, id: string, price: number) => void;
+  addOrUpdateProduct: (
+    product: Product,
+    id: string,
+    price: number,
+  ) => void;
 }
 
 const useVariantSelection = ({
@@ -50,41 +54,29 @@ const useVariantSelection = ({
 
   const handleSelectVariant = useCallback(
     async (id: string, price: number) => {
-      if (!selectedProduct) {
-        console.warn("No selected product. Cannot select a variant.");
-        return;
-      }
+      if (!selectedProduct) return;
 
       try {
         const response = await checkProductAvailability(id);
-        if (response.status !== 200) {
-          toast.error(
-            createToast(
-              "Product Unavailable",
-              "This product is currently not available",
-              "error"
-            )
-          );
-          return;
-        }
+        if (response.status !== 200) return;
 
-        // Find the variant
         const variant = selectedProduct.variants.find((v) => v._id === id);
-        if (!variant) {
-          console.error("Variant not found");
-          return;
-        }
+        if (!variant) return;
 
-        // Get the current menu from localStorage
         const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
         const menuId = orderType.menu_id || currentMenu;
-
-        // Get the correct price based on menu
         const variantPrice =
           variant.menus?.find((menu) => menu.menu_id === menuId)?.price_ttc ??
           variant.default_price ??
           price;
 
+        // For combo products, always create a new entry
+        if (variant.is_menu) {
+          addOrUpdateProduct(selectedProduct, id, variantPrice);
+          return;
+        }
+
+        // For regular products, update existing or create new
         const existingVariant = selectedProducts.find(
           (p) =>
             p.product_variant_id === id && p.customer_index === customerIndex
@@ -106,13 +98,7 @@ const useVariantSelection = ({
           );
         }
       } catch (error) {
-        toast.error(
-          createToast(
-            "Availability Check Failed",
-            "Unable to verify variant availability",
-            "error"
-          )
-        );
+        console.error(error);
       }
     },
     [

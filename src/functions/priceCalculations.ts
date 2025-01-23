@@ -72,9 +72,40 @@ export const calculateTotalFromOrderlines = (
     orderType.delivery_product_variant_id && deliveryGuyId
       ? orderType.delivery_product_variant_id.default_price
       : 0;
+
   return (
     orderlines.reduce((total, line) => {
-      const linePrice = (line.price || 0) * (line.quantity || 1);
+      // For combo products, calculate total including supplements
+      if (line.is_combo) {
+        const basePrice =
+          line.variants?.[0]?.menus?.find(
+            (menu: any) => menu.menu_id === orderType.menu_id
+          )?.price_ttc ||
+          line.variants?.[0]?.default_price ||
+          0;
+
+        // Calculate supplements total
+        const supplementsTotal =
+          line.combo_items?.supplements?.reduce(
+            (suppTotal: number, supp: any) => {
+              const suppPrice =
+                supp.menus?.find(
+                  (menu: any) => menu.menu_id === orderType.menu_id
+                )?.price_ttc ||
+                supp.default_price ||
+                supp.price_ttc ||
+                0;
+              return suppTotal + suppPrice * (supp.quantity || 1);
+            },
+            0
+          ) || 0;
+
+        // Return total for this combo line
+        return total + (basePrice + supplementsTotal);
+      }
+
+      // For regular products
+      const linePrice = line.price || 0;
       return total + linePrice;
     }, 0) + deliveryTax
   );

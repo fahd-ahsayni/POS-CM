@@ -9,11 +9,26 @@ export const useProductQuantity = () => {
   const incrementQuantity = useCallback(
     (product: ProductSelected) => {
       setSelectedProducts((prevProducts) =>
-        prevProducts.map((item) =>
-          (item.is_combo
-            ? item.id === product.id
-            : item.product_variant_id === product.product_variant_id) &&
-          item.customer_index === product.customer_index
+        prevProducts.map((item) => {
+          // For combo products, check unique ID and customer_index
+          if (item.is_combo && product.is_combo) {
+            return item.id === product.id &&
+              item.customer_index === product.customer_index
+              ? {
+                  ...item,
+                  quantity: item.quantity + 1,
+                  price: calculateProductPrice(
+                    item,
+                    currentMenu,
+                    item.quantity + 1
+                  ).totalPrice,
+                }
+              : item;
+          }
+
+          // For regular products, check product_variant_id and customer_index
+          return item.product_variant_id === product.product_variant_id &&
+            item.customer_index === product.customer_index
             ? {
                 ...item,
                 quantity: item.quantity + 1,
@@ -23,8 +38,8 @@ export const useProductQuantity = () => {
                   item.quantity + 1
                 ).totalPrice,
               }
-            : item
-        )
+            : item;
+        })
       );
     },
     [setSelectedProducts, currentMenu]
@@ -34,11 +49,26 @@ export const useProductQuantity = () => {
     (product: ProductSelected) => {
       setSelectedProducts((prevProducts) =>
         prevProducts
-          .map((item) =>
-            (item.is_combo
-              ? item.id === product.id
-              : item.product_variant_id === product.product_variant_id) &&
-            item.customer_index === product.customer_index
+          .map((item) => {
+            // For combo products, check unique ID and customer_index
+            if (item.is_combo && product.is_combo) {
+              return item.id === product.id &&
+                item.customer_index === product.customer_index
+                ? {
+                    ...item,
+                    quantity: item.quantity - 1,
+                    price: calculateProductPrice(
+                      item,
+                      currentMenu,
+                      item.quantity - 1
+                    ).totalPrice,
+                  }
+                : item;
+            }
+
+            // For regular products, check product_variant_id and customer_index
+            return item.product_variant_id === product.product_variant_id &&
+              item.customer_index === product.customer_index
               ? {
                   ...item,
                   quantity: item.quantity - 1,
@@ -48,8 +78,8 @@ export const useProductQuantity = () => {
                     item.quantity - 1
                   ).totalPrice,
                 }
-              : item
-          )
+              : item;
+          })
           .filter((item) => item.quantity > 0)
       );
     },

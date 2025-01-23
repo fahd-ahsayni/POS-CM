@@ -77,16 +77,15 @@ const orderSlice = createSlice({
         }>;
       }>
     ) => {
-      const { _id, customer_index, product_variant_id, ...updateData } =
-        action.payload;
+      const { _id, customer_index, product_variant_id, ...updateData } = action.payload;
 
       // Find the index of the existing order line
       const orderLineIndex = state.data.orderlines.findIndex((ol) => {
         if (_id) {
-          // For combo products, check by id
+          // For combo products, check by id AND customer_index
           return ol.id === _id && ol.customer_index === customer_index;
         }
-        // For regular products, check by product_variant_id
+        // For regular products, check by product_variant_id AND customer_index
         return (
           ol.product_variant_id === product_variant_id &&
           ol.customer_index === customer_index
@@ -98,15 +97,20 @@ const orderSlice = createSlice({
           // Remove the order line if quantity is 0
           state.data.orderlines.splice(orderLineIndex, 1);
         } else {
-          // Update only the necessary fields
+          // Update only the specified fields while preserving combo-specific data
+          const currentOrderLine = state.data.orderlines[orderLineIndex];
           state.data.orderlines[orderLineIndex] = {
-            ...state.data.orderlines[orderLineIndex],
+            ...currentOrderLine,
             ...updateData,
+            // Preserve combo-specific IDs and items
+            id: currentOrderLine.id,
+            combo_prod_ids: currentOrderLine.combo_prod_ids,
+            combo_supp_ids: currentOrderLine.combo_supp_ids,
           };
         }
       }
 
-      // Update total amount directly from orderlines
+      // Update total amount
       state.data.total_amount = calculateTotalFromOrderlines(
         state.data.orderlines,
         state.data.delivery_guy_id || ""
@@ -114,40 +118,36 @@ const orderSlice = createSlice({
     },
     addOrderLine: (state, action: PayloadAction<any[]>) => {
       const newOrderLines = action.payload.map((line) => {
-        if (line.price && line.price > 0) {
-          return line;
-        }
-
-        // For combo products
         if (line.is_combo && line.combo_items) {
+          // Generate a unique ID for each combo
+          const uniqueId = `combo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
           return {
             ...line,
+            id: uniqueId, // Use the unique ID
+            combo_prod_ids: line.combo_items.variants.map((v: any) => ({
+              ...v,
+              combo_id: uniqueId // Add combo_id to track relationship
+            })),
+            combo_supp_ids: line.combo_items.supplements.map((s: any) => ({
+              ...s,
+              combo_id: uniqueId // Add combo_id to track relationship
+            })),
             price: line.price || 0,
             quantity: line.quantity || 1,
           };
         }
 
-        // For regular products
-        const variant = line.variants?.[0];
         return {
           ...line,
-          price: variant?.price || 0,
+          price: line.price || line.variants?.[0]?.price || 0,
           quantity: line.quantity || 1,
         };
       });
 
-      // Replace existing order lines with matching product_variant_id and customer_index
-      state.data.orderlines = newOrderLines.map((newLine) => {
-        const existingLine = state.data.orderlines.find(
-          (ol) =>
-            (ol.is_combo
-              ? ol.id === newLine.id
-              : ol.product_variant_id === newLine.product_variant_id) &&
-            ol.customer_index === newLine.customer_index
-        );
-        return existingLine ? { ...existingLine, ...newLine } : newLine;
-      });
+      // Clear existing orderlines and add all new ones
+      state.data.orderlines = newOrderLines;
 
+      // Update total amount
       state.data.total_amount = calculateTotalFromOrderlines(
         state.data.orderlines,
         state.data.delivery_guy_id || ""

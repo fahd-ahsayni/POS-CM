@@ -79,9 +79,13 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
         return total + suppPrice * supp.quantity;
       }, 0);
 
-      // Create combo product with proper structure
+      // Generate a unique ID for this combo instance
+      const uniqueComboId = `${selectedCombo._id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+      // Create combo product with unique ID
       const comboProduct = {
-        _id: `${selectedCombo._id}_${Date.now()}`,
+        _id: uniqueComboId,
+        id: uniqueComboId,
         name: selectedCombo.name,
         quantity: 1,
         price: menuPrice + supplementsPrice,
@@ -95,15 +99,8 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
         is_paid: false,
         combo_items: {
           variants: selections.variants.map((variant) => ({
-            _id: variant._id,
-            name: variant.name,
-            price: variant.price_ttc || variant.default_price || 0,
-            quantity: variant.quantity || 1,
-            stepIndex: variant.stepIndex,
-            product_variant_id: variant._id,
-            customer_index: customerIndex,
-            order_type_id: orderType?._id || "",
-            uom_id: variant.uom_id?._id || "",
+            ...variant,
+            combo_id: uniqueComboId,
           })),
           supplements: selections.supplements.map((supp) => {
             const suppPrice =
@@ -114,16 +111,9 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
               supp.price_ttc ||
               0;
             return {
-              _id: supp._id,
-              name: supp.name,
+              ...supp,
+              combo_id: uniqueComboId,
               price: suppPrice,
-              quantity: supp.quantity || 1,
-              stepIndex: supp.stepIndex,
-              product_variant_id: supp._id,
-              customer_index: customerIndex,
-              order_type_id: orderType?._id || "",
-              uom_id: supp.uom_id?._id || "",
-              is_supplement: true,
             };
           }),
         },
@@ -137,7 +127,11 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
       setSelectedProducts((prev: any) => [...prev, comboProduct]);
 
       // Reset combo state
-      setSelections({ variants: [], supplements: [] });
+      setSelections({ 
+        variants: [], 
+        supplements: [], 
+        comboId: `combo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}` 
+      });
       setCurrentStep(0);
       setTotalSupplementsPrice(0);
       setOpenDrawerCombo(false);

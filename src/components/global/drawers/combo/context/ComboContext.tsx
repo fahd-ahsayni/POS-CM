@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 interface SelectionState {
   variants: SelectedVariant[];
   supplements: SelectedVariant[];
+  comboId: string;
 }
 
 interface SelectedVariant extends ProductVariant {
@@ -42,6 +43,7 @@ interface ComboContextType {
   setSelections: React.Dispatch<React.SetStateAction<SelectionState>>;
   totalSupplementsPrice: number;
   setTotalSupplementsPrice: (price: number) => void;
+  resetSelections: () => void;
 }
 
 const ComboContext = createContext<ComboContextType | undefined>(undefined);
@@ -51,6 +53,7 @@ export function ComboProvider({ children }: { children: React.ReactNode }) {
   const [selections, setSelections] = useState<SelectionState>({
     variants: [],
     supplements: [],
+    comboId: `combo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
   });
 
   const [totalSupplementsPrice, setTotalSupplementsPrice] = useState(0);
@@ -256,6 +259,14 @@ export function ComboProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
+  const resetSelections = useCallback(() => {
+    setSelections({
+      variants: [],
+      supplements: [],
+      comboId: `combo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    });
+  }, []);
+
   return (
     <ComboContext.Provider
       value={{
@@ -270,6 +281,7 @@ export function ComboProvider({ children }: { children: React.ReactNode }) {
         setTotalSupplementsPrice,
         updateVariantNotes,
         updateVariantSuiteCommande,
+        resetSelections,
       }}
     >
       {children}
