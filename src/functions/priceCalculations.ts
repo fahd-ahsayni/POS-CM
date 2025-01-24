@@ -51,7 +51,24 @@ export const calculateProductPrice = (
   }
 
   const unitPrice = basePrice;
-  const totalPrice = unitPrice * quantity;
+  let totalPrice = unitPrice * quantity;
+
+  // Apply discount if exists
+  if (item.discount?.discount_id) {
+    const generalData = JSON.parse(localStorage.getItem("generalData") || "{}");
+    const discountDetails = generalData.discount?.find(
+      (d: any) => d._id === item.discount?.discount_id
+    );
+
+    if (discountDetails) {
+      if (discountDetails.type === "percentage") {
+        const discountAmount = totalPrice * (discountDetails.value / 100);
+        totalPrice = Number((totalPrice - discountAmount).toFixed(2));
+      } else if (discountDetails.type === "fixed") {
+        totalPrice = Number(Math.max(totalPrice - discountDetails.value, 0).toFixed(2));
+      }
+    }
+  }
 
   return {
     basePrice,

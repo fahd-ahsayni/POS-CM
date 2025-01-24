@@ -46,6 +46,9 @@ const OrderSummary = () => {
   } = useOrderSummary();
 
   const loadedOrder = localStorage.getItem("loadedOrder");
+  const discount = JSON.parse(
+    localStorage.getItem("generalData") || "{}"
+  ).discount;
   const order = useAppSelector((state) => state.createOrder.data);
 
   const hasOrderChanges = useMemo(() => {
@@ -92,6 +95,10 @@ const OrderSummary = () => {
     [handleToggleAll]
   );
 
+  const currentDiscount = discount.find(
+    (d: any) => d.id === order.discount?.id
+  );
+
   return (
     <>
       <Payments open={openDrawerPayments} setOpen={setOpenDrawerPayments} />
@@ -112,6 +119,13 @@ const OrderSummary = () => {
             {taxDelivery && order.delivery_guy_id && (
               <Badge className="text-xs">
                 {`+${taxDelivery} ${currency.currency} Tax`}
+              </Badge>
+            )}
+            {order.discount && currentDiscount && (
+              <Badge variant="destructive" className="text-xs">
+                {currentDiscount.type === "percentage"
+                  ? `-${currentDiscount.value}%`
+                  : `-${currentDiscount.value} ${currency.currency}`}
               </Badge>
             )}
           </div>

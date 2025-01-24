@@ -2,23 +2,15 @@ import { calculateTotalFromOrderlines } from "@/functions/priceCalculations";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../..";
 
-interface DiscountData {
-  id: string;
-  name: string;
-  type: "percentage" | "fixed";
-  value: number;
-  reason?: string;
-  confirmed_by: string;
-}
-
 interface OrderState {
+  _id?: string;
   waiter_id: string | null;
   coaster_call: string | null;
   urgent: boolean;
   shift_id: string;
   table_id: string | null;
   delivery_guy_id: string | null;
-  discount: DiscountData | null;
+  discount: any | null;
   client_id: string | null;
   customer_count: number;
   notes: string;
@@ -257,16 +249,16 @@ const orderSlice = createSlice({
       state.data.urgent = action.payload;
     },
     setDiscount: (state, action: PayloadAction<any | null>) => {
-      console.log('Setting discount:', action.payload); // Debug log
+      console.log("Setting discount:", action.payload); // Debug log
       state.data.discount = action.payload;
-      
+
       const newTotal = calculateTotalFromOrderlines(
         state.data.orderlines,
         state.data.delivery_guy_id || "",
         state.data.discount
       );
-      console.log('New total after discount:', newTotal); // Debug log
-      
+      console.log("New total after discount:", newTotal); // Debug log
+
       state.data.total_amount = newTotal;
     },
     holdOrder: (state) => {
