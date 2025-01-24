@@ -37,7 +37,7 @@ export const OrderCard = memo(
     return (
       <Card
         className={cn(
-          "w-full rounded-md h-24 px-8 py-4 flex space-x-4 items-center justify-between cursor-pointer",
+          "w-full rounded-md h-24 px-6 py-4 flex space-x-4 items-center justify-between cursor-pointer",
           fixedLightDark
             ? "bg-neutral-bright-grey dark:bg-primary-black"
             : "bg-white dark:bg-secondary-black"
@@ -47,9 +47,13 @@ export const OrderCard = memo(
         <div className="flex items-center gap-x-4">
           {orderType.image || isDeliveryChild ? (
             <img
-              src={orderType.image || "/path/to/delivery-image.png"}
+              src={
+                `${import.meta.env.VITE_BASE_URL}${orderType.image}` ||
+                "/path/to/delivery-image.png"
+              }
               alt={orderType.name}
-              className="w-7 h-7"
+              className="size-12 rounded-md"
+              crossOrigin="anonymous"
             />
           ) : (
             <TypeOfOrderIcon type={iconType || ""} />

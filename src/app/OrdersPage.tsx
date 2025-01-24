@@ -87,12 +87,26 @@ export default function OrdersPage() {
     let rfidTimeout: NodeJS.Timeout;
 
     const handleKeyPress = (e: KeyboardEvent) => {
+      // Ignore if focus is on an input element
+      if (e.target instanceof HTMLInputElement || 
+          e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
       setIsScanning(true);
       setRfidInput((prev) => prev + e.key);
 
+      // Clear previous timeout
+      clearTimeout(rfidTimeout);
+
+      // Set new timeout
+      rfidTimeout = setTimeout(() => {
+        setIsScanning(false);
+        setRfidInput("");
+      }, 100);
+
       if (e.key === "Enter" && rfidInput) {
         clearTimeout(rfidTimeout);
-        console.log(rfidInput);
         handleRfidSubmit(rfidInput);
       }
     };

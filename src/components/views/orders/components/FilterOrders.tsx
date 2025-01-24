@@ -43,23 +43,34 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
     [users]
   );
 
-  const orderTypesData = useMemo(
-    () => JSON.parse(localStorage.getItem("generalData") || "[]").orderTypes,
-    []
-  );
-  const orderTypes = useMemo(
-    () =>
-      orderTypesData?.map((type: any, index: number) => {
-        const uniqueId = `${type.type}_${index}`;
-        return {
-          value: uniqueId,
+  const orderTypesData = useMemo(() => {
+    const data = JSON.parse(
+      localStorage.getItem("generalData") || "[]"
+    ).orderTypes;
+
+    // Function to flatten order types including children
+    const flattenOrderTypes = (types: any[]): any[] => {
+      return types.reduce((acc: any[], type: any) => {
+        // Add the parent type
+        acc.push({
+          id: type._id,
+          value: type._id, // Use _id as unique identifier
           label: type.name,
-          key: uniqueId,
-          originalType: type.type
-        };
-      }),
-    [orderTypesData]
-  );
+          type: type.type,
+        });
+
+        // Add children if they exist
+        if (type.children && type.children.length > 0) {
+          const childTypes = flattenOrderTypes(type.children);
+          acc.push(...childTypes);
+        }
+
+        return acc;
+      }, []);
+    };
+
+    return flattenOrderTypes(data || []);
+  }, []);
 
   const statuses = useMemo(
     () => [
@@ -75,8 +86,7 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
   }, []);
 
   const handleOrderTypeSelect = useCallback((value: string) => {
-    const originalType = value.split('_')[0];
-    setSelectedOrderType(originalType);
+    setSelectedOrderType(value); // Store the full ID
   }, []);
 
   const handleStatusSelect = useCallback((value: string) => {
@@ -200,7 +210,10 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
                   Clear
                 </span>
               </div>
-              <Select value={selectedEmployee} onValueChange={handleEmployeeSelect}>
+              <Select
+                value={selectedEmployee}
+                onValueChange={handleEmployeeSelect}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select an employee" />
                 </SelectTrigger>
@@ -224,13 +237,20 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
                   Clear
                 </span>
               </div>
-              <Select value={selectedOrderType} onValueChange={handleOrderTypeSelect}>
+              <Select
+                value={selectedOrderType}
+                onValueChange={handleOrderTypeSelect}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select an order type" />
                 </SelectTrigger>
                 <SelectContent>
-                  {orderTypes.map((type: any) => (
-                    <SelectItem key={type.key} value={type.value}>
+                  {orderTypesData.map((type) => (
+                    <SelectItem
+                      key={type.value}
+                      value={type.value}
+                      className={type.isChild ? "pl-6" : ""}
+                    >
                       {type.label}
                     </SelectItem>
                   ))}

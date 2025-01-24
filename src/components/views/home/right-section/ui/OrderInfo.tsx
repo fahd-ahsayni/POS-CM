@@ -22,7 +22,7 @@ interface OrderType {
 
 const OrderBadge: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="h-8 flex-1 flex items-center justify-center">
-    <span className="font-medium text-sm lg:text-base">{children}</span>
+    <span className="font-medium text-[0.8rem] lg:text-sm">{children}</span>
   </div>
 );
 
@@ -80,13 +80,13 @@ const DeliveryOrder: React.FC<{ order: any; orderType: OrderType }> = ({
   return (
     <OrderContainer>
       {orderType.image && (
-        <div className="h-8 w-8 rounded-md relative overflow-hidden">
+        <div className="h-6 w-6 rounded-md relative overflow-hidden">
           <img
-            src={orderType.image}
+            src={`${import.meta.env.VITE_BASE_URL}${orderType.image}`}
             alt="order-type-image"
             loading="lazy"
             crossOrigin="anonymous"
-            className="absolute w-full h-full object-cover top-0 left-0"
+            className="absolute w-full h-full object-cover top-0 left-0 size-4"
           />
         </div>
       )}

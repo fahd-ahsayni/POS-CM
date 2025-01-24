@@ -135,7 +135,7 @@ export const useAddClient = (onSuccess?: () => void) => {
     setIsLoading(true);
     try {
       const existingClient = clients.find((c) => c.phone === formData.phone);
-      
+
       if (existingClient) {
         const isDataChanged =
           existingClient.name !== formData.name ||
@@ -151,10 +151,10 @@ export const useAddClient = (onSuccess?: () => void) => {
             setClients(res.data);
           }
         }
-        
+
         dispatch(setClientId(existingClient._id));
         setViews(ORDER_SUMMARY_VIEW);
-        
+
         // Show toast after state updates
         if (isDataChanged) {
           toast.info(
@@ -175,14 +175,13 @@ export const useAddClient = (onSuccess?: () => void) => {
         }
       } else {
         const response = await createClient(formData);
-        const res = await getClients();
-        if (res.status === 200) {
-          setClients(res.data);
+        if (response.status === 200) {
+          setClients(response.data);
         }
-        
-        dispatch(setClientId(response.data._id));
+
+        dispatch(setClientId(response.data.data.client._id));
         setViews(ORDER_SUMMARY_VIEW);
-        
+
         // Show toast after state updates
         toast.success(
           createToast(

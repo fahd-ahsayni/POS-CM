@@ -22,7 +22,7 @@ export default function WaitingOrders() {
         {holdOrders.length === 0 && (
           <TableCaption>List of waiting orders</TableCaption>
         )}
-        <TableHeader className="sticky top-0 bg-white dark:bg-secondary-black">
+        <TableHeader className="sticky top-0 bg-white dark:bg-secondary-black rounded">
           <TableRow>
             <TableHead className="text-primary-black dark:text-white">
               Date & Time

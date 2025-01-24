@@ -21,5 +21,5 @@ export const currency: Currency = {
 
 export const loadingColors: loadingColors = {
   primary: "#FFF",
-  secondary: "#FFF",
+  secondary: "#FB0000",
 };

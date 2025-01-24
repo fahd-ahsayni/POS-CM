@@ -1,9 +1,9 @@
 import { TypographyH2 } from "@/components/ui/typography";
 import FilterOrders from "@/components/views/orders/components/FilterOrders";
+import { refreshOrders } from "@/store/slices/data/orders.slice";
 import { FilterCriteria } from "@/types/general";
 import { RefreshCwIcon } from "lucide-react";
-import { useSelector, useDispatch } from "react-redux";
-import { refreshOrders } from "@/store/slices/data/orders.slice";
+import { useDispatch, useSelector } from "react-redux";
 
 interface HeaderProps {
   handleRefreshOrders?: () => void;

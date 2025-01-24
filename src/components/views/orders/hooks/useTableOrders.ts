@@ -8,13 +8,22 @@ interface SortConfig {
   direction: "ascending" | "descending";
 }
 
-interface UseTableOrdersProps<T> {
+interface OrderItem {
+  order_type_id?: {
+    _id: string;
+    type: string | null;
+  };
+  status?: string;
+  // ... other properties
+}
+
+interface UseTableOrdersProps<T extends OrderItem> {
   data: T[];
   filterCriteria: FilterCriteria;
   defaultSort?: SortConfig;
 }
 
-export function useTableOrders<T>({
+export function useTableOrders<T extends OrderItem>({
   data,
   filterCriteria,
   defaultSort,
@@ -94,14 +103,12 @@ export function useTableOrders<T>({
   };
 
   const sortedData = useMemo(() => {
-    // Ensure we're working with an array
     let filtered = filterCriteria.tableNumber
       ? Array.isArray(tableData)
         ? tableData
         : []
       : [...data];
 
-    // Apply other filters
     if (filterCriteria) {
       filtered = filtered.filter((item) => {
         const matchesEmployee =
@@ -110,10 +117,8 @@ export function useTableOrders<T>({
             ?.toLowerCase()
             .includes(filterCriteria.employee.toLowerCase());
 
-        const matchesOrderType =
-          !filterCriteria.orderType ||
-          getNestedValue(item, "order_type_id.type")?.toLowerCase() ===
-            filterCriteria.orderType.toLowerCase();
+        const matchesOrderType = !filterCriteria.orderType || 
+          item.order_type_id?._id === filterCriteria.orderType;
 
         const itemStatus = normalizeStatus(getNestedValue(item, "status"));
         const filterStatus = normalizeStatus(filterCriteria.status);

@@ -40,7 +40,11 @@ export default function BaseModal({
   disabled = false,
 }: BaseModalProps) {
   return (
-    <ModalLayout isOpen={isOpen} closeModal={closeModal} className="dark:bg-primary-black bg-secondary-white">
+    <ModalLayout
+      isOpen={isOpen}
+      closeModal={closeModal}
+      className="dark:bg-primary-black bg-white"
+    >
       <div>
         {icon && (
           <div
@@ -63,7 +67,12 @@ export default function BaseModal({
         </div>
       </div>
       <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-        <Button variant="secondary" onClick={onCancel} disabled={disabled}>
+        <Button
+          variant="secondary"
+          onClick={onCancel}
+          disabled={disabled}
+          className="!bg:neutral-bright-grey dark:bg-secondary-black"
+        >
           {cancelText}
         </Button>
         <Button onClick={onConfirm} disabled={disabled}>

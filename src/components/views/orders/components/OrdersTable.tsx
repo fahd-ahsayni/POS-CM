@@ -99,7 +99,7 @@ const OrderTypeCell = ({ order }: { order: any }) => {
       {orderType.image && (
         <div className="h-6 w-6 rounded-md relative overflow-hidden">
           <img
-            src={orderType.image}
+            src={`${import.meta.env.VITE_BASE_URL}${orderType.image}`}
             alt="order-type"
             loading="lazy"
             crossOrigin="anonymous"
@@ -238,23 +238,23 @@ export default function OrdersTable({
                   column.alignRight ? "text-right" : ""
                 }`}
                 onClick={() => onSort?.(column.key)}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: "pointer" }}
               >
                 <div
                   className={`flex items-center ${
                     column.alignRight ? "justify-end" : "justify-between"
                   }`}
                 >
-                  {column.label}
-                  <SortDesc 
+                  <span className="pr-2.5">{column.label}</span>
+                  <SortDesc
                     className={cn(
                       "h-3 w-3",
-                      sortConfig?.key === column.key 
-                        ? "text-primary" 
+                      sortConfig?.key === column.key
+                        ? "text-primary"
                         : "text-muted-foreground",
-                      sortConfig?.key === column.key && 
-                      sortConfig.direction === "ascending" && 
-                      "rotate-180"
+                      sortConfig?.key === column.key &&
+                        sortConfig.direction === "ascending" &&
+                        "rotate-180"
                     )}
                   />
                 </div>
