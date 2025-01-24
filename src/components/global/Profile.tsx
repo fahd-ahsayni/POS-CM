@@ -1,4 +1,5 @@
 import { logoutService } from "@/api/services";
+import { unknownUser } from "@/assets";
 import { DisplayIcon } from "@/assets/figma-icons";
 import CloseShift from "@/auth/CloseShift";
 import {
@@ -15,11 +16,11 @@ import { logout } from "@/store/slices/authentication/auth.slice";
 import { fetchPosData } from "@/store/slices/data/pos.slice";
 import { PosData } from "@/types/pos.types";
 import * as Headless from "@headlessui/react";
-import { Avatar } from "@heroui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { ChevronDown, LogOut, Power } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Avatar, AvatarImage } from "../ui/avatar";
 import { TypographySmall } from "../ui/typography";
 import {
   isCustomerDisplayOpen,
@@ -74,16 +75,15 @@ export default function Profile() {
           className="flex items-center gap-3 rounded-xl border border-transparent"
           aria-label="Account options"
         >
-          <Avatar
-            radius="lg"
-            showFallback={true}
-            fallback={
-              <span className="font-medium text-sm">
-                {user?.name?.charAt(0) || ""}
-              </span>
-            }
-            src={user?.image}
-          />
+          <Avatar className="rounded-lg">
+            <AvatarImage
+              src={
+                user?.image
+                  ? `${import.meta.env.VITE_BASE_URL}${user?.image}`
+                  : unknownUser
+              }
+            />
+          </Avatar>
           <div className="md:flex hidden flex-col justify-center items-start">
             <TypographySmall className="font-medium capitalize">
               {truncateName(user?.name ?? "", 20)}
@@ -131,8 +131,14 @@ export default function Profile() {
           </DropdownItem>
 
           <DropdownItem onClick={handleLogout}>
-            <LogOut size={17} className="opacity-60 text-primary-red" aria-hidden="true" />
-            <DropdownLabel className="pl-2 text-primary-red">Logout</DropdownLabel>
+            <LogOut
+              size={17}
+              className="opacity-60 text-primary-red"
+              aria-hidden="true"
+            />
+            <DropdownLabel className="pl-2 text-primary-red">
+              Logout
+            </DropdownLabel>
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
