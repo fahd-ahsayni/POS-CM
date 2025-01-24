@@ -9,8 +9,6 @@ const Layout = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const generalData = JSON.parse(localStorage.getItem("generalData") || "{}");
-
   useEffect(() => {
     const initializeData = async () => {
       const posId = localStorage.getItem("posId");
@@ -18,10 +16,16 @@ const Layout = () => {
         navigate("/select-pos");
         return;
       }
+
+      const generalData = localStorage.getItem("generalData");
+      if (!generalData) {
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
     };
-    if (!generalData.orderTypes.length || !generalData.paymentMethods.length) {
-      initializeData();
-    }
+
+    initializeData();
     localStorage.removeItem("loadedOrder");
   }, []);
 
