@@ -9,10 +9,11 @@ import {
   setWaiterId,
 } from "@/store/slices/order/create-order.slice";
 import { StaffUser } from "@/types/staff";
-import { Avatar } from "@heroui/avatar";
 import { Phone } from "lucide-react";
 import { useCallback, useEffect, useId, useState } from "react";
 import Drawer from "../../Drawer";
+import { unknownUser } from "@/assets";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 interface StaffListProps {
   open: boolean;
@@ -129,18 +130,15 @@ const StaffList = ({ open, setOpen }: StaffListProps) => {
               className="order-1 after:absolute after:inset-0"
             />
             <div className="flex grow items-start gap-5">
-              <Avatar
-                radius="lg"
-                size="sm"
-                showFallback={true}
-                fallback={
-                  <span className="font-medium text-sm">
-                    {staff.name?.charAt(0)}
-                  </span>
-                }
-                src={staff?.image || undefined}
-                className="shrink-0"
-              />
+              <Avatar className="rounded-lg">
+                <AvatarImage
+                  src={
+                    staff?.image
+                      ? `${import.meta.env.VITE_BASE_URL}${staff?.image}`
+                      : unknownUser
+                  }
+                />
+              </Avatar>
               <div className="grid grow gap-2">
                 <Label htmlFor={`${id}-${staff._id}`}>{staff.name}</Label>
                 <p className="text-xs text-muted-foreground flex items-center gap-x-2">
