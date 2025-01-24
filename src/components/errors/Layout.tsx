@@ -16,7 +16,7 @@ export default function Layout({
   return (
     <div className="h-screen w-screen overflow-hidden relative flex items-center justify-center px-6">
       <div className="absolute w-full h-full z-0">
-        <Noise patternAlpha={25} />
+        <Noise patternAlpha={20} />
       </div>
       <div className="w-96 h-96 dark:bg-primary-red/30 bg-primary-red/20 absolute z-0 blur-3xl rounded-full" />
       <div className="relative z-10">

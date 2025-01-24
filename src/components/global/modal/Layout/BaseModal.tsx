@@ -40,7 +40,7 @@ export default function BaseModal({
   disabled = false,
 }: BaseModalProps) {
   return (
-    <ModalLayout isOpen={isOpen} closeModal={closeModal}>
+    <ModalLayout isOpen={isOpen} closeModal={closeModal} className="dark:bg-primary-black bg-secondary-white">
       <div>
         {icon && (
           <div

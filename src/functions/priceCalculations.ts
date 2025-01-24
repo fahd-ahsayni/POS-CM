@@ -51,7 +51,24 @@ export const calculateProductPrice = (
   }
 
   const unitPrice = basePrice;
-  const totalPrice = unitPrice * quantity;
+  let totalPrice = unitPrice * quantity;
+
+  // Apply discount if exists
+  if (item.discount?.discount_id) {
+    const generalData = JSON.parse(localStorage.getItem("generalData") || "{}");
+    const discountDetails = generalData.discount?.find(
+      (d: any) => d._id === item.discount?.discount_id
+    );
+
+    if (discountDetails) {
+      if (discountDetails.type === "percentage") {
+        const discountAmount = totalPrice * (discountDetails.value / 100);
+        totalPrice = Number((totalPrice - discountAmount).toFixed(2));
+      } else if (discountDetails.type === "fixed") {
+        totalPrice = Number(Math.max(totalPrice - discountDetails.value, 0).toFixed(2));
+      }
+    }
+  }
 
   return {
     basePrice,
@@ -65,48 +82,41 @@ export const calculateProductPrice = (
 
 export const calculateTotalFromOrderlines = (
   orderlines: any[],
-  deliveryGuyId: string
+  deliveryGuyId: string,
+  discount: any
 ) => {
   const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
+  const generalData = JSON.parse(localStorage.getItem("generalData") || "{}");
+
+  // Calculate subtotal from orderlines
+  const subtotal = orderlines.reduce((total, line) => {
+    const linePrice = line.price || 0;
+    return total + (linePrice);
+  }, 0);
+
+  // Add delivery tax
   const deliveryTax =
     orderType.delivery_product_variant_id && deliveryGuyId
       ? orderType.delivery_product_variant_id.default_price
       : 0;
 
-  return (
-    orderlines.reduce((total, line) => {
-      // For combo products, calculate total including supplements
-      if (line.is_combo) {
-        const basePrice =
-          line.variants?.[0]?.menus?.find(
-            (menu: any) => menu.menu_id === orderType.menu_id
-          )?.price_ttc ||
-          line.variants?.[0]?.default_price ||
-          0;
+  const total = subtotal + deliveryTax;
 
-        // Calculate supplements total
-        const supplementsTotal =
-          line.combo_items?.supplements?.reduce(
-            (suppTotal: number, supp: any) => {
-              const suppPrice =
-                supp.menus?.find(
-                  (menu: any) => menu.menu_id === orderType.menu_id
-                )?.price_ttc ||
-                supp.default_price ||
-                supp.price_ttc ||
-                0;
-              return suppTotal + suppPrice * (supp.quantity || 1);
-            },
-            0
-          ) || 0;
+  // Find and apply discount using discount_id
+  if (discount?.discount_id) {
+    const discountDetails = generalData.discount?.find(
+      (d: any) => d._id === discount.discount_id
+    );
 
-        // Return total for this combo line
-        return total + (basePrice + supplementsTotal);
+    if (discountDetails) {
+      if (discountDetails.type === "percentage") {
+        const discountAmount = total * (discountDetails.value / 100);
+        return Number((total - discountAmount).toFixed(2));
+      } else if (discountDetails.type === "fixed") {
+        return Number(Math.max(total - discountDetails.value, 0).toFixed(2));
       }
+    }
+  }
 
-      // For regular products
-      const linePrice = line.price || 0;
-      return total + linePrice;
-    }, 0) + deliveryTax
-  );
+  return Number(total.toFixed(2));
 };

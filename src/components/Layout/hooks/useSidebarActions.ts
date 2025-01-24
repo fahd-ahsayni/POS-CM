@@ -56,8 +56,10 @@ export const useSidebarActions = (
 
   const handleResetApp = useCallback(async () => {
     const posId = localStorage.getItem("posId");
+
+    // Clear localStorage items
     localStorage.removeItem("orderType");
-    localStorage.removeItem("genralData");
+    localStorage.removeItem("generalData");
 
     // Reset Right View Context
     rightViewContext.setViews(TYPE_OF_ORDER_VIEW);
@@ -79,17 +81,42 @@ export const useSidebarActions = (
     leftViewContext.setCurrentMenu(null);
     leftViewContext.setBreadcrumbs([]);
 
-    // Reset Redux Store
+    // Reset Redux Store - Do this before fetching new data
     dispatch(resetOrder());
     dispatch(resetStaffIds());
 
     // Fetch fresh general data if posId exists
     if (posId) {
       try {
-        localStorage.removeItem("generalData");
-        await dispatch(fetchGeneralData(posId));
+        // Initialize with empty data before fetching
+        const emptyData = {
+          floors: [],
+          configs: [],
+          defineNote: [],
+          orderTypes: [],
+          discount: [],
+          paymentMethods: [],
+          waiters: [],
+          livreurs: [],
+        };
+        localStorage.setItem("generalData", JSON.stringify(emptyData));
+
+        // Fetch new data
+        await dispatch(fetchGeneralData(posId)).unwrap();
       } catch (error) {
         console.error("Failed to fetch general data:", error);
+        // Ensure we still have empty data if fetch fails
+        const emptyData = {
+          floors: [],
+          configs: [],
+          defineNote: [],
+          orderTypes: [],
+          discount: [],
+          paymentMethods: [],
+          waiters: [],
+          livreurs: [],
+        };
+        localStorage.setItem("generalData", JSON.stringify(emptyData));
       }
     }
   }, [dispatch, rightViewContext, leftViewContext]);

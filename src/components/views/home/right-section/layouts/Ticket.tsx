@@ -24,7 +24,7 @@ export default function Ticket() {
 
     const discount = order.data.discount?.discount_id
       ? JSON.parse(localStorage.getItem("generalData") || "{}")?.discount?.find(
-          (d: any) => d._id === order.data.discount.discount_id
+          (d: any) => d._id === order.data.discount?.discount_id
         )
       : null;
 

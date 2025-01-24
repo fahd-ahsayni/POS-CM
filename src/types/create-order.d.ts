@@ -6,7 +6,7 @@ interface OrderState {
   shift_id: string;
   table_id: string | null;
   delivery_guy_id: string | null;
-  discount: any | null;
+  discount: DiscountData | null;
   client_id: string | null;
   customer_count: number;
   notes: string;
@@ -43,4 +43,14 @@ interface PriceCalculation {
   supplementsTotal: number;
   unitPrice: number;
   totalPrice: number;
+}
+
+interface DiscountData {
+  id: string;
+  name: string;
+  type: string;
+  value: number;
+  amount: number;
+  reason: string;
+  confirmed_by: string;
 }
