@@ -90,9 +90,8 @@ export const calculateTotalFromOrderlines = (
 
   // Calculate subtotal from orderlines
   const subtotal = orderlines.reduce((total, line) => {
-    const quantity = line.quantity || 1;
     const linePrice = line.price || 0;
-    return total + (linePrice * quantity);
+    return total + (linePrice);
   }, 0);
 
   // Add delivery tax
