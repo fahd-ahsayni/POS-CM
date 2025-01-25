@@ -116,7 +116,6 @@ export default function Profile() {
               </div>
             </div>
           </DropdownHeader>
-          <DropdownDivider />
 
           <DropdownItem onClick={handleCustomerDisplay}>
             <DisplayIcon className="opacity-60" aria-hidden="true" />
