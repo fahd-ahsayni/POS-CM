@@ -5,6 +5,7 @@ import { fetchOrders } from "@/store/slices/data/orders.slice";
 import { User } from "@/types/user.types";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 interface PaymentAmount {
@@ -25,6 +26,7 @@ interface PaymentMethod {
 }
 
 export const useCloseShift = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const [selectedCashier, setSelectedCashier] = useState<User | null>(null);
   const [paymentAmounts, setPaymentAmounts] = useState<Record<string, number>>(
@@ -154,6 +156,7 @@ export const useCloseShift = () => {
       if (response.status === 200) {
         localStorage.clear();
         logoutService();
+        navigate("/login");
         toast.success(
           createToast(
             "Shift closed successfully",
