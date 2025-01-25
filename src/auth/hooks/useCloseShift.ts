@@ -1,4 +1,4 @@
-import { closeShift } from "@/api/services";
+import { closeShift, logoutService } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
 import { AppDispatch, RootState } from "@/store";
 import { logout } from "@/store/slices/authentication/auth.slice";
@@ -153,7 +153,9 @@ export const useCloseShift = () => {
       const response = await closeShift(data);
 
       if (response.status === 200) {
+        logoutService();
         dispatch(logout());
+        localStorage.clear();
         toast.success(
           createToast(
             "Shift closed successfully",
