@@ -1,10 +1,10 @@
 import { createClient, getClients, updateClient } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
 import { formatAddress } from "@/lib/utils";
-import { setClientId } from "@/store/slices/order/create-order.slice";
+import { selectOrder, setClientId } from "@/store/slices/order/create-order.slice";
 import { Client } from "@/types/clients.types";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { z } from "zod";
 import { useRightViewContext } from "../contexts/RightViewContext";
@@ -29,8 +29,10 @@ export const useAddClient = (onSuccess?: () => void) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
   const dispatch = useDispatch();
-
   const { setViews } = useRightViewContext();
+
+  const order = useSelector(selectOrder);
+  const clientId = order.client_id;
 
   const [formData, setFormData] = useState<ClientFormData>({
     name: "",
@@ -62,6 +64,21 @@ export const useAddClient = (onSuccess?: () => void) => {
     };
     fetchClients();
   }, [isOpen]);
+
+  useEffect(() => {
+    if (clients.length > 0 && clientId) {
+      const existingClient = clients.find((c) => c._id === clientId);
+      if (existingClient) {
+        setFormData({
+          name: existingClient.name,
+          phone: existingClient.phone,
+          address: formatAddress(existingClient.address || ""),
+          email: existingClient.email || "",
+          ice: existingClient.ice || "",
+        });
+      }
+    }
+  }, [clients, clientId]);
 
   const validateForm = (): boolean => {
     try {
