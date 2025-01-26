@@ -3,18 +3,18 @@ import { useShift } from "@/auth/context/ShiftContext";
 import SessionExpired from "@/components/errors/SessionExpired";
 import { Button } from "@/components/ui/button";
 import { TypographyH2, TypographySmall } from "@/components/ui/typography";
-import { AppDispatch } from "@/store";
+import { useAppDispatch } from "@/store/hooks";
 import { logout } from "@/store/slices/authentication/auth.slice";
 import { selectPosError } from "@/store/slices/data/pos.slice";
 import { PosData } from "@/types/pos.types";
-import { User } from "@/types/user.types";
-import { useDispatch, useSelector } from "react-redux";
+import { memo, useCallback, useMemo } from "react";
+import { useSelector } from "react-redux";
 import PosCard from "./components/PosCard";
 import UserCard from "./components/ui/UserCard";
 import { useSelectPos } from "./hooks/useSelectPos";
 import OpenShift from "./OpenShift";
 
-export default function SelectPosPage() {
+function SelectPosPage() {
   const {
     data,
     checkDay,
@@ -24,18 +24,18 @@ export default function SelectPosPage() {
     handleOpenDay,
     handleSelectPos,
   } = useSelectPos();
-  const dispatch = useDispatch<AppDispatch>();
-
+  const dispatch = useAppDispatch();
   const error = useSelector(selectPosError);
   const { shiftId } = useShift();
 
-  const userAuthenticated: User | null = JSON.parse(
-    localStorage.getItem("user") || "null"
+  const userAuthenticated = useMemo(() => 
+    JSON.parse(localStorage.getItem("user") || "null"),
+    []
   );
 
-  const handleChangeAccount = () => {
+  const handleChangeAccount = useCallback(() => {
     dispatch(logout());
-  };
+  }, [dispatch]);
 
   if (error) return <SessionExpired />;
 
@@ -65,19 +65,19 @@ export default function SelectPosPage() {
           </div>
         </header>
         <div className="h-full flex flex-col items-center justify-center">
-          <div>
-            {userAuthenticated && (
+          {userAuthenticated && (
+            <>
               <UserCard
                 withRole={true}
                 user={userAuthenticated}
                 isActive={true}
                 className="scale-105"
               />
-            )}
-          </div>
-          <div className="pt-16">
-            <Button onClick={handleChangeAccount}>Change Account</Button>
-          </div>
+              <div className="pt-16">
+                <Button onClick={handleChangeAccount}>Change Account</Button>
+              </div>
+            </>
+          )}
         </div>
       </aside>
 
@@ -107,3 +107,5 @@ export default function SelectPosPage() {
     </div>
   );
 }
+
+export default memo(SelectPosPage);

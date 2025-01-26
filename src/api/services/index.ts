@@ -83,7 +83,6 @@ export const loginWithRfid = async (rfid: string) => {
 
 export const logoutService = async () => {
   try {
-   
     localStorage.clear();
   } catch (error) {
     toast.error(
@@ -109,6 +108,10 @@ export const openShift = async (startingBalance: string, posId: string) => {
     starting_balance: startingBalance,
     pos_id: posId,
   });
+};
+
+export const updateShift = async (data: any, shiftId: string) => {
+  return api.put(`/shift/update/${shiftId}`, data);
 };
 
 export const createOrder = async (data: any) => {
@@ -222,10 +225,6 @@ export const checkIsNewOrders = async (shiftId: string) => {
   return api.get(`/order/check-new-order/${shiftId}`);
 };
 
-export const updateShift = async (data: any, shiftId: string) => {
-  return api.put(`/shift/update/${shiftId}`, data);
-};
-
 export const filterOrderById = async (orderId: string) => {
   return api.get(`/order/${orderId}`);
 };
@@ -253,4 +252,8 @@ export const getCategories = async (id?: string) => {
     return api.get(`/categories/${id}`);
   }
   return api.get("/categories");
+};
+
+export const getGeneralData = async (posId: string) => {
+  return api.get(`/general-data/pos/${posId}`);
 };

@@ -23,16 +23,14 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 403) {
-      window.location.href = "/session-expired";
-    }
+    // if (error.response?.status === 403) {
+    //   window.location.href = "/session-expired";
+    // }
     return Promise.reject(error);
   }
 );
 
-// Export a function to create the API instance
 export const createApiInstance = () => api;

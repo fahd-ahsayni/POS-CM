@@ -1,4 +1,4 @@
-import { openShift, updateShift } from "@/api/services";
+import { getGeneralData, openShift, updateShift } from "@/api/services";
 import { useShift } from "@/auth/context/ShiftContext";
 import Drawer from "@/components/global/Drawer";
 import NumberPad from "@/components/global/NumberPad";
@@ -42,34 +42,48 @@ export default function OpenShift({
   }, []);
 
   const handleOpenShift = async () => {
-    const amountNumber = parseFloat(amount);
-    if (isNaN(amountNumber)) return;
+    setIsLoading(true);
+    let currentShiftId = "";
 
     try {
-      setIsLoading(true);
-      if (!reOpen) {
-        const res = await openShift(amountNumber.toString(), posId);
-        if (res.status === 200) {
-          setShiftId(res.data.shift._id);
-          localStorage.setItem("shiftId", res.data.shift._id);
-        }
-      } else if (shiftId) {
-        await updateShift(
-          { starting_balance: amountNumber.toString() },
-          shiftId
+      if (reOpen && shiftId) {
+        await updateShift({ starting_balance: amount ? amount : "0" }, shiftId);
+        currentShiftId = shiftId;
+        toast.success(
+          createToast(
+            "Shift updated",
+            "Starting balance has been updated",
+            "success"
+          )
         );
+      } else {
+        const res = await openShift(amount ? amount : "0", posId);
+        if (res.status === 200 && posId) {
+          currentShiftId = res.data.shift._id;
+          setShiftId(currentShiftId);
+          localStorage.setItem("shiftId", currentShiftId);
+
+          // Wait for general data before proceeding
+          const response = await getGeneralData(posId);
+          localStorage.setItem("generalData", JSON.stringify(response.data));
+
+          toast.success(
+            createToast(
+              "New shift started",
+              "You can now start selling",
+              "success"
+            )
+          );
+        }
       }
-      toast.success(
-        createToast("Shift opened", "You can now start selling", "success")
-      );
-      navigate("/");
+
+      setOpen(false);
+      // Only navigate after all data is saved
+      navigate("/", { replace: true });
     } catch (error) {
-      toast.error(
-        createToast("Failed to open shift", "Please try again", "error")
-      );
+      console.error("Error during shift opening:", error);
     } finally {
       setIsLoading(false);
-      setOpen(false);
     }
   };
 
@@ -88,7 +102,7 @@ export default function OpenShift({
           <Button
             className="w-full"
             onClick={handleOpenShift}
-            disabled={isLoading || !amount}
+            disabled={isLoading}
           >
             {isLoading ? (
               <BeatLoader color={loadingColors.primary} size={8} />

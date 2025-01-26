@@ -1,6 +1,5 @@
 import { checkIsNewOrders } from "@/api/services";
 import { CashWithCoinsIcon } from "@/assets/figma-icons";
-import { useShift } from "@/auth/context/ShiftContext";
 import Drawer from "@/components/global/Drawer";
 import InputComponent from "@/components/global/InputField";
 import { Button } from "@/components/ui/button";
@@ -31,7 +30,6 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
     setSelectedCashier,
     paymentAmounts,
     openCurrencyQuantity,
-    requiredNextCashier,
     currencyQuantities,
     focusedMethod,
     setFocusedMethod,
@@ -46,24 +44,15 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
     availableCashiers,
   } = useCloseShift();
   const [isNewOrders, setIsNewOrders] = useState(false);
-  const { shiftId } = useShift();
-  const [currentShift, setCurrentShift] = useState(
-    shiftId ? shiftId : localStorage.getItem("shiftId")
-  );
   const selectId = useId();
 
   useEffect(() => {
-    if (open) {
-      setCurrentShift(shiftId ? shiftId : localStorage.getItem("shiftId"));
-    }
-  }, [open, shiftId]);
-
-  useEffect(() => {
     const checkForNewOrders = async () => {
-      if (!currentShift || !open) return;
+      const shiftId = localStorage.getItem("shiftId");
+      if (!shiftId) return;
 
       try {
-        const res = await checkIsNewOrders(currentShift);
+        const res = await checkIsNewOrders(shiftId);
         setIsNewOrders(res.status === 200);
       } catch (error) {
         console.error("Error checking for new orders:", error);
@@ -72,7 +61,7 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
     };
 
     checkForNewOrders();
-  }, [currentShift, open]);
+  }, [open]);
 
   const renderPaymentMethod = useCallback(
     (method: any) => (
@@ -144,7 +133,7 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
                     )}
                   >
                     <div className="space-y-6 h-full relative px-1">
-                      {(isNewOrders || requiredNextCashier) && (
+                      {isNewOrders && (
                         <div className="space-y-1">
                           <Label className="pl-1" htmlFor={selectId}>
                             Select next cashier
@@ -176,7 +165,11 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
                       )}
                       {paymentMethods.map(renderPaymentMethod)}
                       <div className="absolute bottom-20 left-0 w-full">
-                        <Button className="w-full" onClick={handleCloseShift} disabled={isLoading}>
+                        <Button
+                          className="w-full"
+                          onClick={handleCloseShift}
+                          disabled={isLoading}
+                        >
                           {isLoading ? (
                             <BeatLoader color="#FB0000" size={8} />
                           ) : (

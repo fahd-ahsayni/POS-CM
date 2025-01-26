@@ -1,10 +1,10 @@
-import { closeShift, logoutService } from "@/api/services";
+import { checkIsNewOrders, closeShift, logoutService } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
-import { AppDispatch, RootState } from "@/store";
+import { AppDispatch } from "@/store";
 import { fetchOrders } from "@/store/slices/data/orders.slice";
 import { User } from "@/types/user.types";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -32,8 +32,7 @@ export const useCloseShift = () => {
   const [paymentAmounts, setPaymentAmounts] = useState<Record<string, number>>(
     {}
   );
-  const [requiredNextCashier, setRequiredNextCashier] =
-    useState<boolean>(false);
+
   const [openCurrencyQuantity, setOpenCurrencyQuantity] =
     useState<boolean>(false);
   const [currencyQuantities, setCurrencyQuantities] = useState<
@@ -51,8 +50,6 @@ export const useCloseShift = () => {
     return users.cashiers || [];
   })();
 
-  const orders = useSelector((state: RootState) => state.orders.orders);
-
   const paymentMethods: PaymentMethod[] =
     JSON.parse(localStorage.getItem("generalData") || "{}")?.paymentMethods ||
     [];
@@ -60,13 +57,6 @@ export const useCloseShift = () => {
   useEffect(() => {
     dispatch(fetchOrders());
   }, [dispatch]);
-
-  useEffect(() => {
-    const hasNewOrder = Array.isArray(orders)
-      ? orders.some((order) => order.status === "new")
-      : false;
-    setRequiredNextCashier(hasNewOrder);
-  }, [orders]);
 
   const handleAmountChange = (methodId: string, value: string) => {
     const cleanValue = value.replace(/[^\d.]/g, "");
@@ -125,8 +115,11 @@ export const useCloseShift = () => {
       }));
   };
 
-  const validateForm = (): boolean => {
-    if (requiredNextCashier && !selectedCashier) {
+  const validateForm = async (): Promise<boolean> => {
+    const response = await checkIsNewOrders(
+      localStorage.getItem("shiftId") || ""
+    );
+    if (!selectedCashier && response.status === 200) {
       toast.error(
         createToast(
           "Please select the next cashier",
@@ -141,7 +134,7 @@ export const useCloseShift = () => {
   };
 
   const handleCloseShift = async () => {
-    if (!validateForm()) return;
+    if (!(await validateForm())) return;
 
     setIsLoading(true);
     try {
@@ -215,7 +208,6 @@ export const useCloseShift = () => {
     selectedCashier,
     setSelectedCashier,
     paymentAmounts,
-    requiredNextCashier,
     openCurrencyQuantity,
     setOpenCurrencyQuantity,
     currencyQuantities,

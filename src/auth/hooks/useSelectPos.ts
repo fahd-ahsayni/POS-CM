@@ -82,64 +82,62 @@ export const useSelectPos = (): UseSelectPosReturn => {
         }
 
         localStorage.setItem("posId", id);
+        localStorage.setItem("pos", JSON.stringify(selectedPos));
 
         const isAuthorizedUser =
           selectedPos.shift?.user_id._id === userAuthenticated?.id ||
           userAuthenticated?.position === "Manager";
 
-        if (isAuthorizedUser) {
-          const shiftId = selectedPos.shift?._id ?? "";
-          setShiftId(shiftId);
-          localStorage.setItem("shiftId", shiftId);
-          dispatch(updateOrder({ shift_id: shiftId }));
-          toast.success(
-            createToast(
-              ToastMessages.WELCOME_BACK,
-              "You are authorized to use this POS",
-              "success"
-            )
-          );
-
-          if (selectedPos.shift?.status !== "") {
-            await dispatch(fetchGeneralData(id));
-            navigate("/");
-          } else {
-            setOpen(true);
-            setReOpen(true);
-          }
-          return;
-        }
-
-        if (selectedPos.shift !== null && !isAuthorizedUser) {
-          toast.error(
-            createToast(
-              ToastMessages.UNAUTHORIZED,
-              "You are not authorized to use this POS",
-              "error"
-            )
-          );
-          return;
-        }
-
         if (selectedPos.shift?.status === "opening_control") {
-          toast.info(
-            createToast(
-              `Welcome back ${userAuthenticated?.name}`,
-              "Please open the shift first",
-              "info"
-            )
-          );
+          if (!isAuthorizedUser) {
+            throw new Error("Unauthorized");
+          }
+          setShiftId(selectedPos.shift._id);
+          localStorage.setItem("shiftId", selectedPos.shift._id);
           setOpen(true);
           setReOpen(true);
           return;
         }
 
-        if (selectedPos.shift === null) {
+        if (selectedPos.shift?.status === "open") {
+          if (!isAuthorizedUser) {
+            throw new Error("Unauthorized");
+          }
+          setShiftId(selectedPos.shift._id);
+          localStorage.setItem("shiftId", selectedPos.shift._id);
+          dispatch(updateOrder({ shift_id: selectedPos.shift._id }));
+
+          // Wait for general data to be loaded before navigation
+          const generalDataResponse = await dispatch(
+            fetchGeneralData(id)
+          ).unwrap();
+          localStorage.setItem(
+            "generalData",
+            JSON.stringify(generalDataResponse)
+          );
+
+          navigate("/");
+          return;
+        }
+
+        if (!selectedPos.shift) {
           setOpen(true);
           setReOpen(false);
         }
       } catch (error) {
-        toast.error("An error occurred while selecting POS");
+        const message =
+          error instanceof Error
+            ? error.message
+            : "An error occurred while selecting POS";
+        toast.error(
+          createToast(
+            message === "Unauthorized" ? ToastMessages.UNAUTHORIZED : "Error",
+            message === "Unauthorized"
+              ? "You are not authorized to use this POS"
+              : message,
+            "error"
+          )
+        );
       } finally {
         setIsLoading(false);
       }
