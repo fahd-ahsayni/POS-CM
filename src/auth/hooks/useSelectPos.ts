@@ -83,6 +83,7 @@ export const useSelectPos = (): UseSelectPosReturn => {
 
         localStorage.setItem("posId", id);
         localStorage.setItem("pos", JSON.stringify(selectedPos));
+        localStorage.setItem("shiftId", selectedPos?.shift?._id || "");
 
         const isAuthorizedUser =
           selectedPos.shift?.user_id._id === userAuthenticated?.id ||

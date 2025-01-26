@@ -116,7 +116,7 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
       open={open}
       setOpen={setOpen}
       title="End Shift"
-      classNames={drawerClassNames}
+      classNames={cn(drawerClassNames, "px-3")}
       description="Count your cash and enter totals for each denomination, then continue to add other payment methods."
     >
       <div className="h-full overflow-hidden w-full relative">

@@ -75,7 +75,6 @@ const Layout: FC = () => {
     if (currentPos?.shift?._id) {
       localStorage.setItem("shiftId", currentPos.shift?._id);
     }
-    console.log("2");
   }, [currentPos]);
 
   if (isLoading) {

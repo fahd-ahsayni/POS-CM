@@ -53,7 +53,7 @@ export default function ComboboxSelectOnChange<T>({
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
     setQuery(newValue);
-    onChange(newValue as unknown as T);
+    onChange(newValue ? (newValue as unknown as T) : null);
   };
 
   return (
