@@ -1,5 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useDispatch } from "react-redux";
+import { applyDiscount } from "@/api/services";
+import { useOrder } from "@/components/global/drawers/order-details/context/OrderContext";
 import { setDiscount } from "@/store/slices/order/create-order.slice";
 import { toast } from "react-toastify";
 import { createToast } from "@/components/global/Toasters";
@@ -20,6 +22,7 @@ export function useApplyDiscount(
   setAuthorization: (authorization: boolean) => void
 ) {
   const dispatch = useDispatch();
+  const { selectedOrder } = useOrder();
   const [selectedDiscount, setSelectedDiscount] = useState<string>("");
   const [selectedReason, setSelectedReason] = useState<string>("");
 
@@ -54,7 +57,7 @@ export function useApplyDiscount(
     setSelectedReason(value);
   }, []);
 
-  const handleApplyDiscount = useCallback(() => {
+  const handleApplyDiscount = useCallback(async () => {
     try {
       if (!selectedDiscount || !selectedReason) return;
 
@@ -64,15 +67,47 @@ export function useApplyDiscount(
         confirmed_by: admin.user.id
       };
 
-      dispatch(setDiscount(discountData));
+      // If there's a loaded order (editing existing order)
+      if (selectedOrder?._id) {
+        const response = await applyDiscount({
+          order_id: selectedOrder._id,
+          ...discountData
+        });
+
+        if (response.status === 200) {
+          toast.success(
+            createToast(
+              "Discount applied",
+              "The discount has been applied to the order",
+              "success"
+            )
+          );
+        }
+      } else {
+        // For new orders, use the Redux slice
+        dispatch(setDiscount(discountData));
+        toast.success(
+          createToast(
+            "Discount applied",
+            "The discount has been applied to the order",
+            "success"
+          )
+        );
+      }
 
       setOpen(false);
     } catch (error) {
-      console.error('Discount error:', error); // Debug log
-      toast.error(createToast("Apply Discount failed", "Please try again", "error"));
+      console.error('Discount error:', error);
+      toast.error(
+        createToast(
+          "Apply Discount failed",
+          "Please try again",
+          "error"
+        )
+      );
       setAuthorization(false);
     }
-  }, [selectedDiscount, selectedReason, admin.user.id, dispatch, setOpen, setAuthorization]);
+  }, [selectedDiscount, selectedReason, admin.user.id, dispatch, setOpen, setAuthorization, selectedOrder]);
 
   return {
     selectedDiscount,

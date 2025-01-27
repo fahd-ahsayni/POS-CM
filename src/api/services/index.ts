@@ -257,3 +257,12 @@ export const getCategories = async (id?: string) => {
 export const getGeneralData = async (posId: string) => {
   return api.get(`/general-data/pos/${posId}`);
 };
+
+
+export const applyDiscount = async (data: any) => {
+  return api.post("/order/discount", {
+    order_id: data.order_id,
+    discount_id: data.discount_id,
+    reason: data.reason,
+  });
+};
