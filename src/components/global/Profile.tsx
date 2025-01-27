@@ -16,7 +16,7 @@ import { logout } from "@/store/slices/authentication/auth.slice";
 import { fetchPosData } from "@/store/slices/data/pos.slice";
 import { PosData } from "@/types/pos.types";
 import * as Headless from "@headlessui/react";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNowStrict } from "date-fns";
 import { ChevronDown, LogOut, Power } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -108,10 +108,16 @@ export default function Profile() {
               </div>
               <div className="text-xs text-zinc-500 dark:text-zinc-400 flex-1 text-end">
                 {currentPos?.shift?.opening_time
-                  ? formatDistanceToNow(
+                  ? formatDistanceToNowStrict(
                       new Date(currentPos.shift.opening_time),
-                      { addSuffix: true }
+                      {
+                        unit: "minute", // Ensure it stays in minutes or hours
+                      }
                     )
+                      .replace(" minutes", "m")
+                      .replace(" minute", "m")
+                      .replace(" hours", "h")
+                      .replace(" hour", "h") + " ago"
                   : ""}
               </div>
             </div>

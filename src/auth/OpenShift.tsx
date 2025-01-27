@@ -10,6 +10,8 @@ import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
 import { toast } from "react-toastify";
+import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
+import { TYPE_OF_ORDER_VIEW } from "@/components/views/home/right-section/constants";
 
 interface OpenShiftProps {
   open: boolean;
@@ -26,6 +28,7 @@ export default function OpenShift({
   reOpen,
   shiftId,
 }: OpenShiftProps) {
+  const { setViews } = useRightViewContext();
   const { setShiftId } = useShift();
   const [amount, setAmount] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -63,7 +66,6 @@ export default function OpenShift({
           setShiftId(currentShiftId);
           localStorage.setItem("shiftId", currentShiftId);
 
-          // Wait for general data before proceeding
           const response = await getGeneralData(posId);
           localStorage.setItem("generalData", JSON.stringify(response.data));
 
@@ -78,7 +80,8 @@ export default function OpenShift({
       }
 
       setOpen(false);
-      // Only navigate after all data is saved
+      // Set the initial view before navigation
+      setViews(TYPE_OF_ORDER_VIEW);
       navigate("/", { replace: true });
     } catch (error) {
       console.error("Error during shift opening:", error);

@@ -1,20 +1,18 @@
 import { DishIcon } from "@/assets/figma-icons";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input as NumberFlowInput } from "@/components/ui/number-flow-input";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { toTitleCase } from "@/functions/string-transforms";
 import { currency } from "@/preferences";
 import { ProductSelected } from "@/types/product.types";
 import { motion } from "framer-motion";
-import { Minus, Plus } from "lucide-react";
 import { memo, useMemo } from "react";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { useRightViewContext } from "../contexts/RightViewContext";
 import { useOrderLine } from "../hooks/useOrderLine";
 import OderLineAddComments from "../ui/OderLineAddComments";
 import ProductActions from "../ui/ProductActions";
-import { Input as NumberFlowInput } from "@/components/ui/number-flow-input";
 
 interface OrderLineProps {
   item: ProductSelected;
@@ -34,18 +32,6 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
       setCustomerIndex,
     }
   );
-
-  const handleIncrement = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    selectCustomer();
-    increment();
-  };
-
-  const handleDecrement = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    selectCustomer();
-    decrement();
-  };
 
   const handleQuantityChange = (newQuantity: number) => {
     if (newQuantity > item.quantity) {

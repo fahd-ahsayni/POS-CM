@@ -51,6 +51,7 @@ export default function OrderDetails() {
     );
   };
 
+  console.log(selectedOrder);
   // Group orderlines by customer index
   const groupedOrderLines =
     selectedOrder?.orderline_ids?.reduce((groups: any, line: any) => {
@@ -102,9 +103,7 @@ export default function OrderDetails() {
   };
 
   const calculateTotalPrice = (orderLine: any) => {
-    return (orderLine.price * orderLine.quantity).toFixed(
-      currency.toFixed || 2
-    );
+    return orderLine.price.toFixed(currency.toFixed || 2);
   };
 
   if (!selectedOrder) return null;

@@ -13,6 +13,7 @@ import PosCard from "./components/PosCard";
 import UserCard from "./components/ui/UserCard";
 import { useSelectPos } from "./hooks/useSelectPos";
 import OpenShift from "./OpenShift";
+import { RightViewProvider } from "@/components/views/home/right-section/contexts/RightViewContext";
 
 function SelectPosPage() {
   const {
@@ -41,13 +42,15 @@ function SelectPosPage() {
 
   return (
     <div className="flex h-screen overflow-hidden relative">
-      <OpenShift
-        open={open}
-        setOpen={setOpen}
-        posId={localStorage.getItem("posId") || ""}
-        reOpen={reOpen}
-        shiftId={shiftId ?? ""}
-      />
+      <RightViewProvider>
+        <OpenShift
+          open={open}
+          setOpen={setOpen}
+          posId={localStorage.getItem("posId") || ""}
+          reOpen={reOpen}
+          shiftId={shiftId ?? ""}
+        />
+      </RightViewProvider>
       <aside className="lg:w-3/12 w-4/12 h-full bg-secondary-white relative">
         <header className="absolute top-0 left-0 z-10 flex h-16 flex-shrink-0">
           <div className="flex flex-1 justify-between px-4 sm:px-6">

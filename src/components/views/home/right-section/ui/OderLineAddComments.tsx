@@ -1,12 +1,11 @@
 import { CommentIcon, DeleteCommentIcon } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { updateOrderLine } from "@/store/slices/order/create-order.slice";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
-import { useProductSelection } from "../../left-section/hooks/useProductSelection";
-import { useRightViewContext } from "../contexts/RightViewContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -15,12 +14,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
+import { updateOrderLine } from "@/store/slices/order/create-order.slice";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
+import { useProductSelection } from "../../left-section/hooks/useProductSelection";
+import { useRightViewContext } from "../contexts/RightViewContext";
 
 interface OrderLineAddCommentsProps {
   productId: string;
@@ -152,9 +152,9 @@ export default function OrderLineAddComments({
                   <SelectValue placeholder="Select a comment" />
                 </SelectTrigger>
                 <SelectContent>
-                  {defineComments.map((item: any) => (
+                  {defineComments.map((item: any, index: number) => (
                     <SelectItem
-                      key={item.id}
+                      key={index}
                       value={item.text}
                       className="text-[.8rem]"
                     >
