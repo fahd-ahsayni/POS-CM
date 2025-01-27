@@ -14,6 +14,7 @@ import { useRightViewContext } from "../contexts/RightViewContext";
 import { useOrderLine } from "../hooks/useOrderLine";
 import OderLineAddComments from "../ui/OderLineAddComments";
 import ProductActions from "../ui/ProductActions";
+import { Input as NumberFlowInput } from "@/components/ui/number-flow-input";
 
 interface OrderLineProps {
   item: ProductSelected;
@@ -44,6 +45,14 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
     e.stopPropagation();
     selectCustomer();
     decrement();
+  };
+
+  const handleQuantityChange = (newQuantity: number) => {
+    if (newQuantity > item.quantity) {
+      increment();
+    } else if (newQuantity < item.quantity) {
+      decrement();
+    }
   };
 
   const renderComboItems = useMemo(() => {
@@ -134,36 +143,13 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
                 <DishIcon className="!w-5 !h-auto !fill-secondary-black dark:!fill-secondary-white" />
               </div>
             ) : (
-              <div className="flex items-center justify-end gap-x-2">
-                <Button
-                  slot="decrement"
-                  className="-ms-px h-7 w-7 rounded bg-accent-white/10 hover:bg-accent-white/20"
-                  size="icon"
-                  onClick={handleDecrement}
-                >
-                  <Minus
-                    size={16}
-                    strokeWidth={2}
-                    aria-hidden="true"
-                    className="text-primary-black dark:text-white"
-                  />
-                </Button>
-                <TypographyP className="px-1.5 font-medium">
-                  {item.quantity}
-                </TypographyP>
-                <Button
-                  slot="increment"
-                  className="-ms-px h-7 w-7 rounded bg-accent-white/10 hover:bg-accent-white/20"
-                  size="icon"
-                  onClick={handleIncrement}
-                >
-                  <Plus
-                    size={16}
-                    strokeWidth={2}
-                    aria-hidden="true"
-                    className="text-primary-black dark:text-white"
-                  />
-                </Button>
+              <div className="flex items-center justify-end">
+                <NumberFlowInput
+                  value={item.quantity}
+                  min={0}
+                  max={99}
+                  onChange={handleQuantityChange}
+                />
               </div>
             )}
           </div>
