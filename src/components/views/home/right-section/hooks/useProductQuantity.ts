@@ -1,3 +1,4 @@
+import { updateCustomerDisplay } from "@/components/global/Customer-display/useCustomerDisplay";
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 import { calculateProductPrice } from "@/functions/priceCalculations";
 import { ProductSelected } from "@/types/product.types";
@@ -8,8 +9,8 @@ export const useProductQuantity = () => {
 
   const incrementQuantity = useCallback(
     (product: ProductSelected) => {
-      setSelectedProducts((prevProducts) =>
-        prevProducts.map((item) => {
+      setSelectedProducts((prevProducts) => {
+        const updatedProducts = prevProducts.map((item) => {
           // For combo products, check unique ID and customer_index
           if (item.is_combo && product.is_combo) {
             return item.id === product.id &&
@@ -39,16 +40,20 @@ export const useProductQuantity = () => {
                 ).totalPrice,
               }
             : item;
-        })
-      );
+        });
+        
+        // Update customer display
+        updateCustomerDisplay(updatedProducts);
+        return updatedProducts;
+      });
     },
     [setSelectedProducts, currentMenu]
   );
 
   const decrementQuantity = useCallback(
     (product: ProductSelected) => {
-      setSelectedProducts((prevProducts) =>
-        prevProducts
+      setSelectedProducts((prevProducts) => {
+        const updatedProducts = prevProducts
           .map((item) => {
             // For combo products, check unique ID and customer_index
             if (item.is_combo && product.is_combo) {
@@ -80,8 +85,12 @@ export const useProductQuantity = () => {
                 }
               : item;
           })
-          .filter((item) => item.quantity > 0)
-      );
+          .filter((item) => item.quantity > 0);
+        
+        // Update customer display
+        updateCustomerDisplay(updatedProducts);
+        return updatedProducts;
+      });
     },
     [setSelectedProducts, currentMenu]
   );

@@ -1,19 +1,39 @@
 import { DishIcon } from "@/assets/figma-icons";
+import Logo from "@/components/Layout/components/Logo";
 import { TextShimmer } from "@/components/ui/text-shimmer";
 import {
   TypographyH4,
   TypographyP,
   TypographySmall,
 } from "@/components/ui/typography";
+import { calculateProductPrice } from "@/functions/priceCalculations";
 import { currency } from "@/preferences";
+import { ProductSelected } from "@/types/product.types";
 import { useEffect, useState } from "react";
 
 interface Product {
   customer_index: number;
-  variants: Array<{ name: string; price_ttc: number }>;
+  variants: Array<{ 
+    name: string; 
+    price_ttc: number;
+    menus?: Array<{ menu_id: string; price_ttc: number }>;
+    default_price?: number;
+    is_menu?: boolean;
+  }>;
   name: string;
   quantity: number;
   price: number;
+  is_combo?: boolean;
+  combo_items?: {
+    variants: Array<any>;
+    supplements: Array<any>;
+  };
+  discount?: {
+    discount_id: string;
+    reason: string;
+    confirmed_by: string;
+  };
+  product_variant_id?: string;
 }
 
 interface GroupedProducts {
@@ -49,23 +69,37 @@ export default function CustomerDisplay() {
 
   const calculateCustomerTotal = (products: Product[]) => {
     return products.reduce((sum, product) => {
-      const unitPrice =
-        product.variants[0]?.price_ttc || product.price / product.quantity;
-      return sum + unitPrice * product.quantity;
+      // Use the same price calculation logic as the main app
+      const priceCalc = calculateProductPrice(
+        product as ProductSelected,
+        JSON.parse(localStorage.getItem("orderType") || "{}")?.menu_id || null,
+        product.quantity
+      );
+      return sum + priceCalc.totalPrice;
     }, 0);
   };
 
   const calculateGrandTotal = () => {
-    return Object.values(groupedProducts).reduce((total, customerProducts) => {
-      return (
-        total +
-        customerProducts.reduce((sum, product) => sum + product.price, 0)
-      );
-    }, 0);
+    return Object.values(groupedProducts).reduce(
+      (total, customerProducts) => total + calculateCustomerTotal(customerProducts),
+      0
+    );
+  };
+
+  const getDisplayPrice = (product: Product) => {
+    const priceCalc = calculateProductPrice(
+      product as ProductSelected,
+      JSON.parse(localStorage.getItem("orderType") || "{}")?.menu_id || null,
+      product.quantity
+    );
+    return priceCalc.totalPrice;
   };
 
   return (
     <div className="h-screen bg-background p-8 relative overflow-hidden">
+      <div className="absolute top-4 left-6">
+        <Logo />
+      </div>
       <div
         className="absolute rounded-full -top-48 -right-48 w-[320px] h-[320px] bg-primary-red/50 blur-3xl"
         aria-hidden="true"
@@ -104,9 +138,14 @@ export default function CustomerDisplay() {
                             <span>{product.quantity}</span>
                           </TypographySmall>
                         </div>
+                        {product.discount && (
+                          <TypographySmall className="text-primary-red">
+                            Discount Applied
+                          </TypographySmall>
+                        )}
                       </div>
                       <TypographySmall className="font-semibold">
-                        {product.price.toFixed(2)} {currency.currency}
+                        {getDisplayPrice(product).toFixed(2)} {currency.currency}
                       </TypographySmall>
                     </div>
                   ))}

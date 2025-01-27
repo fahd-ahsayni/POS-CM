@@ -2,7 +2,6 @@ import { CommentIcon, DeleteCommentIcon } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { updateOrderLine } from "@/store/slices/order/create-order.slice";
-import { Menu } from "@headlessui/react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
@@ -17,20 +16,26 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+} from "@/components/ui/dropdown-menu";
 
-interface OderLineAddCommentsProps {
+interface OrderLineAddCommentsProps {
   productId: string;
   customerIndex: number;
   initialNotes?: string[];
   onNotesUpdate?: (notes: string[]) => void;
 }
 
-export default function OderLineAddComments({
+export default function OrderLineAddComments({
   productId,
   customerIndex,
   initialNotes = [],
   onNotesUpdate,
-}: OderLineAddCommentsProps) {
+}: OrderLineAddCommentsProps) {
+  const dispatch = useDispatch();
   const { selectedProducts, setSelectedProducts } = useLeftViewContext();
   const { orderType } = useRightViewContext();
   const { updateProductNotes } = useProductSelection({
@@ -40,88 +45,103 @@ export default function OderLineAddComments({
     orderType,
   });
 
-  const dispatch = useDispatch();
   const generalData = JSON.parse(localStorage.getItem("generalData") || "{}");
   const defineComments =
     generalData.defineNote?.filter((item: any) => item.type === "pos") || [];
-  const [comments, setComments] = useState<string[]>(initialNotes);
+
+  const [comments, setComments] = useState<string[]>(() => {
+    return [...initialNotes, ""];
+  });
+
   const [customInputs, setCustomInputs] = useState<boolean[]>(
-    new Array(comments.length + 1).fill(false)
+    new Array(initialNotes.length + 1).fill(false)
   );
 
   const handleCommentChange = (value: string, index: number) => {
-    const newComments = [...comments];
-    newComments[index] = value;
+    setComments((prev) => {
+      const newComments = [...prev];
+      newComments[index] = value;
 
-    if (index === comments.length - 1 && value.trim()) {
-      newComments.push("");
-      setCustomInputs([...customInputs, false]);
-    }
-
-    const filteredComments = newComments.filter((c) => c.trim() !== "");
-    setComments(filteredComments);
-
-    if (onNotesUpdate) {
-      onNotesUpdate(filteredComments);
-    } else {
-      updateProductNotes(productId, filteredComments, customerIndex);
-      dispatch(
-        updateOrderLine({
-          _id: productId,
-          customer_index: customerIndex,
-          notes: filteredComments,
-        })
-      );
-    }
+      if (index === prev.length - 1 && value.length > 0) {
+        newComments.push("");
+        setCustomInputs((prevCI) => [...prevCI, false]);
+      }
+      return newComments;
+    });
   };
 
-  const handleCustomInputToggle = (index: number, enabled: boolean) => {
-    const newCustomInputs = [...customInputs];
-    newCustomInputs[index] = enabled;
-    setCustomInputs(newCustomInputs);
+  const handleBlur = () => {
+    setComments((prev) => {
+      const filtered = prev.filter((c) => c.length > 0);
+      filtered.push("");
 
-    // Reset the value when switching between input types
-    handleCommentChange("", index);
-  };
-
-  const handleDelete = (index: number) => {
-    if (comments.length > 0) {
-      const newComments = comments.filter((_, i) => i !== index);
-      setComments(newComments);
       if (onNotesUpdate) {
-        onNotesUpdate(newComments);
+        onNotesUpdate(filtered.slice(0, -1));
       } else {
-        updateProductNotes(productId, newComments, customerIndex);
+        updateProductNotes(productId, filtered.slice(0, -1), customerIndex);
         dispatch(
           updateOrderLine({
             _id: productId,
             customer_index: customerIndex,
-            notes: newComments,
+            notes: filtered.slice(0, -1),
           })
         );
       }
-    }
+      return filtered;
+    });
+  };
+
+  const handleCustomInputToggle = (index: number, enabled: boolean) => {
+    setCustomInputs((prev) => {
+      const newArr = [...prev];
+      newArr[index] = enabled;
+      return newArr;
+    });
+    handleCommentChange("", index);
+  };
+
+  const handleDelete = (index: number) => {
+    setComments((prev) => {
+      const newComments = prev.filter((_, i) => i !== index);
+      if (onNotesUpdate) {
+        onNotesUpdate(newComments.slice(0, -1));
+      } else {
+        updateProductNotes(productId, newComments.slice(0, -1), customerIndex);
+        dispatch(
+          updateOrderLine({
+            _id: productId,
+            customer_index: customerIndex,
+            notes: newComments.slice(0, -1),
+          })
+        );
+      }
+      return newComments;
+    });
+    setCustomInputs((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
-    <Menu as="div" className="relative">
-      <Menu.Button
-        as={Button}
-        size="icon"
-        variant="ghost"
-        className="-ms-px rounded h-7 w-7 bg-accent-white/10 hover:bg-accent-white/20 relative"
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          size="icon"
+          variant="ghost"
+          className="-ms-px rounded h-7 w-7 bg-accent-white/10 hover:bg-accent-white/20 relative"
+        >
+          <CommentIcon className="fill-primary-black dark:fill-white h-4 w-4" />
+          <span className="sr-only">Comments</span>
+          {comments.filter((c) => c.trim() !== "").length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-error-color text-white text-[0.6rem] rounded-full flex items-center justify-center shadow-md shadow-error-color/50 size-4">
+              {comments.filter((c) => c.trim() !== "").length}
+            </span>
+          )}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        className="mt-2 w-[280px] rounded-md bg-white dark:bg-primary-black shadow-lg border border-border p-3 space-y-2 -translate-x-1/3"
+        onBlur={handleBlur}
       >
-        <CommentIcon className="fill-primary-black dark:fill-white h-4 w-4" />
-        <span className="sr-only">Comments</span>
-        {comments.length > 0 && (
-          <span className="absolute -top-1 -right-1 bg-error-color text-white text-[0.6rem] rounded-full flex items-center justify-center shadow-md shadow-error-color/50 size-4">
-            <span>{comments.length}</span>
-          </span>
-        )}
-      </Menu.Button>
-
-      <Menu.Items className="absolute right-0 mt-4 w-[280px] origin-top-right rounded-md bg-white dark:bg-primary-black shadow-lg focus:outline-none p-3 border border-border z-50 space-y-2">
-        {[...comments, ""].map((comment, index) => (
+        {comments.map((comment, index) => (
           <div key={index} className="flex items-center gap-2">
             {!customInputs[index] ? (
               <Select
@@ -148,10 +168,11 @@ export default function OderLineAddComments({
                 value={comment}
                 placeholder="Add a comment"
                 onChange={(e) => handleCommentChange(e.target.value, index)}
+                onBlur={handleBlur}
               />
             )}
             <div className="flex items-center">
-              {comment ? (
+              {comment.trim() ? (
                 <Button
                   size="icon"
                   variant="link"
@@ -159,8 +180,10 @@ export default function OderLineAddComments({
                 >
                   <DeleteCommentIcon
                     className={cn(
-                      comment ? "fill-error-color" : "fill-neutral-dark-grey",
-                      "w-5 h-5"
+                      "w-5 h-5",
+                      comment.trim()
+                        ? "fill-error-color"
+                        : "fill-neutral-dark-grey"
                     )}
                   />
                   <span className="sr-only">Delete</span>
@@ -177,7 +200,7 @@ export default function OderLineAddComments({
             </div>
           </div>
         ))}
-      </Menu.Items>
-    </Menu>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
