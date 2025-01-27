@@ -7,93 +7,82 @@ import { useCallback } from "react";
 export const useProductQuantity = () => {
   const { setSelectedProducts, currentMenu } = useLeftViewContext();
 
-  const incrementQuantity = useCallback(
-    (product: ProductSelected) => {
+  const updateQuantity = useCallback(
+    (product: ProductSelected, newQuantity: number) => {
+      if (newQuantity < 0) return; // Prevent negative quantities
+
       setSelectedProducts((prevProducts) => {
+        if (newQuantity === 0) {
+          // Remove product if quantity is 0
+          const updatedProducts = prevProducts.filter((item) => {
+            if (item.is_combo && product.is_combo) {
+              return !(
+                item.id === product.id &&
+                item.customer_index === product.customer_index
+              );
+            }
+            return !(
+              item.product_variant_id === product.product_variant_id &&
+              item.customer_index === product.customer_index
+            );
+          });
+          updateCustomerDisplay(updatedProducts);
+          return updatedProducts;
+        }
+
+        // Update quantity for existing product
         const updatedProducts = prevProducts.map((item) => {
-          // For combo products, check unique ID and customer_index
+          // For combo products
           if (item.is_combo && product.is_combo) {
             return item.id === product.id &&
               item.customer_index === product.customer_index
               ? {
                   ...item,
-                  quantity: item.quantity + 1,
+                  quantity: newQuantity,
                   price: calculateProductPrice(
                     item,
                     currentMenu,
-                    item.quantity + 1
+                    newQuantity
                   ).totalPrice,
                 }
               : item;
           }
 
-          // For regular products, check product_variant_id and customer_index
+          // For regular products
           return item.product_variant_id === product.product_variant_id &&
             item.customer_index === product.customer_index
             ? {
                 ...item,
-                quantity: item.quantity + 1,
+                quantity: newQuantity,
                 price: calculateProductPrice(
                   item,
                   currentMenu,
-                  item.quantity + 1
+                  newQuantity
                 ).totalPrice,
               }
             : item;
         });
-        
-        // Update customer display
+
         updateCustomerDisplay(updatedProducts);
         return updatedProducts;
       });
     },
     [setSelectedProducts, currentMenu]
+  );
+
+  const incrementQuantity = useCallback(
+    (product: ProductSelected) => {
+      updateQuantity(product, product.quantity + 1);
+    },
+    [updateQuantity]
   );
 
   const decrementQuantity = useCallback(
     (product: ProductSelected) => {
-      setSelectedProducts((prevProducts) => {
-        const updatedProducts = prevProducts
-          .map((item) => {
-            // For combo products, check unique ID and customer_index
-            if (item.is_combo && product.is_combo) {
-              return item.id === product.id &&
-                item.customer_index === product.customer_index
-                ? {
-                    ...item,
-                    quantity: item.quantity - 1,
-                    price: calculateProductPrice(
-                      item,
-                      currentMenu,
-                      item.quantity - 1
-                    ).totalPrice,
-                  }
-                : item;
-            }
-
-            // For regular products, check product_variant_id and customer_index
-            return item.product_variant_id === product.product_variant_id &&
-              item.customer_index === product.customer_index
-              ? {
-                  ...item,
-                  quantity: item.quantity - 1,
-                  price: calculateProductPrice(
-                    item,
-                    currentMenu,
-                    item.quantity - 1
-                  ).totalPrice,
-                }
-              : item;
-          })
-          .filter((item) => item.quantity > 0);
-        
-        // Update customer display
-        updateCustomerDisplay(updatedProducts);
-        return updatedProducts;
-      });
+      updateQuantity(product, product.quantity - 1);
     },
-    [setSelectedProducts, currentMenu]
+    [updateQuantity]
   );
 
-  return { incrementQuantity, decrementQuantity };
+  return { incrementQuantity, decrementQuantity, updateQuantity };
 };

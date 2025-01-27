@@ -22,31 +22,48 @@ export function Input({
   const defaultValue = React.useRef(value);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [animated, setAnimated] = React.useState(true);
-  // Hide the caret during transitions so you can't see it shifting around:
   const [showCaret, setShowCaret] = React.useState(true);
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [inputValue, setInputValue] = React.useState(String(value));
+
+  React.useEffect(() => {
+    if (!isEditing) {
+      setInputValue(String(value));
+    }
+  }, [value, isEditing]);
 
   const handleInput: React.ChangeEventHandler<HTMLInputElement> = ({
     currentTarget: el,
   }) => {
     setAnimated(false);
+    setInputValue(el.value);
+
     if (el.value === "") {
       onChange?.(defaultValue.current);
       return;
     }
+
     const num = parseInt(el.value);
-    if (
-      isNaN(num) ||
-      (min != null && num < min) ||
-      (max != null && num > max)
-    ) {
-      // Revert input's value:
-      el.value = String(value);
-    } else {
-      // Manually update value in case they e.g. start with a "0" or end with a "."
-      // which won't trigger a DOM update (because the number is the same):
-      el.value = String(num);
-      onChange?.(num);
+    if (!isNaN(num)) {
+      if ((min != null && num < min) || (max != null && num > max)) {
+        // Revert input's value if outside bounds
+        setInputValue(String(value));
+      } else {
+        onChange?.(num);
+      }
     }
+  };
+
+  const handleBlur = () => {
+    setIsEditing(false);
+    if (inputValue === "" || isNaN(parseInt(inputValue))) {
+      setInputValue(String(value));
+    }
+  };
+
+  const handleFocus = () => {
+    setIsEditing(true);
+    setAnimated(false);
   };
 
   const handlePointerDown =
@@ -54,7 +71,6 @@ export function Input({
       setAnimated(true);
       if (event.pointerType === "mouse") {
         event?.preventDefault();
-        inputRef.current?.focus();
       }
       const newVal = Math.min(Math.max(value + diff, min), max);
       onChange?.(newVal);
@@ -81,7 +97,8 @@ export function Input({
           ref={inputRef}
           className={cn(
             showCaret ? "caret-primary" : "caret-transparent",
-            "spin-hide w-[2em] bg-transparent py-1.5 text-center font-[inherit] text-transparent outline-none appearance-none"
+            "spin-hide w-[2em] bg-transparent py-1.5 text-center font-[inherit] outline-none appearance-none",
+            isEditing ? "text-inherit" : "text-transparent"
           )}
           style={{ fontKerning: "none" }}
           type="text"
@@ -90,19 +107,23 @@ export function Input({
           autoComplete="off"
           inputMode="numeric"
           max={max}
-          value={value}
+          value={inputValue}
           onInput={handleInput}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
         />
-        <NumberFlow
-          value={value}
-          format={{ useGrouping: false }}
-          aria-hidden
-          animated={animated}
-          onAnimationsStart={() => setShowCaret(false)}
-          onAnimationsFinish={() => setShowCaret(true)}
-          className="pointer-events-none"
-          willChange
-        />
+        {!isEditing && (
+          <NumberFlow
+            value={value}
+            format={{ useGrouping: false }}
+            aria-hidden
+            animated={animated}
+            onAnimationsStart={() => setShowCaret(false)}
+            onAnimationsFinish={() => setShowCaret(true)}
+            className="pointer-events-none"
+            willChange
+          />
+        )}
       </div>
       <button
         aria-hidden

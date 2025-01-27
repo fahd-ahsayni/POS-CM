@@ -11,6 +11,7 @@ import { memo, useMemo } from "react";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { useRightViewContext } from "../contexts/RightViewContext";
 import { useOrderLine } from "../hooks/useOrderLine";
+import { useProductQuantity } from "../hooks/useProductQuantity";
 import OderLineAddComments from "../ui/OderLineAddComments";
 import ProductActions from "../ui/ProductActions";
 
@@ -20,9 +21,10 @@ interface OrderLineProps {
   decrement: () => void;
 }
 
-export function OrderLine({ item, increment, decrement }: OrderLineProps) {
+export function OrderLine({ item }: OrderLineProps) {
   const { customerIndex, setCustomerIndex } = useRightViewContext();
   const { currentMenu } = useLeftViewContext();
+  const { updateQuantity } = useProductQuantity();
 
   const { prices, itemVariants, selectCustomer, getDisplayName } = useOrderLine(
     {
@@ -34,11 +36,7 @@ export function OrderLine({ item, increment, decrement }: OrderLineProps) {
   );
 
   const handleQuantityChange = (newQuantity: number) => {
-    if (newQuantity > item.quantity) {
-      increment();
-    } else if (newQuantity < item.quantity) {
-      decrement();
-    }
+    updateQuantity(item, newQuantity);
   };
 
   const renderComboItems = useMemo(() => {
