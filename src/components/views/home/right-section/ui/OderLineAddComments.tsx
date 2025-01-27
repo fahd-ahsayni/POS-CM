@@ -149,7 +149,7 @@ export default function OrderLineAddComments({
                 onValueChange={(value) => handleCommentChange(value, index)}
               >
                 <SelectTrigger className="w-full text-[.8rem]">
-                  <SelectValue placeholder="Add a comment" />
+                  <SelectValue placeholder="Select a comment" />
                 </SelectTrigger>
                 <SelectContent>
                   {defineComments.map((item: any) => (
@@ -166,7 +166,7 @@ export default function OrderLineAddComments({
             ) : (
               <Input
                 value={comment}
-                placeholder="Add a comment"
+                placeholder="Write a comment"
                 onChange={(e) => handleCommentChange(e.target.value, index)}
                 onBlur={handleBlur}
               />
