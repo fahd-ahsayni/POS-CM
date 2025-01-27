@@ -5,7 +5,7 @@ import { Input as NumberFlowInput } from "@/components/ui/number-flow-input";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { toTitleCase } from "@/functions/string-transforms";
 import { currency } from "@/preferences";
-import { ProductSelected } from "@/types/product.types";
+import { ProductSelected } from "@/interfaces/product";
 import { motion } from "framer-motion";
 import { memo, useMemo } from "react";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";

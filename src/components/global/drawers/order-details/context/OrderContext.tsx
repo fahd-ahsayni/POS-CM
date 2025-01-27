@@ -1,4 +1,4 @@
-import { Order, OrderLine } from "@/types/order.types";
+import { Order, OrderLine } from "@/interfaces/order";
 import { createContext, ReactNode, useContext, useState } from "react";
 
 interface OrderContextType {

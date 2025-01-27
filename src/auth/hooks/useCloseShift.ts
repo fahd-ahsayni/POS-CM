@@ -2,7 +2,7 @@ import { checkIsNewOrders, closeShift, logoutService } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
 import { AppDispatch } from "@/store";
 import { fetchOrders } from "@/store/slices/data/orders.slice";
-import { User } from "@/types/user.types";
+import { User } from "@/interfaces/user";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";

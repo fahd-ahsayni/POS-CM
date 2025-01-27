@@ -6,7 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import NavigationButton from "./ui/NavigationButton";
 import UserCard from "./ui/UserCard";
 import UserCardSkeleton from "./ui/UserCardSkelton";
-import { User } from "@/types/user.types";
+import { User } from "@/interfaces/user";
 
 export interface SelectUserSlideProps {
   userType: string;

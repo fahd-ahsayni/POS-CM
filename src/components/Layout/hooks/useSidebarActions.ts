@@ -10,7 +10,7 @@ import {
   setDeliveryGuyId,
   setWaiterId,
 } from "@/store/slices/order/create-order.slice";
-import { StaffUser } from "@/types/staff";
+import { StaffUser } from "@/interfaces/staff";
 import { useCallback } from "react";
 
 interface UseSidebarActionsReturn {

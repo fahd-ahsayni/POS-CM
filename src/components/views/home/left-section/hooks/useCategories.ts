@@ -1,4 +1,4 @@
-import { Category } from "@/types/product.types";
+import { Category } from "@/interfaces/product";
 import { useCallback, useEffect, useState } from "react";
 import { ORDER_SUMMARY_VIEW } from "../../right-section/constants";
 import { useRightViewContext } from "../../right-section/contexts/RightViewContext";

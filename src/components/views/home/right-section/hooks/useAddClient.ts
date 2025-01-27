@@ -5,7 +5,7 @@ import {
   selectOrder,
   setClientId,
 } from "@/store/slices/order/create-order.slice";
-import { Client } from "@/types/clients.types";
+import { Client } from "@/interfaces/clients";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";

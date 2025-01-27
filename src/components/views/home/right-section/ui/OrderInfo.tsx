@@ -7,7 +7,7 @@ import {
 import { TypographySmall } from "@/components/ui/typography";
 import { getTableById } from "@/functions/getTableById";
 import { selectOrder } from "@/store/slices/order/create-order.slice";
-import { ProductVariant } from "@/types/product.types";
+import { ProductVariant } from "@/interfaces/product";
 import { useSelector } from "react-redux";
 
 interface OrderType {

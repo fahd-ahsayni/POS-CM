@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { toTitleCase } from "@/functions/string-transforms";
 import { cn } from "@/lib/utils";
-import { OrderType } from "@/types/order.types";
+import { OrderType } from "@/interfaces/order";
 import { ChevronRightIcon } from "lucide-react";
 import { memo } from "react";
 import { TypeOfOrderDescription, TypeOfOrderIcon } from "./TypeOfOrderIcon";

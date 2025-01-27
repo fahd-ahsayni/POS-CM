@@ -1,4 +1,4 @@
-import { OrderType } from "@/types/order.types";
+import { OrderType } from "@/interfaces/order";
 
 export const useOrderType = () => {
   const getOrderType = (): OrderType | null => {

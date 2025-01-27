@@ -1,5 +1,5 @@
 import { createToast } from "@/components/global/Toasters";
-import { ProductVariant, Step } from "@/types/product.types";
+import { ProductVariant, Step } from "@/interfaces/product";
 import { createContext, useCallback, useContext, useState } from "react";
 import { toast } from "react-toastify";
 

@@ -1,6 +1,6 @@
 import { checkProductAvailability } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
-import { Product, ProductSelected, ProductVariant } from "@/types/product.types";
+import { Product, ProductSelected, ProductVariant } from "@/interfaces/product";
 import { useCallback } from "react";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";

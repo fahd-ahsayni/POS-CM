@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { TypographySmall } from "@/components/ui/typography";
 import { calculateProductPrice } from "@/functions/priceCalculations";
 import { currency } from "@/preferences";
-import { ProductSelected } from "@/types/product.types";
+import { ProductSelected } from "@/interfaces/product";
 import { ChevronDown } from "lucide-react";
 import { memo, useCallback, useMemo } from "react";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";

@@ -14,7 +14,7 @@ import { truncateName } from "@/lib/utils";
 import { AppDispatch, RootState } from "@/store";
 import { logout } from "@/store/slices/authentication/auth.slice";
 import { fetchPosData } from "@/store/slices/data/pos.slice";
-import { PosData } from "@/types/pos.types";
+import { PosData } from "@/interfaces/pos";
 import * as Headless from "@headlessui/react";
 import { formatDistanceToNowStrict } from "date-fns";
 import { ChevronDown, LogOut, Power } from "lucide-react";

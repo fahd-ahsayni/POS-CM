@@ -1,4 +1,4 @@
-import { Category, Product } from "@/types/product.types";
+import { Category, Product } from "@/interfaces/product";
 import { useCallback, useEffect, useState } from "react";
 import { useRightViewContext } from "../../right-section/contexts/RightViewContext";
 import { useLeftViewContext } from "../contexts/LeftViewContext";

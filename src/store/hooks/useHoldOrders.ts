@@ -14,7 +14,7 @@ import {
   resetOrder,
   selectOrder,
 } from "@/store/slices/order/create-order.slice";
-import { Order } from "@/types/hold-order";
+import { Order } from "@/interfaces/hold-order";
 import { toast } from "react-toastify";
 
 export const useHoldOrders = () => {

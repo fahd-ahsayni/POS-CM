@@ -1,5 +1,5 @@
 import Combo from "@/components/global/drawers/combo/Combo";
-import { Product, ProductSelected } from "@/types/product.types";
+import { Product, ProductSelected } from "@/interfaces/product";
 import { memo, useEffect, useMemo } from "react";
 import { useProducts } from "../hooks/useProducts";
 import { ProductCard, ProductCardSkeleton } from "../ui/ProductCard";

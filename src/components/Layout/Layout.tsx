@@ -3,7 +3,7 @@ import { loadingColors } from "@/preferences";
 import { store } from "@/store";
 import { useAppDispatch } from "@/store/hooks";
 import { fetchPosData, selectPosData } from "@/store/slices/data/pos.slice";
-import { PosData } from "@/types/pos.types";
+import { PosData } from "@/interfaces/pos";
 import { FC, memo, useCallback, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { BeatLoader } from "react-spinners";

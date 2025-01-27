@@ -2,7 +2,7 @@ import { checkProductAvailability } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
-import { Step } from "@/types/product.types";
+import { Step } from "@/interfaces/product";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useCombo } from "../context/ComboContext";

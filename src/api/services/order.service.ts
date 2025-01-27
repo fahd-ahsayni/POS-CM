@@ -1,7 +1,7 @@
 import { api } from "@/api/axios";
 import { createToast } from "@/components/global/Toasters";
 import { toast } from "react-toastify";
-import { ApiResponse } from "@/types/api";
+import { ApiResponse } from "@/interfaces/api";
 
 export interface PrintOrderRequest {
   order_id: string;

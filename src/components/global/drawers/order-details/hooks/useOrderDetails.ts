@@ -7,7 +7,7 @@ import {
   setOrderData,
   setWaiterId,
 } from "@/store/slices/order/create-order.slice";
-import { Product, ProductVariant } from "@/types/product.types";
+import { Product, ProductVariant } from "@/interfaces/product";
 import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";

@@ -19,7 +19,7 @@ import {
 import { TypographySmall } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { refreshOrders } from "@/store/slices/data/orders.slice";
-import { Order } from "@/types/order.types";
+import { Order } from "@/interfaces/order";
 import { format } from "date-fns";
 import { SortDesc } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";

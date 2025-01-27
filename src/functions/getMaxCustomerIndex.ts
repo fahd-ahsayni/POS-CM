@@ -1,4 +1,4 @@
-import { ProductSelected } from "@/types/product.types";
+import { ProductSelected } from "@/interfaces/product";
 
 export const getMaxCustomerIndex = (products: ProductSelected[]): number => {
   if (!products || products.length === 0) return 1;

@@ -13,7 +13,7 @@ import {
   selectOrder,
   setCustomerCount,
 } from "@/store/slices/order/create-order.slice";
-import { Order } from "@/types/order.types";
+import { Order } from "@/interfaces/order";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";

@@ -4,7 +4,7 @@ import { ORDER_SUMMARY_VIEW } from "@/components/views/home/right-section/consta
 import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
 import { useHoldOrders } from "@/store/hooks/useHoldOrders";
 import { setOrderData } from "@/store/slices/order/create-order.slice";
-import { Product, ProductVariant } from "@/types/product.types";
+import { Product, ProductVariant } from "@/interfaces/product";
 import { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";

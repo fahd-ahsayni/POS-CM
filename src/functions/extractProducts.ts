@@ -1,4 +1,4 @@
-import { Category, Product } from "@/types/product.types";
+import { Category, Product, ProductVariant } from "@/interfaces/product";
 
 export const extractProducts = (
   categories: Category[] | undefined
@@ -11,9 +11,9 @@ export const extractProducts = (
 
   categories.forEach((category) => {
     if (category?.products) {
-      const productsWithPrice = category.products.map((product) => {
+      const productsWithPrice = category.products.map((product: Product) => {
         const minPrice = product.variants
-          ? Math.min(...product.variants.map((variant) => variant.price_ttc))
+          ? Math.min(...product.variants.map((variant: ProductVariant) => variant.price_ttc))
           : 0;
         return { ...product, price: minPrice };
       });

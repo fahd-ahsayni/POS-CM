@@ -1,5 +1,5 @@
 import { filterOrderByTableNumber } from "@/api/services";
-import { FilterCriteria } from "@/types/general";
+import { FilterCriteria } from "@/interfaces/general";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 

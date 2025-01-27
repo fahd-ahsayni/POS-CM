@@ -1,4 +1,4 @@
-import { ProductSelected } from "@/types/product.types";
+import { ProductSelected } from "@/interfaces/product";
 
 interface PriceCalculation {
   basePrice: number;

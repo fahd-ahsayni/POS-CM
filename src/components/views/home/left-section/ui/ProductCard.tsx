@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { toTitleCase } from "@/functions/string-transforms";
 import { currency } from "@/preferences";
-import { Product, ProductSelected } from "@/types/product.types";
+import { Product, ProductSelected } from "@/interfaces/product";
 import { motion } from "framer-motion";
 import { useMemo } from "react";
 import { BsInfoCircleFill } from "react-icons/bs";

@@ -1,5 +1,5 @@
 // src/store/slices/data/posSlice.ts
-import { DayData, PosData } from "@/types/pos.types";
+import { DayData, PosData } from "@/interfaces/pos";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 

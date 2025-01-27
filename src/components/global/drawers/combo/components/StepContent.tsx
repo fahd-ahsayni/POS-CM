@@ -1,4 +1,4 @@
-import { Step } from "@/types/product.types";
+import { Step } from "@/interfaces/product";
 import { useCombo } from "../context/ComboContext";
 import { VariantCard } from "./VariantCard";
 

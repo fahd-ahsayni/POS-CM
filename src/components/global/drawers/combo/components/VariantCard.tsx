@@ -7,7 +7,7 @@ import OderLineAddComments from "@/components/views/home/right-section/ui/OderLi
 import { toTitleCase } from "@/functions/string-transforms";
 import { cn } from "@/lib/utils";
 import { currency } from "@/preferences";
-import { ProductVariant, Step } from "@/types/product.types";
+import { ProductVariant, Step } from "@/interfaces/product";
 import { Minus, Plus } from "lucide-react";
 import { useCombo } from "../context/ComboContext";
 

@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { TypographyP } from "@/components/ui/typography";
 import { toTitleCase } from "@/functions/string-transforms";
-import { Category, Product, ProductSelected } from "@/types/product.types";
+import { Category, Product, ProductSelected } from "@/interfaces/product";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { memo, useEffect, useMemo, useState } from "react";

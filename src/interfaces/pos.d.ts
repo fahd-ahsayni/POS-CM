@@ -1,5 +1,5 @@
-import { BaseEntity } from "./common.types";
-import { User } from "./user.types";
+import { BaseEntity } from "./common";
+import { User } from "./user";
 
 export interface PosData {
   _id: string;

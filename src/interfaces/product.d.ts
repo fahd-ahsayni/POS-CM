@@ -1,5 +1,5 @@
-import { BaseEntity, Tax, UnitOfMeasure } from "./common.types";
-import { OrderLineDiscount } from "./order.types";
+import { BaseEntity, Tax, UnitOfMeasure } from "./common";
+import { OrderLineDiscount } from "./order";
 
 export interface Menu extends BaseEntity {
   name: string;

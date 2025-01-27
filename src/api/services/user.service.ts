@@ -1,5 +1,5 @@
 import { api } from "@/api/axios";
-import { User } from "@/types/user.types";
+import { User } from "@/interfaces/user";
 
 type UserPosition = "Cashier" | "Manager" | "Waiter" | "Livreur";
 

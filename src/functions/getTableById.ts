@@ -1,4 +1,4 @@
-import { Table } from "@/types/table.types";
+import { Table } from "@/interfaces/table";
 
 export function getTableById(tableId: string): Table | null {
   const floors = JSON.parse(localStorage.getItem("floors") || "[]").floors;

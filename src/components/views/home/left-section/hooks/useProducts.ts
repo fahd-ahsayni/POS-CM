@@ -1,4 +1,4 @@
-import { Product, ProductVariant } from "@/types/product.types";
+import { Product, ProductVariant } from "@/interfaces/product";
 import { useCallback, useMemo, useState } from "react";
 import { useRightViewContext } from "../../right-section/contexts/RightViewContext";
 import { useLeftViewContext } from "../contexts/LeftViewContext";

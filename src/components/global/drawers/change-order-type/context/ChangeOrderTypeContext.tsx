@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback } from "react";
-import { OrderType } from "@/types/order.types";
+import { OrderType } from "@/interfaces/order";
 import { useDispatch } from "react-redux";
 import { setOrderTypeId } from "@/store/slices/order/create-order.slice";
 

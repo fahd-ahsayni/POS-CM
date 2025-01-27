@@ -10,7 +10,7 @@ import {
   refreshOrders,
   setFilteredDataLength,
 } from "@/store/slices/data/orders.slice";
-import { FilterCriteria } from "@/types/general";
+import { FilterCriteria } from "@/interfaces/general";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import { TextShimmer } from "@/components/ui/text-shimmer";

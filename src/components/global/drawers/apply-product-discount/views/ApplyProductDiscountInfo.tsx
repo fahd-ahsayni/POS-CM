@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ProductSelected } from "@/types/product.types";
+import { ProductSelected } from "@/interfaces/product";
 import { useApplyProductDiscount } from "../hooks/useApplyProductDiscount";
 
 interface ApplyProductDiscountInfoProps {

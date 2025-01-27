@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../..";
-import { Order } from "@/types/hold-order";
+import { Order } from "@/interfaces/hold-order";
 
 interface HoldOrdersState {
   orders: Order[];

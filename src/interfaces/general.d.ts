@@ -1,5 +1,5 @@
-import { OrderType } from "./order.types";
-import { Category, Product } from "./product.types";
+import { OrderType } from "./order";
+import { Category, Product } from "./product";
 
 export interface GeneralData {
   floors: object[];

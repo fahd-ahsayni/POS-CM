@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
-import { ProductVariant } from "@/types/product.types";
+import { ProductVariant } from "@/interfaces/product";
 import { Minus, Plus } from "lucide-react";
 import { memo, useCallback, useMemo } from "react";
 import { ORDER_SUMMARY_VIEW } from "../../right-section/constants";

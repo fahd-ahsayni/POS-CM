@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { TypographyH3 } from "@/components/ui/typography";
 import { updateOrder } from "@/functions/updateOrder";
 import { cn } from "@/lib/utils";
-import { OrderType } from "@/types/order.types";
+import { OrderType } from "@/interfaces/order";
 import { ChevronLeftIcon } from "lucide-react";
 import { memo } from "react";
 import { useDispatch } from "react-redux";

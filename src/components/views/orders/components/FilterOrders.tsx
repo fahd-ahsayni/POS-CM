@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FilterCriteria } from "@/types/general.d";
+import { FilterCriteria } from "@/interfaces/general";
 import { useCallback, useMemo, useState } from "react";
 
 interface FilterOrdersProps {

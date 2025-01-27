@@ -3,8 +3,8 @@ import { getCategories } from "@/api/services";
 import { updateOrder } from "@/functions/updateOrder";
 import { RootState } from "@/store";
 import { useAppSelector } from "@/store/hooks";
-import { OrderType } from "@/types/order.types";
-import { Category } from "@/types/product.types";
+import { OrderType } from "@/interfaces/order";
+import { Category } from "@/interfaces/product";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import {

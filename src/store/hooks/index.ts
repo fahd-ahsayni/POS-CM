@@ -1,6 +1,6 @@
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "../index";
-import { ProductSelected } from "@/types/product.types";
+import { ProductSelected } from "@/interfaces/product";
 
 export const useAppDispatch = () => useDispatch<AppDispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
@@ -51,7 +51,7 @@ export const calculateComboPrice = (
   // Calculate supplements total
   const supplementsTotal =
     item.combo_items?.supplements?.reduce(
-      (total, supp) => total + calculateSupplementPrice(supp, menuId),
+      (total: any, supp: any) => total + calculateSupplementPrice(supp, menuId),
       0
     ) || 0;
 

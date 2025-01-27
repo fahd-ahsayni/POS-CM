@@ -1,5 +1,5 @@
 import { useMemo, useCallback } from "react";
-import { ProductSelected } from "@/types/product.types";
+import { ProductSelected } from "@/interfaces/product";
 import { calculateProductPrice } from "@/functions/priceCalculations";
 import { toTitleCase } from "@/functions/string-transforms";
 

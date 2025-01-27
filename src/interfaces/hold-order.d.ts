@@ -1,7 +1,7 @@
-import { OrderLine, OrderType } from "./order.types";
-import { Shift } from "./pos.types";
-import { Table } from "./table.types";
-import { User } from "./user.types";
+import { OrderLine, OrderType } from "./order";
+import { Shift } from "./pos";
+import { Table } from "./table";
+import { User } from "./user";
 
 export interface Order {
   _id: string;

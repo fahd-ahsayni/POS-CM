@@ -1,6 +1,6 @@
 import { unknownUser } from "@/assets";
 import { cn } from "@/lib/utils";
-import { User } from "@/types/user.types";
+import { User } from "@/interfaces/user";
 
 interface UserCardProps {
   user: User;

@@ -1,12 +1,23 @@
 import { api } from "@/api/axios";
 import { createToast } from "@/components/global/Toasters";
-import { ApiResponse } from "@/types/api";
+import { ApiResponse } from "@/interfaces/api";
+import { User } from "@/interfaces/user";
 import { toast } from "react-toastify";
 
-export const login = async (id: string, password: string): Promise<ApiResponse<any>> => {
+interface AuthResponse {
+  token: string;
+  user: User;
+}
+
+export const login = async (
+  id: string,
+  password: string
+): Promise<AuthResponse> => {
   try {
     const response = await api.post(
-      `${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}/auth/login`,
+      `${
+        window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL
+      }/auth/login`,
       { id, password },
       {
         headers: {
@@ -17,15 +28,25 @@ export const login = async (id: string, password: string): Promise<ApiResponse<a
     );
     return response.data;
   } catch (error) {
-    toast.error(createToast("Error logging in", "Please check your credentials and try again", "error"));
+    toast.error(
+      createToast(
+        "Error logging in",
+        "Please check your credentials and try again",
+        "error"
+      )
+    );
     throw error;
   }
 };
 
-export const loginWithRfid = async (rfid: string): Promise<ApiResponse<any>> => {
+export const loginWithRfid = async (
+  rfid: string
+): Promise<AuthResponse> => {
   try {
-    const response = await api.post(
-      `${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}/auth/login-with-rfid`,
+    const response = await api.post<ApiResponse<AuthResponse>>(
+      `${
+        window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL
+      }/auth/login-with-rfid`,
       { rfid },
       {
         headers: {
@@ -34,7 +55,7 @@ export const loginWithRfid = async (rfid: string): Promise<ApiResponse<any>> => 
         },
       }
     );
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error("Error logging in with RFID:", error);
     throw error;
@@ -45,10 +66,18 @@ export const logoutService = async (): Promise<void> => {
   try {
     localStorage.clear();
   } catch (error) {
-    toast.error(createToast("Error logging out", "An unexpected error occurred while trying to log out", "error"));
+    toast.error(
+      createToast(
+        "Error logging out",
+        "An unexpected error occurred while trying to log out",
+        "error"
+      )
+    );
   }
 };
 
-export const checkAuthorization = async (passcode: string): Promise<ApiResponse<any>> => {
+export const checkAuthorization = async (
+  passcode: string
+): Promise<ApiResponse<any>> => {
   return api.post("/auth/check-admin-password", { admin_password: passcode });
 };

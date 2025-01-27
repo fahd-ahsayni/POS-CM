@@ -6,7 +6,7 @@ import { TypographyH2, TypographySmall } from "@/components/ui/typography";
 import { useAppDispatch } from "@/store/hooks";
 import { logout } from "@/store/slices/authentication/auth.slice";
 import { selectPosError } from "@/store/slices/data/pos.slice";
-import { PosData } from "@/types/pos.types";
+import { PosData } from "@/interfaces/pos";
 import { memo, useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import PosCard from "./components/PosCard";

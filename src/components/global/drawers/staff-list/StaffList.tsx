@@ -8,7 +8,7 @@ import {
   setDeliveryGuyId,
   setWaiterId,
 } from "@/store/slices/order/create-order.slice";
-import { StaffUser } from "@/types/staff";
+import { StaffUser } from "@/interfaces/staff";
 import { Phone } from "lucide-react";
 import { useCallback, useEffect, useId, useState } from "react";
 import Drawer from "../../Drawer";

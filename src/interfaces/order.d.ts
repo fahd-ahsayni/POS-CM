@@ -1,7 +1,7 @@
-import { BaseEntity } from "./common.types";
-import { User } from "./user.types";
-import { ProductVariant } from "./product.types";
-import { Shift } from "./pos.types";
+import { BaseEntity } from "./common";
+import { User } from "./user";
+import { ProductVariant } from "./product";
+import { Shift } from "./pos";
 
 export type OrderSelectionType =
   | "onPlace"

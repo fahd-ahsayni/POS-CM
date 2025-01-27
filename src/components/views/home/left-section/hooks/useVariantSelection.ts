@@ -6,7 +6,7 @@ import {
   setCustomerCount,
   updateOrderLine,
 } from "@/store/slices/order/create-order.slice";
-import { Product, ProductSelected } from "@/types/product.types";
+import { Product, ProductSelected } from "@/interfaces/product";
 import { useCallback, useEffect, useMemo } from "react";
 import { useLeftViewContext } from "../contexts/LeftViewContext";
 

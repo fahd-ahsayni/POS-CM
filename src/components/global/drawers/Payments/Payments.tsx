@@ -11,7 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 import { currency, loadingColors } from "@/preferences/index";
 import { selectOrder } from "@/store/slices/order/create-order.slice";
-import { Order } from "@/types/order.types";
+import { Order } from "@/interfaces/order";
 import { AnimatePresence, motion } from "framer-motion";
 import { Pencil, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";

@@ -1,4 +1,4 @@
-import { Category, Product, ProductSelected } from "@/types/product.types";
+import { Category, Product, ProductSelected } from "@/interfaces/product";
 import {
   createContext,
   ReactNode,

@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getOrdersByDay } from "@/api/services";
-import { Order } from "@/types/order.types";
+import { Order } from "@/interfaces/order";
 import { RootState } from "@/store";
 import { createSelector } from "reselect";
 

@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { TextShimmer } from "@/components/ui/text-shimmer";
 import { TypographyH3, TypographySmall } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
-import { PosData } from "@/types/pos.types";
+import { PosData } from "@/interfaces/pos";
 import { format } from "date-fns";
 import { ChevronRight } from "lucide-react";
 import { useSelectPos } from "../hooks/useSelectPos";

@@ -1,6 +1,6 @@
 import { logoutService } from "@/api/services";
 // Import required modules
-import { GeneralData, GeneralDataState } from "@/types/general.d";
+import { GeneralData, GeneralDataState } from "@/interfaces/general";
 import {
   createAsyncThunk,
   createSlice,

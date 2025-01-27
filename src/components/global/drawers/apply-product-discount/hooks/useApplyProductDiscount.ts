@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { createToast } from "@/components/global/Toasters";
 import { updateOrderLine } from "@/store/slices/order/create-order.slice";
-import { ProductSelected } from "@/types/product.types";
+import { ProductSelected } from "@/interfaces/product";
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 
 interface UseApplyProductDiscountProps {

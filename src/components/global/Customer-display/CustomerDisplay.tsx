@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/typography";
 import { calculateProductPrice } from "@/functions/priceCalculations";
 import { currency } from "@/preferences";
-import { ProductSelected } from "@/types/product.types";
+import { ProductSelected } from "@/interfaces/product";
 import { useEffect, useState } from "react";
 
 interface Product {
