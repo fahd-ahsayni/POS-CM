@@ -111,7 +111,8 @@ export default function Profile() {
                   ? formatDistanceToNowStrict(
                       new Date(currentPos.shift.opening_time),
                       {
-                        unit: "minute", // Ensure it stays in minutes or hours
+                        addSuffix: false,
+                        roundingMethod: 'floor',
                       }
                     )
                       .replace(" minutes", "m")
