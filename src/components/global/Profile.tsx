@@ -112,7 +112,7 @@ export default function Profile() {
                       new Date(currentPos.shift.opening_time),
                       {
                         addSuffix: false,
-                        roundingMethod: 'floor',
+                        roundingMethod: "floor",
                       }
                     )
                       .replace(" minutes", "m")

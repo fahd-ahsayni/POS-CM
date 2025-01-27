@@ -51,8 +51,6 @@ export default function OrderDetails() {
     );
   };
 
-  console.log(selectedOrder);
-  // Group orderlines by customer index
   const groupedOrderLines =
     selectedOrder?.orderline_ids?.reduce((groups: any, line: any) => {
       const customerIndex = line.customer_index || 0;

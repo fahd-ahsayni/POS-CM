@@ -56,6 +56,7 @@ export const useSidebarActions = (
 
   const handleResetApp = useCallback(async () => {
     const posId = localStorage.getItem("posId");
+    localStorage.removeItem("loadedOrder");
 
     // Clear localStorage items
     localStorage.removeItem("orderType");
