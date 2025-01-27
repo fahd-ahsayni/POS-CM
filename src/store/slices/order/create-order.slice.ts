@@ -144,20 +144,19 @@ const orderSlice = createSlice({
     addOrderLine: (state, action: PayloadAction<any[]>) => {
       const newOrderLines = action.payload.map((line) => {
         if (line.is_combo && line.combo_items) {
-          // Generate a unique ID for each combo
           const uniqueId = `combo_${Date.now()}_${Math.random()
             .toString(36)
             .substr(2, 9)}`;
           return {
             ...line,
-            id: uniqueId, // Use the unique ID
+            id: uniqueId,
             combo_prod_ids: line.combo_items.variants.map((v: any) => ({
               ...v,
-              combo_id: uniqueId, // Add combo_id to track relationship
+              combo_id: uniqueId,
             })),
             combo_supp_ids: line.combo_items.supplements.map((s: any) => ({
               ...s,
-              combo_id: uniqueId, // Add combo_id to track relationship
+              combo_id: uniqueId,
             })),
             price: line.price || 0,
             quantity: line.quantity || 1,
@@ -171,8 +170,17 @@ const orderSlice = createSlice({
         };
       });
 
-      // Clear existing orderlines and add all new ones
       state.data.orderlines = newOrderLines;
+
+      // Recalculate customer count based on orderlines
+      if (newOrderLines.length > 0) {
+        const uniqueCustomerIndices = new Set(
+          newOrderLines.map(line => line.customer_index)
+        );
+        state.data.customer_count = Math.max(uniqueCustomerIndices.size, 1);
+      } else {
+        state.data.customer_count = 1; // Reset to 1 if no orderlines
+      }
 
       // Update total amount
       state.data.total_amount = calculateTotalFromOrderlines(
@@ -195,7 +203,20 @@ const orderSlice = createSlice({
       state.data.total_amount = action.payload;
     },
     setCustomerCount: (state, action: PayloadAction<number>) => {
-      state.data.customer_count = Math.max(action.payload, 1);
+      // Calculate actual customer count from orderlines
+      const uniqueCustomerIndices = new Set(
+        state.data.orderlines.map(line => line.customer_index)
+      );
+      
+      // Use the larger value between calculated and provided count
+      // Ensure minimum of 1 customer
+      const calculatedCount = Math.max(
+        uniqueCustomerIndices.size,
+        action.payload,
+        1
+      );
+      
+      state.data.customer_count = calculatedCount;
     },
     setWaiterId: (state, action: PayloadAction<string | null>) => {
       state.data.waiter_id = action.payload;

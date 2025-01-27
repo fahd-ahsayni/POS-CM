@@ -276,8 +276,18 @@ export function usePayments({
     setIsProcessing(true);
 
     try {
-      // Ensure customer count is at least 1
-      dispatch(setCustomerCount(Math.max(customerIndex, 1)));
+      // Calculate actual customer count from order lines
+      const uniqueCustomerIndices = new Set(
+        order.orderlines.map((line) => line.customer_index)
+      );
+      const actualCustomerCount = Math.max(
+        uniqueCustomerIndices.size,
+        customerIndex,
+        1
+      );
+
+      // Update customer count before payment
+      dispatch(setCustomerCount(actualCustomerCount));
 
       const validPaymentData = selectedPayments.map((item) => ({
         payment_method_id: item.originalId,
@@ -297,6 +307,7 @@ export function usePayments({
           order: {
             ...order,
             shift_id: order.shift_id || shiftId,
+            customer_count: actualCustomerCount, // Use calculated count
           },
           shift_id: order.shift_id || shiftId,
           payments: validPaymentData,
@@ -361,6 +372,7 @@ export function usePayments({
     setTableNumber,
     setNumber,
     customerIndex,
+    order.orderlines,
   ]);
 
   const resetPayments = useCallback(() => {
