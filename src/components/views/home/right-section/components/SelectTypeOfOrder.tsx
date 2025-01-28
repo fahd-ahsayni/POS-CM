@@ -1,19 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { TypographyH3 } from "@/components/ui/typography";
 import { updateOrder } from "@/functions/updateOrder";
-import { cn } from "@/lib/utils";
 import { OrderType } from "@/interfaces/order";
+import { cn } from "@/lib/utils";
+import { loadingColors } from "@/preferences/index";
 import { ChevronLeftIcon } from "lucide-react";
-import { memo } from "react";
+import { memo, useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { BeatLoader } from "react-spinners";
+import { toast } from "react-toastify";
 import "swiper/css/pagination";
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useSelectOrderType } from "../hooks/useSelectOrderType";
 import { OrderCard } from "../ui/OrderTypeCards";
-import { toast } from "react-toastify";
-import { BeatLoader } from "react-spinners";
-import { loadingColors } from "@/preferences/index";
 
 function SelectTypeOfOrder() {
   const {
@@ -22,6 +22,25 @@ function SelectTypeOfOrder() {
   } = useSelectOrderType();
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (
+      displayedTypes.length === 1 &&
+      (!displayedTypes[0].children ||
+        displayedTypes[0].children.length === 0) &&
+      !selectedType
+    ) {
+      const shiftId = localStorage.getItem("shiftId");
+      if (!shiftId) {
+        toast.error("No active shift found");
+        return;
+      }
+      const singleType = displayedTypes[0];
+      handleOrderTypeSelect(singleType);
+
+      dispatch(updateOrder({ shift_id: shiftId }));
+    }
+  }, [displayedTypes, selectedType, handleOrderTypeSelect, dispatch]);
 
   const handleTypeSelect = (type: OrderType) => (event: React.MouseEvent) => {
     event.preventDefault();
@@ -33,6 +52,7 @@ function SelectTypeOfOrder() {
     }
 
     handleOrderTypeSelect(type);
+
     dispatch(updateOrder({ shift_id: shiftId }));
   };
 

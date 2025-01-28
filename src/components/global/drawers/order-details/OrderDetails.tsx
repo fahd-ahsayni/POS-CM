@@ -147,7 +147,7 @@ export default function OrderDetails() {
                       className={cn(
                         "flex flex-col gap-4 w-full dark:bg-primary-black bg-neutral-bright-grey py-4 px-4 cursor-pointer",
                         selectedOrderlines.includes(orderLine._id) &&
-                          "ring-2 ring-primary-red"
+                          "ring-1 ring-primary-red"
                       )}
                       onClick={() => toggleOrderLineSelection(orderLine._id)}
                     >

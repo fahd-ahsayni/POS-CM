@@ -99,8 +99,8 @@ export default function Sidebar() {
         setOpen={setOpenStaffList}
         onSelect={handleStaffSelect}
       />
-      <div className="flex w-full flex-col h-full items-center">
-        <div className="w-full flex-1 flex flex-col justify-between py-3 px-2">
+      <div className="flex w-full flex-col h-full items-center py-3">
+        <div className="w-full flex-1 flex flex-col border-l border-white/10 justify-between px-2">
           <div className="flex flex-col gap-y-6">
             {/* Pages Links */}
             {sidebarPagesLink.map((item) => (

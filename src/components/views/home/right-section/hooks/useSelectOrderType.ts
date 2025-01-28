@@ -1,5 +1,4 @@
 import { getCategories } from "@/api/services";
-// import { setOrderTypeId } from "@/store/slices/order/create-order.slice";
 import { updateOrder } from "@/functions/updateOrder";
 import { RootState } from "@/store";
 import { useAppSelector } from "@/store/hooks";
