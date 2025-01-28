@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { TypographyH3 } from "@/components/ui/typography";
 import ModalLayout from "./index";
 
@@ -45,6 +46,8 @@ export default function BaseModal({
       closeModal={closeModal}
       className="dark:bg-primary-black bg-white"
     >
+      <DialogTitle className="sr-only">Caisse Manager</DialogTitle>
+      <DialogDescription className="sr-only">Caisse Manager</DialogDescription>
       <div>
         {icon && (
           <div
