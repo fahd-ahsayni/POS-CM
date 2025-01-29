@@ -70,49 +70,46 @@ export const useProductSelection = ({
     [customerIndex, orderType]
   );
 
-  const updateExistingProduct = useCallback(
-    (
-      prevProducts: ProductSelected[],
-      product: Product, // Add product parameter
-      variantId: string,
-      price?: number,
-      notes?: string[]
-    ): ProductSelected[] => {
-      // Find existing product with same variant ID, customer index AND same notes
-      const existingProduct = prevProducts.find(p =>
-        p.product_variant_id === variantId &&
-        p.customer_index === customerIndex &&
-        JSON.stringify(p.notes) === JSON.stringify(notes)
-      );
+  // const updateExistingProduct = useCallback(
+  //   (
+  //     prevProducts: ProductSelected[],
+  //     product: Product, // Add product parameter
+  //     variantId: string,
+  //     price?: number,
+  //     notes?: string[]
+  //   ): ProductSelected[] => {
+  //     // Find existing product with same variant ID, customer index AND same notes
+  //     const existingProduct = prevProducts.find(p =>
+  //       p.product_variant_id === variantId &&
+  //       p.customer_index === customerIndex &&
+  //       JSON.stringify(p.notes) === JSON.stringify(notes)
+  //     );
 
-      if (existingProduct) {
-        // Update existing product if notes match
-        return prevProducts.map((p) =>
-          p === existingProduct
-            ? {
-              ...p,
-              quantity: p.quantity + 1,
-              price: price ? p.price + price : p.price,
-              order_type_id: orderType || "",
-            }
-            : p
-        );
-      } else {
-        // Create new product entry if notes don't match
-        const variant = findVariant(product, variantId);
-        if (!variant) return prevProducts;
+  //     if (existingProduct) {
+  //       // Update existing product if notes match
+  //       return prevProducts.map((p) =>
+  //         p === existingProduct
+  //           ? {
+  //             ...p,
+  //             quantity: p.quantity + 1,
+  //             price: price ? p.price + price : p.price,
+  //             order_type_id: orderType || "",
+  //           }
+  //           : p
+  //       );
+  //     } else {
+  //       // Create new product entry if notes don't match
+  //       const variant = findVariant(product, variantId);
+  //       if (!variant) return prevProducts;
 
-        const newProduct = createNewProduct(product, variant, price);
-        newProduct.notes = notes || [];
+  //       const newProduct = createNewProduct(product, variant, price);
+  //       newProduct.notes = notes || [];
 
-        return [...prevProducts, newProduct];
-      }
-    },
-    [customerIndex, orderType, findVariant, createNewProduct]
-  );
-
-
-
+  //       return [...prevProducts, newProduct];
+  //     }
+  //   },
+  //   [customerIndex, orderType, findVariant, createNewProduct]
+  // );
 
   const updateProductNotes = useCallback(
     (productId: string, notes: string[], customerIndex: number) => {
@@ -185,11 +182,50 @@ export const useProductSelection = ({
             return prevSelected;
           }
 
-          const newProducts = updateExistingProduct(prevSelected, product, variantId, price, notes);
+          // If notes are provided, always add a new product
+          if (notes && notes.length > 0) {
+            const newProduct = createNewProduct(product, variant, price);
+            newProduct.notes = notes;
+            const newProducts = [...prevSelected, newProduct];
 
-          updateCustomerCount(newProducts);
-          updateProductsAndDisplay(newProducts);
-          return newProducts;
+            updateCustomerCount(newProducts);
+            updateProductsAndDisplay(newProducts);
+            return newProducts;
+          }
+
+          // If no notes, update the existing product
+          const existingProduct = prevSelected.find(
+            (p) =>
+              p.product_variant_id === variantId &&
+              p.customer_index === customerIndex &&
+              (!p.notes || p.notes.length === 0) // Only update if no notes
+          );
+
+          if (existingProduct) {
+            // Update existing product
+            const updatedProducts = prevSelected.map((p) =>
+              p === existingProduct
+                ? {
+                  ...p,
+                  quantity: p.quantity + 1,
+                  price: price ? p.price + price : p.price,
+                  order_type_id: orderType || "",
+                }
+                : p
+            );
+
+            updateCustomerCount(updatedProducts);
+            updateProductsAndDisplay(updatedProducts);
+            return updatedProducts;
+          } else {
+            // If no existing product without notes, add a new one
+            const newProduct = createNewProduct(product, variant, price);
+            const newProducts = [...prevSelected, newProduct];
+
+            updateCustomerCount(newProducts);
+            updateProductsAndDisplay(newProducts);
+            return newProducts;
+          }
         });
       } catch (error) {
         toast.error(
@@ -203,9 +239,11 @@ export const useProductSelection = ({
     },
     [
       findVariant,
-      updateExistingProduct,
+      createNewProduct,
       updateCustomerCount,
       updateProductsAndDisplay,
+      customerIndex,
+      orderType,
     ]
   );
 

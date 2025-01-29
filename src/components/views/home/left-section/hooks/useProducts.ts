@@ -104,14 +104,14 @@ export const useProducts = (initialProducts?: Product[]) => {
   }, [currentMenu]);
 
   const handleProductClick = useCallback(
-    (product: Product) => {
+    (product: Product, notes?: string[]) => {
       if (product.variants.length === 1) {
         const variant = product.variants[0];
         if (variant.is_menu) {
           setSelectedCombo(variant);
           setOpenDrawerCombo(true);
         } else {
-          addOrUpdateProduct(product, variant._id);
+          addOrUpdateProduct(product, variant._id, undefined, notes); // Pass notes here
         }
       } else if (product.variants.length > 1) {
         // Check if any variant is a combo menu
