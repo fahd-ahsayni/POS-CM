@@ -1,12 +1,12 @@
 import { checkProductAvailability } from "@/api/services";
+import { updateCustomerDisplay } from "@/components/global/Customer-display/useCustomerDisplay";
 import { createToast } from "@/components/global/Toasters";
 import { Product, ProductSelected, ProductVariant } from "@/interfaces/product";
+import { useAppDispatch } from "@/store/hooks";
+import { setCustomerCount } from "@/store/slices/order/create-order.slice";
 import { useCallback } from "react";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
-import { updateCustomerDisplay } from "@/components/global/Customer-display/useCustomerDisplay";
-import { setCustomerCount } from "@/store/slices/order/create-order.slice";
-import { useAppDispatch } from "@/store/hooks";
 
 interface UseProductSelectionProps {
   selectedProducts: ProductSelected[];
@@ -23,7 +23,7 @@ export const useProductSelection = ({
   const dispatch = useAppDispatch();
 
   const findVariant = useCallback(
-    (product: Product, variantId: string): ProductVariant | undefined => {
+    (product: Product | null, variantId: string): ProductVariant | undefined => {
       const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
       if (!product?.variants) return undefined;
 
@@ -46,9 +46,9 @@ export const useProductSelection = ({
       const menuPrice = variant.menus?.find(
         (menu) => menu.menu_id === orderType.menu_id
       )?.price_ttc;
-      
+
       const unitPrice = menuPrice || variant.default_price || price || variant.price_ttc;
-      
+
       return {
         ...product,
         id: uuidv4(),
@@ -73,24 +73,46 @@ export const useProductSelection = ({
   const updateExistingProduct = useCallback(
     (
       prevProducts: ProductSelected[],
+      product: Product, // Add product parameter
       variantId: string,
       price?: number,
       notes?: string[]
     ): ProductSelected[] => {
-      return prevProducts.map((p: any) =>
-        p.product_variant_id === variantId && p.customer_index === customerIndex
-          ? {
+      // Find existing product with same variant ID, customer index AND same notes
+      const existingProduct = prevProducts.find(p =>
+        p.product_variant_id === variantId &&
+        p.customer_index === customerIndex &&
+        JSON.stringify(p.notes) === JSON.stringify(notes)
+      );
+
+      if (existingProduct) {
+        // Update existing product if notes match
+        return prevProducts.map((p) =>
+          p === existingProduct
+            ? {
               ...p,
               quantity: p.quantity + 1,
               price: price ? p.price + price : p.price,
               order_type_id: orderType || "",
-              ...(notes && { notes }),
             }
-          : p
-      );
+            : p
+        );
+      } else {
+        // Create new product entry if notes don't match
+        const variant = findVariant(product, variantId);
+        if (!variant) return prevProducts;
+
+        const newProduct = createNewProduct(product, variant, price);
+        newProduct.notes = notes || [];
+
+        return [...prevProducts, newProduct];
+      }
     },
-    [customerIndex, orderType]
+    [customerIndex, orderType, findVariant, createNewProduct]
   );
+
+
+
 
   const updateProductNotes = useCallback(
     (productId: string, notes: string[], customerIndex: number) => {
@@ -98,9 +120,9 @@ export const useProductSelection = ({
         prevSelected.map((p) =>
           p._id === productId && p.customer_index === customerIndex
             ? {
-                ...p,
-                notes,
-              }
+              ...p,
+              notes,
+            }
             : p
         )
       );
@@ -138,7 +160,7 @@ export const useProductSelection = ({
       try {
         // Check availability before adding
         const response = await checkProductAvailability(variantId);
-  
+
         if (response?.status !== 200 || !response?.data?.availability) {
           toast.error(
             createToast(
@@ -149,7 +171,7 @@ export const useProductSelection = ({
           );
           return;
         }
-  
+
         setSelectedProducts((prevSelected) => {
           const variant = findVariant(product, variantId);
           if (!variant) {
@@ -162,17 +184,9 @@ export const useProductSelection = ({
             );
             return prevSelected;
           }
-  
-          const existingProduct = prevSelected.find(
-            (p: any) =>
-              p.product_variant_id === variantId &&
-              p.customer_index === customerIndex
-          );
-  
-          const newProducts = existingProduct
-            ? updateExistingProduct(prevSelected, variantId, price, notes)
-            : [...prevSelected, createNewProduct(product, variant, price)];
-  
+
+          const newProducts = updateExistingProduct(prevSelected, product, variantId, price, notes);
+
           updateCustomerCount(newProducts);
           updateProductsAndDisplay(newProducts);
           return newProducts;
@@ -189,14 +203,13 @@ export const useProductSelection = ({
     },
     [
       findVariant,
-      createNewProduct,
       updateExistingProduct,
-      customerIndex,
-      updateProductsAndDisplay,
       updateCustomerCount,
+      updateProductsAndDisplay,
     ]
   );
-  
+
+
 
   return {
     addOrUpdateProduct,

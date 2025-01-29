@@ -10,15 +10,21 @@ import {
   DropdownLabel,
   DropdownMenu,
 } from "@/components/catalyst/dropdown";
+import { ALL_CATEGORIES_VIEW } from "@/components/views/home/left-section/constants";
+import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
+import { TYPE_OF_ORDER_VIEW } from "@/components/views/home/right-section/constants";
+import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
+import { PosData } from "@/interfaces/pos";
 import { truncateName } from "@/lib/utils";
 import { AppDispatch, RootState } from "@/store";
 import { logout } from "@/store/slices/authentication/auth.slice";
+import { fetchGeneralData } from "@/store/slices/data/general-data.slice";
 import { fetchPosData } from "@/store/slices/data/pos.slice";
-import { PosData } from "@/interfaces/pos";
+import { resetOrder, resetStaffIds } from "@/store/slices/order/create-order.slice";
 import * as Headless from "@headlessui/react";
 import { formatDistanceToNowStrict } from "date-fns";
 import { ChevronDown, LogOut, Power } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Avatar, AvatarImage } from "../ui/avatar";
 import { TypographySmall } from "../ui/typography";
@@ -41,6 +47,9 @@ export default function Profile() {
   const dispatch = useDispatch<AppDispatch>();
   const pos = useSelector((state: RootState) => state.pos.data.pos);
 
+  const rightViewContext = useRightViewContext();
+  const leftViewContext = useLeftViewContext();
+
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user") || "{}") as UserData;
     setUser(user);
@@ -56,10 +65,84 @@ export default function Profile() {
     }
   }, [pos, user]);
 
-  const handleLogout = () => {
+
+  const resetAppState = useCallback(async () => {
+    const posId = localStorage.getItem("posId");
+
+    // Clear localStorage items
+    localStorage.removeItem("orderType");
+    localStorage.removeItem("loadedOrder");
+    localStorage.removeItem("generalData");
+
+    // Reset Right View Context
+    rightViewContext.setViews(TYPE_OF_ORDER_VIEW);
+    rightViewContext.setSelectedOrderType(null);
+    rightViewContext.setCustomerIndex(1);
+    rightViewContext.setTableNumber("");
+    rightViewContext.setOrderType(null);
+
+    // Reset Left View Context
+    leftViewContext.setViews(ALL_CATEGORIES_VIEW);
+    leftViewContext.setSelectedProducts([]);
+    leftViewContext.setOpenDrawerVariants(false);
+    leftViewContext.setSelectedProduct(null);
+    leftViewContext.setQuantityPerVariant(0);
+    leftViewContext.setCategory(null);
+    leftViewContext.setSubCategory(null);
+    leftViewContext.setOpenDrawerCombo(false);
+    leftViewContext.setSelectedCombo(null);
+    leftViewContext.setCurrentMenu(null);
+    leftViewContext.setBreadcrumbs([]);
+
+    // Reset Redux Store
+    dispatch(resetOrder());
+    dispatch(resetStaffIds());
+
+    // Fetch fresh general data if posId exists
+    if (posId) {
+      try {
+        // Initialize with empty data before fetching
+        const emptyData = {
+          floors: [],
+          configs: [],
+          defineNote: [],
+          orderTypes: [],
+          discount: [],
+          paymentMethods: [],
+          waiters: [],
+          livreurs: [],
+        };
+        localStorage.setItem("generalData", JSON.stringify(emptyData));
+
+        // Fetch new data
+        await dispatch(fetchGeneralData(posId)).unwrap();
+      } catch (error) {
+        console.error("Failed to fetch general data:", error);
+        // Ensure we still have empty data if fetch fails
+        const emptyData = {
+          floors: [],
+          configs: [],
+          defineNote: [],
+          orderTypes: [],
+          discount: [],
+          paymentMethods: [],
+          waiters: [],
+          livreurs: [],
+        };
+        localStorage.setItem("generalData", JSON.stringify(emptyData));
+      }
+    }
+  }, [dispatch, rightViewContext, leftViewContext]);
+
+  const handleLogout = useCallback(() => {
+    // Reset the app state before logging out
+    resetAppState();
+
+    // Perform logout actions
     dispatch(logout());
     logoutService();
-  };
+  }, [dispatch, resetAppState]);
+
 
   const handleCustomerDisplay = () => {
     if (!isCustomerDisplayOpen()) {
@@ -109,16 +192,16 @@ export default function Profile() {
               <div className="text-xs text-zinc-500 dark:text-zinc-400 flex-1 text-end">
                 {currentPos?.shift?.opening_time
                   ? formatDistanceToNowStrict(
-                      new Date(currentPos.shift.opening_time),
-                      {
-                        addSuffix: false,
-                        roundingMethod: "floor",
-                      }
-                    )
-                      .replace(" minutes", "m")
-                      .replace(" minute", "m")
-                      .replace(" hours", "h")
-                      .replace(" hour", "h") + " ago"
+                    new Date(currentPos.shift.opening_time),
+                    {
+                      addSuffix: false,
+                      roundingMethod: "floor",
+                    }
+                  )
+                    .replace(" minutes", "m")
+                    .replace(" minute", "m")
+                    .replace(" hours", "h")
+                    .replace(" hour", "h") + " ago"
                   : ""}
               </div>
             </div>

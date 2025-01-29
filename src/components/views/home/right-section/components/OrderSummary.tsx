@@ -95,7 +95,7 @@ const OrderSummary = () => {
     [handleToggleAll]
   );
 
-  const currentDiscount = discount.find(
+  const currentDiscount = discount?.find(
     (d: any) => d.id === order.discount?.id
   );
 
