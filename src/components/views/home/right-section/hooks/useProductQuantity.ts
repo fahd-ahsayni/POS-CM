@@ -1,4 +1,4 @@
-import { updateCustomerDisplay } from "@/components/global/Customer-display/useCustomerDisplay";
+// import { updateCustomerDisplay } from "@/components/global/Customer-display/useCustomerDisplay";
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 import { calculateProductPrice } from "@/functions/priceCalculations";
 import { ProductSelected } from "@/interfaces/product";
