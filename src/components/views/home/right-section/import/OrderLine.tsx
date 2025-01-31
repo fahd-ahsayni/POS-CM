@@ -132,7 +132,7 @@ export function OrderLine({ item }: OrderLineProps) {
                 <NumberFlowInput
                   value={item.quantity}
                   min={0}
-                  max={99}
+                  max={100}
                   onChange={handleQuantityChange}
                 />
               </div>

@@ -112,9 +112,9 @@ export default function OrderLineAddComments({
           avoidCollisions={true}
         >
           {comments.map((comment, index) => (
-            <div key={index} className="flex items-center">
+            <div key={index} className="flex items-center mt-2">
               <ComboboxSelectOnChange
-                label={`Comment ${index + 1}`}
+                label={`Note ${index + 1}`}
                 items={defineComments.map((item: any) => item.text)}
                 value={comment}
                 onChange={(value) => handleCommentChange(index, value)}
@@ -123,13 +123,11 @@ export default function OrderLineAddComments({
                   item.toLowerCase().includes(query.toLowerCase())
                 }
                 renderOption={(item, active) => (
-                  <span className={cn("px-2 py-1", active && "bg-gray-200")}>
-                    {item}
-                  </span>
+                  <span className={cn("px-2 py-1", active && "")}>{item}</span>
                 )}
                 placeholder="Choose a comment"
               />
-              {comment.trim() !== "" && ( // Only show delete button when there is text
+              {comment.trim() !== "" && (
                 <Button
                   variant="link"
                   onClick={() => removeCommentField(index)}
