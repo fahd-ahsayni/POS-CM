@@ -13,62 +13,27 @@ export const useProductQuantity = () => {
 
       setSelectedProducts((prevProducts) => {
         if (newQuantity === 0) {
-          // Remove product if quantity is 0, matching notes as well
-          const updatedProducts = prevProducts.filter((item) => {
-            if (item.is_combo && product.is_combo) {
-              return !(
-                item.id === product.id &&
-                item.customer_index === product.customer_index &&
-                JSON.stringify(item.notes) === JSON.stringify(product.notes)
-              );
-            }
+          return prevProducts.filter((item) => {
             return !(
-              item.product_variant_id === product.product_variant_id &&
+              item.id === product.id &&
               item.customer_index === product.customer_index &&
               JSON.stringify(item.notes) === JSON.stringify(product.notes)
             );
           });
-          updateCustomerDisplay(updatedProducts);
-          return updatedProducts;
         }
 
-        // Update quantity only for product with matching notes
-        const updatedProducts = prevProducts.map((item) => {
-          // For combo products
-          if (item.is_combo && product.is_combo) {
-            return item.id === product.id &&
-              item.customer_index === product.customer_index &&
-              JSON.stringify(item.notes) === JSON.stringify(product.notes)
-              ? {
+        return prevProducts.map((item) =>
+          item.id === product.id &&
+          item.customer_index === product.customer_index &&
+          JSON.stringify(item.notes) === JSON.stringify(product.notes)
+            ? {
                 ...item,
                 quantity: newQuantity,
-                price: calculateProductPrice(
-                  item,
-                  currentMenu,
-                  newQuantity
-                ).totalPrice,
+                price: calculateProductPrice(item, currentMenu, newQuantity)
+                  .totalPrice,
               }
-              : item;
-          }
-
-          // For regular products
-          return item.product_variant_id === product.product_variant_id &&
-            item.customer_index === product.customer_index &&
-            JSON.stringify(item.notes) === JSON.stringify(product.notes)
-            ? {
-              ...item,
-              quantity: newQuantity,
-              price: calculateProductPrice(
-                item,
-                currentMenu,
-                newQuantity
-              ).totalPrice,
-            }
-            : item;
-        });
-
-        updateCustomerDisplay(updatedProducts);
-        return updatedProducts;
+            : item
+        );
       });
     },
     [setSelectedProducts, currentMenu]

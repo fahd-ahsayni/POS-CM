@@ -61,7 +61,7 @@ export default function OrderLines() {
               getMaxCustomerIndex(selectedProducts)
             ),
           }).map((_, index) => (
-            <div key={index}>
+            <div key={`customer-${index + 1}`}>
               <OrderLineIndex
                 customerIndex={index + 1}
                 products={groupedProducts[index + 1] || []}

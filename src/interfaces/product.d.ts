@@ -30,6 +30,7 @@ export interface categories {
 export interface ProductVariant extends BaseEntity {
   name: string;
   price_ttc: number;
+  is_ordred?: boolean;
   image: string;
   is_active: boolean;
   is_available: boolean;
@@ -61,7 +62,6 @@ export interface ProductVariant extends BaseEntity {
     }>;
   }>;
 }
-
 
 interface MenuProduct {
   _id: string; // Unique identifier for the menu product

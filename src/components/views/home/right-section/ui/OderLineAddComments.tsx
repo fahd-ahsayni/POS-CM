@@ -1,18 +1,7 @@
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { CommentIcon, DeleteCommentIcon } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { updateOrderLine } from "@/store/slices/order/create-order.slice";
@@ -106,6 +95,7 @@ export default function OrderLineAddComments({
       if (onNotesUpdate) {
         onNotesUpdate(newComments.slice(0, -1));
       } else {
+        // Ensure notes are cleared properly for this specific product
         updateProductNotes(productId, newComments.slice(0, -1), customerIndex);
         dispatch(
           updateOrderLine({
@@ -121,8 +111,8 @@ export default function OrderLineAddComments({
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger asChild>
         <Button
           size="icon"
           variant="ghost"
@@ -136,71 +126,79 @@ export default function OrderLineAddComments({
             </span>
           )}
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        className="mt-2 w-[280px] rounded-md bg-white dark:bg-primary-black shadow-lg border border-border p-3 space-y-2 -translate-x-1/3"
-        onBlur={handleBlur}
-      >
-        {comments.map((comment, index) => (
-          <div key={index} className="flex items-center gap-2">
-            {!customInputs[index] ? (
-              <Select
-                value={comment}
-                onValueChange={(value) => handleCommentChange(value, index)}
-              >
-                <SelectTrigger className="w-full text-[.8rem]">
-                  <SelectValue placeholder="Select a comment" />
-                </SelectTrigger>
-                <SelectContent>
-                  {defineComments.map((item: any, index: number) => (
-                    <SelectItem
-                      key={index}
-                      value={item.text}
-                      className="text-[.8rem]"
+      </DropdownMenu.Trigger>
+
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content
+          className="absolute z-50 mt-2 w-[280px] rounded-md bg-white dark:bg-primary-black shadow-lg border border-border p-3 space-y-2 -left-52 top-2"
+          onBlur={handleBlur}
+        >
+          {comments.map((comment, index) => (
+            <div key={index} className="flex items-center gap-2">
+              {!customInputs[index] ? (
+                <DropdownMenu.Root>
+                  <DropdownMenu.Trigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full text-[.8rem] h-9 bg-secondary-black"
                     >
-                      {item.text}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            ) : (
-              <Input
-                value={comment}
-                placeholder="Write a comment"
-                onChange={(e) => handleCommentChange(e.target.value, index)}
-                onBlur={handleBlur}
-              />
-            )}
-            <div className="flex items-center">
-              {comment.trim() ? (
-                <Button
-                  size="icon"
-                  variant="link"
-                  onClick={() => handleDelete(index)}
-                >
-                  <DeleteCommentIcon
-                    className={cn(
-                      "w-5 h-5",
-                      comment.trim()
-                        ? "fill-error-color"
-                        : "fill-neutral-dark-grey"
-                    )}
-                  />
-                  <span className="sr-only">Delete</span>
-                </Button>
+                      {comment || "Select a comment"}
+                    </Button>
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Portal>
+                    <DropdownMenu.Content className="bg-white dark:bg-primary-black shadow-md border border-border rounded-md p-1 w-[230px] z-[9999] mt-0.5">
+                      {defineComments.map((item: any, idx: number) => (
+                        <DropdownMenu.Item
+                          key={idx}
+                          onSelect={() => handleCommentChange(item.text, index)}
+                          className="p-2 text-sm text-start hover:bg-neutral-700 dark:hover:bg-secondary-black cursor-pointer rounded font-medium"
+                        >
+                          {item.text}
+                        </DropdownMenu.Item>
+                      ))}
+                    </DropdownMenu.Content>
+                  </DropdownMenu.Portal>
+                </DropdownMenu.Root>
               ) : (
-                <Switch
-                  checked={customInputs[index]}
-                  onChange={(enabled) =>
-                    handleCustomInputToggle(index, enabled)
-                  }
-                  color="red"
+                <Input
+                  value={comment}
+                  placeholder="Write a comment"
+                  onChange={(e) => handleCommentChange(e.target.value, index)}
+                  onBlur={handleBlur}
+                  className="text-center font-medium"
                 />
               )}
+              <div className="flex items-center">
+                {comment.trim() ? (
+                  <Button
+                    size="icon"
+                    variant="link"
+                    onClick={() => handleDelete(index)}
+                  >
+                    <DeleteCommentIcon
+                      className={cn(
+                        "w-5 h-5",
+                        comment.trim()
+                          ? "fill-error-color"
+                          : "fill-neutral-dark-grey"
+                      )}
+                    />
+                    <span className="sr-only">Delete</span>
+                  </Button>
+                ) : (
+                  <Switch
+                    checked={customInputs[index]}
+                    onChange={(enabled) =>
+                      handleCustomInputToggle(index, enabled)
+                    }
+                    color="red"
+                  />
+                )}
+              </div>
             </div>
-          </div>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+          ))}
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   );
 }

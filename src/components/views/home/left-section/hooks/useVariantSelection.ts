@@ -16,11 +16,7 @@ interface UseVariantSelectionProps {
   setSelectedProducts: React.Dispatch<React.SetStateAction<ProductSelected[]>>;
   customerIndex: number;
   orderType: string | null;
-  addOrUpdateProduct: (
-    product: Product,
-    id: string,
-    price: number,
-  ) => void;
+  addOrUpdateProduct: (product: Product, id: string, price: number) => void;
 }
 
 const useVariantSelection = ({
@@ -68,16 +64,18 @@ const useVariantSelection = ({
           variant.default_price ??
           price;
 
-        // For combo products, always create a new entry
-        if (variant.is_menu) {
+        // For combo products or ordered items, always create a new entry
+        if (variant.is_menu || variant.is_ordred) {
           addOrUpdateProduct(selectedProduct, id, variantPrice);
           return;
         }
 
-        // For regular products, update existing or create new
+        // Regular product handling...
         const existingVariant = selectedProducts.find(
           (p) =>
-            p.product_variant_id === id && p.customer_index === customerIndex
+            p.product_variant_id === id &&
+            p.customer_index === customerIndex &&
+            !p.is_ordred // Don't update if it's ordered
         );
 
         if (!existingVariant) {
@@ -85,12 +83,14 @@ const useVariantSelection = ({
         } else {
           setSelectedProducts((prev) =>
             prev.map((p) =>
-              p.product_variant_id === id && p.customer_index === customerIndex
+              p.product_variant_id === id &&
+              p.customer_index === customerIndex &&
+              !p.is_ordred
                 ? {
-                  ...p,
-                  quantity: p.quantity + 1,
-                  price: variantPrice * (p.quantity + 1),
-                }
+                    ...p,
+                    quantity: p.quantity + 1,
+                    price: variantPrice * (p.quantity + 1),
+                  }
                 : p
             )
           );
@@ -179,7 +179,6 @@ const useVariantSelection = ({
     ]
   );
 
-
   const orderlineData = useMemo(
     () =>
       selectedProducts.map((p) => {
@@ -246,4 +245,3 @@ const useVariantSelection = ({
 };
 
 export { useVariantSelection };
-

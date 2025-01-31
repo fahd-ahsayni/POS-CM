@@ -1,9 +1,9 @@
 import { getGeneralData } from "@/api/services";
+import { PosData } from "@/interfaces/pos";
 import { loadingColors } from "@/preferences";
 import { store } from "@/store";
 import { useAppDispatch } from "@/store/hooks";
 import { fetchPosData, selectPosData } from "@/store/slices/data/pos.slice";
-import { PosData } from "@/interfaces/pos";
 import { FC, memo, useCallback, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
@@ -59,7 +59,6 @@ const Layout: FC = () => {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to initialize layout";
-      console.error("Failed to initialize layout:", error);
       setError(errorMessage);
       navigate("/error");
     } finally {
@@ -68,6 +67,7 @@ const Layout: FC = () => {
   }, [dispatch, navigate]);
 
   useEffect(() => {
+    localStorage.removeItem("loadedOrder");
     initializeLayout();
   }, []);
 

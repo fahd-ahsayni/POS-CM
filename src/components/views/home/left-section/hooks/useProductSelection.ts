@@ -23,7 +23,10 @@ export const useProductSelection = ({
   const dispatch = useAppDispatch();
 
   const findVariant = useCallback(
-    (product: Product | null, variantId: string): ProductVariant | undefined => {
+    (
+      product: Product | null,
+      variantId: string
+    ): ProductVariant | undefined => {
       const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
       if (!product?.variants) return undefined;
 
@@ -33,7 +36,10 @@ export const useProductSelection = ({
         const menuPrice = variant.menus?.find(
           (menu) => menu.menu_id === orderType.menu_id
         )?.price_ttc;
-        return { ...variant, price_ttc: menuPrice || variant.default_price || variant.price_ttc };
+        return {
+          ...variant,
+          price_ttc: menuPrice || variant.default_price || variant.price_ttc,
+        };
       }
       return variant;
     },
@@ -41,13 +47,18 @@ export const useProductSelection = ({
   );
 
   const createNewProduct = useCallback(
-    (product: any, variant: ProductVariant, price?: number): ProductSelected => {
+    (
+      product: any,
+      variant: ProductVariant,
+      price?: number
+    ): ProductSelected => {
       const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
       const menuPrice = variant.menus?.find(
         (menu) => menu.menu_id === orderType.menu_id
       )?.price_ttc;
 
-      const unitPrice = menuPrice || variant.default_price || price || variant.price_ttc;
+      const unitPrice =
+        menuPrice || variant.default_price || price || variant.price_ttc;
 
       return {
         ...product,
@@ -117,9 +128,9 @@ export const useProductSelection = ({
         prevSelected.map((p) =>
           p._id === productId && p.customer_index === customerIndex
             ? {
-              ...p,
-              notes,
-            }
+                ...p,
+                notes,
+              }
             : p
         )
       );
@@ -135,17 +146,20 @@ export const useProductSelection = ({
     [setSelectedProducts]
   );
 
-  const updateCustomerCount = useCallback((products: ProductSelected[]) => {
-    if (products.length === 0) {
-      dispatch(setCustomerCount(1));
-      return;
-    }
+  const updateCustomerCount = useCallback(
+    (products: ProductSelected[]) => {
+      if (products.length === 0) {
+        dispatch(setCustomerCount(1));
+        return;
+      }
 
-    const maxCustomerIndex = Math.max(
-      ...products.map(product => product.customer_index)
-    );
-    dispatch(setCustomerCount(maxCustomerIndex));
-  }, [dispatch]);
+      const maxCustomerIndex = Math.max(
+        ...products.map((product) => product.customer_index)
+      );
+      dispatch(setCustomerCount(maxCustomerIndex));
+    },
+    [dispatch]
+  );
 
   const addOrUpdateProduct = useCallback(
     async (
@@ -182,10 +196,14 @@ export const useProductSelection = ({
             return prevSelected;
           }
 
-          // If notes are provided, always add a new product
-          if (notes && notes.length > 0) {
+          // If the product is ordered, always create a new entry
+          const isOrdered = variant.is_ordred || false;
+
+          // If notes are provided or product is ordered, always add a new product
+          if ((notes || []).length > 0 || isOrdered) {
             const newProduct = createNewProduct(product, variant, price);
-            newProduct.notes = notes;
+            newProduct.notes = notes || [];
+            newProduct.is_ordred = isOrdered;
             const newProducts = [...prevSelected, newProduct];
 
             updateCustomerCount(newProducts);
@@ -193,12 +211,13 @@ export const useProductSelection = ({
             return newProducts;
           }
 
-          // If no notes, update the existing product
+          // Regular product handling...
           const existingProduct = prevSelected.find(
             (p) =>
               p.product_variant_id === variantId &&
               p.customer_index === customerIndex &&
-              (!p.notes || p.notes.length === 0) // Only update if no notes
+              (!p.notes || p.notes.length === 0) &&
+              !p.is_ordred // Don't update if it's ordered
           );
 
           if (existingProduct) {
@@ -206,11 +225,11 @@ export const useProductSelection = ({
             const updatedProducts = prevSelected.map((p) =>
               p === existingProduct
                 ? {
-                  ...p,
-                  quantity: p.quantity + 1,
-                  price: price ? p.price + price : p.price,
-                  order_type_id: orderType || "",
-                }
+                    ...p,
+                    quantity: p.quantity + 1,
+                    price: price ? p.price + price : p.price,
+                    order_type_id: orderType || "",
+                  }
                 : p
             );
 
@@ -218,7 +237,7 @@ export const useProductSelection = ({
             updateProductsAndDisplay(updatedProducts);
             return updatedProducts;
           } else {
-            // If no existing product without notes, add a new one
+            // Add new product
             const newProduct = createNewProduct(product, variant, price);
             const newProducts = [...prevSelected, newProduct];
 
@@ -246,8 +265,6 @@ export const useProductSelection = ({
       orderType,
     ]
   );
-
-
 
   return {
     addOrUpdateProduct,

@@ -102,6 +102,7 @@ export default function Navbar() {
               <LucideMaximize size={16} />
               <span className="sr-only">Full screen</span>
             </Button>
+            
             <Separator
               orientation="vertical"
               className="h-6 !bg-neutral-dark-grey/50"

@@ -105,14 +105,10 @@ const orderSlice = createSlice({
 
       // Find the index of the existing order line
       const orderLineIndex = state.data.orderlines.findIndex((ol) => {
-        if (_id) {
-          // For combo products, check by id AND customer_index
-          return ol.id === _id && ol.customer_index === customer_index;
-        }
-        // For regular products, check by product_variant_id AND customer_index
         return (
-          ol.product_variant_id === product_variant_id &&
-          ol.customer_index === customer_index
+          ol.id === _id && // Ensure unique product instance is updated
+          ol.customer_index === customer_index &&
+          JSON.stringify(ol.notes) === JSON.stringify(updateData.notes)
         );
       });
 
@@ -175,7 +171,7 @@ const orderSlice = createSlice({
       // Recalculate customer count based on orderlines
       if (newOrderLines.length > 0) {
         const uniqueCustomerIndices = new Set(
-          newOrderLines.map(line => line.customer_index)
+          newOrderLines.map((line) => line.customer_index)
         );
         state.data.customer_count = Math.max(uniqueCustomerIndices.size, 1);
       } else {
@@ -205,9 +201,9 @@ const orderSlice = createSlice({
     setCustomerCount: (state, action: PayloadAction<number>) => {
       // Calculate actual customer count from orderlines
       const uniqueCustomerIndices = new Set(
-        state.data.orderlines.map(line => line.customer_index)
+        state.data.orderlines.map((line) => line.customer_index)
       );
-      
+
       // Use the larger value between calculated and provided count
       // Ensure minimum of 1 customer
       const calculatedCount = Math.max(
@@ -215,7 +211,7 @@ const orderSlice = createSlice({
         action.payload,
         1
       );
-      
+
       state.data.customer_count = calculatedCount;
     },
     setWaiterId: (state, action: PayloadAction<string | null>) => {

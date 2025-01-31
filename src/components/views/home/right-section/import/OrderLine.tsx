@@ -92,6 +92,7 @@ export function OrderLine({ item }: OrderLineProps) {
 
   return (
     <motion.div
+      key={`order-line-${item._id}-${item.customer_index || item.createdAt}`} // Ensure uniqueness
       layout
       initial="initial"
       animate="animate"

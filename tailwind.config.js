@@ -8,7 +8,7 @@ module.exports = {
   content: [
     "./index.html",
     "./src/**/*.{ts,tsx,js,jsx}",
-    "./node_modules/@heroui/theme/dist/components/(avatar|checkbox|dropdown|form|menu|divider|popover|button|ripple|spinner).js"
+    "./node_modules/@heroui/theme/dist/components/(avatar|checkbox|dropdown|form|menu|divider|popover|button|ripple|spinner).js",
   ],
   theme: {
     extend: {

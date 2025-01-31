@@ -108,9 +108,11 @@ export default function ProductActions({ item }: ProductActionsProps) {
         </MenuButton>
 
         <DropdownMenu className="z-[9999] -ml-20 p-3">
-          <DropdownItem onClick={handleRemoveOrderLine}>
-            Remove Order Line
-          </DropdownItem>
+          {!item.is_ordred && (
+            <DropdownItem onClick={handleRemoveOrderLine}>
+              Remove Order Line
+            </DropdownItem>
+          )}
 
           <DropdownItem onClick={() => setIsDiscountDrawerOpen(true)}>
             Apply Discount
