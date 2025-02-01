@@ -22,6 +22,7 @@ interface InputConfig {
   isFocused?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
+  onSelect?: (e: React.SyntheticEvent<HTMLInputElement>) => void; // ✅ Add cursor tracking
 }
 
 const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
@@ -45,6 +46,7 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
     suffix,
     onFocus,
     onBlur,
+    onSelect, // NEW - Capture cursor position
   } = config;
 
   const [isVisible, setIsVisible] = useState<boolean>(false);
@@ -105,6 +107,7 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
           }
           onFocus={onFocus}
           onBlur={onBlur}
+          onSelect={onSelect} // NEW - Captures cursor position
         />
 
         {suffix && (

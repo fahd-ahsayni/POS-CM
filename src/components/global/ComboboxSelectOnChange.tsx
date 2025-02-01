@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import {
@@ -8,7 +9,6 @@ import {
   ComboboxOptions,
 } from "@headlessui/react";
 import { ChevronDown } from "lucide-react";
-import { useState } from "react";
 
 interface ComboboxSelectOnChangeProps<T> {
   label?: string;
@@ -28,6 +28,9 @@ interface ComboboxSelectOnChangeProps<T> {
   hasError?: boolean;
   helperText?: string;
   optionalText?: string;
+  inputRef?: React.Ref<HTMLInputElement>;
+  onFocus?: React.FocusEventHandler<HTMLInputElement>;
+  onSelect?: React.ReactEventHandler<HTMLInputElement>;
 }
 
 export default function ComboboxSelectOnChange<T>({
@@ -44,8 +47,12 @@ export default function ComboboxSelectOnChange<T>({
   hasError = false,
   helperText,
   optionalText,
+  inputRef,
+  onFocus,
+  onSelect,
 }: ComboboxSelectOnChangeProps<T>) {
   const [query, setQuery] = useState("");
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const filteredItems =
     query === "" ? items : items.filter((item) => filterFunction(query, item));
@@ -75,11 +82,22 @@ export default function ComboboxSelectOnChange<T>({
           </div>
           <div className="relative mt-1.5">
             <ComboboxInput
+              ref={inputRef}
               className={cn(
                 "w-full h-9 rounded-md border border-input dark:bg-white/5 bg-primary-black/5 px-3 py-2 text-[.8rem] text-foreground shadow-sm shadow-black/5 transition-shadow placeholder:text-muted-foreground/70 dark:focus-visible:border-white/80 focus-visible:border-primary-black/40 focus-visible:outline-none focus-visible:ring-[3px] dark:focus-visible:ring-ring/20 focus-visible:ring-ring/10 disabled:cursor-not-allowed disabled:opacity-50",
                 hasError && "!border-none ring-2 ring-primary-red"
               )}
               onChange={handleInputChange}
+              onFocus={(e) => {
+                onFocus && onFocus(e);
+                buttonRef.current?.click();
+              }}
+              onClick={(e) => {
+                onSelect && onSelect(e);
+              }}
+              onKeyUp={(e) => {
+                onSelect && onSelect(e);
+              }}
               displayValue={(item: any) => {
                 if (typeof item === "string") return item;
                 return displayValue(item);
@@ -90,7 +108,11 @@ export default function ComboboxSelectOnChange<T>({
                 helperText || errorMessage ? `${label}-description` : undefined
               }
             />
-            <ComboboxButton className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+
+            <ComboboxButton
+              ref={buttonRef}
+              className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none"
+            >
               <ChevronDown
                 className={cn(
                   "h-4 w-4",

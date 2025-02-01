@@ -18,6 +18,8 @@ import { memo, useCallback, useEffect, useId, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { CurrencyQuantityData } from "./constants";
 import { useCloseShift } from "./hooks/useCloseShift";
+// Import the virtual keyboard component.
+import VirtualKeyboard from "@/components/keyboard/VirtualKeyboard";
 
 interface CloseShiftProps {
   open: boolean;
@@ -46,6 +48,11 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
   const [isNewOrders, setIsNewOrders] = useState(false);
   const selectId = useId();
 
+  // State to track which input (by method ID) is active and whether to show the keyboard.
+  const [activeInput, setActiveInput] = useState<string | null>(null);
+  const [showKeyboard, setShowKeyboard] = useState(false);
+  const [cursorPosition, setCursorPosition] = useState<number>(0);
+
   useEffect(() => {
     const checkForNewOrders = async () => {
       const shiftId = localStorage.getItem("shiftId");
@@ -63,6 +70,61 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
     checkForNewOrders();
   }, [open]);
 
+  /**
+   * This function will receive key presses from the virtual keyboard.
+   * It looks up the current value for the active input (a payment method)
+   * and updates it according to the pressed key.
+   *
+   * For simplicity, this example appends the key to the current value,
+   * removes one digit for a normal Backspace, or clears the entire field
+   * for a BackspaceLongPress.
+   */
+  const handleKeyboardKeyPress = (key: string) => {
+    if (!activeInput) return;
+
+    // Determine if the active input is a currency quantity input
+    const isCurrency = activeInput.startsWith("currency_");
+
+    // Get the current value from the corresponding state
+    let currentValue = isCurrency
+      ? (currencyQuantities[Number(activeInput.replace("currency_", ""))]?.toString() || "")
+      : (paymentAmounts[activeInput]?.toString() || "");
+
+    // Calculate the new value based on the cursor position
+    if (key === "Backspace") {
+      // Remove one character before the cursor
+      if (cursorPosition > 0) {
+        currentValue =
+          currentValue.slice(0, cursorPosition - 1) +
+          currentValue.slice(cursorPosition);
+      }
+    } else if (key === "BackspaceLongPress") {
+      currentValue = "";
+    } else {
+      // Insert the new key at the current cursor position
+      currentValue =
+        currentValue.slice(0, cursorPosition) +
+        key +
+        currentValue.slice(cursorPosition);
+    }
+
+    // Update the state
+    if (isCurrency) {
+      const currencyKey = Number(activeInput.replace("currency_", ""));
+      handleCurrencyQuantityChange(currencyKey, currentValue);
+    } else {
+      handleAmountChange(activeInput, currentValue);
+    }
+
+    // Optionally update the cursor position (e.g., move it forward by 1 after inserting a character)
+    setCursorPosition(cursorPosition + (key.length || 0));
+  };
+
+
+  /**
+   * Wrap the payment method input in a function that, in addition to its normal
+   * behavior, sets the active input and shows the virtual keyboard.
+   */
   const renderPaymentMethod = useCallback(
     (method: any) => (
       <div
@@ -79,8 +141,20 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
             setValue: (value: string | number | null) =>
               handleAmountChange(method._id, value?.toString() || ""),
             isFocused: focusedMethod === method._id,
-            onFocus: () => setFocusedMethod(method._id),
-            onBlur: () => setFocusedMethod(null),
+            onFocus: () => {
+              setFocusedMethod(method._id);
+              setActiveInput(method._id);
+              setShowKeyboard(true);
+            },
+            onBlur: () => {
+              setFocusedMethod(null);
+              // Optionally hide the keyboard on blur.
+              // setShowKeyboard(false);
+            },
+            onSelect: (e) => {
+              const selectionStart = (e.target as HTMLInputElement).selectionStart || 0;
+              setCursorPosition(selectionStart);
+            },
           }}
           className={method.is_cash ? "w-[90%]" : "w-full"}
         />
@@ -124,7 +198,7 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
           <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
             <div className="relative z-0 flex flex-1 overflow-hidden space-x-8">
               <main className="relative z-0 flex-1 overflow-y-auto focus:outline-none">
-                {/* Start main area*/}
+                {/* Start main area */}
                 <div className="absolute inset-0">
                   <div
                     className={cn(
@@ -191,7 +265,7 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
                     transition={{ duration: 0.3 }}
                     className="relative w-72 flex-shrink-0 overflow-y-auto xl:flex xl:flex-col"
                   >
-                    {/* Start secondary column (hidden on smaller screens) */}
+                    {/* Secondary column for currency quantities */}
                     <div className="absolute inset-0 h-full space-y-4">
                       {CurrencyQuantityData.map((item) => (
                         <div
@@ -211,11 +285,16 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
                                 placeholder: item.placeholder,
                                 type: "number",
                                 value: currencyQuantities[item.value] || "",
-                                setValue: (value) =>
-                                  handleCurrencyQuantityChange(
-                                    item.value,
-                                    value
-                                  ),
+                                setValue: (value) => handleCurrencyQuantityChange(item.value, value),
+                                onFocus: () => {
+                                  // For currency quantities, use a unique key (for example, "currency_" + item.value)
+                                  setActiveInput("currency_" + item.value);
+                                  setShowKeyboard(true);
+                                },
+                                onSelect: (e) => {
+                                  const selectionStart = (e.target as HTMLInputElement).selectionStart || 0;
+                                  setCursorPosition(selectionStart);
+                                },
                               }}
                             />
                           </div>
@@ -241,6 +320,16 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
           </div>
         </div>
       </div>
+      {/* Virtual Keyboard positioned at the bottom of the drawer */}
+      {showKeyboard && (
+        <div className="mt-4">
+          <VirtualKeyboard
+            onClose={() => setShowKeyboard(false)}
+            onKeyPress={handleKeyboardKeyPress}
+            inputType={activeInput}
+          />
+        </div>
+      )}
     </Drawer>
   );
 });
