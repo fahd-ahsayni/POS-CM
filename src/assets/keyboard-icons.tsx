@@ -42,8 +42,8 @@ export const KeyboardClose = ({ className }: { className: string }) => (
     <path
       d="M1.05859 4.50781C1.05859 2.85096 2.40174 1.50781 4.05859 1.50781H28.6141C30.271 1.50781 31.6141 2.85096 31.6141 4.50781V14.3967C31.6141 16.0536 30.271 17.3967 28.6141 17.3967H4.05859C2.40174 17.3967 1.05859 16.0536 1.05859 14.3967V4.50781Z"
       stroke="currentColor"
-      stroke-width="1.5"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinejoin="round"
     />
     <rect
       x="4.31641"
@@ -96,9 +96,9 @@ export const KeyboardClose = ({ className }: { className: string }) => (
     <path
       d="M11.2422 21.2656L15.6577 25.3279C16.0404 25.68 16.6291 25.68 17.0118 25.3279L21.4274 21.2656"
       stroke="currentColor"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
     <rect
       x="11.6484"

@@ -1,5 +1,5 @@
 import { FilterIcon } from "@/assets/figma-icons";
-import InputComponent from "@/components/global/InputField";
+import InputComponent from "@/components/global/InputComponent";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {

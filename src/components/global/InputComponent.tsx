@@ -89,7 +89,7 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
             suffix && "pe-9",
             isPasswordToggleable && "pe-9",
             type === "number" &&
-              "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           )}
           type={getInputType()}
           placeholder={placeholder}
@@ -131,9 +131,8 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
 
       {(helperText || errorMessage) && (
         <p
-          className={`mt-2 text-xs font-medium pl-1 ${
-            hasError ? "text-primary-red" : "text-neutral-dark-grey"
-          }`}
+          className={`mt-2 text-xs font-medium pl-1 ${hasError ? "text-primary-red" : "text-neutral-dark-grey"
+            }`}
           role={hasError ? "alert" : "region"}
         >
           {hasError ? errorMessage : helperText}

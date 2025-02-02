@@ -1,7 +1,7 @@
 import { checkIsNewOrders } from "@/api/services";
 import { CashWithCoinsIcon } from "@/assets/figma-icons";
 import Drawer from "@/components/global/Drawer";
-import InputComponent from "@/components/global/InputField";
+import InputComponent from "@/components/global/InputComponent";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -18,8 +18,8 @@ import { memo, useCallback, useEffect, useId, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { CurrencyQuantityData } from "./constants";
 import { useCloseShift } from "./hooks/useCloseShift";
-// Import the virtual keyboard component.
-import VirtualKeyboard from "@/components/keyboard/VirtualKeyboard";
+// Import the global virtual keyboard context hook
+import { useVirtualKeyboard } from "@/components/keyboard/VirtualKeyboardGlobalContext";
 
 interface CloseShiftProps {
   open: boolean;
@@ -48,10 +48,12 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
   const [isNewOrders, setIsNewOrders] = useState(false);
   const selectId = useId();
 
-  // State to track which input (by method ID) is active and whether to show the keyboard.
-  const [activeInput, setActiveInput] = useState<string | null>(null);
-  const [showKeyboard, setShowKeyboard] = useState(false);
+  // Remove local keyboard state variables for active input and showKeyboard.
+  // Instead, we'll use the global context.
   const [cursorPosition, setCursorPosition] = useState<number>(0);
+
+  // Get the global virtual keyboard functions and active input from context.
+  const { activeInput, openKeyboard } = useVirtualKeyboard();
 
   useEffect(() => {
     const checkForNewOrders = async () => {
@@ -71,28 +73,19 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
   }, [open]);
 
   /**
-   * This function will receive key presses from the virtual keyboard.
-   * It looks up the current value for the active input (a payment method)
-   * and updates it according to the pressed key.
-   *
-   * For simplicity, this example appends the key to the current value,
-   * removes one digit for a normal Backspace, or clears the entire field
-   * for a BackspaceLongPress.
+   * This callback will be passed to the global virtual keyboard.
+   * It uses the active input from the global context.
    */
   const handleKeyboardKeyPress = (key: string) => {
     if (!activeInput) return;
 
-    // Determine if the active input is a currency quantity input
+    // Determine if the active input is a currency quantity input.
     const isCurrency = activeInput.startsWith("currency_");
-
-    // Get the current value from the corresponding state
     let currentValue = isCurrency
       ? (currencyQuantities[Number(activeInput.replace("currency_", ""))]?.toString() || "")
       : (paymentAmounts[activeInput]?.toString() || "");
 
-    // Calculate the new value based on the cursor position
     if (key === "Backspace") {
-      // Remove one character before the cursor
       if (cursorPosition > 0) {
         currentValue =
           currentValue.slice(0, cursorPosition - 1) +
@@ -101,29 +94,23 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
     } else if (key === "BackspaceLongPress") {
       currentValue = "";
     } else {
-      // Insert the new key at the current cursor position
       currentValue =
         currentValue.slice(0, cursorPosition) +
         key +
         currentValue.slice(cursorPosition);
     }
 
-    // Update the state
     if (isCurrency) {
       const currencyKey = Number(activeInput.replace("currency_", ""));
       handleCurrencyQuantityChange(currencyKey, currentValue);
     } else {
       handleAmountChange(activeInput, currentValue);
     }
-
-    // Optionally update the cursor position (e.g., move it forward by 1 after inserting a character)
     setCursorPosition(cursorPosition + (key.length || 0));
   };
 
-
   /**
-   * Wrap the payment method input in a function that, in addition to its normal
-   * behavior, sets the active input and shows the virtual keyboard.
+   * Render each payment method input. On focus, call openKeyboard() from the global context.
    */
   const renderPaymentMethod = useCallback(
     (method: any) => (
@@ -143,16 +130,15 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
             isFocused: focusedMethod === method._id,
             onFocus: () => {
               setFocusedMethod(method._id);
-              setActiveInput(method._id);
-              setShowKeyboard(true);
+              // Open the global virtual keyboard for this input.
+              openKeyboard(method._id, handleKeyboardKeyPress);
             },
             onBlur: () => {
               setFocusedMethod(null);
-              // Optionally hide the keyboard on blur.
-              // setShowKeyboard(false);
             },
             onSelect: (e) => {
-              const selectionStart = (e.target as HTMLInputElement).selectionStart || 0;
+              const selectionStart =
+                (e.target as HTMLInputElement).selectionStart || 0;
               setCursorPosition(selectionStart);
             },
           }}
@@ -177,6 +163,8 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
       handleAmountChange,
       setFocusedMethod,
       handleCurrencyIconClick,
+      openKeyboard,
+      handleKeyboardKeyPress,
     ]
   );
 
@@ -285,11 +273,11 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
                                 placeholder: item.placeholder,
                                 type: "number",
                                 value: currencyQuantities[item.value] || "",
-                                setValue: (value) => handleCurrencyQuantityChange(item.value, value),
+                                setValue: (value) =>
+                                  handleCurrencyQuantityChange(item.value, value),
                                 onFocus: () => {
-                                  // For currency quantities, use a unique key (for example, "currency_" + item.value)
-                                  setActiveInput("currency_" + item.value);
-                                  setShowKeyboard(true);
+                                  // Open the global virtual keyboard for this currency input.
+                                  openKeyboard("currency_" + item.value, handleKeyboardKeyPress);
                                 },
                                 onSelect: (e) => {
                                   const selectionStart = (e.target as HTMLInputElement).selectionStart || 0;
@@ -320,16 +308,7 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
           </div>
         </div>
       </div>
-      {/* Virtual Keyboard positioned at the bottom of the drawer */}
-      {showKeyboard && (
-        <div className="mt-4">
-          <VirtualKeyboard
-            onClose={() => setShowKeyboard(false)}
-            onKeyPress={handleKeyboardKeyPress}
-            inputType={activeInput}
-          />
-        </div>
-      )}
+      {/* The VirtualKeyboard is rendered globally via a portal */}
     </Drawer>
   );
 });

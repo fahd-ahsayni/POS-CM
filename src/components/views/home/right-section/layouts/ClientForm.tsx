@@ -1,17 +1,15 @@
 import ComboboxSelectOnChange from "@/components/global/ComboboxSelectOnChange";
-import InputComponent from "@/components/global/InputField";
-import VirtualKeyboard from "@/components/keyboard/VirtualKeyboard";
+import InputComponent from "@/components/global/InputComponent";
+import { useVirtualKeyboard } from "@/components/keyboard/VirtualKeyboardGlobalContext";
 import { Client, ClientFormData } from "@/interfaces/clients";
 import { loadingColors } from "@/preferences";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { BeatLoader } from "react-spinners";
 
 interface ClientFormProps {
   formData: ClientFormData;
   errors: Partial<ClientFormData>;
-  handleInputChange: (
-    field: keyof ClientFormData
-  ) => (value: string | number | null) => void;
+  handleInputChange: (field: keyof ClientFormData) => (value: string | number | null) => void;
   handlePhoneSelect: (selectedClient: Client | null) => void;
   clients: Client[];
   isFetching: boolean;
@@ -27,54 +25,31 @@ export default function ClientForm({
   isFetching,
   isSubmitting = false,
 }: ClientFormProps) {
-  const [showKeyboard, setShowKeyboard] = useState(false);
-  const [activeInput, setActiveInput] = useState<keyof ClientFormData | null>(
-    null
-  );
+  const [activeInput, setActiveInput] = useState<keyof ClientFormData | null>(null);
   const [cursorPosition, setCursorPosition] = useState<number>(0);
 
-  // Update refs to remove textarea reference
+  // Define refs for your inputs
   const inputRefs = {
     phone: useRef<HTMLInputElement>(null),
     name: useRef<HTMLInputElement>(null),
-    address: useRef<HTMLInputElement>(null), // Change from HTMLTextAreaElement to HTMLInputElement
+    address: useRef<HTMLInputElement>(null),
     email: useRef<HTMLInputElement>(null),
     ice: useRef<HTMLInputElement>(null),
   };
 
-  const handleKeyPress = (key: string) => {
-    if (!activeInput) return;
-    const currentValue = formData[activeInput] || "";
-    let newValue = currentValue;
-    let newPosition = cursorPosition;
+  // Get the global virtual keyboard functions
+  const { openKeyboard } = useVirtualKeyboard();
 
-    if (key === "Backspace") {
-      if (cursorPosition > 0) {
-        newValue =
-          currentValue.slice(0, cursorPosition - 1) +
-          currentValue.slice(cursorPosition);
-        newPosition = cursorPosition - 1;
-      }
-    } else {
-      newValue =
-        currentValue.slice(0, cursorPosition) +
-        key +
-        currentValue.slice(cursorPosition);
-      newPosition = cursorPosition + 1;
-    }
+  // Helper function to update input value and cursor position
+  const updateInputValue = (
+    field: keyof ClientFormData,
+    newValue: string,
+    newPosition: number
+  ) => {
+    handleInputChange(field)(newValue);
+    setCursorPosition(newPosition);
 
-    // For phone/ice, ensure only valid characters are accepted
-    if (activeInput === "phone" || activeInput === "ice") {
-      if (!isNaN(Number(newValue)) || newValue === "" || newValue === "+") {
-        handleInputChange(activeInput)(newValue);
-        setCursorPosition(newPosition);
-      }
-    } else {
-      handleInputChange(activeInput)(newValue);
-      setCursorPosition(newPosition);
-    }
-
-    const inputRefCurrent = inputRefs[activeInput]?.current;
+    const inputRefCurrent = inputRefs[field]?.current;
     if (inputRefCurrent) {
       setTimeout(() => {
         inputRefCurrent.setSelectionRange(newPosition, newPosition);
@@ -83,10 +58,38 @@ export default function ClientForm({
     }
   };
 
+  // Handle keypress events
+  const handleKeyPress = (key: string) => {
+    if (!activeInput) return;
 
+    const currentValue = formData[activeInput] || "";
+    let newValue = currentValue;
+    let newPosition = cursorPosition;
+
+    if (key === "Backspace") {
+      if (cursorPosition > 0) {
+        newValue = currentValue.slice(0, cursorPosition - 1) + currentValue.slice(cursorPosition);
+        newPosition = cursorPosition - 1;
+      }
+    } else {
+      newValue = currentValue.slice(0, cursorPosition) + key + currentValue.slice(cursorPosition);
+      newPosition = cursorPosition + 1;
+    }
+
+    // Validate input for phone and ICE fields
+    if (activeInput === "phone" || activeInput === "ice") {
+      if (/^[0-9+]*$/.test(newValue)) {
+        updateInputValue(activeInput, newValue, newPosition);
+      }
+    } else {
+      updateInputValue(activeInput, newValue, newPosition);
+    }
+  };
+
+  // Handle input focus
   const handleInputFocus = (inputType: keyof ClientFormData) => {
     setActiveInput(inputType);
-    setShowKeyboard(true);
+    openKeyboard(inputType, handleKeyPress);
 
     const inputRef = inputRefs[inputType]?.current;
     if (inputRef) {
@@ -94,12 +97,7 @@ export default function ClientForm({
     }
   };
 
-  useEffect(() => {
-    if (activeInput && inputRefs[activeInput]?.current) {
-      inputRefs[activeInput].current.setSelectionRange(cursorPosition, cursorPosition);
-    }
-  }, [formData.phone, cursorPosition, activeInput]);
-
+  // Handle loading state
   if (isFetching || isSubmitting) {
     return (
       <div className="w-full h-full flex items-center justify-center">
@@ -135,7 +133,6 @@ export default function ClientForm({
         required
         hasError={!!errors.phone}
         errorMessage={errors.phone}
-        // --- New Props for Virtual Keyboard Integration ---
         inputRef={inputRefs.phone}
         onFocus={() => handleInputFocus("phone")}
         onSelect={(e) => {
@@ -143,7 +140,6 @@ export default function ClientForm({
           setCursorPosition(selectionStart);
         }}
       />
-
 
       {/* Full Name Input */}
       <InputComponent
@@ -158,19 +154,18 @@ export default function ClientForm({
           hasError: !!errors.name,
           onFocus: () => handleInputFocus("name"),
           onSelect: (e) => {
-            const selectionStart =
-              (e.target as HTMLInputElement).selectionStart || 0;
+            const selectionStart = (e.target as HTMLInputElement).selectionStart || 0;
             setCursorPosition(selectionStart);
-          }, // ✅ Pass cursor tracking function
+          },
         }}
       />
 
-      {/* Address Input (Replaced InputLikeTextarea with InputComponent) */}
+      {/* Address Input */}
       <InputComponent
         config={{
           label: "Address",
           placeholder: "e.g. 123 Main street, Apartment, City",
-          type: "text", // Use 'text' type for multi-line input simulation
+          type: "text",
           required: true,
           value: formData.address || "",
           setValue: handleInputChange("address"),
@@ -178,10 +173,9 @@ export default function ClientForm({
           hasError: !!errors.address,
           onFocus: () => handleInputFocus("address"),
           onSelect: (e) => {
-            const selectionStart =
-              (e.target as HTMLInputElement).selectionStart || 0;
+            const selectionStart = (e.target as HTMLInputElement).selectionStart || 0;
             setCursorPosition(selectionStart);
-          }, // ✅ Pass cursor tracking function
+          },
         }}
       />
 
@@ -199,10 +193,9 @@ export default function ClientForm({
           optionalText: "Optional",
           onFocus: () => handleInputFocus("email"),
           onSelect: (e) => {
-            const selectionStart =
-              (e.target as HTMLInputElement).selectionStart || 0;
+            const selectionStart = (e.target as HTMLInputElement).selectionStart || 0;
             setCursorPosition(selectionStart);
-          }, // ✅ Pass cursor tracking function
+          },
         }}
       />
 
@@ -221,21 +214,11 @@ export default function ClientForm({
           helperText: "Required for businesses. Skip for individual clients.",
           onFocus: () => handleInputFocus("ice"),
           onSelect: (e) => {
-            const selectionStart =
-              (e.target as HTMLInputElement).selectionStart || 0;
+            const selectionStart = (e.target as HTMLInputElement).selectionStart || 0;
             setCursorPosition(selectionStart);
-          }, // ✅ Pass cursor tracking function
+          },
         }}
       />
-
-      {/* Virtual Keyboard */}
-      {showKeyboard && (
-        <VirtualKeyboard
-          onClose={() => setShowKeyboard(false)}
-          onKeyPress={handleKeyPress}
-          inputType={activeInput}
-        />
-      )}
     </div>
   );
 }

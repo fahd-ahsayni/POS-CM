@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { currency } from "@/preferences";
 import Drawer from "../../Drawer";
-import InputComponent from "../../InputField";
+import InputComponent from "../../InputComponent";
 import InputLikeTextarea from "../../InputLikeTextarea";
 import { Button } from "@/components/ui/button";
 import { dropCash } from "@/api/services";
