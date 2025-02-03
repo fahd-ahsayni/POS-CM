@@ -9,7 +9,6 @@ import { ThemeProvider } from "./providers/themeProvider";
 export default function App() {
   return (
     <VirtualKeyboardProvider>
-
       <main>
         <div className="block md:hidden">
           <NoMobileResponsive />

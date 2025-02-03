@@ -18,12 +18,12 @@ export default function ModalOrderComments({
   setOpen,
 }: ModalOrderCommentsProps) {
   const notes = useSelector((state: RootState) => state.createOrder.data.notes);
-  const [comment, setComment] = useState(notes);
+  const [comment, setComment] = useState<string>(notes || "");
   const dispatch = useDispatch();
 
   // Virtual Keyboard state management
   const [activeInput, setActiveInput] = useState<string | null>(null);
-  const [cursorPosition, setCursorPosition] = useState(0);
+  const [cursorPosition, setCursorPosition] = useState<number>(0);
 
   // Create a ref for the textarea to manage cursor position
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -33,7 +33,7 @@ export default function ModalOrderComments({
 
   // Update the comment when notes in the store change
   useEffect(() => {
-    setComment(notes);
+    setComment(notes || "");
   }, [notes]);
 
   // Keep the textarea's selection in sync with the cursor position
@@ -63,6 +63,9 @@ export default function ModalOrderComments({
           currentValue.slice(cursorPosition);
         newPosition = cursorPosition - 1;
       }
+    } else if (key === "Delete") {
+      currentValue = "";
+      newPosition = 0;
     } else {
       currentValue =
         currentValue.slice(0, cursorPosition) +
@@ -78,7 +81,6 @@ export default function ModalOrderComments({
   const handleFocus = () => {
     setActiveInput("textarea");
     openKeyboard("textarea", handleKeyboardKeyPress);
-
     if (textareaRef.current) {
       setCursorPosition(textareaRef.current.selectionStart || 0);
     }
@@ -100,7 +102,8 @@ export default function ModalOrderComments({
             className="w-full"
             onFocus={handleFocus}
             onSelect={(e) => {
-              const selectionStart = (e.target as HTMLTextAreaElement).selectionStart || 0;
+              const selectionStart =
+                (e.target as HTMLTextAreaElement).selectionStart || 0;
               setCursorPosition(selectionStart);
             }}
           />

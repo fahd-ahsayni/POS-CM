@@ -1,6 +1,5 @@
 "use client";
-import { useEventListener } from "./use-event-listener";
-import type { RefObject } from "react";
+import { useEffect, useCallback, type RefObject } from "react";
 
 type EventType =
   | "mousedown"
@@ -11,32 +10,53 @@ type EventType =
   | "focusout";
 
 export function useOnClickOutside<T extends HTMLElement = HTMLElement>(
-  ref: RefObject<T | null> | RefObject<T | null>[],
+  refs: RefObject<T | null> | RefObject<T | null>[],
   handler: (event: MouseEvent | TouchEvent | FocusEvent) => void,
   eventType: EventType = "mousedown",
   eventListenerOptions: AddEventListenerOptions = {}
 ): void {
-  useEventListener(
-    eventType,
-    (event) => {
+  // Memoized event handler to avoid unnecessary re-renders
+  const handleClickOutside = useCallback(
+    (event: MouseEvent | TouchEvent | FocusEvent) => {
       const target = event.target as Node;
 
-      // Do nothing if the target is not connected element with document
-      if (!target?.isConnected) {
+      if (!target?.isConnected) return;
+
+      // Ignore clicks inside an input, textarea, or select
+      if (
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement
+      ) {
         return;
       }
 
-      const isOutside = Array.isArray(ref)
-        ? ref
+      const isOutside = Array.isArray(refs)
+        ? refs
             .filter((r) => Boolean(r.current))
             .every((r) => r.current && !r.current.contains(target))
-        : ref.current && !ref.current.contains(target);
+        : refs.current && !refs.current.contains(target);
 
       if (isOutside) {
         handler(event);
       }
     },
-    undefined,
-    eventListenerOptions
+    [refs, handler]
   );
+
+  useEffect(() => {
+    document.addEventListener(
+      eventType,
+      handleClickOutside,
+      eventListenerOptions
+    );
+
+    return () => {
+      document.removeEventListener(
+        eventType,
+        handleClickOutside,
+        eventListenerOptions
+      );
+    };
+  }, [eventType, handleClickOutside, eventListenerOptions]);
 }

@@ -54,7 +54,7 @@ export default function OrderLines() {
   return (
     <AnimatePresence mode="popLayout">
       <div className="z-10 h-full w-full overflow-x-hidden">
-        <div className="space-y-4 w-full pr-2 pt-1">
+        <div className="space-y-4 w-full px-1 pt-1">
           {Array.from({
             length: Math.max(
               customerIndex,

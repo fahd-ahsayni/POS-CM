@@ -76,38 +76,80 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
    * This callback will be passed to the global virtual keyboard.
    * It uses the active input from the global context.
    */
-  const handleKeyboardKeyPress = (key: string) => {
-    if (!activeInput) return;
+  const handleKeyboardKeyPress = useCallback(
+    (key: string, cursorAdjustment: number) => {
+      if (!activeInput) return;
 
-    // Determine if the active input is a currency quantity input.
-    const isCurrency = activeInput.startsWith("currency_");
-    let currentValue = isCurrency
-      ? (currencyQuantities[Number(activeInput.replace("currency_", ""))]?.toString() || "")
-      : (paymentAmounts[activeInput]?.toString() || "");
+      const isCurrency = activeInput.startsWith("currency_");
+      let currentValue = isCurrency
+        ? currencyQuantities[
+            Number(activeInput.replace("currency_", ""))
+          ]?.toString() || ""
+        : paymentAmounts[activeInput]?.toString() || "";
 
-    if (key === "Backspace") {
-      if (cursorPosition > 0) {
-        currentValue =
-          currentValue.slice(0, cursorPosition - 1) +
-          currentValue.slice(cursorPosition);
+      let newValue = currentValue;
+      let newPosition = cursorPosition;
+
+      // Remove default "0" if a number is pressed
+      if (currentValue === "0" && key !== "Backspace") {
+        newValue = key; // Replace "0" with the first pressed key
+        newPosition = 1; // Move cursor to next position
+      } else {
+        switch (key) {
+          case "Backspace":
+            if (currentValue === "0") {
+              newValue = ""; // Clear the field instead of keeping "0"
+              newPosition = 0;
+            } else if (cursorPosition > 0) {
+              newValue =
+                currentValue.slice(0, cursorPosition - 1) +
+                currentValue.slice(cursorPosition);
+              newPosition = cursorPosition - 1;
+            }
+            break;
+          case "ArrowLeft":
+            newPosition = Math.max(0, cursorPosition - 1);
+            break;
+          case "ArrowRight":
+            newPosition = Math.min(currentValue.length, cursorPosition + 1);
+            break;
+          case "Delete": // Clear the entire input
+            newValue = "";
+            newPosition = 0;
+            break;
+          default:
+            // Insert new character at the correct cursor position
+            newValue =
+              currentValue.slice(0, cursorPosition) +
+              key +
+              currentValue.slice(cursorPosition);
+            newPosition = cursorPosition + cursorAdjustment;
+            break;
+        }
       }
-    } else if (key === "BackspaceLongPress") {
-      currentValue = "";
-    } else {
-      currentValue =
-        currentValue.slice(0, cursorPosition) +
-        key +
-        currentValue.slice(cursorPosition);
-    }
 
-    if (isCurrency) {
-      const currencyKey = Number(activeInput.replace("currency_", ""));
-      handleCurrencyQuantityChange(currencyKey, currentValue);
-    } else {
-      handleAmountChange(activeInput, currentValue);
-    }
-    setCursorPosition(cursorPosition + (key.length || 0));
-  };
+      // Update state correctly
+      if (isCurrency) {
+        handleCurrencyQuantityChange(
+          Number(activeInput.replace("currency_", "")),
+          newValue
+        );
+      } else {
+        handleAmountChange(activeInput, newValue);
+      }
+
+      // Correctly set the cursor position
+      setCursorPosition(newPosition);
+    },
+    [
+      activeInput,
+      currencyQuantities,
+      paymentAmounts,
+      handleCurrencyQuantityChange,
+      handleAmountChange,
+      cursorPosition,
+    ]
+  );
 
   /**
    * Render each payment method input. On focus, call openKeyboard() from the global context.
@@ -130,8 +172,8 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
             isFocused: focusedMethod === method._id,
             onFocus: () => {
               setFocusedMethod(method._id);
-              // Open the global virtual keyboard for this input.
               openKeyboard(method._id, handleKeyboardKeyPress);
+              setCursorPosition(0); // Set cursor position to 0 or any default value
             },
             onBlur: () => {
               setFocusedMethod(null);
@@ -274,13 +316,21 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
                                 type: "number",
                                 value: currencyQuantities[item.value] || "",
                                 setValue: (value) =>
-                                  handleCurrencyQuantityChange(item.value, value),
+                                  handleCurrencyQuantityChange(
+                                    item.value,
+                                    value
+                                  ),
                                 onFocus: () => {
                                   // Open the global virtual keyboard for this currency input.
-                                  openKeyboard("currency_" + item.value, handleKeyboardKeyPress);
+                                  openKeyboard(
+                                    "currency_" + item.value,
+                                    handleKeyboardKeyPress
+                                  );
                                 },
                                 onSelect: (e) => {
-                                  const selectionStart = (e.target as HTMLInputElement).selectionStart || 0;
+                                  const selectionStart =
+                                    (e.target as HTMLInputElement)
+                                      .selectionStart || 0;
                                   setCursorPosition(selectionStart);
                                 },
                               }}

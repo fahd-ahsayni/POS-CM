@@ -1,9 +1,9 @@
-import { useRef, useState } from "react";
 import ComboboxSelectOnChange from "@/components/global/ComboboxSelectOnChange";
 import InputComponent from "@/components/global/InputComponent";
 import { useVirtualKeyboard } from "@/components/keyboard/VirtualKeyboardGlobalContext";
 import { Client, ClientFormData } from "@/interfaces/clients";
 import { loadingColors } from "@/preferences";
+import { useRef, useState } from "react";
 import { BeatLoader } from "react-spinners";
 
 interface ClientFormProps {
@@ -52,7 +52,6 @@ export default function ClientForm({
   ) => {
     handleInputChange(field)(newValue);
     setCursorPosition(newPosition);
-
     const inputRefCurrent = inputRefs[field]?.current;
     if (inputRefCurrent) {
       setTimeout(() => {
@@ -63,7 +62,7 @@ export default function ClientForm({
   };
 
   // Handle key press events
-  const handleKeyPress = (key: string) => {
+  const handleKeyPress = (key: string, cursorAdjustment: number) => {
     if (activeInput === null) return;
 
     const currentValue = formData[activeInput] || "";
@@ -79,13 +78,16 @@ export default function ClientForm({
           newPosition = cursorPosition - 1;
         }
         break;
-
       case "ArrowLeft":
         newPosition = Math.max(0, cursorPosition - 1);
         break;
-
       case "ArrowRight":
         newPosition = Math.min(currentValue.length, cursorPosition + 1);
+        break;
+
+      case "Delete": // New case for Delete key
+        newValue = ""; // Clear the entire input field
+        newPosition = 0; // Reset cursor position to the start
         break;
 
       default:
@@ -94,7 +96,7 @@ export default function ClientForm({
           currentValue.slice(0, cursorPosition) +
           key +
           currentValue.slice(cursorPosition);
-        newPosition = cursorPosition + key.length;
+        newPosition = cursorPosition + cursorAdjustment;
         break;
     }
 
@@ -105,8 +107,7 @@ export default function ClientForm({
   // Handle input focus
   const handleInputFocus = (inputType: keyof ClientFormData) => {
     setActiveInput(inputType);
-    openKeyboard(inputType, handleKeyPress);
-
+    openKeyboard(inputType, handleKeyPress); // Pass handleKeyPress to openKeyboard
     const inputRef = inputRefs[inputType]?.current;
     if (inputRef) {
       setCursorPosition(inputRef.selectionStart || 0);

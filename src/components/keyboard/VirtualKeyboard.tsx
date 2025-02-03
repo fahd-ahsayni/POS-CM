@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type React from "react";
 import { useOnClickOutside } from "@/hooks/use-click-outside";
-import { BackSpace, EnterButton, KeyboardClose, ShiftActive } from "@/assets/keyboard-icons";
+import { BackSpace, EnterButton, KeyboardClose } from "@/assets/keyboard-icons";
 import { cn } from "@/lib/utils";
 
 interface Position {
@@ -27,7 +27,6 @@ interface VirtualKeyboardProps {
 const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
   onClose,
   onKeyPress,
-  inputType,
   customLayout,
 }) => {
   const [isShiftActive, setIsShiftActive] = useState(false);
@@ -156,7 +155,7 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
         { label: "8", action: "8" },
         { label: "9", action: "9" },
         { label: "0", action: "0" },
-        { label: "-", action: "-" },
+        { label: "@", action: "@" },
       ],
       [
         { label: "q", action: "q" },
@@ -194,12 +193,8 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
         },
       ],
       [
-        {
-          label: <ShiftActive className="dark:text-white text-primary-black" />,
-          colSpan: 2,
-          action: () => setIsShiftActive((prev) => !prev),
-          bgColor: "bg-neutral-bright-grey dark:bg-[#3F4042]",
-        },
+        { label: "_", action: "_" },
+        { label: "-", action: "-" },
         { label: "z", action: "z" },
         { label: "x", action: "x" },
         { label: "c", action: "c" },
@@ -211,7 +206,13 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
         { label: ".", action: "." },
       ],
       [
-        { label: "@", colSpan: 2, action: "@" },
+        {
+          label: "Delete",
+          colSpan: 2,
+          action: "Delete",
+          textColor: "text-white",
+          bgColor: "bg-primary-red",
+        },
         { label: "", colSpan: 7, action: " " },
         {
           label: (

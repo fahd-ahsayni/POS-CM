@@ -2,8 +2,18 @@ import { FilterIcon } from "@/assets/figma-icons";
 import InputComponent from "@/components/global/InputComponent";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { FilterCriteria } from "@/interfaces/general";
 import { useState, useRef } from "react";
 import { useVirtualKeyboard } from "@/components/keyboard/VirtualKeyboardGlobalContext";
@@ -16,6 +26,11 @@ interface FilterOrdersProps {
 export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
   const [open, setOpen] = useState(false);
   const { openKeyboard, showKeyboard } = useVirtualKeyboard();
+
+  // Track cursor position
+  const [cursorPosition, setCursorPosition] = useState<number>(0);
+
+  // Ref for the Order ID input
   const orderIdRef = useRef<HTMLInputElement | null>(null);
 
   const {
@@ -35,25 +50,62 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
     handleApplyFilter,
   } = useFilterCriteria(onFilterChange);
 
-  // Handle virtual keyboard input
-  const handleKeyPress = (key: string) => {
+  // Handle virtual keyboard input with correct cursor tracking
+  const handleKeyPress = (key: string, cursorAdjustment: number) => {
     if (!orderIdRef.current) return;
 
-    let newValue = orderId;
-    if (key === "Backspace") {
-      newValue = newValue.slice(0, -1);
-    } else {
-      newValue += key;
+    let currentValue = orderId;
+    let newValue = currentValue;
+    let newPosition = cursorPosition;
+
+    switch (key) {
+      case "Backspace":
+        if (cursorPosition > 0) {
+          newValue =
+            currentValue.slice(0, cursorPosition - 1) +
+            currentValue.slice(cursorPosition);
+          newPosition = cursorPosition - 1;
+        }
+        break;
+      case "ArrowLeft":
+        newPosition = Math.max(0, cursorPosition - 1);
+        break;
+      case "ArrowRight":
+        newPosition = Math.min(currentValue.length, cursorPosition + 1);
+        break;
+      case "Delete":
+        newValue = ""; // Clear the entire field
+        newPosition = 0;
+        break;
+      default:
+        newValue =
+          currentValue.slice(0, cursorPosition) +
+          key +
+          currentValue.slice(cursorPosition);
+        newPosition = cursorPosition + cursorAdjustment;
+        break;
     }
 
     setOrderId(newValue);
+    setCursorPosition(newPosition);
+
+    // Ensure the cursor stays in the correct place
+    setTimeout(() => {
+      orderIdRef.current?.setSelectionRange(newPosition, newPosition);
+      orderIdRef.current?.focus();
+    }, 0);
   };
 
   return (
     <div className="flex flex-col gap-4">
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover
+        open={open}
+        onOpenChange={(newState) => {
+          if (!showKeyboard) setOpen(newState);
+        }}
+      >
         <PopoverTrigger asChild>
-          <Button size="icon">
+          <Button size="icon" onClick={() => setOpen(true)}>
             <FilterIcon className="w-4 h-4" />
           </Button>
         </PopoverTrigger>
@@ -61,9 +113,7 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
           align="start"
           className="w-72 mr-[6.5rem] dark:bg-secondary-black bg-secondary-white"
           onPointerDownOutside={(event) => {
-            if (showKeyboard) {
-              event.preventDefault();
-            }
+            if (showKeyboard) event.preventDefault();
           }}
           onInteractOutside={(event) => {
             if (orderIdRef.current?.contains(event.target as Node)) {
@@ -73,7 +123,7 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
         >
           <h2 className="mb-4 text-sm font-semibold">Filter Orders</h2>
           <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
-            {/* Order ID with Virtual Keyboard */}
+            {/* Order ID Input with Virtual Keyboard */}
             <div>
               <div className="flex items-center justify-between">
                 <Label className="pl-2">Order ID</Label>
@@ -91,7 +141,16 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
                   value: orderId,
                   setValue: (value: string | number | null) =>
                     setOrderId(value ? value.toString() : ""),
-                  onFocus: () => openKeyboard("order-id", handleKeyPress),
+                  onFocus: () => {
+                    openKeyboard("order-id", handleKeyPress);
+                    setCursorPosition(orderIdRef.current?.selectionStart || 0);
+                    setOpen(true); // Keep popover open
+                  },
+                  onSelect: (e) => {
+                    setCursorPosition(
+                      (e.target as HTMLInputElement).selectionStart || 0
+                    );
+                  },
                   ref: orderIdRef,
                 }}
               />
@@ -99,16 +158,11 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
 
             {/* Users Filter */}
             <div>
-              <div className="mb-2 flex items-center justify-between gap-1">
-                <Label className="pl-2">Users</Label>
-                <span
-                  className="text-xs font-medium text-error-color cursor-pointer"
-                  onClick={() => handleClearFilter("employee")}
-                >
-                  Clear
-                </span>
-              </div>
-              <Select value={selectedEmployee} onValueChange={setSelectedEmployee}>
+              <Label className="pl-2">Users</Label>
+              <Select
+                value={selectedEmployee}
+                onValueChange={setSelectedEmployee}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select an employee" />
                 </SelectTrigger>
@@ -124,16 +178,11 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
 
             {/* Order Type Filter */}
             <div>
-              <div className="mb-2 flex items-center justify-between gap-1">
-                <Label className="pl-2">Order Type</Label>
-                <span
-                  className="text-xs font-medium text-error-color cursor-pointer"
-                  onClick={() => handleClearFilter("orderType")}
-                >
-                  Clear
-                </span>
-              </div>
-              <Select value={selectedOrderType} onValueChange={setSelectedOrderType}>
+              <Label className="pl-2">Order Type</Label>
+              <Select
+                value={selectedOrderType}
+                onValueChange={setSelectedOrderType}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select an order type" />
                 </SelectTrigger>
@@ -149,15 +198,7 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
 
             {/* Status Filter */}
             <div>
-              <div className="mb-2 flex items-center justify-between gap-1">
-                <Label className="pl-2">Status</Label>
-                <span
-                  className="text-xs font-medium text-error-color cursor-pointer"
-                  onClick={() => handleClearFilter("status")}
-                >
-                  Clear
-                </span>
-              </div>
+              <Label className="pl-2">Status</Label>
               <Select value={selectedStatus} onValueChange={setSelectedStatus}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a status" />

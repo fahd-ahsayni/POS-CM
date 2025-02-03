@@ -5,6 +5,7 @@ import {
   DialogPortal,
   DialogOverlay,
 } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 
 interface ModalLayoutProps {
   children: React.ReactNode;
@@ -24,11 +25,16 @@ export default function ModalLayout({
     <Dialog open={isOpen} onOpenChange={closeModal}>
       <DialogPortal>
         <DialogOverlay className="bg-black/30" />
-        <DialogContent onPointerDownOutside={(event) => {
-          if (showKeyboard) {
-            event.preventDefault();
-          }
-        }} className={className}>{children}</DialogContent>
+        <DialogContent
+          onPointerDownOutside={(event) => {
+            if (showKeyboard) {
+              event.preventDefault();
+            }
+          }}
+          className={cn(className, "dark:bg-primary-black bg-secondary-white")}
+        >
+          {children}
+        </DialogContent>
       </DialogPortal>
     </Dialog>
   );

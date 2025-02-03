@@ -1,17 +1,16 @@
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { CommentIcon, DeleteCommentIcon } from "@/assets/figma-icons";
-
+import ComboboxSelectOnChange from "@/components/global/ComboboxSelectOnChange";
+import { useVirtualKeyboard } from "@/components/keyboard/VirtualKeyboardGlobalContext";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { updateOrderLine } from "@/store/slices/order/create-order.slice";
-import { useState, useRef } from "react";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { PlusIcon } from "lucide-react";
+import { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { useProductSelection } from "../../left-section/hooks/useProductSelection";
 import { useRightViewContext } from "../contexts/RightViewContext";
-import ComboboxSelectOnChange from "@/components/global/ComboboxSelectOnChange";
-import { PlusIcon } from "lucide-react";
-import { useVirtualKeyboard } from "@/components/keyboard/VirtualKeyboardGlobalContext";
 
 interface OrderLineAddCommentsProps {
   productId: string;
@@ -42,7 +41,6 @@ export default function OrderLineAddComments({
     generalData.defineNote?.filter((item: any) => item.type === "pos") || [];
 
   const [comments, setComments] = useState<string[]>([...initialNotes]);
-  const [activeInput, setActiveInput] = useState<number | null>(null);
   const [cursorPosition, setCursorPosition] = useState<number>(0);
 
   // Refs for each comment input field
@@ -91,44 +89,43 @@ export default function OrderLineAddComments({
     }
   };
 
-  // Handle keypress from virtual keyboard
-  const handleKeyPress = (key: string) => {
-    if (activeInput === null) return;
-
-    let currentValue = comments[activeInput] || "";
-    let newPosition = cursorPosition;
-
-    if (key === "Backspace") {
-      if (cursorPosition > 0) {
-        currentValue =
-          currentValue.slice(0, cursorPosition - 1) +
-          currentValue.slice(cursorPosition);
-        newPosition = cursorPosition - 1;
-      }
-    } else {
-      currentValue =
-        currentValue.slice(0, cursorPosition) +
-        key +
-        currentValue.slice(cursorPosition);
-      newPosition = cursorPosition + key.length;
-    }
-
-    handleCommentChange(activeInput, currentValue);
-    setCursorPosition(newPosition);
-
-    const inputRefCurrent = inputRefs.current[activeInput];
-    if (inputRefCurrent) {
-      setTimeout(() => {
-        inputRefCurrent.setSelectionRange(newPosition, newPosition);
-        inputRefCurrent.focus();
-      }, 0);
-    }
-  };
-
-  // Handle input focus
   const handleInputFocus = (index: number) => {
-    setActiveInput(index);
-    openKeyboard(`comment-${index}`, handleKeyPress);
+    openKeyboard(`comment-${index}`, (key) => {
+      let currentValue = comments[index] || "";
+      let newPosition = cursorPosition;
+
+      if (key === "Backspace") {
+        if (newPosition > 0) {
+          currentValue =
+            currentValue.slice(0, newPosition - 1) +
+            currentValue.slice(newPosition);
+          newPosition -= 1;
+        }
+      } else if (key === "Delete") {
+        // Handle Delete key
+        currentValue = ""; // Clear the entire input field
+        newPosition = 0; // Reset cursor position to the start
+      } else {
+        currentValue =
+          currentValue.slice(0, newPosition) +
+          key +
+          currentValue.slice(newPosition);
+        newPosition += key.length;
+      }
+
+      // Update the comment and cursor position
+      handleCommentChange(index, currentValue);
+      setCursorPosition(newPosition);
+
+      // Update the input field's selection range
+      const inputRefCurrent = inputRefs.current[index];
+      if (inputRefCurrent) {
+        setTimeout(() => {
+          inputRefCurrent.setSelectionRange(newPosition, newPosition);
+          inputRefCurrent.focus();
+        }, 0);
+      }
+    });
 
     const inputRef = inputRefs.current[index];
     if (inputRef) {
@@ -154,7 +151,6 @@ export default function OrderLineAddComments({
             )}
         </Button>
       </DropdownMenu.Trigger>
-
       <DropdownMenu.Portal>
         <DropdownMenu.Content
           className="z-50 mt-2 w-[280px] rounded-md bg-white dark:bg-primary-black shadow-lg border border-border p-3 space-y-2 -ml-52 top-2"
@@ -185,7 +181,8 @@ export default function OrderLineAddComments({
                 inputRef={(el) => (inputRefs.current[index] = el)}
                 onFocus={() => handleInputFocus(index)}
                 onSelect={(e) => {
-                  const selectionStart = (e.target as HTMLInputElement).selectionStart || 0;
+                  const selectionStart =
+                    (e.target as HTMLInputElement).selectionStart || 0;
                   setCursorPosition(selectionStart);
                 }}
               />
@@ -200,7 +197,6 @@ export default function OrderLineAddComments({
               )}
             </div>
           ))}
-
           <Button
             onClick={addCommentField}
             variant="outline"

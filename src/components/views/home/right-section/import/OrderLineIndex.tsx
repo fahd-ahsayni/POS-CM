@@ -29,9 +29,14 @@ const OrderLineIndex = ({
   isExpanded,
   onToggle,
 }: OrderLineIndexProps) => {
-  const { customerIndex: contextCustomerIndex, setCustomerIndex } =
+  const { customerIndex: selectedCustomerIndex, setCustomerIndex } =
     useRightViewContext();
   const { currentMenu } = useLeftViewContext();
+
+  const loadedOrder = useMemo(
+    () => JSON.parse(localStorage.getItem("loadedOrder") || "{}"),
+    []
+  );
 
   const totalItems = useMemo(
     () => products.reduce((sum, product) => sum + product.quantity, 0),
@@ -81,18 +86,21 @@ const OrderLineIndex = ({
         aria-expanded={isExpanded}
         onKeyDown={(e) => e.key === "Enter" && handleCustomerSelect()}
       >
-        <Button
-          size="icon"
-          variant="link"
-          onClick={handleDelete}
-          aria-label={`Delete customer ${customerIndex}`}
-        >
-          <TrashIcon className="w-5 h-5 fill-primary-red" />
-        </Button>
+        {Object.keys(loadedOrder).length === 0 && (
+          <Button
+            size="icon"
+            variant="link"
+            onClick={handleDelete}
+            aria-label={`Delete customer ${customerIndex}`}
+          >
+            <TrashIcon className="w-5 h-5 fill-primary-red" />
+          </Button>
+        )}
+
         <div
           className={`flex items-center justify-between gap-x-2 flex-1 bg-white dark:bg-secondary-black rounded px-2 shadow
             ${
-              customerIndex === contextCustomerIndex
+              customerIndex === selectedCustomerIndex
                 ? "ring-2 ring-primary-red"
                 : ""
             }`}
@@ -105,7 +113,12 @@ const OrderLineIndex = ({
           </div>
 
           <div className="flex items-center gap-x-4">
-            <Button size="icon" variant="ghost" onClick={handleToggle}>
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={handleToggle}
+              aria-label="Toggle customer details"
+            >
               <ChevronDown
                 className={`w-4 h-4 transition-transform ${
                   isExpanded ? "" : "-rotate-90"
@@ -131,9 +144,9 @@ const OrderLineIndex = ({
 
       {isExpanded && (
         <div className="flex flex-col gap-2">
-          {products.map((product: any, index: number) => (
+          {products.map((product, index) => (
             <OrderLine
-              key={index}
+              key={product.id || index}
               item={product}
               increment={() => incrementQuantity(product)}
               decrement={() => decrementQuantity(product)}
