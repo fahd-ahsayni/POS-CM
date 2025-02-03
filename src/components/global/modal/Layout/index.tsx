@@ -1,3 +1,4 @@
+import { useVirtualKeyboard } from "@/components/keyboard/VirtualKeyboardGlobalContext";
 import {
   Dialog,
   DialogContent,
@@ -18,11 +19,16 @@ export default function ModalLayout({
   closeModal,
   className,
 }: ModalLayoutProps) {
+  const { showKeyboard } = useVirtualKeyboard();
   return (
     <Dialog open={isOpen} onOpenChange={closeModal}>
       <DialogPortal>
         <DialogOverlay className="bg-black/30" />
-        <DialogContent className={className}>{children}</DialogContent>
+        <DialogContent onPointerDownOutside={(event) => {
+          if (showKeyboard) {
+            event.preventDefault();
+          }
+        }} className={className}>{children}</DialogContent>
       </DialogPortal>
     </Dialog>
   );

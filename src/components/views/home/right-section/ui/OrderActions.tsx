@@ -86,7 +86,7 @@ export default function OtherActionsOrderLines() {
 
           <div className="flex flex-col gap-y-2 px-3.5 py-2.5 sm:px-3 sm:py-1.5">
             <div className="flex items-center justify-between w-full">
-              <span>Order One Time</span>
+              <span className="text-sm">Order One Time</span>
               <span className="-mr-10">
                 <Switch
                   color="red"
@@ -101,7 +101,7 @@ export default function OtherActionsOrderLines() {
               className="flex items-center justify-between w-full"
               onClick={() => handleUrgentToggle(!isUrgent)}
             >
-              <span>Mark as Urgent</span>
+              <span className="text-sm">Mark as Urgent</span>
               <span className="-mr-10">
                 <Switch
                   color="red"

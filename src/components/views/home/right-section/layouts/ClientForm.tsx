@@ -1,15 +1,17 @@
+import { useRef, useState } from "react";
 import ComboboxSelectOnChange from "@/components/global/ComboboxSelectOnChange";
 import InputComponent from "@/components/global/InputComponent";
 import { useVirtualKeyboard } from "@/components/keyboard/VirtualKeyboardGlobalContext";
 import { Client, ClientFormData } from "@/interfaces/clients";
 import { loadingColors } from "@/preferences";
-import { useRef, useState } from "react";
 import { BeatLoader } from "react-spinners";
 
 interface ClientFormProps {
   formData: ClientFormData;
   errors: Partial<ClientFormData>;
-  handleInputChange: (field: keyof ClientFormData) => (value: string | number | null) => void;
+  handleInputChange: (
+    field: keyof ClientFormData
+  ) => (value: string | number | null) => void;
   handlePhoneSelect: (selectedClient: Client | null) => void;
   clients: Client[];
   isFetching: boolean;
@@ -25,7 +27,9 @@ export default function ClientForm({
   isFetching,
   isSubmitting = false,
 }: ClientFormProps) {
-  const [activeInput, setActiveInput] = useState<keyof ClientFormData | null>(null);
+  const [activeInput, setActiveInput] = useState<keyof ClientFormData | null>(
+    null
+  );
   const [cursorPosition, setCursorPosition] = useState<number>(0);
 
   // Define refs for your inputs
@@ -58,32 +62,44 @@ export default function ClientForm({
     }
   };
 
-  // Handle keypress events
+  // Handle key press events
   const handleKeyPress = (key: string) => {
-    if (!activeInput) return;
+    if (activeInput === null) return;
 
     const currentValue = formData[activeInput] || "";
     let newValue = currentValue;
     let newPosition = cursorPosition;
 
-    if (key === "Backspace") {
-      if (cursorPosition > 0) {
-        newValue = currentValue.slice(0, cursorPosition - 1) + currentValue.slice(cursorPosition);
-        newPosition = cursorPosition - 1;
-      }
-    } else {
-      newValue = currentValue.slice(0, cursorPosition) + key + currentValue.slice(cursorPosition);
-      newPosition = cursorPosition + 1;
+    switch (key) {
+      case "Backspace":
+        if (cursorPosition > 0) {
+          newValue =
+            currentValue.slice(0, cursorPosition - 1) +
+            currentValue.slice(cursorPosition);
+          newPosition = cursorPosition - 1;
+        }
+        break;
+
+      case "ArrowLeft":
+        newPosition = Math.max(0, cursorPosition - 1);
+        break;
+
+      case "ArrowRight":
+        newPosition = Math.min(currentValue.length, cursorPosition + 1);
+        break;
+
+      default:
+        // Handle regular character input
+        newValue =
+          currentValue.slice(0, cursorPosition) +
+          key +
+          currentValue.slice(cursorPosition);
+        newPosition = cursorPosition + key.length;
+        break;
     }
 
-    // Validate input for phone and ICE fields
-    if (activeInput === "phone" || activeInput === "ice") {
-      if (/^[0-9+]*$/.test(newValue)) {
-        updateInputValue(activeInput, newValue, newPosition);
-      }
-    } else {
-      updateInputValue(activeInput, newValue, newPosition);
-    }
+    // Update the input value and cursor position
+    updateInputValue(activeInput, newValue, newPosition);
   };
 
   // Handle input focus
@@ -136,7 +152,8 @@ export default function ClientForm({
         inputRef={inputRefs.phone}
         onFocus={() => handleInputFocus("phone")}
         onSelect={(e) => {
-          const selectionStart = (e.target as HTMLInputElement).selectionStart || 0;
+          const selectionStart =
+            (e.target as HTMLInputElement).selectionStart || 0;
           setCursorPosition(selectionStart);
         }}
       />
@@ -154,7 +171,8 @@ export default function ClientForm({
           hasError: !!errors.name,
           onFocus: () => handleInputFocus("name"),
           onSelect: (e) => {
-            const selectionStart = (e.target as HTMLInputElement).selectionStart || 0;
+            const selectionStart =
+              (e.target as HTMLInputElement).selectionStart || 0;
             setCursorPosition(selectionStart);
           },
         }}
@@ -173,7 +191,8 @@ export default function ClientForm({
           hasError: !!errors.address,
           onFocus: () => handleInputFocus("address"),
           onSelect: (e) => {
-            const selectionStart = (e.target as HTMLInputElement).selectionStart || 0;
+            const selectionStart =
+              (e.target as HTMLInputElement).selectionStart || 0;
             setCursorPosition(selectionStart);
           },
         }}
@@ -193,7 +212,8 @@ export default function ClientForm({
           optionalText: "Optional",
           onFocus: () => handleInputFocus("email"),
           onSelect: (e) => {
-            const selectionStart = (e.target as HTMLInputElement).selectionStart || 0;
+            const selectionStart =
+              (e.target as HTMLInputElement).selectionStart || 0;
             setCursorPosition(selectionStart);
           },
         }}
@@ -214,7 +234,8 @@ export default function ClientForm({
           helperText: "Required for businesses. Skip for individual clients.",
           onFocus: () => handleInputFocus("ice"),
           onSelect: (e) => {
-            const selectionStart = (e.target as HTMLInputElement).selectionStart || 0;
+            const selectionStart =
+              (e.target as HTMLInputElement).selectionStart || 0;
             setCursorPosition(selectionStart);
           },
         }}

@@ -44,7 +44,7 @@ export default function BaseModal({
     <ModalLayout
       isOpen={isOpen}
       closeModal={closeModal}
-      className="dark:bg-primary-black bg-white"
+      className="dark:bg-primary-black bg-white z-0 relative"
     >
       <DialogTitle className="sr-only">Caisse Manager</DialogTitle>
       <DialogDescription className="sr-only">Caisse Manager</DialogDescription>

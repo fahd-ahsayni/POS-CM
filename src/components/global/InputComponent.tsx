@@ -22,7 +22,8 @@ interface InputConfig {
   isFocused?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
-  onSelect?: (e: React.SyntheticEvent<HTMLInputElement>) => void; // ✅ Add cursor tracking
+  onSelect?: (e: React.SyntheticEvent<HTMLInputElement>) => void; // Tracks cursor position
+  ref?: React.RefObject<HTMLInputElement>;
 }
 
 const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
@@ -46,7 +47,8 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
     suffix,
     onFocus,
     onBlur,
-    onSelect, // NEW - Capture cursor position
+    onSelect, // NEW - Captures cursor position
+    ref,
   } = config;
 
   const [isVisible, setIsVisible] = useState<boolean>(false);
@@ -89,25 +91,26 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
             suffix && "pe-9",
             isPasswordToggleable && "pe-9",
             type === "number" &&
-            "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           )}
           type={getInputType()}
           placeholder={placeholder}
           required={required}
+          ref={ref}
           defaultValue={defaultValue}
           aria-invalid={hasError}
           aria-describedby={
             helperText || errorMessage ? `description` : undefined
           }
           value={value ?? ""}
-          onChange={(e) =>
-            setValue?.(
-              type === "number" ? Number(e.target.value) : e.target.value
-            )
-          }
+          onChange={(e) => {
+            const newValue =
+              type === "number" ? Number(e.target.value) : e.target.value;
+            setValue?.(newValue);
+          }}
           onFocus={onFocus}
           onBlur={onBlur}
-          onSelect={onSelect} // NEW - Captures cursor position
+          onSelect={onSelect} // Tracks cursor position
         />
 
         {suffix && (
@@ -131,8 +134,9 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
 
       {(helperText || errorMessage) && (
         <p
-          className={`mt-2 text-xs font-medium pl-1 ${hasError ? "text-primary-red" : "text-neutral-dark-grey"
-            }`}
+          className={`mt-2 text-xs font-medium pl-1 ${
+            hasError ? "text-primary-red" : "text-neutral-dark-grey"
+          }`}
           role={hasError ? "alert" : "region"}
         >
           {hasError ? errorMessage : helperText}

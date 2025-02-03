@@ -2,168 +2,52 @@ import { FilterIcon } from "@/assets/figma-icons";
 import InputComponent from "@/components/global/InputComponent";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FilterCriteria } from "@/interfaces/general";
-import { useCallback, useMemo, useState } from "react";
+import { useState, useRef } from "react";
+import { useVirtualKeyboard } from "@/components/keyboard/VirtualKeyboardGlobalContext";
+import useFilterCriteria from "./hooks/useFilterOrder";
 
 interface FilterOrdersProps {
   onFilterChange: (filters: FilterCriteria) => void;
-  totalItems: number;
 }
 
 export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
-  const [selectedEmployee, setSelectedEmployee] = useState<string>("");
-  const [selectedOrderType, setSelectedOrderType] = useState<string>("");
-  const [selectedStatus, setSelectedStatus] = useState<string>("");
-  const [orderId, setOrderId] = useState<string>("");
-  const [tableNumber, setTableNumber] = useState<string>("");
   const [open, setOpen] = useState(false);
+  const { openKeyboard, showKeyboard } = useVirtualKeyboard();
+  const orderIdRef = useRef<HTMLInputElement | null>(null);
 
-  const users = useMemo(
-    () => JSON.parse(localStorage.getItem("users") || "[]").cashiers,
-    []
-  );
-  const employees = useMemo(
-    () =>
-      users?.map((user: any) => ({
-        value: user.name,
-        label: user.name,
-      })),
-    [users]
-  );
-
-  const orderTypesData = useMemo(() => {
-    const data = JSON.parse(
-      localStorage.getItem("generalData") || "[]"
-    ).orderTypes;
-
-    // Function to flatten order types including children
-    const flattenOrderTypes = (types: any[]): any[] => {
-      return types.reduce((acc: any[], type: any) => {
-        // Add the parent type
-        acc.push({
-          id: type._id,
-          value: type._id, // Use _id as unique identifier
-          label: type.name,
-          type: type.type,
-        });
-
-        // Add children if they exist
-        if (type.children && type.children.length > 0) {
-          const childTypes = flattenOrderTypes(type.children);
-          acc.push(...childTypes);
-        }
-
-        return acc;
-      }, []);
-    };
-
-    return flattenOrderTypes(data || []);
-  }, []);
-
-  const statuses = useMemo(
-    () => [
-      { value: "new", label: "New" },
-      { value: "paid", label: "Paid" },
-      { value: "cancelled", label: "Cancelled" },
-    ],
-    []
-  );
-
-  const handleEmployeeSelect = useCallback((value: string) => {
-    setSelectedEmployee(value);
-  }, []);
-
-  const handleOrderTypeSelect = useCallback((value: string) => {
-    setSelectedOrderType(value); // Store the full ID
-  }, []);
-
-  const handleStatusSelect = useCallback((value: string) => {
-    setSelectedStatus(value);
-  }, []);
-
-  const handleOrderIdChange = useCallback((value: string | number | null) => {
-    setOrderId(value?.toString() || "");
-  }, []);
-
-  const handleClearFilter = useCallback(
-    (
-      filterType:
-        | "employee"
-        | "orderType"
-        | "status"
-        | "orderId"
-        | "tableNumber"
-    ) => {
-      switch (filterType) {
-        case "employee":
-          setSelectedEmployee("");
-          break;
-        case "orderType":
-          setSelectedOrderType("");
-          break;
-        case "status":
-          setSelectedStatus("");
-          break;
-        case "orderId":
-          setOrderId("");
-          break;
-        case "tableNumber":
-          setTableNumber("");
-          break;
-      }
-    },
-    []
-  );
-
-  const handleReset = useCallback(() => {
-    setSelectedEmployee("");
-    setSelectedOrderType("");
-    setSelectedStatus("");
-    setOrderId("");
-    setTableNumber("");
-    onFilterChange({
-      employee: "",
-      orderType: "",
-      status: "",
-      orderId: "",
-      tableNumber: "",
-    });
-  }, [onFilterChange]);
-
-  const handleApplyFilter = useCallback(() => {
-    onFilterChange({
-      employee: selectedEmployee,
-      orderType: selectedOrderType,
-      status: selectedStatus,
-      orderId: orderId,
-      tableNumber: tableNumber,
-    });
-    setSelectedEmployee("");
-    setSelectedOrderType("");
-    setSelectedStatus("");
-    setOrderId("");
-    setTableNumber("");
-    setOpen(false);
-  }, [
-    onFilterChange,
+  const {
     selectedEmployee,
+    setSelectedEmployee,
     selectedOrderType,
+    setSelectedOrderType,
     selectedStatus,
+    setSelectedStatus,
     orderId,
-    tableNumber,
-  ]);
+    setOrderId,
+    employees,
+    orderTypesData,
+    statuses,
+    handleClearFilter,
+    handleReset,
+    handleApplyFilter,
+  } = useFilterCriteria(onFilterChange);
+
+  // Handle virtual keyboard input
+  const handleKeyPress = (key: string) => {
+    if (!orderIdRef.current) return;
+
+    let newValue = orderId;
+    if (key === "Backspace") {
+      newValue = newValue.slice(0, -1);
+    } else {
+      newValue += key;
+    }
+
+    setOrderId(newValue);
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -176,10 +60,20 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
         <PopoverContent
           align="start"
           className="w-72 mr-[6.5rem] dark:bg-secondary-black bg-secondary-white"
-          onOpenAutoFocus={(e) => e.preventDefault()}
+          onPointerDownOutside={(event) => {
+            if (showKeyboard) {
+              event.preventDefault();
+            }
+          }}
+          onInteractOutside={(event) => {
+            if (orderIdRef.current?.contains(event.target as Node)) {
+              event.preventDefault();
+            }
+          }}
         >
           <h2 className="mb-4 text-sm font-semibold">Filter Orders</h2>
           <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+            {/* Order ID with Virtual Keyboard */}
             <div>
               <div className="flex items-center justify-between">
                 <Label className="pl-2">Order ID</Label>
@@ -195,11 +89,15 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
                   type: "text",
                   placeholder: "Enter Order ID",
                   value: orderId,
-                  setValue: handleOrderIdChange,
+                  setValue: (value: string | number | null) =>
+                    setOrderId(value ? value.toString() : ""),
+                  onFocus: () => openKeyboard("order-id", handleKeyPress),
+                  ref: orderIdRef,
                 }}
               />
             </div>
 
+            {/* Users Filter */}
             <div>
               <div className="mb-2 flex items-center justify-between gap-1">
                 <Label className="pl-2">Users</Label>
@@ -210,10 +108,7 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
                   Clear
                 </span>
               </div>
-              <Select
-                value={selectedEmployee}
-                onValueChange={handleEmployeeSelect}
-              >
+              <Select value={selectedEmployee} onValueChange={setSelectedEmployee}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select an employee" />
                 </SelectTrigger>
@@ -227,6 +122,7 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
               </Select>
             </div>
 
+            {/* Order Type Filter */}
             <div>
               <div className="mb-2 flex items-center justify-between gap-1">
                 <Label className="pl-2">Order Type</Label>
@@ -237,20 +133,13 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
                   Clear
                 </span>
               </div>
-              <Select
-                value={selectedOrderType}
-                onValueChange={handleOrderTypeSelect}
-              >
+              <Select value={selectedOrderType} onValueChange={setSelectedOrderType}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select an order type" />
                 </SelectTrigger>
                 <SelectContent>
                   {orderTypesData.map((type) => (
-                    <SelectItem
-                      key={type.value}
-                      value={type.value}
-                      className={type.isChild ? "pl-6" : ""}
-                    >
+                    <SelectItem key={type.value} value={type.value}>
                       {type.label}
                     </SelectItem>
                   ))}
@@ -258,6 +147,7 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
               </Select>
             </div>
 
+            {/* Status Filter */}
             <div>
               <div className="mb-2 flex items-center justify-between gap-1">
                 <Label className="pl-2">Status</Label>
@@ -268,7 +158,7 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
                   Clear
                 </span>
               </div>
-              <Select value={selectedStatus} onValueChange={handleStatusSelect}>
+              <Select value={selectedStatus} onValueChange={setSelectedStatus}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a status" />
                 </SelectTrigger>
@@ -282,15 +172,27 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
               </Select>
             </div>
           </form>
+
+          {/* Filter Buttons */}
           <div className="flex justify-end gap-x-2 mt-6">
             <Button
               variant="secondary"
               className="dark:bg-white/10 bg-white border border-border"
-              onClick={handleReset}
+              onClick={() => {
+                handleReset();
+                setOpen(false);
+              }}
             >
               Reset
             </Button>
-            <Button onClick={handleApplyFilter}>Apply Filter</Button>
+            <Button
+              onClick={() => {
+                handleApplyFilter();
+                setOpen(false);
+              }}
+            >
+              Apply Filter
+            </Button>
           </div>
         </PopoverContent>
       </Popover>

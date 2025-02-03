@@ -1,74 +1,148 @@
-import type React from "react"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { cn } from "@/lib/utils"
-import { BackSpace, EnterButton, KeyboardClose, ShiftActive } from "@/assets/keyboard-icons"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type React from "react";
+import { useOnClickOutside } from "@/hooks/use-click-outside";
+import { BackSpace, EnterButton, KeyboardClose, ShiftActive } from "@/assets/keyboard-icons";
+import { cn } from "@/lib/utils";
 
 interface Position {
-  x: number
-  y: number
+  x: number;
+  y: number;
 }
 
 export interface KeyConfig {
-  label: string | React.ReactNode
-  colSpan?: number
-  action: string | (() => void)
-  textColor?: string
-  bgColor?: string
+  label: string | React.ReactNode;
+  colSpan?: number;
+  action: string | (() => void);
+  textColor?: string;
+  bgColor?: string;
 }
 
 interface VirtualKeyboardProps {
-  onClose: () => void
-  onKeyPress: (key: string, cursorAdjustment: number) => void
-  inputType: string | null
-  customLayout?: KeyConfig[][]
+  onClose: () => void;
+  onKeyPress: (key: string, cursorAdjustment: number) => void;
+  inputType: string | null;
+  customLayout?: KeyConfig[][];
 }
 
-const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ onClose, onKeyPress, inputType, customLayout }) => {
-  const [isShiftActive, setIsShiftActive] = useState(false)
+const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
+  onClose,
+  onKeyPress,
+  inputType,
+  customLayout,
+}) => {
+  const [isShiftActive, setIsShiftActive] = useState(false);
+  const [position, setPosition] = useState<Position>({ x: 90, y: 150 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState<Position>({ x: 0, y: 0 });
+  const headerRef = useRef<HTMLDivElement>(null);
 
-  // Position and dragging state
-  const [position, setPosition] = useState<Position>({ x: 90, y: 150 })
-  const [isDragging, setIsDragging] = useState(false)
-  const [dragOffset, setDragOffset] = useState<Position>({ x: 0, y: 0 })
-  const headerRef = useRef<HTMLDivElement>(null)
+  // Reference to the entire keyboard container
+  const keyboardRef = useRef<HTMLDivElement | null>(null);
 
-  // Drag handlers
+  // Close the keyboard when clicking outside
+  useOnClickOutside(keyboardRef, () => onClose(), "mousedown");
+  useOnClickOutside(keyboardRef, () => onClose(), "touchstart");
+
+  // Mouse Drag Handlers
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
-      if (headerRef.current && (headerRef.current === e.target || headerRef.current.contains(e.target as Node))) {
-        setIsDragging(true)
-        setDragOffset({ x: e.clientX - position.x, y: e.clientY - position.y })
-        e.preventDefault()
+      if (
+        headerRef.current &&
+        (headerRef.current === e.target ||
+          headerRef.current.contains(e.target as Node))
+      ) {
+        setIsDragging(true);
+        setDragOffset({ x: e.clientX - position.x, y: e.clientY - position.y });
+        e.preventDefault();
       }
     },
-    [position],
-  )
+    [position]
+  );
 
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
       if (isDragging) {
-        setPosition({ x: e.clientX - dragOffset.x, y: e.clientY - dragOffset.y })
+        const newX = e.clientX - dragOffset.x;
+        const newY = e.clientY - dragOffset.y;
+
+        // Clamp position within viewport boundaries
+        const clampedX = Math.max(0, Math.min(window.innerWidth - 667, newX));
+        const clampedY = Math.max(0, Math.min(window.innerHeight - 300, newY));
+
+        setPosition({ x: clampedX, y: clampedY });
       }
     },
-    [isDragging, dragOffset],
-  )
+    [isDragging, dragOffset]
+  );
 
   const handleMouseUp = useCallback(() => {
-    setIsDragging(false)
-  }, [])
+    setIsDragging(false);
+  }, []);
 
+  // Touch Drag Handlers
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      if (
+        headerRef.current &&
+        (headerRef.current === e.target ||
+          headerRef.current.contains(e.target as Node))
+      ) {
+        const touch = e.touches[0];
+        setIsDragging(true);
+        setDragOffset({
+          x: touch.clientX - position.x,
+          y: touch.clientY - position.y,
+        });
+        e.preventDefault();
+      }
+    },
+    [position]
+  );
+
+  const handleTouchMove = useCallback(
+    (e: TouchEvent) => {
+      if (isDragging) {
+        const touch = e.touches[0];
+        const newX = touch.clientX - dragOffset.x;
+        const newY = touch.clientY - dragOffset.y;
+
+        // Clamp position within viewport boundaries
+        const clampedX = Math.max(0, Math.min(window.innerWidth - 667, newX));
+        const clampedY = Math.max(0, Math.min(window.innerHeight - 300, newY));
+
+        setPosition({ x: clampedX, y: clampedY });
+      }
+    },
+    [isDragging, dragOffset]
+  );
+
+  const handleTouchEnd = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  // Add/Remove Event Listeners
   useEffect(() => {
     if (isDragging) {
-      window.addEventListener("mousemove", handleMouseMove)
-      window.addEventListener("mouseup", handleMouseUp)
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseup", handleMouseUp);
+      window.addEventListener("touchmove", handleTouchMove, { passive: false });
+      window.addEventListener("touchend", handleTouchEnd);
     }
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove)
-      window.removeEventListener("mouseup", handleMouseUp)
-    }
-  }, [isDragging, handleMouseMove, handleMouseUp])
 
-  // Default layout definition
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [
+    isDragging,
+    handleMouseMove,
+    handleMouseUp,
+    handleTouchMove,
+    handleTouchEnd,
+  ]);
+
   const defaultLayout = useMemo<KeyConfig[][]>(
     () => [
       [
@@ -140,30 +214,32 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ onClose, onKeyPress, 
         { label: "@", colSpan: 2, action: "@" },
         { label: "", colSpan: 7, action: " " },
         {
-          label: <KeyboardClose className="dark:text-white text-primary-black size-6" />,
+          label: (
+            <KeyboardClose className="dark:text-white text-primary-black size-6" />
+          ),
           colSpan: 2,
           action: onClose,
           bgColor: "bg-neutral-bright-grey dark:bg-[#3F4042]",
         },
       ],
     ],
-    [onClose],
-  )
+    [onClose]
+  );
 
-  const memoizedLayout = useMemo(() => customLayout || defaultLayout, [customLayout, defaultLayout])
+  const memoizedLayout = useMemo(
+    () => customLayout || defaultLayout,
+    [customLayout, defaultLayout]
+  );
 
-  // Handle key press events
   const handleKeyPressInternal = useCallback(
     (action: string) => {
       let processedAction = action;
 
-      // Apply uppercase transformation if Shift is active and key is a letter
       if (isShiftActive && /^[a-z]$/.test(processedAction)) {
         processedAction = processedAction.toUpperCase();
-        setIsShiftActive(false); // Deactivate Shift after use
+        setIsShiftActive(false);
       }
 
-      // Handle special keys
       if (processedAction === "Backspace") {
         onKeyPress(processedAction, -1);
       } else if (processedAction === "\n") {
@@ -172,13 +248,15 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ onClose, onKeyPress, 
         onKeyPress(processedAction, 1);
       }
     },
-    [onKeyPress, isShiftActive] // Track Shift state changes
+    [onKeyPress, isShiftActive]
   );
 
   return (
     <div
-      onMouseDown={(e) => e.stopPropagation()}
+      ref={keyboardRef} // Attach the ref to the root element
+      onMouseDown={(e) => e.stopPropagation()} // Prevent propagation
       onClick={(e) => e.stopPropagation()}
+      onTouchStart={(e) => e.stopPropagation()}
       style={{
         pointerEvents: "auto",
         left: `${position.x}px`,
@@ -193,10 +271,10 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ onClose, onKeyPress, 
         ref={headerRef}
         className="flex justify-center items-center py-4 cursor-move rounded-t-lg w-full"
         onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
       >
         <div className="w-6 h-1 rounded-lg bg-secondary-black dark:bg-secondary-white" />
       </div>
-
       {/* Keyboard layout */}
       <div className="space-y-1.5">
         {memoizedLayout.map((row, rowIndex) => (
@@ -204,11 +282,11 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ onClose, onKeyPress, 
             {row.map((key, keyIndex) => {
               const handleClick = () => {
                 if (typeof key.action === "function") {
-                  key.action()
+                  key.action();
                 } else {
-                  handleKeyPressInternal(key.action)
+                  handleKeyPressInternal(key.action);
                 }
-              }
+              };
 
               return (
                 <button
@@ -217,23 +295,27 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ onClose, onKeyPress, 
                   className={cn(
                     "rounded-lg border border-border shadow active:shadow-none hover:scale-[0.96] duration-150 transition-all flex items-center justify-center font-medium h-12",
                     key.textColor || "text-primary-black dark:text-white",
-                    key.bgColor || "bg-white dark:bg-[#646567] hover:bg-neutral-100",
-                    key.colSpan ? `col-span-${key.colSpan}` : "",
+                    key.bgColor ||
+                      "bg-white dark:bg-[#646567] hover:bg-neutral-100",
+                    key.colSpan ? `col-span-${key.colSpan}` : ""
                   )}
-                  style={{ gridColumn: key.colSpan ? `span ${key.colSpan}` : "span 1" }}
+                  style={{
+                    gridColumn: key.colSpan ? `span ${key.colSpan}` : "span 1",
+                  }}
                 >
-                  {isShiftActive && typeof key.label === "string" && /^[a-z]$/.test(key.label)
+                  {isShiftActive &&
+                  typeof key.label === "string" &&
+                  /^[a-z]$/.test(key.label)
                     ? key.label.toUpperCase()
                     : key.label}
                 </button>
-              )
+              );
             })}
           </div>
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default VirtualKeyboard
-
+export default VirtualKeyboard;

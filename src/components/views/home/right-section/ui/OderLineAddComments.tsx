@@ -4,13 +4,14 @@ import { CommentIcon, DeleteCommentIcon } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { updateOrderLine } from "@/store/slices/order/create-order.slice";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { useProductSelection } from "../../left-section/hooks/useProductSelection";
 import { useRightViewContext } from "../contexts/RightViewContext";
 import ComboboxSelectOnChange from "@/components/global/ComboboxSelectOnChange";
 import { PlusIcon } from "lucide-react";
+import { useVirtualKeyboard } from "@/components/keyboard/VirtualKeyboardGlobalContext";
 
 interface OrderLineAddCommentsProps {
   productId: string;
@@ -26,6 +27,7 @@ export default function OrderLineAddComments({
   onNotesUpdate,
 }: OrderLineAddCommentsProps) {
   const dispatch = useDispatch();
+  const { openKeyboard, showKeyboard } = useVirtualKeyboard();
   const { selectedProducts, setSelectedProducts } = useLeftViewContext();
   const { orderType } = useRightViewContext();
   const { updateProductNotes } = useProductSelection({
@@ -40,11 +42,15 @@ export default function OrderLineAddComments({
     generalData.defineNote?.filter((item: any) => item.type === "pos") || [];
 
   const [comments, setComments] = useState<string[]>([...initialNotes]);
+  const [activeInput, setActiveInput] = useState<number | null>(null);
+  const [cursorPosition, setCursorPosition] = useState<number>(0);
+
+  // Refs for each comment input field
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const handleCommentChange = (index: number, value: string | null) => {
     const updatedComments = [...comments];
     updatedComments[index] = value || "";
-
     setComments(updatedComments);
 
     if (onNotesUpdate) {
@@ -85,6 +91,51 @@ export default function OrderLineAddComments({
     }
   };
 
+  // Handle keypress from virtual keyboard
+  const handleKeyPress = (key: string) => {
+    if (activeInput === null) return;
+
+    let currentValue = comments[activeInput] || "";
+    let newPosition = cursorPosition;
+
+    if (key === "Backspace") {
+      if (cursorPosition > 0) {
+        currentValue =
+          currentValue.slice(0, cursorPosition - 1) +
+          currentValue.slice(cursorPosition);
+        newPosition = cursorPosition - 1;
+      }
+    } else {
+      currentValue =
+        currentValue.slice(0, cursorPosition) +
+        key +
+        currentValue.slice(cursorPosition);
+      newPosition = cursorPosition + key.length;
+    }
+
+    handleCommentChange(activeInput, currentValue);
+    setCursorPosition(newPosition);
+
+    const inputRefCurrent = inputRefs.current[activeInput];
+    if (inputRefCurrent) {
+      setTimeout(() => {
+        inputRefCurrent.setSelectionRange(newPosition, newPosition);
+        inputRefCurrent.focus();
+      }, 0);
+    }
+  };
+
+  // Handle input focus
+  const handleInputFocus = (index: number) => {
+    setActiveInput(index);
+    openKeyboard(`comment-${index}`, handleKeyPress);
+
+    const inputRef = inputRefs.current[index];
+    if (inputRef) {
+      setCursorPosition(inputRef.selectionStart || 0);
+    }
+  };
+
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
@@ -110,6 +161,11 @@ export default function OrderLineAddComments({
           sideOffset={5}
           collisionPadding={16}
           avoidCollisions={true}
+          onPointerDownOutside={(event) => {
+            if (showKeyboard) {
+              event.preventDefault(); // Prevent closing if keyboard is open
+            }
+          }}
         >
           {comments.map((comment, index) => (
             <div key={index} className="flex items-center mt-2">
@@ -126,10 +182,17 @@ export default function OrderLineAddComments({
                   <span className={cn("px-2 py-1", active && "")}>{item}</span>
                 )}
                 placeholder="Choose a comment"
+                inputRef={(el) => (inputRefs.current[index] = el)}
+                onFocus={() => handleInputFocus(index)}
+                onSelect={(e) => {
+                  const selectionStart = (e.target as HTMLInputElement).selectionStart || 0;
+                  setCursorPosition(selectionStart);
+                }}
               />
               {comment.trim() !== "" && (
                 <Button
                   variant="link"
+                  size="icon"
                   onClick={() => removeCommentField(index)}
                 >
                   <DeleteCommentIcon className="h-5 w-5 -mb-2 !fill-red-400" />
