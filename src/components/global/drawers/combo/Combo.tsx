@@ -7,6 +7,7 @@ import { StepContent } from "./components/StepContent";
 import { ComboProvider, useCombo } from "./context/ComboContext";
 import { useComboLogic } from "./hooks/useComboLogic";
 import { loadingColors } from "@/preferences";
+import { useEffect } from "react";
 
 function ComboContent() {
   const { selectedCombo } = useLeftViewContext();
@@ -21,6 +22,20 @@ function ComboContent() {
 
   const isLastStep = currentStep === selectedCombo.steps.length - 1;
   const currentStepData = selectedCombo.steps[currentStep];
+
+  // Add useEffect to handle automatic step navigation
+  useEffect(() => {
+    if (currentStepData && currentStepData.is_required && !currentStepData.is_supplement) {
+      // Add a small delay to prevent immediate navigation which might cause UI issues
+      const timeoutId = setTimeout(() => {
+        if (!isLastStep) {
+          handleNavigation("next");
+        }
+      }, 100);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [currentStep, currentStepData, isLastStep]);
 
   const handleNextOrFinish = () => {
     if (isLastStep) {
@@ -89,7 +104,7 @@ export default function Combo() {
   if (!selectedCombo) return null;
 
   return (
-    <ComboProvider>
+    <ComboProvider totalSteps={selectedCombo.steps.length}>
       <Drawer
         open={openDrawerCombo}
         setOpen={setOpenDrawerCombo}

@@ -2,6 +2,7 @@ import { createToast } from "@/components/global/Toasters";
 import { ProductVariant, Step } from "@/interfaces/product";
 import { createContext, useCallback, useContext, useState } from "react";
 import { toast } from "react-toastify";
+import { useStep } from "@/hooks/use-step"; // Add this import
 
 interface SelectionState {
   variants: SelectedVariant[];
@@ -48,8 +49,13 @@ interface ComboContextType {
 
 const ComboContext = createContext<ComboContextType | undefined>(undefined);
 
-export function ComboProvider({ children }: { children: React.ReactNode }) {
-  const [currentStep, setCurrentStep] = useState(0);
+export function ComboProvider({ children, totalSteps }: { children: React.ReactNode; totalSteps: number }) {
+  const [currentStep, { 
+    goToNextStep, 
+    goToPrevStep, 
+    setStep, 
+    reset: resetStep 
+  }] = useStep(totalSteps);
   const [selections, setSelections] = useState<SelectionState>({
     variants: [],
     supplements: [],
@@ -227,9 +233,9 @@ export function ComboProvider({ children }: { children: React.ReactNode }) {
 
   const handleNavigation = (direction: "next" | "previous") => {
     if (direction === "next") {
-      setCurrentStep((prev) => prev + 1);
+      goToNextStep();
     } else {
-      setCurrentStep((prev) => prev - 1);
+      goToPrevStep();
     }
   };
 
@@ -265,17 +271,17 @@ export function ComboProvider({ children }: { children: React.ReactNode }) {
       supplements: [],
       comboId: `combo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     });
-  }, []);
-
+    resetStep();
+  }, [resetStep]);
   return (
     <ComboContext.Provider
       value={{
-        currentStep,
+        currentStep: currentStep - 1, // Convert from 1-based to 0-based index
         selections,
         handleSelect,
         handleQuantityChange,
         handleNavigation,
-        setCurrentStep,
+        setCurrentStep: (step: number) => setStep(step + 1), // Convert from 0-based to 1-based index
         setSelections,
         totalSupplementsPrice,
         setTotalSupplementsPrice,
