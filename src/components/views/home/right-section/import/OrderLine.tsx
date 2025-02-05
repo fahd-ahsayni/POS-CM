@@ -60,7 +60,6 @@ export function OrderLine({ item }: OrderLineProps) {
 
   const [lunche, setLunche] = useState<boolean>(false);
 
-  // Add this check at the beginning of the component
   useEffect(() => {
     if (currentProduct) {
       setSuiteCommandCallToAction(currentProduct.suite_commande || false);
@@ -75,13 +74,6 @@ export function OrderLine({ item }: OrderLineProps) {
     const newSuiteCommandStatus = !suiteCommandCallToAction;
     setSuiteCommandCallToAction(newSuiteCommandStatus);
 
-    // Log the dispatch action
-    console.log("Dispatching update:", {
-      _id: item._id,
-      customer_index: item.customer_index || customerIndex,
-      suite_commande: newSuiteCommandStatus,
-    });
-
     dispatch(
       updateSuiteCommande({
         product_variant_id: item.product_variant_id,
@@ -91,10 +83,8 @@ export function OrderLine({ item }: OrderLineProps) {
   };
 
   const letsLaunchSuiteCommand = async () => {
-    console.log("item", item._id);
-    const res = await lunchSuiteCommand(item._id);
-
-    console.log("item", res);
+    if (!item.id) return;
+    const res = await lunchSuiteCommand(item.id);
 
     if (res.status === 200) {
       setLunche(true);
