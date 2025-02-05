@@ -14,7 +14,7 @@ const HomePage = lazy(() => import("./HomePage"));
 const OrdersPage = lazy(() => import("./OrdersPage"));
 const WaitingOrders = lazy(() => import("./WaitingOrders"));
 const CustomerDisplay = lazy(
-  () => import("@/components/global/Customer-display/CustomerDisplay")
+  () => import("@/components/global/customer-display/CustomerDisplay")
 );
 const SessionExpired = lazy(() => import("@/components/errors/SessionExpired"));
 const ErrorOccurred = lazy(() => import("@/components/errors/ErrorOccurred"));

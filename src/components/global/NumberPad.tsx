@@ -36,7 +36,7 @@ const NumberPad = memo(
     numbers = Array.from({ length: 9 }, (_, i) => i + 1),
     fixLightDark,
   }: NumberPadProps) => (
-    <div className="max-w-[13rem] grid grid-cols-3 grid-rows-4 gap-5">
+    <div className="max-w-[13rem] grid grid-cols-3 grid-rows-4 gap-7">
       {numbers.map((number) => (
         <NumberButton
           fixLightDark={fixLightDark}

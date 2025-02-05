@@ -97,10 +97,7 @@ export default function OtherActionsOrderLines() {
               </span>
             </div>
 
-            <div
-              className="flex items-center justify-between w-full"
-              onClick={() => handleUrgentToggle(!isUrgent)}
-            >
+            <div className="flex items-center justify-between w-full">
               <span className="text-sm">Mark as Urgent</span>
               <span className="-mr-10">
                 <Switch

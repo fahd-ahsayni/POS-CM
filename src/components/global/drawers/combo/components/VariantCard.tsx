@@ -5,9 +5,9 @@ import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 import OderLineAddComments from "@/components/views/home/right-section/ui/OderLineAddComments";
 import { toTitleCase } from "@/functions/string-transforms";
+import { ProductVariant, Step } from "@/interfaces/product";
 import { cn } from "@/lib/utils";
 import { currency } from "@/preferences";
-import { ProductVariant, Step } from "@/interfaces/product";
 import { Minus, Plus } from "lucide-react";
 import { useCombo } from "../context/ComboContext";
 

@@ -7,6 +7,16 @@ export const useCustomerManagement = () => {
   const { selectedProducts, setSelectedProducts } = useLeftViewContext();
   const { customerIndex, setCustomerIndex } = useRightViewContext();
 
+  // Validate setCustomerIndex
+  if (typeof setCustomerIndex !== "function") {
+    return {
+      deleteCustomer: () => {},
+      addCustomer: () => {},
+      handlePaymentComplete: () => {},
+      resetCustomerIndex: () => {},
+    };
+  }
+
   useEffect(() => {
     if (selectedProducts.length === 0) {
       setCustomerIndex(1);
@@ -61,6 +71,6 @@ export const useCustomerManagement = () => {
     deleteCustomer,
     addCustomer,
     handlePaymentComplete,
-    resetCustomerIndex
+    resetCustomerIndex,
   };
 };

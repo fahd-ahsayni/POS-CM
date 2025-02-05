@@ -9,4 +9,4 @@ export const getCategories = async (id?: string) => {
     return api.get(`/categories/${id}`);
   }
   return api.get("/categories");
-}; 
+};

@@ -31,7 +31,7 @@ import { TypographySmall } from "../ui/typography";
 import {
   isCustomerDisplayOpen,
   openCustomerDisplay,
-} from "./Customer-display/useCustomerDisplay";
+} from "./customer-display/useCustomerDisplay";
 
 interface UserData {
   id: string;

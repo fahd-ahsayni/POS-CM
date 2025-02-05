@@ -5,7 +5,7 @@ import { BeatLoader } from "react-spinners";
 import Drawer from "../../Drawer";
 import { StepContent } from "./components/StepContent";
 import { ComboProvider, useCombo } from "./context/ComboContext";
-import { useComboLogic } from "./hooks/useComboLogic";
+import { useComboLogic } from "./hooks/use-combo-logic";
 import { loadingColors } from "@/preferences";
 import { useEffect } from "react";
 

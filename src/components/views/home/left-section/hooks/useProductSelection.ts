@@ -1,5 +1,5 @@
 import { checkProductAvailability } from "@/api/services";
-import { updateCustomerDisplay } from "@/components/global/Customer-display/useCustomerDisplay";
+import { updateCustomerDisplay } from "@/components/global/customer-display/useCustomerDisplay";
 import { createToast } from "@/components/global/Toasters";
 import { Product, ProductSelected, ProductVariant } from "@/interfaces/product";
 import { useAppDispatch } from "@/store/hooks";

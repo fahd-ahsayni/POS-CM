@@ -107,7 +107,7 @@ export default function ProductActions({ item }: ProductActionsProps) {
           </span>
         </MenuButton>
 
-        <DropdownMenu className="z-[9999] -ml-20 p-3">
+        <DropdownMenu className="z-[9999] -ml-20 p-2 min-w-52">
           {!item.is_ordred && (
             <DropdownItem onClick={handleRemoveOrderLine}>
               Remove Order Line
@@ -118,24 +118,27 @@ export default function ProductActions({ item }: ProductActionsProps) {
             Apply Discount
           </DropdownItem>
 
-          <DropdownDivider />
-
-          <div
-            className="px-3.5 py-2.5 sm:px-3 sm:py-1.5"
-            onClick={() => handleUrgentToggle(!item.high_priority)}
-          >
-            <div className="flex items-center justify-between w-full">
-              <span className="text-sm">Mark as Urgent</span>
-              <span className="-mr-10">
-                <Switch
-                  color="red"
-                  checked={item.high_priority || false}
-                  onChange={handleUrgentToggle}
-                  disabled={isUrgentDisabled}
-                />
-              </span>
-            </div>
-          </div>
+          {!item.is_ordred && (
+            <>
+              <DropdownDivider />
+              <div
+                className="px-3.5 py-2.5 sm:px-3 sm:py-1.5 w-full"
+                onClick={() => handleUrgentToggle(!item.high_priority)}
+              >
+                <div className="flex items-center justify-between w-full">
+                  <span className="text-sm">Mark as Urgent</span>
+                  <span className="-mr-10">
+                    <Switch
+                      color="red"
+                      checked={item.high_priority || false}
+                      onChange={handleUrgentToggle}
+                      disabled={isUrgentDisabled}
+                    />
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
         </DropdownMenu>
       </Dropdown>
     </>

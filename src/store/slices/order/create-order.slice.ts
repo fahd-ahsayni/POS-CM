@@ -75,6 +75,26 @@ const orderSlice = createSlice({
         state.data.discount?.id || ""
       );
     },
+    updateSuiteCommande: (
+      state,
+      action: PayloadAction<{
+        product_variant_id: string;
+        suite_commande: boolean;
+      }>
+    ) => {
+      console.log(
+        "Updating suite_commande for",
+        action.payload.product_variant_id
+      );
+
+      state.data.orderlines = state.data.orderlines.map((orderline) =>
+        orderline.product_variant_id === action.payload.product_variant_id
+          ? { ...orderline, suite_commande: action.payload.suite_commande }
+          : orderline
+      );
+
+      console.log("Updated Orderlines:", state.data.orderlines);
+    },
     updateOrderLine: (
       state,
       action: PayloadAction<{
@@ -338,6 +358,7 @@ export const {
   setClientId,
   setOneTime,
   setOrderTypeId,
+  updateSuiteCommande,
   setNotes,
   setUrgent,
   setDiscount,

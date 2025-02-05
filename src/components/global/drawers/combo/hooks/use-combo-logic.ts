@@ -80,7 +80,9 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
       }, 0);
 
       // Generate a unique ID for this combo instance
-      const uniqueComboId = `${selectedCombo._id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const uniqueComboId = `${selectedCombo._id}_${Date.now()}_${Math.random()
+        .toString(36)
+        .substr(2, 9)}`;
 
       // Create combo product with unique ID
       const comboProduct = {
@@ -127,10 +129,12 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
       setSelectedProducts((prev: any) => [...prev, comboProduct]);
 
       // Reset combo state
-      setSelections({ 
-        variants: [], 
-        supplements: [], 
-        comboId: `combo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}` 
+      setSelections({
+        variants: [],
+        supplements: [],
+        comboId: `combo_${Date.now()}_${Math.random()
+          .toString(36)
+          .substr(2, 9)}`,
       });
       setCurrentStep(0);
       setTotalSupplementsPrice(0);
