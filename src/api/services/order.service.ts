@@ -106,7 +106,7 @@ export const applyDiscount = async (data: any) => {
   });
 };
 
-export const lunchSuiteCommand = async (id: string) => {
+export const launchSuiteCommand = async (id: string) => {
   return api.post(`/orderline/suite-ordred/${id}`);
 };
 

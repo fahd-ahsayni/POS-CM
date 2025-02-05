@@ -3,10 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input as NumberFlowInput } from "@/components/ui/number-flow-input";
-import {
-  TypographyP,
-  TypographySmall,
-} from "@/components/ui/typography";
+import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { toTitleCase } from "@/functions/string-transforms";
 import { OrderLine as OrderLineInterface } from "@/interfaces/order";
 import type { ProductSelected } from "@/interfaces/product";
@@ -26,7 +23,8 @@ import { useOrderLine } from "../hooks/useOrderLine";
 import { useProductQuantity } from "../hooks/useProductQuantity";
 import OderLineAddComments from "../ui/OderLineAddComments";
 import ProductActions from "../ui/ProductActions";
-import { lunchSuiteCommand } from "@/api/services";
+import { launchSuiteCommand } from "@/api/services";
+import { set } from "lodash";
 
 interface OrderLineProps {
   item: ProductSelected;
@@ -49,6 +47,10 @@ export function OrderLine({ item }: OrderLineProps) {
     }
   );
 
+  useEffect(() => {
+    setLaunch(false);
+  }, [item]);
+
   const craetedOrder = useSelector(selectOrder);
 
   const currentProduct: OrderLineInterface = craetedOrder.orderlines.find(
@@ -58,7 +60,7 @@ export function OrderLine({ item }: OrderLineProps) {
   const [suiteCommandCallToAction, setSuiteCommandCallToAction] =
     useState<boolean>(currentProduct?.suite_commande || false);
 
-  const [lunche, setLunche] = useState<boolean>(false);
+  const [launch, setLaunch] = useState<boolean>(false);
 
   useEffect(() => {
     if (currentProduct) {
@@ -84,10 +86,10 @@ export function OrderLine({ item }: OrderLineProps) {
 
   const letsLaunchSuiteCommand = async () => {
     if (!item.id) return;
-    const res = await lunchSuiteCommand(item.id);
+    const res = await launchSuiteCommand(item.id);
 
     if (res.status === 200) {
-      setLunche(true);
+      setLaunch(true);
     }
   };
 
@@ -177,11 +179,14 @@ export function OrderLine({ item }: OrderLineProps) {
             height: "100%",
           }}
           onClick={letsLaunchSuiteCommand}
-          className="absolute left-0 top-0 bg-interactive-dark-red"
+          className={cn(
+            "absolute left-0 top-0",
+            launch ? "bg-info-color" : "bg-interactive-dark-red"
+          )}
         >
           {item.is_ordred && item.suite_commande && !item.is_combo && (
             <TypographyP className="-rotate-90 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white whitespace-nowrap font-medium tracking-wide">
-              {lunche ? "Launched" : "Launch"}
+              {launch ? "Launched" : "Launch"}
             </TypographyP>
           )}
         </div>
@@ -247,7 +252,8 @@ export function OrderLine({ item }: OrderLineProps) {
                   variant="ghost"
                   className={cn(
                     "h-7 w-7 bg-accent-white/10 hover:bg-accent-white/20 rounded transition-colors duration-200",
-                    suiteCommandCallToAction && "ring-1 ring-error-color bg-error-color shadow-lg shadow-error-color/50"
+                    suiteCommandCallToAction &&
+                      "ring-1 ring-error-color bg-error-color shadow-lg shadow-error-color/50"
                   )}
                   onClick={handleSuiteCommandCallToAction}
                 >
