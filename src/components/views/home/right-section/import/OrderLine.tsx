@@ -24,7 +24,6 @@ import { useProductQuantity } from "../hooks/useProductQuantity";
 import OderLineAddComments from "../ui/OderLineAddComments";
 import ProductActions from "../ui/ProductActions";
 import { launchSuiteCommand } from "@/api/services";
-import { set } from "lodash";
 
 interface OrderLineProps {
   item: ProductSelected;
