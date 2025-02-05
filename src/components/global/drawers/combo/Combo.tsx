@@ -7,7 +7,7 @@ import { StepContent } from "./components/StepContent";
 import { ComboProvider, useCombo } from "./context/ComboContext";
 import { useComboLogic } from "./hooks/use-combo-logic";
 import { loadingColors } from "@/preferences";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 function ComboContent() {
   const { selectedCombo } = useLeftViewContext();
@@ -18,30 +18,36 @@ function ComboContent() {
     selectedCombo?.steps[currentStep]
   );
 
+  const [visitedSteps, setVisitedSteps] = useState(new Set());
+
   if (!selectedCombo) return null;
 
   const isLastStep = currentStep === selectedCombo.steps.length - 1;
   const currentStepData = selectedCombo.steps[currentStep];
 
-  // Add useEffect to handle automatic step navigation
   useEffect(() => {
-    if (currentStepData && currentStepData.is_required && !currentStepData.is_supplement) {
-      // Add a small delay to prevent immediate navigation which might cause UI issues
+    if (
+      currentStepData &&
+      currentStepData.is_required &&
+      !currentStepData.is_supplement &&
+      !visitedSteps.has(currentStep)
+    ) {
       const timeoutId = setTimeout(() => {
         if (!isLastStep) {
+          setVisitedSteps((prev) => new Set(prev).add(currentStep)); // Mark step as visited
           handleNavigation("next");
         }
       }, 100);
-      
+
       return () => clearTimeout(timeoutId);
     }
   }, [currentStep, currentStepData, isLastStep]);
 
-  const handleNextOrFinish = () => {
-    if (isLastStep) {
-      handleFinish();
-    } else {
+  const handleNavigationWithTracking = (direction: "next" | "previous") => {
+    if (direction === "next") {
       handleNavigation("next");
+    } else {
+      handleNavigation("previous");
     }
   };
 
@@ -71,7 +77,7 @@ function ComboContent() {
           <Button
             variant="secondary"
             className="flex-1 bg-white dark:bg-white/10 shadow border border-border"
-            onClick={() => handleNavigation("previous")}
+            onClick={() => handleNavigationWithTracking("previous")}
             disabled={isFinishing}
           >
             Previous
@@ -79,7 +85,13 @@ function ComboContent() {
         )}
         <Button
           className="flex-1"
-          onClick={handleNextOrFinish}
+          onClick={() => {
+            if (isLastStep) {
+              handleFinish();
+            } else {
+              handleNavigationWithTracking("next");
+            }
+          }}
           disabled={isFinishing}
         >
           {isLastStep ? (

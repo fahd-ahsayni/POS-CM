@@ -49,13 +49,17 @@ interface ComboContextType {
 
 const ComboContext = createContext<ComboContextType | undefined>(undefined);
 
-export function ComboProvider({ children, totalSteps }: { children: React.ReactNode; totalSteps: number }) {
-  const [currentStep, { 
-    goToNextStep, 
-    goToPrevStep, 
-    setStep, 
-    reset: resetStep 
-  }] = useStep(totalSteps);
+export function ComboProvider({
+  children,
+  totalSteps,
+}: {
+  children: React.ReactNode;
+  totalSteps: number;
+}) {
+  const [
+    currentStep,
+    { goToNextStep, goToPrevStep, setStep, reset: resetStep },
+  ] = useStep(totalSteps);
   const [selections, setSelections] = useState<SelectionState>({
     variants: [],
     supplements: [],
@@ -77,7 +81,6 @@ export function ComboProvider({ children, totalSteps }: { children: React.ReactN
         const exists = prev.supplements.some(
           (v) => v._id === variant._id && v.stepIndex === currentStep
         );
-
         return {
           ...prev,
           supplements: exists
@@ -86,7 +89,12 @@ export function ComboProvider({ children, totalSteps }: { children: React.ReactN
               )
             : [
                 ...prev.supplements,
-                { ...variant, quantity: 1, stepIndex: currentStep },
+                {
+                  ...variant,
+                  quantity: 1,
+                  stepIndex: currentStep,
+                  suite_commande: false, // Initialize suite_commande
+                },
               ],
         };
       }
@@ -130,7 +138,12 @@ export function ComboProvider({ children, totalSteps }: { children: React.ReactN
           ...prev,
           variants: [
             ...prev.variants,
-            { ...variant, quantity: 1, stepIndex: currentStep },
+            {
+              ...variant,
+              quantity: 1,
+              stepIndex: currentStep,
+              suite_commande: false, // Initialize suite_commande
+            },
           ],
         };
       }

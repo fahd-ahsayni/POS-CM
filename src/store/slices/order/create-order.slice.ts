@@ -82,18 +82,50 @@ const orderSlice = createSlice({
         suite_commande: boolean;
       }>
     ) => {
-      console.log(
-        "Updating suite_commande for",
-        action.payload.product_variant_id
-      );
+      state.data.orderlines = state.data.orderlines.map((orderline) => {
+        // Handle regular products
+        if (
+          orderline.product_variant_id === action.payload.product_variant_id
+        ) {
+          return {
+            ...orderline,
+            suite_commande: action.payload.suite_commande,
+          };
+        }
 
-      state.data.orderlines = state.data.orderlines.map((orderline) =>
-        orderline.product_variant_id === action.payload.product_variant_id
-          ? { ...orderline, suite_commande: action.payload.suite_commande }
-          : orderline
-      );
+        // Handle combo products
+        if (orderline.is_combo && orderline.combo_items) {
+          // Update suite_commande in variants
+          const updatedVariants = orderline.combo_items.variants.map(
+            (variant: any) =>
+              variant._id === action.payload.product_variant_id
+                ? { ...variant, suite_commande: action.payload.suite_commande }
+                : variant
+          );
 
-      console.log("Updated Orderlines:", state.data.orderlines);
+          // Update suite_commande in supplements
+          const updatedSupplements = orderline.combo_items.supplements.map(
+            (supplement: any) =>
+              supplement._id === action.payload.product_variant_id
+                ? {
+                    ...supplement,
+                    suite_commande: action.payload.suite_commande,
+                  }
+                : supplement
+          );
+
+          return {
+            ...orderline,
+            combo_items: {
+              ...orderline.combo_items,
+              variants: updatedVariants,
+              supplements: updatedSupplements,
+            },
+          };
+        }
+
+        return orderline;
+      });
     },
     updateOrderLine: (
       state,
@@ -150,7 +182,6 @@ const orderSlice = createSlice({
         }
       }
 
-      // Update total amount
       state.data.total_amount = calculateTotalFromOrderlines(
         state.data.orderlines,
         state.data.delivery_guy_id || "",
@@ -219,13 +250,9 @@ const orderSlice = createSlice({
       state.data.total_amount = action.payload;
     },
     setCustomerCount: (state, action: PayloadAction<number>) => {
-      // Calculate actual customer count from orderlines
       const uniqueCustomerIndices = new Set(
         state.data.orderlines.map((line) => line.customer_index)
       );
-
-      // Use the larger value between calculated and provided count
-      // Ensure minimum of 1 customer
       const calculatedCount = Math.max(
         uniqueCustomerIndices.size,
         action.payload,

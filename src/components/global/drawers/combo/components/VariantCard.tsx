@@ -1,4 +1,4 @@
-import { DishIcon } from "@/assets/figma-icons";
+import { DishIcon, SuiteCommandIcon } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
@@ -9,6 +9,7 @@ import { ProductVariant, Step } from "@/interfaces/product";
 import { cn } from "@/lib/utils";
 import { currency } from "@/preferences";
 import { Minus, Plus } from "lucide-react";
+import { useState } from "react";
 import { useCombo } from "../context/ComboContext";
 
 interface VariantCardProps {
@@ -40,6 +41,8 @@ export function VariantCard({
     variant.default_price ??
     0;
 
+  const [suiteCommande, setSuiteCommande] = useState<boolean>(false);
+
   const handleQuantityChange = (e: React.MouseEvent, increment: boolean) => {
     e.preventDefault();
     e.stopPropagation();
@@ -48,6 +51,12 @@ export function VariantCard({
 
   const handleNotesUpdate = (notes: string[]) => {
     updateVariantNotes(variant._id, notes, step.is_supplement);
+  };
+
+  const handleSuiteCommandeToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSuiteCommande(!suiteCommande);
   };
 
   return (
@@ -120,16 +129,7 @@ export function VariantCard({
           <div className="flex items-center gap-x-4">
             {isSelected && (
               <>
-                <div onClick={(e) => e.stopPropagation()}>
-                  <OderLineAddComments
-                    productId={variant._id}
-                    customerIndex={customerIndex}
-                    initialNotes={variant.notes || []}
-                    onNotesUpdate={handleNotesUpdate}
-                  />
-                </div>
-                {/* TODO SUITE COMMAND COMBO: ACTIVATE THIS BUTTON */}
-                {/* <Button
+                <Button
                   size="icon"
                   variant="ghost"
                   className={cn(
@@ -146,7 +146,15 @@ export function VariantCard({
                         : "!text-primary-black dark:!text-white"
                     )}
                   />
-                </Button> */}
+                </Button>
+                <div onClick={(e) => e.stopPropagation()}>
+                  <OderLineAddComments
+                    productId={variant._id}
+                    customerIndex={customerIndex}
+                    initialNotes={variant.notes || []}
+                    onNotesUpdate={handleNotesUpdate}
+                  />
+                </div>
               </>
             )}
           </div>

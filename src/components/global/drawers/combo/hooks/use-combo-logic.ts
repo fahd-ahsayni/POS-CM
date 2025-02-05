@@ -103,6 +103,7 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
           variants: selections.variants.map((variant) => ({
             ...variant,
             combo_id: uniqueComboId,
+            suite_commande: variant.suite_commande || false, // Preserve suite_commande
           })),
           supplements: selections.supplements.map((supp) => {
             const suppPrice =
@@ -116,6 +117,7 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
               ...supp,
               combo_id: uniqueComboId,
               price: suppPrice,
+              suite_commande: supp.suite_commande || false, // Preserve suite_commande
             };
           }),
         },
