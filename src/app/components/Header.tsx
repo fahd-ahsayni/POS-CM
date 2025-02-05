@@ -18,11 +18,7 @@ function Header({
   title,
   withFilter = false,
   onFilterChange,
-  totalItems = 0,
 }: HeaderProps) {
-  const filteredDataLength = useSelector(
-    (state: any) => state.orders.filteredDataLength
-  );
   const ordersStatus = useSelector((state: any) => state.orders.status);
   const dispatch = useDispatch();
 
@@ -48,10 +44,7 @@ function Header({
         </button>
       </div>
       {withFilter && onFilterChange && (
-        <FilterOrders
-          onFilterChange={onFilterChange}
-          totalItems={totalItems || filteredDataLength}
-        />
+        <FilterOrders onFilterChange={onFilterChange} />
       )}
     </div>
   );

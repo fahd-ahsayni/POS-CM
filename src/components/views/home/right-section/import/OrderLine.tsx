@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input as NumberFlowInput } from "@/components/ui/number-flow-input";
 import {
-  TypographyH4,
   TypographyP,
   TypographySmall,
 } from "@/components/ui/typography";
