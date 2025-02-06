@@ -10,7 +10,7 @@ import {
 import { toTitleCase } from "@/functions/string-transforms";
 import { cn } from "@/lib/utils";
 import * as React from "react";
-import { useVirtualKeyboard } from "../keyboard/VirtualKeyboardGlobalContext";
+import { useVirtualKeyboard } from "../../../keyboard/VirtualKeyboardGlobalContext";
 
 interface DrawerProps {
   children: React.ReactNode;
@@ -31,7 +31,7 @@ export default function Drawer({
   position = "right",
   description = "",
 }: DrawerProps) {
-  // Get the state of the global virtual keyboard
+  
   const { showKeyboard } = useVirtualKeyboard();
 
   return (

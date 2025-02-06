@@ -20,7 +20,7 @@ import { BeatLoader } from "react-spinners";
 import type { Swiper as SwiperType } from "swiper";
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import Drawer from "../../Drawer";
+import Drawer from "../layout/Drawer";
 import EditPrice from "../edit-price/EditPrice";
 import { usePayments } from "./hooks/usePayments";
 

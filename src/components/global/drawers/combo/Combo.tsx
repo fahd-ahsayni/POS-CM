@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { TypographySmall } from "@/components/ui/typography";
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 import { BeatLoader } from "react-spinners";
-import Drawer from "../../Drawer";
+import Drawer from "../layout/Drawer";
 import { StepContent } from "./components/StepContent";
 import { ComboProvider, useCombo } from "./context/ComboContext";
 import { useComboLogic } from "./hooks/use-combo-logic";
@@ -37,7 +37,7 @@ function ComboContent() {
           setVisitedSteps((prev) => new Set(prev).add(currentStep)); // Mark step as visited
           handleNavigation("next");
         }
-      }, 100);
+      }, 50);
 
       return () => clearTimeout(timeoutId);
     }

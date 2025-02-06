@@ -1,6 +1,6 @@
 import { checkIsNewOrders } from "@/api/services";
 import { CashWithCoinsIcon } from "@/assets/figma-icons";
-import Drawer from "@/components/global/Drawer";
+import Drawer from "@/components/global/drawers/layout/Drawer";
 import InputComponent from "@/components/global/InputComponent";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -17,7 +17,7 @@ import { motion } from "framer-motion";
 import { memo, useCallback, useEffect, useId, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { CurrencyQuantityData } from "./constants";
-import { useCloseShift } from "./hooks/useCloseShift";
+import { useCloseShift } from "./hooks/use-close-shift";
 // Import the global virtual keyboard context hook
 import { useVirtualKeyboard } from "@/components/keyboard/VirtualKeyboardGlobalContext";
 

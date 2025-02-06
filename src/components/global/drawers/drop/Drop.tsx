@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { currency } from "@/preferences";
-import Drawer from "../../Drawer";
+import Drawer from "../layout/Drawer";
 import InputComponent from "../../InputComponent";
 import { Button } from "@/components/ui/button";
 import { dropCash } from "@/api/services";

@@ -1,7 +1,5 @@
 import { getCategories } from "@/api/services";
 import { updateOrder } from "@/functions/updateOrder";
-import { RootState } from "@/store";
-import { useAppSelector } from "@/store/hooks";
 import { OrderType } from "@/interfaces/order";
 import { Category } from "@/interfaces/product";
 import { useCallback, useEffect, useState } from "react";
@@ -23,17 +21,13 @@ export const useSelectOrderType = () => {
   const { setViews } = useRightViewContext();
   const [categories, setCategories] = useState<Category[]>([]);
 
-  const generalData = useAppSelector(
-    (state: RootState) => state.generalData.data
-  );
-
   useEffect(() => {
     const loadOrderTypes = () => {
       setIsLoading(true);
       try {
-        const storedGeneralData = generalData
-          ? generalData
-          : JSON.parse(localStorage.getItem("generalData") || "{}");
+        const storedGeneralData = JSON.parse(
+          localStorage.getItem("generalData") || "{}"
+        );
         const rootOrderTypes = storedGeneralData.orderTypes.filter(
           (type: OrderType) => !type.parent_id
         );

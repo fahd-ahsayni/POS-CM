@@ -59,7 +59,11 @@ const OrderTypeCell = ({ order }: { order: any }) => {
           return orderType.name;
         }
         if (order.delivery_guy_id === null && !orderType.select_delivery_boy) {
-          return "Delivery";
+          if(orderType.delivery_companies_name === "Glovo"){
+            return `Glovo: ${order.glovo_pick_up_code} - ${order.glovo_order_code}`;
+          } else {
+            return orderType.name;
+          }
         }
         if (order.delivery_guy_id !== null && orderType.select_delivery_boy) {
           return `${orderType.name}`;

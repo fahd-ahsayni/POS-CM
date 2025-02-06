@@ -1,21 +1,31 @@
-import { logoWithoutText } from "@/assets";
+import { memo, useCallback, useMemo, useState } from "react";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { logout } from "@/store/slices/authentication/auth.slice";
+import { selectPosError } from "@/store/slices/data/pos.slice";
+import { useAppDispatch } from "@/store/hooks";
+import { closeDay } from "@/api/services";
 import { useShift } from "@/auth/context/ShiftContext";
+import { useSelectPos } from "./hooks/use-select-pos";
+import { useAuthorizationWorkflow } from "./hooks/use-authorization-work-flow";
+
+import { logoWithoutText } from "@/assets";
 import SessionExpired from "@/components/errors/SessionExpired";
 import { Button } from "@/components/ui/button";
 import { TypographyH2, TypographySmall } from "@/components/ui/typography";
-import { useAppDispatch } from "@/store/hooks";
-import { logout } from "@/store/slices/authentication/auth.slice";
-import { selectPosError } from "@/store/slices/data/pos.slice";
-import { PosData } from "@/interfaces/pos";
-import { memo, useCallback, useMemo } from "react";
-import { useSelector } from "react-redux";
+import { Switch } from "@/components/ui/switch";
 import PosCard from "./components/PosCard";
 import UserCard from "./components/ui/UserCard";
-import { useSelectPos } from "./hooks/useSelectPos";
 import OpenShift from "./OpenShift";
+import Drawer from "@/components/global/drawers/layout/Drawer";
+import Authorization from "@/components/global/drawers/auth/Authorization";
+import ModalConfirmCloseDay from "@/components/global/modal/ModalConfirmCloseDay";
 import { RightViewProvider } from "@/components/views/home/right-section/contexts/RightViewContext";
+import { PosData } from "@/interfaces/pos";
+import { createToast } from "@/components/global/Toasters";
 
 function SelectPosPage() {
+  // Custom Hooks
   const {
     data,
     checkDay,
@@ -25,18 +35,60 @@ function SelectPosPage() {
     handleOpenDay,
     handleSelectPos,
   } = useSelectPos();
+
+  const {
+    isDrawerOpen,
+    setIsDrawerOpen,
+    isModalOpen,
+    setIsModalOpen,
+    handleAuthorization,
+    startAuthFlow,
+    admin, // Added to retrieve the confirmed admin
+  } = useAuthorizationWorkflow();
+
   const dispatch = useAppDispatch();
   const error = useSelector(selectPosError);
   const { shiftId } = useShift();
 
-  const userAuthenticated = useMemo(() => 
-    JSON.parse(localStorage.getItem("user") || "null"),
+  // State Management
+  const [withOpenNewDay, setWithOpenNewDay] = useState(false);
+  const [isDayClosing, setIsDayClosing] = useState(false);
+
+  const userAuthenticated = useMemo(
+    () => JSON.parse(localStorage.getItem("user") || "null"),
     []
   );
 
+  // Event Handlers
   const handleChangeAccount = useCallback(() => {
     dispatch(logout());
   }, [dispatch]);
+
+  const handleClickCloseDay = useCallback(() => {
+    startAuthFlow();
+  }, [startAuthFlow]);
+
+  const handleCloseDayConfirmed = useCallback(async () => {
+    try {
+      setIsDayClosing(true);
+
+      const response = await closeDay({
+        openNewDay: withOpenNewDay,
+        confirmed_by: admin?.user.id || "",
+      });
+
+      if (response.status === 200) {
+        toast.success(
+          createToast("Closed success", "The Day is close", "success")
+        );
+      }
+    } catch (error: any) {
+      toast.error(createToast("Close faild", "Close Day is close", "error"));
+    } finally {
+      setIsModalOpen(false);
+      window.location.reload();
+    }
+  }, [withOpenNewDay, setIsModalOpen, admin]);
 
   if (error) return <SessionExpired />;
 
@@ -51,6 +103,34 @@ function SelectPosPage() {
           shiftId={shiftId ?? ""}
         />
       </RightViewProvider>
+
+      <Drawer
+        open={isDrawerOpen}
+        setOpen={setIsDrawerOpen}
+        title="Authorization Required"
+        description="Please enter your admin credentials to close the day"
+        position="right"
+      >
+        <Authorization
+          setAuthorization={(authorized) => handleAuthorization(authorized)}
+          setAdmin={(adminData) => handleAuthorization(true, adminData)}
+        />
+      </Drawer>
+
+      <ModalConfirmCloseDay
+        open={isModalOpen}
+        setOpen={setIsModalOpen}
+        onConfirm={handleCloseDayConfirmed}
+      >
+        <div className="flex items-center gap-2 justify-center">
+          <Switch
+            color="red"
+            onChange={() => setWithOpenNewDay((prev) => !prev)}
+          />
+          <TypographySmall>Open new day</TypographySmall>
+        </div>
+      </ModalConfirmCloseDay>
+
       <aside className="lg:w-3/12 w-4/12 h-full bg-secondary-white relative">
         <header className="absolute top-0 left-0 z-10 flex h-16 flex-shrink-0">
           <div className="flex flex-1 justify-between px-4 sm:px-6">
@@ -95,9 +175,17 @@ function SelectPosPage() {
                 Choose your active POS to continue selling.
               </TypographySmall>
             </div>
-            <Button onClick={handleOpenDay} disabled={checkDay}>
-              Open new Day
-            </Button>
+            <div className="flex gap-x-2">
+              <Button
+                onClick={handleClickCloseDay}
+                disabled={!checkDay || isDayClosing}
+              >
+                Close Day
+              </Button>
+              <Button onClick={handleOpenDay} disabled={checkDay}>
+                Open new Day
+              </Button>
+            </div>
           </header>
 
           <div className="grid lg:grid-cols-2 gap-10 mt-10 w-11/12">

@@ -1,4 +1,4 @@
-import Drawer from "../../Drawer";
+import Drawer from "../layout/Drawer";
 import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon } from "lucide-react";
 import { TypographyH3 } from "@/components/ui/typography";

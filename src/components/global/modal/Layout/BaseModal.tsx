@@ -15,6 +15,7 @@ interface BaseModalProps {
   onCancel: () => void;
   variant?: "warning" | "success" | "danger" | "default";
   disabled?: boolean;
+  children?: React.ReactNode;
 }
 
 const getIconContainerClass = (variant: BaseModalProps["variant"]) => {
@@ -39,6 +40,7 @@ export default function BaseModal({
   onCancel,
   variant = "default",
   disabled = false,
+  children,
 }: BaseModalProps) {
   return (
     <ModalLayout
@@ -69,6 +71,7 @@ export default function BaseModal({
           </div>
         </div>
       </div>
+      <div className="mt-2">{children}</div>
       <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
         <Button
           variant="secondary"

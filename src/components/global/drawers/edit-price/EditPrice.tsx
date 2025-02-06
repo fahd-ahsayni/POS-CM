@@ -1,5 +1,5 @@
 import { memo, useCallback, useState } from "react";
-import Drawer from "../../Drawer";
+import Drawer from "../layout/Drawer";
 import Authorization from "../auth/Authorization";
 import { useOrder } from "../order-details/context/OrderContext";
 import EditPriceInfo from "./views/EditPriceInfo";

@@ -1,6 +1,12 @@
 import { createToast } from "@/components/global/Toasters";
 import { ProductVariant, Step } from "@/interfaces/product";
-import { createContext, useCallback, useContext, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+} from "react";
 import { toast } from "react-toastify";
 import { useStep } from "@/hooks/use-step"; // Add this import
 
@@ -60,6 +66,7 @@ export function ComboProvider({
     currentStep,
     { goToNextStep, goToPrevStep, setStep, reset: resetStep },
   ] = useStep(totalSteps);
+
   const [selections, setSelections] = useState<SelectionState>({
     variants: [],
     supplements: [],
@@ -67,90 +74,102 @@ export function ComboProvider({
   });
 
   const [totalSupplementsPrice, setTotalSupplementsPrice] = useState(0);
+  const navigationLock = useRef(false);
+  const handleSelect = useCallback(
+    (
+      variant: ProductVariant,
+      isSupplement: boolean,
+      isRequired: boolean,
+      maxProducts?: number
+    ) => {
+      if (isRequired && !isSupplement) return;
 
-  const handleSelect = (
-    variant: ProductVariant,
-    isSupplement: boolean,
-    isRequired: boolean,
-    maxProducts?: number
-  ) => {
-    if (isRequired && !isSupplement) return;
-
-    setSelections((prev) => {
-      if (isSupplement) {
-        const exists = prev.supplements.some(
-          (v) => v._id === variant._id && v.stepIndex === currentStep
+      setSelections((prev) => {
+        const updatedVariants = isSupplement ? prev.supplements : prev.variants;
+        const stepVariants = updatedVariants.filter(
+          (v) => v.stepIndex === currentStep - 1
         );
-        return {
-          ...prev,
-          supplements: exists
-            ? prev.supplements.filter(
-                (v) => !(v._id === variant._id && v.stepIndex === currentStep)
+
+        if (!isRequired && maxProducts) {
+          const totalQuantity = stepVariants.reduce(
+            (sum, v) => sum + (v.quantity || 1),
+            0
+          );
+
+          if (totalQuantity + 1 > maxProducts) {
+            toast.warning(
+              createToast(
+                "Selection Limit Reached",
+                `You can only select up to ${maxProducts} items`,
+                "warning"
               )
-            : [
+            );
+            return prev;
+          }
+        }
+
+        // Check for duplicate selection
+        const isDuplicate = updatedVariants.some(
+          (v) => v._id === variant._id && v.stepIndex === currentStep - 1
+        );
+
+        if (isDuplicate) {
+          return prev;
+        }
+
+        const newSelections = isSupplement
+          ? {
+              ...prev,
+              supplements: [
                 ...prev.supplements,
                 {
                   ...variant,
                   quantity: 1,
-                  stepIndex: currentStep,
-                  suite_commande: false, // Initialize suite_commande
+                  stepIndex: currentStep - 1,
+                  suite_commande: false,
                 },
               ],
-        };
-      }
+            }
+          : {
+              ...prev,
+              variants: [
+                ...prev.variants,
+                {
+                  ...variant,
+                  quantity: 1,
+                  stepIndex: currentStep - 1,
+                  suite_commande: false,
+                },
+              ],
+            };
 
-      const existingVariant = prev.variants.find(
-        (v) => v._id === variant._id && v.stepIndex === currentStep
-      );
+        // Check if the total count matches the limit and trigger navigation
+        const totalSelected = newSelections.variants.filter(
+          (v) => v.stepIndex === currentStep - 1
+        ).length;
 
-      // Handle deselection
-      if (!isRequired && existingVariant) {
-        return {
-          ...prev,
-          variants: prev.variants.filter(
-            (v) => !(v._id === variant._id && v.stepIndex === currentStep)
-          ),
-        };
-      }
-
-      // Handle new selections
-      if (!isRequired && maxProducts) {
-        const stepVariants = prev.variants.filter(
-          (v) => v.stepIndex === currentStep
-        );
-        const totalQuantity = stepVariants.reduce(
-          (sum, v) => sum + (v.quantity || 1),
-          0
-        );
-
-        if (totalQuantity >= maxProducts) {
-          toast.warning(
-            createToast(
-              "Selection Limit Reached",
-              `You can only select up to ${maxProducts} items`,
-              "warning"
-            )
-          );
-          return prev;
+        if (
+          !isRequired &&
+          maxProducts &&
+          totalSelected >= maxProducts &&
+          !navigationLock.current
+        ) {
+          navigationLock.current = true;
+          // Use requestAnimationFrame for smoother transition
+          requestAnimationFrame(() => {
+            goToNextStep();
+            // Reset the lock after navigation
+            setTimeout(() => {
+              navigationLock.current = false;
+            }, 50);
+          });
         }
 
-        return {
-          ...prev,
-          variants: [
-            ...prev.variants,
-            {
-              ...variant,
-              quantity: 1,
-              stepIndex: currentStep,
-              suite_commande: false, // Initialize suite_commande
-            },
-          ],
-        };
-      }
-
-      return prev;
-    });
-  };
+        return newSelections;
+      });
+    },
+    [currentStep, goToNextStep]
+  );
 
   const handleQuantityChange = (
     variantId: string,
@@ -286,15 +305,16 @@ export function ComboProvider({
     });
     resetStep();
   }, [resetStep]);
+
   return (
     <ComboContext.Provider
       value={{
-        currentStep: currentStep - 1, // Convert from 1-based to 0-based index
+        currentStep: currentStep - 1,
         selections,
         handleSelect,
         handleQuantityChange,
         handleNavigation,
-        setCurrentStep: (step: number) => setStep(step + 1), // Convert from 0-based to 1-based index
+        setCurrentStep: (step: number) => setStep(step + 1),
         setSelections,
         totalSupplementsPrice,
         setTotalSupplementsPrice,

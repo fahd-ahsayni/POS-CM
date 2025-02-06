@@ -1,5 +1,5 @@
 import ClientForm from "@/components/views/home/right-section/layouts/ClientForm";
-import Drawer from "../../Drawer";
+import Drawer from "../layout/Drawer";
 
 import { Button } from "@/components/ui/button";
 import { useAddClient } from "@/components/views/home/right-section/hooks/useAddClient";

@@ -16,7 +16,7 @@ import { currency } from "@/preferences";
 import { Checkbox } from "@heroui/checkbox";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
-import Drawer from "../../Drawer";
+import Drawer from "../layout/Drawer";
 import CancelOrder from "../cancel-order/CancelOrder";
 import EditPrice from "../edit-price/EditPrice";
 import Payments from "../Payments/Payments";

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { PosData } from "@/interfaces/pos";
 import { format } from "date-fns";
 import { ChevronRight } from "lucide-react";
-import { useSelectPos } from "../hooks/useSelectPos";
+import { useSelectPos } from "../hooks/use-select-pos";
 
 interface PosCardProps {
   pos: PosData;

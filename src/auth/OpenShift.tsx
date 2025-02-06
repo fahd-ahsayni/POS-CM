@@ -1,6 +1,6 @@
 import { getGeneralData, openShift, updateShift } from "@/api/services";
 import { useShift } from "@/auth/context/ShiftContext";
-import Drawer from "@/components/global/Drawer";
+import Drawer from "@/components/global/drawers/layout/Drawer";
 import NumberPad from "@/components/global/NumberPad";
 import { createToast } from "@/components/global/Toasters";
 import { Button } from "@/components/ui/button";

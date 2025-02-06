@@ -1,4 +1,4 @@
-import Drawer from "@/components/global/Drawer";
+import Drawer from "@/components/global/drawers/layout/Drawer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";

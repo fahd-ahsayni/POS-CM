@@ -11,7 +11,7 @@ import {
 import { StaffUser } from "@/interfaces/staff";
 import { Phone } from "lucide-react";
 import { useCallback, useEffect, useId, useState } from "react";
-import Drawer from "../../Drawer";
+import Drawer from "../layout/Drawer";
 import { unknownUser } from "@/assets";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
