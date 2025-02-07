@@ -35,7 +35,7 @@ export function VariantCard({
   customerIndex,
 }: VariantCardProps) {
   const { currentMenu } = useLeftViewContext();
-  const { updateVariantNotes } = useCombo();
+  const { updateVariantNotes, updateVariantSuiteCommande } = useCombo();
   const variantPrice =
     variant.menus?.find((menu) => menu.menu_id === currentMenu)?.price_ttc ??
     variant.default_price ??
@@ -56,13 +56,15 @@ export function VariantCard({
   const handleSuiteCommandeToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setSuiteCommande(!suiteCommande);
+    const newValue = !suiteCommande;
+    setSuiteCommande(newValue);
+    updateVariantSuiteCommande(variant._id, newValue, step.is_supplement);
   };
 
   return (
     <Card
       className={cn(
-        "px-3 py-2 h-[5.5rem] cursor-pointer transition-colors dark:!bg-primary-black !bg-neutral-bright-grey",
+        "px-3 py-2 h-28 cursor-pointer transition-colors dark:!bg-primary-black !bg-neutral-bright-grey",
         isSelected ? "ring-1 ring-primary-red" : ""
       )}
       onClick={isRequired ? undefined : onClick}

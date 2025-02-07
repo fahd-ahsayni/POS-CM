@@ -86,8 +86,9 @@ export function ComboProvider({
 
       setSelections((prev) => {
         const updatedVariants = isSupplement ? prev.supplements : prev.variants;
+        // Filter variants for current step (use currentStep directly)
         const stepVariants = updatedVariants.filter(
-          (v) => v.stepIndex === currentStep - 1
+          (v) => v.stepIndex === currentStep
         );
 
         if (!isRequired && maxProducts) {
@@ -108,9 +109,9 @@ export function ComboProvider({
           }
         }
 
-        // Check for duplicate selection
+        // Check for duplicate selection using currentStep
         const isDuplicate = updatedVariants.some(
-          (v) => v._id === variant._id && v.stepIndex === currentStep - 1
+          (v) => v._id === variant._id && v.stepIndex === currentStep
         );
 
         if (isDuplicate) {
@@ -125,7 +126,7 @@ export function ComboProvider({
                 {
                   ...variant,
                   quantity: 1,
-                  stepIndex: currentStep - 1,
+                  stepIndex: currentStep,
                   suite_commande: false,
                 },
               ],
@@ -137,15 +138,15 @@ export function ComboProvider({
                 {
                   ...variant,
                   quantity: 1,
-                  stepIndex: currentStep - 1,
+                  stepIndex: currentStep,
                   suite_commande: false,
                 },
               ],
             };
 
-        // Check if the total count matches the limit and trigger navigation
+        // Use currentStep for checking selections count
         const totalSelected = newSelections.variants.filter(
-          (v) => v.stepIndex === currentStep - 1
+          (v) => v.stepIndex === currentStep
         ).length;
 
         if (
@@ -155,10 +156,8 @@ export function ComboProvider({
           !navigationLock.current
         ) {
           navigationLock.current = true;
-          // Use requestAnimationFrame for smoother transition
           requestAnimationFrame(() => {
             goToNextStep();
-            // Reset the lock after navigation
             setTimeout(() => {
               navigationLock.current = false;
             }, 50);
@@ -237,13 +236,13 @@ export function ComboProvider({
         ? variant.quantity + 1
         : variant.quantity - 1;
 
-      // Check if new total quantity would exceed step.number_of_products
       const maxProducts = step?.number_of_products || Infinity;
-      if (otherVariantsQuantity + newQuantity > maxProducts) {
+      const newTotal = otherVariantsQuantity + newQuantity;
+      if (newTotal > maxProducts) {
         return prev;
       }
 
-      return {
+      const newState = {
         ...prev,
         variants: prev.variants.map((v) =>
           v._id === variantId && v.stepIndex === currentStep
@@ -251,6 +250,19 @@ export function ComboProvider({
             : v
         ),
       };
+
+      // Auto navigate if new total equals the product limit and navigation is not locked
+      if (newTotal === maxProducts && !navigationLock.current) {
+        navigationLock.current = true;
+        requestAnimationFrame(() => {
+          goToNextStep();
+          setTimeout(() => {
+            navigationLock.current = false;
+          }, 50);
+        });
+      }
+
+      return newState;
     });
 
     // Calculate and log total supplements price after state update

@@ -13,7 +13,6 @@ import { useRightViewContext } from "@/components/views/home/right-section/conte
 import { toTitleCase } from "@/functions/string-transforms";
 import { cn } from "@/lib/utils";
 import { currency } from "@/preferences";
-import { Checkbox } from "@heroui/checkbox";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import Drawer from "../layout/Drawer";
@@ -21,6 +20,7 @@ import CancelOrder from "../cancel-order/CancelOrder";
 import EditPrice from "../edit-price/EditPrice";
 import Payments from "../Payments/Payments";
 import { useOrderDetails } from "./hooks/useOrderDetails";
+import { Switch } from "@/components/ui/switch";
 
 export default function OrderDetails() {
   const [editPriceOpen, setEditPriceOpen] = useState(false);
@@ -41,6 +41,7 @@ export default function OrderDetails() {
     handlePaymentComplete,
     setEditedAmount,
     handleLoadOrder,
+    calculateSelectedOrdersTotal,  // Add this
   } = useOrderDetails(setLeftViews, setRightViews, setSelectedProducts);
 
   const toggleOrderLineSelection = (orderId: string) => {
@@ -126,7 +127,8 @@ export default function OrderDetails() {
                         Customer {Number(customerIndex)}
                       </span>
                     </TypographySmall>
-                    <Checkbox
+                    <Switch
+                      color="red"
                       checked={(lines as any[]).every((line) =>
                         selectedOrderlines.includes(line._id)
                       )}
@@ -136,7 +138,6 @@ export default function OrderDetails() {
                           lines as any[]
                         )
                       }
-                      color="primary"
                     />
                   </div>
                 </div>
@@ -254,7 +255,8 @@ export default function OrderDetails() {
         setOpen={setOpenPayments}
         onComplete={handlePaymentComplete}
         selectedOrder={selectedOrder}
-        totalAmount={selectedOrder?.total_amount || 0}
+        totalAmount={selectedOrderlines.length ? calculateSelectedOrdersTotal() : selectedOrder?.total_amount || 0}
+        selectedOrderlines={selectedOrderlines}
       />
     </>
   );

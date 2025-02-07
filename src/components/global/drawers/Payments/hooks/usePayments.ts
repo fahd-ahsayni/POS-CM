@@ -1,4 +1,4 @@
-import { createPayment, payNewOrder } from "@/api/services";
+import { createPayment, payNewOrder, paySelectedProducts } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
 import { ALL_CATEGORIES_VIEW } from "@/components/views/home/left-section/constants";
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
@@ -35,6 +35,7 @@ interface UsePaymentsProps {
   onComplete?: (payments: PaymentMethod[]) => Promise<void>;
   selectedOrder?: Order;
   totalAmount?: number;
+  selectedOrderlines?: any[]; // Add this prop
 }
 
 /**
@@ -45,6 +46,7 @@ export function usePayments({
   onComplete,
   selectedOrder,
   totalAmount,
+  selectedOrderlines, // Add this prop
 }: UsePaymentsProps) {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [selectedPayments, setSelectedPayments] = useState<PaymentMethod[]>([]);
@@ -276,6 +278,8 @@ export function usePayments({
     setIsProcessing(true);
 
     try {
+      const shiftId = localStorage.getItem("shiftId");
+
       // Calculate actual customer count from order lines
       const uniqueCustomerIndices = new Set(
         order.orderlines.map((line) => line.customer_index)
@@ -289,51 +293,56 @@ export function usePayments({
       // Update customer count before payment
       dispatch(setCustomerCount(actualCustomerCount));
 
-      const validPaymentData = selectedPayments.map((item) => ({
-        payment_method_id: item.originalId,
-        amount_given: item.amount,
-      }));
-
-      const shiftId = localStorage.getItem("shiftId");
-
       if (selectedOrder) {
-        await payNewOrder({
-          order_id: selectedOrder._id,
-          shift_id: shiftId,
-          payments: validPaymentData,
-        });
+        // Check if there are selected orderlines
+        if (selectedOrderlines && selectedOrderlines.length > 0) {
+          // Use paySelectedProducts for partial payment
+          const payment = selectedPayments[0];
+          await paySelectedProducts({
+            orderlines: selectedOrderlines,
+            order_id: selectedOrder._id,
+            payment_method_id: payment.originalId || '',
+            amount_given: payment.amount,
+            shift_id: shiftId || ''
+          });
+        } else {
+          // Use payNewOrder for full order payment
+          await payNewOrder({
+            order_id: selectedOrder._id,
+            shift_id: shiftId,
+            payments: selectedPayments.map(item => ({
+              payment_method_id: item.originalId,
+              amount_given: item.amount,
+            }))
+          });
+        }
       } else {
+        // Handle new order creation
         await createPayment({
           order: {
             ...order,
             shift_id: order.shift_id || shiftId,
-            customer_count: actualCustomerCount, // Use calculated count
+            customer_count: actualCustomerCount,
           },
           shift_id: order.shift_id || shiftId,
-          payments: validPaymentData,
+          payments: selectedPayments.map(item => ({
+            payment_method_id: item.originalId,
+            amount_given: item.amount,
+          }))
         });
       }
 
-      // 2. Call the onComplete callback if provided
+      // Handle success
       await onComplete?.(selectedPayments);
-
-      // 3. Reset payment-related state
       setSelectedPayments([]);
       setCurrentAmount("");
       setActivePaymentIndex(-1);
       localStorage.removeItem("orderType");
-
-      // 4. Reset customer and order state using the customer management hook
       handlePaymentComplete();
-
-      // 5. Reset order state but keep shift_id
       dispatch(resetOrder());
-
-      // 6. Reset views to initial state
       setViewsLeft(ALL_CATEGORIES_VIEW);
       setViewsRight(TYPE_OF_ORDER_VIEW);
 
-      // 7. Show success message
       toast.success(
         createToast(
           "Payment completed successfully",
@@ -344,7 +353,6 @@ export function usePayments({
         )
       );
 
-      // Reset table number and coaster call
       setTableNumber("");
       setNumber("");
     } catch (error) {
@@ -373,6 +381,7 @@ export function usePayments({
     setNumber,
     customerIndex,
     order.orderlines,
+    selectedOrderlines, // Add this
   ]);
 
   const resetPayments = useCallback(() => {

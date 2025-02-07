@@ -29,7 +29,15 @@ export const useOrderDetails = (
   const navigate = useNavigate();
   const ordersStatus = useSelector((state: any) => state.orders.status);
 
+  const calculateSelectedOrdersTotal = useCallback(() => {
+    if (!selectedOrder || !selectedOrderlines.length) return 0;
+    return selectedOrder.orderline_ids
+      .filter((line: any) => selectedOrderlines.includes(line._id))
+      .reduce((total: number, line: any) => total + line.price, 0);
+  }, [selectedOrder, selectedOrderlines]);
+
   const handleProcessPayment = () => {
+    // Remove the warning and requirement for selection
     setOpenOrderDetails(false);
     setOpenPayments(true);
   };
@@ -275,5 +283,6 @@ export const useOrderDetails = (
     setEditedAmount,
     handleCancelComplete,
     handleLoadOrder,
+    calculateSelectedOrdersTotal,
   };
 };

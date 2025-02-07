@@ -8,15 +8,22 @@ import { ComboProvider, useCombo } from "./context/ComboContext";
 import { useComboLogic } from "./hooks/use-combo-logic";
 import { loadingColors } from "@/preferences";
 import { useEffect, useState } from "react";
+import AnimatedStepper from "@/components/global/AnimatedStepper";
 
 function ComboContent() {
   const { selectedCombo } = useLeftViewContext();
-  const { currentStep } = useCombo();
+  const { currentStep, setCurrentStep } = useCombo();
   const { handleNavigation } = useCombo();
   const { handleFinish, isFinishing, getStepDescription } = useComboLogic(
     currentStep,
     selectedCombo?.steps[currentStep]
   );
+
+  const steps =
+    selectedCombo?.steps.map((_: any, index: number) => ({
+      number: index + 1,
+      label: `Step ${index + 1}`,
+    })) || [];
 
   const [visitedSteps, setVisitedSteps] = useState(new Set());
 
@@ -53,19 +60,12 @@ function ComboContent() {
 
   return (
     <div className="flex flex-col h-full">
-      <header className="mb-4">
-        <TypographySmall className="text-neutral-dark-grey">
-          Step{" "}
-          <span className="font-semibold dark:text-white text-primary-black">
-            {currentStep + 1}
-          </span>{" "}
-          of{" "}
-          <span className="font-semibold dark:text-white text-primary-black">
-            {selectedCombo.steps.length}
-          </span>
-        </TypographySmall>
-      </header>
-      <TypographySmall className="mb-4 font-medium">
+      <AnimatedStepper
+        steps={steps}
+        currentStep={currentStep + 1}
+        onStepClick={(stepNumber) => setCurrentStep(stepNumber - 1)}
+      />
+      <TypographySmall className="mb-2">
         {getStepDescription(currentStepData)}
       </TypographySmall>
       <main className="flex-1 overflow-auto pr-2">

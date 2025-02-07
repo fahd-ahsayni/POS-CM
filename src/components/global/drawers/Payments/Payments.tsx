@@ -36,6 +36,7 @@ interface PaymentsProps {
   onComplete?: (payments: PaymentMethod[]) => Promise<void>;
   selectedOrder?: Order;
   totalAmount?: number;
+  selectedOrderlines?: string[];
 }
 
 export default function Payments({
@@ -44,6 +45,7 @@ export default function Payments({
   onComplete,
   selectedOrder,
   totalAmount,
+  selectedOrderlines,
 }: PaymentsProps) {
   const [editPriceOpen, setEditPriceOpen] = useState(false);
 
@@ -67,6 +69,7 @@ export default function Payments({
     onComplete,
     selectedOrder,
     totalAmount,
+    selectedOrderlines,
   });
 
   const order = useSelector(selectOrder);
@@ -130,11 +133,15 @@ export default function Payments({
     );
   };
 
+  console.log(selectedOrderlines);
+
   return (
     <Drawer
       open={open}
       setOpen={setOpen}
-      title="Complete Payment"
+      title={selectedOrderlines?.length 
+        ? `Complete Payment (${selectedOrderlines.length} items selected)`
+        : "Complete Payment"}
       classNames="max-w-[700px]"
     >
       <div className="flex items-center justify-center h-full gap-6">

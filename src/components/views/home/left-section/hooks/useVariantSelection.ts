@@ -208,6 +208,7 @@ const useVariantSelection = ({
               product_variant_id: v._id,
               quantity: v.quantity,
               notes: Array.isArray(v.notes) ? v.notes : [],
+              suite_commande: v.suite_commande || false, // FIX: add suite_commande
               order_type_id: JSON.parse(
                 localStorage.getItem("orderType") || "{}"
               )._id,
@@ -232,6 +233,8 @@ const useVariantSelection = ({
       }),
     [selectedProducts, currentMenu]
   );
+
+  console.log(orderlineData);
 
   useEffect(() => {
     dispatch(addOrderLine(selectedProducts.length > 0 ? orderlineData : []));

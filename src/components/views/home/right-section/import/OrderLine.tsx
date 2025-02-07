@@ -106,6 +106,11 @@ export function OrderLine({ item }: OrderLineProps) {
             <span className="first-letter:uppercase dark:text-neutral-bright-grey text-primary-black/90 tracking-wide">
               {toTitleCase(variant.name || "")}
             </span>
+            {variant.suite_commande && (
+              <span className="text-sm font-medium">
+                Suite Command
+              </span>
+            )}
           </TypographySmall>
         ))}
 
