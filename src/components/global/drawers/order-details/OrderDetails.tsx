@@ -86,14 +86,19 @@ export default function OrderDetails() {
     }, {}) || {};
 
   const handleCustomerGroupSelection = (_: any, lines: any[]) => {
-    const lineIds = lines.map((line) => line._id);
-    const allSelected = lineIds.every((id) => selectedOrderlines.includes(id));
-
-    setSelectedOrderlines((prev) =>
-      allSelected
-        ? prev.filter((id) => !lineIds.includes(id))
-        : [...new Set([...prev, ...lineIds])]
+    const unpaidLines = lines.filter((line) => !line.is_paid);
+    const unpaidLineIds = unpaidLines.map((line) => line._id);
+    const currentlySelected = selectedOrderlines.filter((id) =>
+      unpaidLineIds.includes(id)
     );
+    const allUnpaidSelected = currentlySelected.length === unpaidLineIds.length;
+
+    setSelectedOrderlines((prev) => {
+      const outsideGroup = prev.filter((id) => !unpaidLineIds.includes(id));
+      return allUnpaidSelected
+        ? outsideGroup
+        : [...outsideGroup, ...unpaidLineIds];
+    });
   };
 
   const handlePrintKitchen = async () => {
@@ -138,15 +143,16 @@ export default function OrderDetails() {
                     </TypographySmall>
                     <Switch
                       color="red"
-                      checked={(lines as any[]).every((line) =>
-                        selectedOrderlines.includes(line._id)
-                      )}
+                      checked={(lines as any[])
+                        .filter((line) => !line.is_paid)
+                        .every((line) => selectedOrderlines.includes(line._id))}
                       onChange={() =>
                         handleCustomerGroupSelection(
                           customerIndex,
                           lines as any[]
                         )
                       }
+                      disabled={(lines as any[]).every((line) => line.is_paid)}
                     />
                   </div>
                 </div>
@@ -155,15 +161,17 @@ export default function OrderDetails() {
                     <Card
                       key={orderLine._id}
                       className={cn(
-                        "flex flex-col gap-4 w-full dark:bg-primary-black bg-neutral-bright-grey py-4 px-4 cursor-pointer",
+                        "flex flex-col gap-4 w-full dark:bg-primary-black bg-neutral-bright-grey py-4 px-4",
+                        orderLine.is_paid &&
+                          "pointer-events-none cursor-not-allowed opacity-40",
                         selectedOrderlines.includes(orderLine._id) &&
-                          "ring-1 ring-primary-red",
-                        orderLine.is_paid && "opacity-40"
+                          "ring-1 ring-primary-red"
                       )}
-                      onClick={() => {
-                        if (orderLine.is_paid) return;
-                        toggleOrderLineSelection(orderLine._id);
-                      }}
+                      onClick={
+                        !orderLine.is_paid
+                          ? () => toggleOrderLineSelection(orderLine._id)
+                          : undefined
+                      }
                     >
                       <div className="flex justify-between items-center">
                         <TypographyP className="dark:text-white text-primary-black font-medium capitalize">

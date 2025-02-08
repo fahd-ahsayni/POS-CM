@@ -110,12 +110,11 @@ export function OrderLine({ item }: OrderLineProps) {
     await launchSuiteCommandForComboElement(id, elementId);
   };
 
-  console.log(item)
   const renderComboItems = useMemo(() => {
     if (!item.is_combo || !item.combo_items) return null;
 
     return (
-      <div className="mt-2 pl-4 border-l-2 border-neutral-dark-grey/50 space-y-2">
+      <div className="mt-2 text- pl-4 border-l-2 border-neutral-dark-grey/50 space-y-2">
         {item.combo_items.variants?.map((variant: any, idx: number) => {
           const badgeKey = `${item.id}-${variant._id}-${idx}`;
           return (

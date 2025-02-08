@@ -26,7 +26,6 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     setOrderLines,
   };
 
-  console.log("selectedOrder", selectedOrder);
   return (
     <OrderContext.Provider value={value}>{children}</OrderContext.Provider>
   );
