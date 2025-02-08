@@ -11,11 +11,10 @@ export const payNewOrder = async (data: any) => {
 export const paySelectedProducts = async (data: {
   orderlines: string[];
   order_id: string;
-  payment_method_id: string;
-  amount_given: number;
+  payments: any[];
   shift_id: string;
 }) => {
-  return api.post("/payement", data);
+  return api.post("/payment", data);
 };
 
 export const dropCash = async (data: any) => {

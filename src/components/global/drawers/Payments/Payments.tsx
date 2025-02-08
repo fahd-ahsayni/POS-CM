@@ -91,7 +91,7 @@ export default function Payments({
     if (!open) {
       resetPayments();
     }
-  }, [open]);
+  }, [open, resetPayments]);
 
   useEffect(() => {
     if (
@@ -140,7 +140,7 @@ export default function Payments({
       open={open}
       setOpen={setOpen}
       title={selectedOrderlines?.length 
-        ? `Complete Payment (${selectedOrderlines.length} items selected)`
+        ? `Make Payment For ${selectedOrderlines.length} Products`
         : "Complete Payment"}
       classNames="max-w-[700px]"
     >

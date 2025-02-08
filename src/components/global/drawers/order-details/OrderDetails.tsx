@@ -14,7 +14,7 @@ import { toTitleCase } from "@/functions/string-transforms";
 import { cn } from "@/lib/utils";
 import { currency } from "@/preferences";
 import { ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Drawer from "../layout/Drawer";
 import CancelOrder from "../cancel-order/CancelOrder";
 import EditPrice from "../edit-price/EditPrice";
@@ -41,8 +41,17 @@ export default function OrderDetails() {
     handlePaymentComplete,
     setEditedAmount,
     handleLoadOrder,
-    calculateSelectedOrdersTotal,  // Add this
+    calculateSelectedOrdersTotal,
   } = useOrderDetails(setLeftViews, setRightViews, setSelectedProducts);
+
+  useEffect(() => {
+    // Clear orderlines only if drawer is closed and payments are not active
+    if (!openOrderDetails && !openPayments) {
+      setSelectedOrderlines([]);
+      setEditedAmount(null);
+      setOpenCancelOrder(false);
+    }
+  }, [openOrderDetails, openPayments, setOpenCancelOrder]);
 
   const toggleOrderLineSelection = (orderId: string) => {
     setSelectedOrderlines((prev) =>
@@ -148,9 +157,13 @@ export default function OrderDetails() {
                       className={cn(
                         "flex flex-col gap-4 w-full dark:bg-primary-black bg-neutral-bright-grey py-4 px-4 cursor-pointer",
                         selectedOrderlines.includes(orderLine._id) &&
-                          "ring-1 ring-primary-red"
+                          "ring-1 ring-primary-red",
+                        orderLine.is_paid && "opacity-40"
                       )}
-                      onClick={() => toggleOrderLineSelection(orderLine._id)}
+                      onClick={() => {
+                        if (orderLine.is_paid) return;
+                        toggleOrderLineSelection(orderLine._id);
+                      }}
                     >
                       <div className="flex justify-between items-center">
                         <TypographyP className="dark:text-white text-primary-black font-medium capitalize">
@@ -255,7 +268,11 @@ export default function OrderDetails() {
         setOpen={setOpenPayments}
         onComplete={handlePaymentComplete}
         selectedOrder={selectedOrder}
-        totalAmount={selectedOrderlines.length ? calculateSelectedOrdersTotal() : selectedOrder?.total_amount || 0}
+        totalAmount={
+          selectedOrderlines.length
+            ? calculateSelectedOrdersTotal()
+            : selectedOrder?.total_amount || 0
+        }
         selectedOrderlines={selectedOrderlines}
       />
     </>

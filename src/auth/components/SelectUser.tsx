@@ -3,7 +3,6 @@ import ShineBorder from "@/components/ui/shine-border";
 import { TypographySmall } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import type { AppDispatch, RootState } from "@/store";
-import { loginWithRfid } from "@/store/slices/authentication/auth.slice";
 import { useCallback, useEffect, useState } from "react";
 import { RiRfidFill } from "react-icons/ri";
 import Tilt from "react-parallax-tilt";
@@ -11,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import SegmentedControl from "./SegmentedControl";
 import SelectUserSlide from "./SelectUserSlide";
+import { loginWithRfid } from "@/api/services";
 
 export default function SelectUser() {
   const [activeTab, setActiveTab] = useState("cashiers");
@@ -33,7 +33,6 @@ export default function SelectUser() {
   const handleRfidSubmit = useCallback(
     async (rfid: string) => {
       if (rfid.length < 8) {
-        // Adjust minimum length based on your RFID format
         console.error("Invalid RFID length");
         resetRfidBuffer();
         return;
@@ -41,12 +40,16 @@ export default function SelectUser() {
 
       try {
         setIsScanning(true);
-        const result = await dispatch(loginWithRfid(rfid)).unwrap();
-        if (result) {
+        const response = await loginWithRfid(rfid);
+
+        if (response && response.data.token) {
+          localStorage.setItem("token", response.data.token);
+          localStorage.setItem("user", JSON.stringify(response.data.user)); // Store user as JSON string
+
           navigate("/select-pos");
         }
-      } catch (err) {
-        console.error("RFID login failed:", err);
+      } catch (err: any) {
+        console.error("RFID login failed:", err.message || err);
       } finally {
         resetRfidBuffer();
       }

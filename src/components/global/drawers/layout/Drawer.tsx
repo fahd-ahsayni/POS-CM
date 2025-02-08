@@ -47,7 +47,7 @@ export default function Drawer({
             }
           }}
           className={cn(
-            "p-0 dark:bg-secondary-black bg-secondary-white w-full h-full !sm:max-w-none",
+            "p-0 dark:bg-secondary-black bg-secondary-white w-full h-full !sm:max-w-none outline-none",
             classNames
           )}
         >

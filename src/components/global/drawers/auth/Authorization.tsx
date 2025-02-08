@@ -1,4 +1,5 @@
 import { checkAuthorization } from "@/api/services";
+import { checkAdminRfid } from "@/api/services"; // Import the RFID check function
 import CirclesAnimation from "@/auth/components/ui/CirclesAnimation";
 import NumberPad from "@/components/global/NumberPad";
 import ShineBorder from "@/components/ui/shine-border";
@@ -15,7 +16,7 @@ export default function Authorization({
   setAdmin: (admin: any) => void;
 }) {
   const [passcode, setPasscode] = useState("");
-
+  const [rfid, setRfid] = useState(""); // State to store RFID input
   const shuffledNumbers = useMemo(
     () =>
       Array.from({ length: 9 }, (_, i) => i + 1).sort(
@@ -24,6 +25,7 @@ export default function Authorization({
     []
   );
 
+  // Handle number pad clicks
   const handleNumberClick = useCallback(
     (value: string) => {
       if (value === "C") {
@@ -37,6 +39,7 @@ export default function Authorization({
     [passcode.length]
   );
 
+  // Check passcode authorization
   const handleChangePasscode = useCallback(async () => {
     if (passcode.length === 6 || passcode.length === 4) {
       const response = await checkAuthorization(passcode);
@@ -47,6 +50,41 @@ export default function Authorization({
     }
   }, [passcode, setAuthorization]);
 
+  // Check RFID badge authorization
+  const handleRfidScan = useCallback(
+    async (rfid: string) => {
+      try {
+        const response = await checkAdminRfid(rfid); // Call the RFID check function
+        if (response.status === 200) {
+          setAuthorization(true);
+          setAdmin(response.data);
+        }
+      } catch (error) {
+        console.error("RFID validation failed:", error);
+      }
+    },
+    [setAuthorization, setAdmin]
+  );
+
+  // Listen for RFID input
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      const key = event.key;
+
+      // Assuming RFID input ends with "Enter" key
+      if (key === "Enter" && rfid.length > 0) {
+        handleRfidScan(rfid); // Validate RFID badge
+        setRfid(""); // Reset RFID state
+      } else if (key.length === 1 || key === "Backspace") {
+        setRfid((prev) => prev + key); // Accumulate RFID input
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [rfid, handleRfidScan]);
+
+  // Trigger passcode validation when passcode changes
   useEffect(() => {
     handleChangePasscode();
   }, [passcode, handleChangePasscode]);

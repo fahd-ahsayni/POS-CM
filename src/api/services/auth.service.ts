@@ -39,27 +39,25 @@ export const login = async (
   }
 };
 
-export const loginWithRfid = async (
-  rfid: string
-): Promise<AuthResponse> => {
-  try {
-    const response = await api.post<ApiResponse<AuthResponse>>(
-      `${
-        window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL
-      }/auth/login-with-rfid`,
-      { rfid },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Api-Key ${import.meta.env.VITE_API_KEY}`,
-        },
-      }
-    );
-    return response.data.data;
-  } catch (error) {
-    console.error("Error logging in with RFID:", error);
-    throw error;
-  }
+export const loginWithRfid = async (rfid: string) => {
+  return api.post(
+    "/auth/login-with-rfid",
+    {
+      rfid: rfid,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Api-Key ${import.meta.env.VITE_API_KEY}`,
+      },
+    }
+  );
+};
+
+export const checkAdminRfid = async (rfid: string) => {
+  return api.post("/auth/check-admin-rfid/", {
+    admin_rfid: rfid,
+  });
 };
 
 export const logoutService = async (): Promise<void> => {

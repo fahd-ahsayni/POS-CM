@@ -23,7 +23,10 @@ import { useOrderLine } from "../hooks/useOrderLine";
 import { useProductQuantity } from "../hooks/useProductQuantity";
 import OderLineAddComments from "../ui/OderLineAddComments";
 import ProductActions from "../ui/ProductActions";
-import { launchSuiteCommand } from "@/api/services";
+import {
+  launchSuiteCommand,
+  launchSuiteCommandForComboElement,
+} from "@/api/services";
 
 interface OrderLineProps {
   item: ProductSelected;
@@ -60,6 +63,13 @@ export function OrderLine({ item }: OrderLineProps) {
     useState<boolean>(currentProduct?.suite_commande || false);
 
   const [launch, setLaunch] = useState<boolean>(false);
+  // Removed old comboLaunched state
+  // const [comboLaunched, setComboLaunched] = useState<boolean>(false);
+
+  // New state map for individual badge clicks
+  const [comboLaunchedMap, setComboLaunchedMap] = useState<
+    Record<string, boolean>
+  >({});
 
   useEffect(() => {
     if (currentProduct) {
@@ -92,31 +102,60 @@ export function OrderLine({ item }: OrderLineProps) {
     }
   };
 
+  const letsLaunchSuiteCommandForComboElement = async (
+    badgeKey: string,
+    id: string,
+    elementId: string
+  ) => {
+    if (!item.is_combo) return;
+    setComboLaunchedMap((prev) => ({ ...prev, [badgeKey]: true }));
+    await launchSuiteCommandForComboElement(id, elementId);
+  };
+
   const renderComboItems = useMemo(() => {
     if (!item.is_combo || !item.combo_items) return null;
 
     return (
       <div className="mt-2 pl-4 border-l-2 border-neutral-dark-grey/50 space-y-2">
-        {item.combo_items.variants?.map((variant: any, idx: number) => (
-          <TypographySmall
-            key={`${item.id}-${variant._id}-${idx}`}
-            className="text-sm space-x-2"
-          >
-            <span className="font-medium">x{variant.quantity || 1}</span>
-            <span className="first-letter:uppercase dark:text-neutral-bright-grey text-primary-black/90 tracking-wide">
-              {toTitleCase(variant.name || "")}
+        {item.combo_items.variants?.map((variant: any, idx: number) => {
+          const badgeKey = `${item.id}-${variant._id}-${idx}`;
+          return (
+            <span className="flex items-center space-x-2" key={badgeKey}>
+              <TypographySmall className="text-sm space-x-2">
+                <span className="font-medium">x{variant.quantity || 1}</span>
+                <span className="first-letter:uppercase dark:text-neutral-bright-grey text-primary-black/90 tracking-wide">
+                  {toTitleCase(variant.name || "")}
+                </span>
+              </TypographySmall>
+              {variant.suite_commande && !item.is_ordred && (
+                <span className="text-sm font-medium">
+                  <SuiteCommandIcon className="w-4 h-auto text-info-color" />
+                </span>
+              )}
+              {variant.suite_commande && item.is_ordred && (
+                <Badge
+                  onClick={() =>
+                    letsLaunchSuiteCommandForComboElement(
+                      badgeKey,
+                      item.id || "",
+                      variant._id
+                    )
+                  }
+                  className={
+                    comboLaunchedMap[badgeKey] ? "bg-info-color text-white" : ""
+                  }
+                >
+                  {comboLaunchedMap[badgeKey] ? "Launched" : "Launch"}
+                </Badge>
+              )}
             </span>
-            {variant.suite_commande && (
-              <span className="text-sm font-medium">
-                Suite Command
-              </span>
-            )}
-          </TypographySmall>
-        ))}
+          );
+        })}
 
         {item.combo_items.supplements?.length > 0 && (
           <div className="mt-1 space-y-1">
             {item.combo_items.supplements.map((supp: any, idx: number) => {
+              const badgeKey = `${supp._id || supp.name}-${idx}`;
               const suppPrice =
                 supp.price ||
                 supp.menus?.find((menu: any) => menu.menu_id === currentMenu)
@@ -127,17 +166,42 @@ export function OrderLine({ item }: OrderLineProps) {
 
               return (
                 <div
-                  key={`${supp._id || supp.name}-${idx}`}
+                  key={badgeKey}
                   className="flex justify-between items-center"
                 >
-                  <TypographySmall className="text-sm space-x-2">
-                    <span className="font-medium">x{supp.quantity || 1}</span>
-                    <span className="first-letter:uppercase dark:text-neutral-bright-grey text-primary-black/90 tracking-wide">
-                      {toTitleCase(supp.name || "")}
-                    </span>
-                  </TypographySmall>
+                  <span className="flex items-center space-x-2">
+                    <TypographySmall className="text-sm space-x-2">
+                      <span className="font-medium">x{supp.quantity || 1}</span>
+                      <span className="first-letter:uppercase dark:text-neutral-bright-grey text-primary-black/90 tracking-wide">
+                        {toTitleCase(supp.name || "")}
+                      </span>
+                    </TypographySmall>
+                    {supp.suite_commande && !item.is_ordred && (
+                      <span className="text-sm font-medium">
+                        <SuiteCommandIcon className="w-4 h-auto text-info-color" />
+                      </span>
+                    )}
+                    {supp.suite_commande && item.is_ordred && (
+                      <Badge
+                        onClick={() =>
+                          letsLaunchSuiteCommandForComboElement(
+                            badgeKey,
+                            item.id || "",
+                            supp._id
+                          )
+                        }
+                        className={
+                          comboLaunchedMap[badgeKey]
+                            ? "bg-info-color text-white"
+                            : ""
+                        }
+                      >
+                        {comboLaunchedMap[badgeKey] ? "Launched" : "Launch"}
+                      </Badge>
+                    )}
+                  </span>
                   {price > 0 && (
-                    <TypographySmall className="font-medium">
+                    <TypographySmall className="font-medium text-xs text-white/30">
                       +{price.toFixed(currency.toFixed || 2)}{" "}
                       {currency.currency}
                     </TypographySmall>
@@ -149,7 +213,7 @@ export function OrderLine({ item }: OrderLineProps) {
         )}
       </div>
     );
-  }, [item.combo_items, item.id, currentMenu, item.is_combo]);
+  }, [item.combo_items, item.id, currentMenu, item.is_combo, comboLaunchedMap]);
 
   return (
     <motion.div

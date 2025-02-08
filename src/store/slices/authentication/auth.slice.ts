@@ -1,8 +1,4 @@
-// src/store/slices/auth/authSlice.ts
-import {
-  login as loginService,
-  loginWithRfid as loginWithRfidService,
-} from "@/api/services";
+import { login as loginService } from "@/api/services";
 import { User } from "@/interfaces/user";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
@@ -58,23 +54,6 @@ export const logout = createAsyncThunk("auth/logout", async (_) => {
   return;
 });
 
-export const loginWithRfid = createAsyncThunk<LoginResponse, string>(
-  "auth/loginWithRfid",
-  async (rfid, { rejectWithValue }) => {
-    try {
-      const response = await loginWithRfidService(rfid);
-      return response;
-    } catch (error: any) {
-      if (axios.isAxiosError(error)) {
-        const message = error.response?.data?.message || error.message;
-        console.error("RFID Login API Error:", message);
-        return rejectWithValue(message);
-      }
-      return rejectWithValue("An unexpected error occurred");
-    }
-  }
-);
-
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -113,24 +92,6 @@ const authSlice = createSlice({
         state.token = null;
         state.isAuthenticated = false;
         state.error = null;
-      })
-      .addCase(loginWithRfid.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(loginWithRfid.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
-        localStorage.setItem("token", action.payload.token);
-        localStorage.setItem("user", JSON.stringify(action.payload.user));
-        state.isAuthenticated = true;
-        state.error = null;
-      })
-      .addCase(loginWithRfid.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-        state.isAuthenticated = false;
       });
   },
 });

@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { logout } from "@/store/slices/authentication/auth.slice";
@@ -54,10 +54,7 @@ function SelectPosPage() {
   const [withOpenNewDay, setWithOpenNewDay] = useState(false);
   const [isDayClosing, setIsDayClosing] = useState(false);
 
-  const userAuthenticated = useMemo(
-    () => JSON.parse(localStorage.getItem("user") || "null"),
-    []
-  );
+  const userAuthenticated = JSON.parse(localStorage.getItem("user") || "null");
 
   // Event Handlers
   const handleChangeAccount = useCallback(() => {

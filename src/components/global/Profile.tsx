@@ -20,7 +20,10 @@ import { AppDispatch, RootState } from "@/store";
 import { logout } from "@/store/slices/authentication/auth.slice";
 import { fetchGeneralData } from "@/store/slices/data/general-data.slice";
 import { fetchPosData } from "@/store/slices/data/pos.slice";
-import { resetOrder, resetStaffIds } from "@/store/slices/order/create-order.slice";
+import {
+  resetOrder,
+  resetStaffIds,
+} from "@/store/slices/order/create-order.slice";
 import * as Headless from "@headlessui/react";
 import { formatDistanceToNowStrict } from "date-fns";
 import { ChevronDown, LogOut, Power } from "lucide-react";
@@ -32,6 +35,7 @@ import {
   isCustomerDisplayOpen,
   openCustomerDisplay,
 } from "./customer-display/useCustomerDisplay";
+import { useNavigate } from "react-router-dom"; // added import
 
 interface UserData {
   id: string;
@@ -46,6 +50,7 @@ export default function Profile() {
   const [user, setUser] = useState<UserData | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const pos = useSelector((state: RootState) => state.pos.data.pos);
+  const navigate = useNavigate(); // added
 
   const rightViewContext = useRightViewContext();
   const leftViewContext = useLeftViewContext();
@@ -64,7 +69,6 @@ export default function Profile() {
       setCurrentPos(currentPos || null);
     }
   }, [pos, user]);
-
 
   const resetAppState = useCallback(async () => {
     const posId = localStorage.getItem("posId");
@@ -141,8 +145,10 @@ export default function Profile() {
     // Perform logout actions
     dispatch(logout());
     logoutService();
-  }, [dispatch, resetAppState]);
 
+    // Navigate to the login page after logout
+    navigate("/login");
+  }, [dispatch, resetAppState, navigate]);
 
   const handleCustomerDisplay = () => {
     if (!isCustomerDisplayOpen()) {
@@ -192,16 +198,16 @@ export default function Profile() {
               <div className="text-xs text-zinc-500 dark:text-zinc-400 flex-1 text-end">
                 {currentPos?.shift?.opening_time
                   ? formatDistanceToNowStrict(
-                    new Date(currentPos.shift.opening_time),
-                    {
-                      addSuffix: false,
-                      roundingMethod: "floor",
-                    }
-                  )
-                    .replace(" minutes", "m")
-                    .replace(" minute", "m")
-                    .replace(" hours", "h")
-                    .replace(" hour", "h") + " ago"
+                      new Date(currentPos.shift.opening_time),
+                      {
+                        addSuffix: false,
+                        roundingMethod: "floor",
+                      }
+                    )
+                      .replace(" minutes", "m")
+                      .replace(" minute", "m")
+                      .replace(" hours", "h")
+                      .replace(" hour", "h") + " ago"
                   : ""}
               </div>
             </div>

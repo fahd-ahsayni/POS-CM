@@ -1,9 +1,7 @@
-import { openDay } from "@/api/services";
 import { useShift } from "@/auth/context/ShiftContext";
 import { createToast } from "@/components/global/Toasters";
 import { updateOrder } from "@/functions/updateOrder";
-import { AppDispatch, RootState } from "@/store";
-import { checkOpenDay } from "@/store/slices/authentication/open.day.slice";
+import { AppDispatch } from "@/store";
 import { fetchGeneralData } from "@/store/slices/data/general-data.slice";
 import { fetchPosData, selectPosData } from "@/store/slices/data/pos.slice";
 import { PosData } from "@/interfaces/pos";
@@ -12,6 +10,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { checkOpenDay, openDay } from "@/api/services/day.service";
 
 enum ToastMessages {
   DAY_NOT_OPEN = "Day is not open",
@@ -33,9 +32,7 @@ interface UseSelectPosReturn {
 export const useSelectPos = (): UseSelectPosReturn => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const { isOpen: isDayOpen } = useSelector(
-    (state: RootState) => state.dayStatus
-  );
+
   const data = useSelector(selectPosData);
   const { setShiftId } = useShift();
 
@@ -65,7 +62,7 @@ export const useSelectPos = (): UseSelectPosReturn => {
       try {
         setIsLoading(true);
 
-        if (!checkDay || !isDayOpen) {
+        if (!checkDay) {
           toast.warning(
             createToast(
               ToastMessages.DAY_NOT_OPEN,
@@ -86,7 +83,8 @@ export const useSelectPos = (): UseSelectPosReturn => {
         localStorage.setItem("shiftId", selectedPos?.shift?._id || "");
 
         const isAuthorizedUser =
-          selectedPos.shift?.user_id._id === userAuthenticated?.id ||
+          selectedPos.shift?.user_id._id ===
+            (userAuthenticated?.id || userAuthenticated?._id) ||
           userAuthenticated?.position === "Manager";
 
         if (selectedPos.shift?.status === "opening_control") {
@@ -108,7 +106,6 @@ export const useSelectPos = (): UseSelectPosReturn => {
           localStorage.setItem("shiftId", selectedPos.shift._id);
           dispatch(updateOrder({ shift_id: selectedPos.shift._id }));
 
-          // Wait for general data to be loaded before navigation
           const generalDataResponse = await dispatch(
             fetchGeneralData(id)
           ).unwrap();
@@ -143,21 +140,24 @@ export const useSelectPos = (): UseSelectPosReturn => {
         setIsLoading(false);
       }
     },
-    [
-      data.pos,
-      userAuthenticated,
-      checkDay,
-      isDayOpen,
-      navigate,
-      setShiftId,
-      dispatch,
-    ]
+    [data.pos, userAuthenticated, checkDay, navigate, setShiftId, dispatch]
   );
 
   useEffect(() => {
-    dispatch(checkOpenDay());
-    setCheckDay(isDayOpen ?? false);
-  }, [dispatch, isDayOpen]);
+    const checkDayStatus = async () => {
+      try {
+        const response = await checkOpenDay();
+        if (response.status === 204) {
+          setCheckDay(false);
+        } else if (response.status === 200) {
+          setCheckDay(true);
+        }
+      } catch (error) {
+        console.error("Error checking day status:", error);
+      }
+    };
+    checkDayStatus();
+  }, [userAuthenticated]);
 
   useEffect(() => {
     dispatch(fetchPosData());

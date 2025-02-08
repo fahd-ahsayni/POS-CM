@@ -110,6 +110,15 @@ export const launchSuiteCommand = async (id: string) => {
   return api.post(`/orderline/suite-ordred/${id}`);
 };
 
+export const launchSuiteCommandForComboElement = async (
+  id: string,
+  comboOrderlineId: string
+) => {
+  return api.post(`/orderline/suite/combo-orderlines/${id}`, {
+    combo_orderline_id: comboOrderlineId,
+  });
+};
+
 export class OrderService {
   static async createWithPayment(data: any) {
     return api.post("/order/create-with-payment", data);

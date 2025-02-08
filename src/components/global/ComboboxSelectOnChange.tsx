@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import {
@@ -52,6 +52,14 @@ export default function ComboboxSelectOnChange<T>({
   onSelect,
 }: ComboboxSelectOnChangeProps<T>) {
   const [query, setQuery] = useState("");
+
+  // Sync query with external value changes (e.g., from virtual keyboard)
+  useEffect(() => {
+    // If value is a string, use it. Otherwise, derive a string using displayValue (if exists)
+    const newQuery = typeof value === "string" ? value : value ? displayValue(value) : "";
+    setQuery(newQuery);
+  }, [value, displayValue]);
+
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const filteredItems =
@@ -122,7 +130,7 @@ export default function ComboboxSelectOnChange<T>({
               />
             </ComboboxButton>
 
-            {filteredItems.length > 0 && open && (
+            {(filteredItems.length > 0 && (open || query.length > 0)) && (
               <ComboboxOptions className="absolute z-10 mt-2 max-h-56 min-w-64 w-full overflow-auto rounded-lg dark:bg-primary-black bg-white py-2 shadow-lg dark:shadow-black/50 ring-1 ring-black ring-opacity-5 focus:outline-none px-2">
                 {filteredItems.map((item, index) => (
                   <ComboboxOption

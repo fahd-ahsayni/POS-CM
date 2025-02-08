@@ -1,4 +1,8 @@
-import { createPayment, payNewOrder, paySelectedProducts } from "@/api/services";
+import {
+  createPayment,
+  payNewOrder,
+  paySelectedProducts,
+} from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
 import { ALL_CATEGORIES_VIEW } from "@/components/views/home/left-section/constants";
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
@@ -83,22 +87,22 @@ export function usePayments({
   }, [selectedPayments]);
 
   const getRemainingAmount = useCallback(() => {
-    const orderTotal =
-      editedAmount ??
-      (selectedOrder
-        ? totalAmount || 0
-        : order.changed_price !== null
-        ? order.changed_price
-        : order.total_amount);
-
+    // Use totalAmount prop if provided (for selected orderlines), otherwise fallback to order totals
+    const orderTotal = editedAmount ?? (totalAmount !== undefined 
+      ? totalAmount 
+      : selectedOrder
+        ? order.changed_price !== null
+          ? order.changed_price
+          : order.total_amount
+        : 0);
     return Number((orderTotal - getTotalPaidAmount()).toFixed(2));
   }, [
     editedAmount,
+    totalAmount,
+    selectedOrder,
     order.changed_price,
     order.total_amount,
     getTotalPaidAmount,
-    selectedOrder,
-    totalAmount,
   ]);
 
   const handlePaymentMethodSelect = useCallback(
@@ -297,23 +301,24 @@ export function usePayments({
         // Check if there are selected orderlines
         if (selectedOrderlines && selectedOrderlines.length > 0) {
           // Use paySelectedProducts for partial payment
-          const payment = selectedPayments[0];
           await paySelectedProducts({
             orderlines: selectedOrderlines,
             order_id: selectedOrder._id,
-            payment_method_id: payment.originalId || '',
-            amount_given: payment.amount,
-            shift_id: shiftId || ''
+            payments: selectedPayments.map((item) => ({
+              payment_method_id: item.originalId,
+              amount_given: item.amount,
+            })),
+            shift_id: shiftId || "",
           });
         } else {
           // Use payNewOrder for full order payment
           await payNewOrder({
             order_id: selectedOrder._id,
             shift_id: shiftId,
-            payments: selectedPayments.map(item => ({
+            payments: selectedPayments.map((item) => ({
               payment_method_id: item.originalId,
               amount_given: item.amount,
-            }))
+            })),
           });
         }
       } else {
@@ -325,10 +330,10 @@ export function usePayments({
             customer_count: actualCustomerCount,
           },
           shift_id: order.shift_id || shiftId,
-          payments: selectedPayments.map(item => ({
+          payments: selectedPayments.map((item) => ({
             payment_method_id: item.originalId,
             amount_given: item.amount,
-          }))
+          })),
         });
       }
 
