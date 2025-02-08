@@ -90,14 +90,14 @@ export function usePayments({
     // Use totalAmount prop if provided (for selected orderlines), otherwise fallback to order totals
     const orderTotal =
       editedAmount ??
-      (totalAmount !== undefined
-        ? totalAmount
-        : selectedOrder
-        ? order.changed_price !== null
-          ? order.changed_price
-          : order.total_amount
-        : 0);
-    return Number((orderTotal - getTotalPaidAmount()).toFixed(2));
+      (selectedOrder
+        ? totalAmount ?? selectedOrder.total_amount
+        : order.changed_price !== null
+        ? order.changed_price
+        : order.total_amount);
+    
+    const remaining = orderTotal - getTotalPaidAmount();
+    return Number(remaining.toFixed(2));
   }, [
     editedAmount,
     totalAmount,
@@ -111,8 +111,8 @@ export function usePayments({
     (method: PaymentMethod, initialAmount?: string) => {
       const remainingAmount = getRemainingAmount();
 
-      // Prevent adding new payment method if remaining amount is >= price
-      if (remainingAmount <= 0) {
+      // Only show warning if trying to add payment when fully paid
+      if (remainingAmount <= 0 && !initialAmount) {
         toast.warning(
           createToast(
             "Payment amount exceeded",
