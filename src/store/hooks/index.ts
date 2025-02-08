@@ -97,14 +97,6 @@ export const calculateProductPrice = (
     ? calculateComboPrice(item, menuId, quantity)
     : calculateRegularPrice(item, menuId, quantity);
 
-  console.log("Price calculation for:", {
-    itemId: item._id,
-    isCombo: item.is_combo,
-    menuId,
-    quantity,
-    ...result,
-  });
-
   return result;
 };
 

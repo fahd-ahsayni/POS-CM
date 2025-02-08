@@ -133,15 +133,15 @@ export default function Payments({
     );
   };
 
-  console.log(selectedOrderlines);
-
   return (
     <Drawer
       open={open}
       setOpen={setOpen}
-      title={selectedOrderlines?.length 
-        ? `Make Payment For ${selectedOrderlines.length} Products`
-        : "Complete Payment"}
+      title={
+        selectedOrderlines?.length
+          ? `Make Payment For ${selectedOrderlines.length} Products`
+          : "Complete Payment"
+      }
       classNames="max-w-[700px]"
     >
       <div className="flex items-center justify-center h-full gap-6">

@@ -313,7 +313,6 @@ const orderSlice = createSlice({
       state.data.urgent = action.payload;
     },
     setDiscount: (state, action: PayloadAction<any | null>) => {
-      console.log("Setting discount:", action.payload); // Debug log
       state.data.discount = action.payload;
 
       const newTotal = calculateTotalFromOrderlines(
@@ -321,8 +320,6 @@ const orderSlice = createSlice({
         state.data.delivery_guy_id || "",
         state.data.discount
       );
-      console.log("New total after discount:", newTotal); // Debug log
-
       state.data.total_amount = newTotal;
     },
     holdOrder: (state) => {

@@ -63,8 +63,6 @@ export function OrderLine({ item }: OrderLineProps) {
     useState<boolean>(currentProduct?.suite_commande || false);
 
   const [launch, setLaunch] = useState<boolean>(false);
-  // Removed old comboLaunched state
-  // const [comboLaunched, setComboLaunched] = useState<boolean>(false);
 
   // New state map for individual badge clicks
   const [comboLaunchedMap, setComboLaunchedMap] = useState<
@@ -142,10 +140,10 @@ export function OrderLine({ item }: OrderLineProps) {
                     )
                   }
                   className={
-                    comboLaunchedMap[badgeKey] ? "bg-info-color text-white" : ""
+                    comboLaunchedMap[badgeKey] || variant.suite_ordred ? "bg-info-color text-white" : ""
                   }
                 >
-                  {comboLaunchedMap[badgeKey] ? "Launched" : "Launch"}
+                  {comboLaunchedMap[badgeKey] || variant.suite_ordred ? "Launched" : "Launch"}
                 </Badge>
               )}
             </span>
@@ -191,12 +189,12 @@ export function OrderLine({ item }: OrderLineProps) {
                           )
                         }
                         className={
-                          comboLaunchedMap[badgeKey]
+                          comboLaunchedMap[badgeKey] || supp.suite_ordred
                             ? "bg-info-color text-white"
                             : ""
                         }
                       >
-                        {comboLaunchedMap[badgeKey] ? "Launched" : "Launch"}
+                        {comboLaunchedMap[badgeKey]  || supp.suite_ordred ? "Launched" : "Launch"}
                       </Badge>
                     )}
                   </span>
@@ -249,12 +247,12 @@ export function OrderLine({ item }: OrderLineProps) {
           onClick={letsLaunchSuiteCommand}
           className={cn(
             "absolute left-0 top-0",
-            launch ? "bg-info-color" : "bg-interactive-dark-red"
+            launch || item.suite_ordred ? "bg-info-color" : "bg-interactive-dark-red"
           )}
         >
           {item.is_ordred && item.suite_commande && !item.is_combo && (
             <TypographyP className="-rotate-90 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white whitespace-nowrap font-medium tracking-wide">
-              {launch ? "Launched" : "Launch"}
+              {launch || item.suite_ordred ? "Launched" : "Launch"}
             </TypographyP>
           )}
         </div>

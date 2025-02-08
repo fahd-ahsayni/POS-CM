@@ -234,8 +234,6 @@ const useVariantSelection = ({
     [selectedProducts, currentMenu]
   );
 
-  console.log(orderlineData);
-
   useEffect(() => {
     dispatch(addOrderLine(selectedProducts.length > 0 ? orderlineData : []));
   }, [dispatch, orderlineData, selectedProducts.length]);

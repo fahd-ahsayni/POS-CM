@@ -92,6 +92,7 @@ export interface Product extends BaseEntity {
 export interface ProductSelected extends Product {
   product_variant_id: string;
   quantity: number;
+  suite_ordred: boolean;
   discount?: OrderLineDiscount;
   price_ttc?: number;
   price: number;
