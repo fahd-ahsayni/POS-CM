@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 interface OrderType {
   type: "takeAway" | "delivery" | "onPlace";
   name?: string;
+  delivery_companies_name?: string;
   select_coaster_call?: boolean;
   select_table?: boolean;
   select_delivery_boy?: boolean;
@@ -62,19 +63,19 @@ const DeliveryOrder: React.FC<{ order: any; orderType: OrderType }> = ({
 }) => {
   const getDeliveryText = () => {
     if (order.delivery_guy_id === null && orderType.select_delivery_boy) {
-      return `${orderType.name}`;
+      return orderType.name;
     }
     if (order.delivery_guy_id === null && !orderType.select_delivery_boy) {
-      return "Delivery";
+      if (orderType.delivery_companies_name === "Glovo") {
+        return `Glovo`;
+      } else {
+        return orderType.name;
+      }
     }
-    if (
-      order.delivery_guy_id !== null &&
-      orderType.select_delivery_boy &&
-      orderType.delivery_product_variant_id
-    ) {
+    if (order.delivery_guy_id !== null && orderType.select_delivery_boy) {
       return `${orderType.name}`;
     }
-    return "";
+    return orderType.name;
   };
 
   return (

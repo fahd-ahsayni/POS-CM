@@ -6,9 +6,9 @@ export const createToast = (
   type: ToastType = "error"
 ) => {
   const bgColorMap = {
-    error: "bg-primary-red",
+    error: "bg-error-color",
     success: "bg-green-500",
-    info: "bg-blue-500",
+    info: "bg-info-color",
     warning: "bg-yellow-500",
     default: "bg-gray-500",
   };
@@ -19,7 +19,7 @@ export const createToast = (
         className={`w-40 h-40 ${bgColorMap[type]} absolute -left-40 -top-10 blur-3xl opacity-30`}
       />
       <span className="text-sm font-medium">{title}</span>
-      <span className="text-xs font-light dark:text-white/50 light:text-primary-black/50 leading-3">
+      <span className="text-xs font-light dark:text-white/50 light:text-primary-black/50 leading-4">
         {message}
       </span>
     </span>

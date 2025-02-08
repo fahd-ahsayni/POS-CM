@@ -101,8 +101,6 @@ const Layout: FC = () => {
     );
   }
 
-  console.log(expirationDate);
-
   if (error) {
     return (
       <div className="flex items-center justify-center h-screen">

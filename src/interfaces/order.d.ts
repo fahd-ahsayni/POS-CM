@@ -18,6 +18,7 @@ export interface OrderType extends BaseEntity {
   select_table: boolean;
   select_delivery_boy: boolean;
   select_client: boolean;
+  delivery_companies_name?: string;
   select_coaster_call: boolean;
   in_mobile: boolean;
   type: OrderSelectionType; // Using the new type instead of string

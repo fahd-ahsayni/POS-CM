@@ -1,10 +1,14 @@
+import createNewOrderReceivedNotification from "@/components/Layout/components/NewOrderReceived";
+import useSocket from "@/hooks/use-socket";
 import { loadingColors } from "@/preferences";
 import { useTheme } from "@/providers/themeProvider";
 import { useAppSelector } from "@/store/hooks";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
 import { Bounce, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
+import notificationSound from "@/assets/sound/notification.mp3";
 
 // Lazy load components
 const LogInPage = lazy(() => import("../auth/LogInPage"));
@@ -20,6 +24,14 @@ const SessionExpired = lazy(() => import("@/components/errors/SessionExpired"));
 const ErrorOccurred = lazy(() => import("@/components/errors/ErrorOccurred"));
 const BrokenLink = lazy(() => import("@/components/errors/BrokenLink"));
 const Test = lazy(() => import("@/Test"));
+
+// Define AppEvents type
+type AppEvents = {
+  glovo_new_order_created: {
+    glovo_pick_up_code: string;
+    order_type_image: string;
+  };
+};
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -45,6 +57,56 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 export default function HandleApp() {
   const { theme } = useTheme();
+  const { on, off } = useSocket<AppEvents>(import.meta.env.VITE_SOCKET_URL);
+
+  useEffect(() => {
+    // Preload the audio file
+    const audio = new Audio(notificationSound);
+    let isMounted = true;
+
+    const handleNewOrder = (data: {
+      glovo_pick_up_code: string;
+      order_type_image: string;
+    }) => {
+      // Reset audio position and play
+      try {
+        audio.currentTime = 0; // Rewind to start
+        audio.play().catch((error) => {
+          if (error.name === "NotAllowedError") {
+            console.warn(
+              "Audio playback blocked by browser. Consider user interaction first."
+            );
+          } else {
+            console.error("Audio playback error:", error);
+          }
+        });
+      } catch (error) {
+        console.error("Audio initialization error:", error);
+      }
+
+      // Show notification
+      if (isMounted) {
+        toast(() =>
+          createNewOrderReceivedNotification(
+            data.glovo_pick_up_code,
+            data.order_type_image,
+            "glovo_new_order_created"
+          )
+        );
+      }
+    };
+
+    // Register event listener
+    on("glovo_new_order_created", handleNewOrder);
+
+    return () => {
+      // Cleanup
+      isMounted = false;
+      off("glovo_new_order_created");
+      audio.pause();
+      audio.remove();
+    };
+  }, [on, off, notificationSound]);
 
   return (
     <>

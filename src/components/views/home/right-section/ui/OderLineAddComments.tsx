@@ -191,8 +191,9 @@ export default function OrderLineAddComments({
                   variant="link"
                   size="icon"
                   onClick={() => removeCommentField(index)}
+                  className="p-2"
                 >
-                  <DeleteCommentIcon className="h-5 w-5 -mb-2 !fill-red-400" />
+                  <DeleteCommentIcon className="h-5 w-5 -mb-3 !fill-red-400" />
                 </Button>
               )}
             </div>

@@ -131,7 +131,7 @@ export default function ComboboxSelectOnChange<T>({
             </ComboboxButton>
 
             {(filteredItems.length > 0 && (open || query.length > 0)) && (
-              <ComboboxOptions className="absolute z-10 mt-2 max-h-56 min-w-64 w-full overflow-auto rounded-lg dark:bg-primary-black bg-white py-2 shadow-lg dark:shadow-black/50 ring-1 ring-black ring-opacity-5 focus:outline-none px-2">
+              <ComboboxOptions className="absolute z-10 mt-2 max-h-56 min-w-64 w-full overflow-auto rounded-md dark:bg-secondary-black bg-white py-2 shadow-lg dark:shadow-black/50 ring-1 ring-black ring-opacity-5 focus:outline-none px-2">
                 {filteredItems.map((item, index) => (
                   <ComboboxOption
                     key={index}
