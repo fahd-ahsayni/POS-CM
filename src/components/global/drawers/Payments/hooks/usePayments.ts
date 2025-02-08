@@ -88,9 +88,11 @@ export function usePayments({
 
   const getRemainingAmount = useCallback(() => {
     // Use totalAmount prop if provided (for selected orderlines), otherwise fallback to order totals
-    const orderTotal = editedAmount ?? (totalAmount !== undefined 
-      ? totalAmount 
-      : selectedOrder
+    const orderTotal =
+      editedAmount ??
+      (totalAmount !== undefined
+        ? totalAmount
+        : selectedOrder
         ? order.changed_price !== null
           ? order.changed_price
           : order.total_amount

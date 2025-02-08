@@ -110,6 +110,7 @@ export function OrderLine({ item }: OrderLineProps) {
     await launchSuiteCommandForComboElement(id, elementId);
   };
 
+  console.log(item)
   const renderComboItems = useMemo(() => {
     if (!item.is_combo || !item.combo_items) return null;
 

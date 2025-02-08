@@ -1,3 +1,4 @@
+import notificationSound from "@/assets/sound/notification.mp3";
 import createNewOrderReceivedNotification from "@/components/Layout/components/NewOrderReceived";
 import useSocket from "@/hooks/use-socket";
 import { loadingColors } from "@/preferences";
@@ -6,9 +7,7 @@ import { useAppSelector } from "@/store/hooks";
 import { Suspense, lazy, useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
-import { Bounce, ToastContainer } from "react-toastify";
-import { toast } from "react-toastify";
-import notificationSound from "@/assets/sound/notification.mp3";
+import { Bounce, ToastContainer, toast } from "react-toastify";
 
 // Lazy load components
 const LogInPage = lazy(() => import("../auth/LogInPage"));
@@ -68,6 +67,7 @@ export default function HandleApp() {
       glovo_pick_up_code: string;
       order_type_image: string;
     }) => {
+      if (import.meta.env.VITE_SOCKET_URL) return;
       // Reset audio position and play
       try {
         audio.currentTime = 0; // Rewind to start

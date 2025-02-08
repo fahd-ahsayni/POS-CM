@@ -110,13 +110,11 @@ const Layout: FC = () => {
   }
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden">
+    <div className="flex relative w-screen h-screen overflow-hidden">
       {isExpirationNear(expirationDate) && <BannerSessionExpired />}
-      <div className="flex justify-center">
-        <BackgroundDecoration />
-        <MainContent />
-        <Sidebar />
-      </div>
+      <BackgroundDecoration />
+      <MainContent />
+      <Sidebar />
     </div>
   );
 };

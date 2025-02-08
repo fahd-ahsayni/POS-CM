@@ -10,7 +10,7 @@ export const openCustomerDisplay = () => {
   customerDisplayWindow = window.open(
     "/customer-display",
     "CustomerDisplay",
-    "width=800,height=600"
+    "width=full,height=full"
   );
 };
 
