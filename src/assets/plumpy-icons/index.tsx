@@ -1,5 +1,30 @@
 import { SVGProps } from "react";
 
+export const ReloadIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="26"
+    height="26"
+    fill="none"
+    viewBox="0 0 26 26"
+    {...props}
+  >
+    <path
+      fill="currentColor"
+      d="M19.501 3.79v2.707h-2.708a1.626 1.626 0 0 0 0 3.25h3.792c1.197 0 2.166-.97 2.166-2.166V3.789a1.626 1.626 0 0 0-3.25 0"
+    ></path>
+    <path
+      fill="currentColor"
+      d="M5.564 11.479c.578-2.977 2.988-5.367 5.968-5.927 2.697-.506 5.197.42 6.885 2.144V7.58h3.955c-2.042-3.524-6.003-5.8-10.46-5.364-5.014.49-9.122 4.537-9.677 9.545q-.067.625-.067 1.236h3.26c0-.498.037-1.004.136-1.52"
+    ></path>
+    <path
+      fill="currentColor"
+      d="M13 23.833c5.338 0 9.774-3.86 10.669-8.941.173-.982-.55-1.892-1.547-1.892h-.1c-.788 0-1.42.588-1.56 1.363A7.586 7.586 0 0 1 13 20.583c-4.187 0-7.571-3.396-7.572-7.583h-3.26c0 5.983 4.849 10.833 10.832 10.833"
+      opacity="0.35"
+    ></path>
+  </svg>
+);
+
 export const HomeIcon = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"

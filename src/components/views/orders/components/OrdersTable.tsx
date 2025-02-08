@@ -59,8 +59,12 @@ const OrderTypeCell = ({ order }: { order: any }) => {
           return orderType.name;
         }
         if (order.delivery_guy_id === null && !orderType.select_delivery_boy) {
-          if(orderType.delivery_companies_name === "Glovo"){
-            return `Glovo: ${order.glovo_pick_up_code} - ${order.glovo_order_code}`;
+          if (orderType.delivery_companies_name === "Glovo") {
+            if (order.glovo_pick_up_code) {
+              return `Glovo - N° ${order.glovo_pick_up_code}`;
+            } else {
+              return "Glovo";
+            }
           } else {
             return orderType.name;
           }

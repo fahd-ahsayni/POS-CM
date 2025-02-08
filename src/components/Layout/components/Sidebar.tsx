@@ -1,3 +1,4 @@
+import { ReloadIcon } from "@/assets/plumpy-icons";
 import AddClient from "@/components/global/drawers/add-client/AddClient";
 import Drop from "@/components/global/drawers/drop/Drop";
 import StaffList from "@/components/global/drawers/staff-list/StaffList";
@@ -8,7 +9,6 @@ import { useRightViewContext } from "@/components/views/home/right-section/conte
 import { useOrderType } from "@/components/views/home/right-section/hooks/useOrderType";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/providers/themeProvider";
-import { RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -160,7 +160,7 @@ export default function Sidebar() {
                 "bg-interactive-vivid-red/50 dark:bg-interactive-vivid-red/20 hover:!bg-interactive-vivid-red/60 !border-interactive-dark-red/70"
               )}
             >
-              <RefreshCw className="h-4 w-4" />
+              <ReloadIcon className="h-4 w-4 text-white" />
               <span className="mt-2 text-center">Reload</span>
             </Card>
           </div>

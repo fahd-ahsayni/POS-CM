@@ -1,28 +1,29 @@
+import { closeDay } from "@/api/services";
+import { useShift } from "@/auth/context/ShiftContext";
+import { useAppDispatch } from "@/store/hooks";
+import { logout } from "@/store/slices/authentication/auth.slice";
+import { selectPosError } from "@/store/slices/data/pos.slice";
 import { memo, useCallback, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { logout } from "@/store/slices/authentication/auth.slice";
-import { selectPosError } from "@/store/slices/data/pos.slice";
-import { useAppDispatch } from "@/store/hooks";
-import { closeDay } from "@/api/services";
-import { useShift } from "@/auth/context/ShiftContext";
-import { useSelectPos } from "./hooks/use-select-pos";
 import { useAuthorizationWorkflow } from "./hooks/use-authorization-work-flow";
+import { useSelectPos } from "./hooks/use-select-pos";
 
 import { logoWithoutText } from "@/assets";
 import SessionExpired from "@/components/errors/SessionExpired";
+import Authorization from "@/components/global/drawers/auth/Authorization";
+import Drawer from "@/components/global/drawers/layout/Drawer";
+import ModalConfirmCloseDay from "@/components/global/modal/ModalConfirmCloseDay";
+import { createToast } from "@/components/global/Toasters";
 import { Button } from "@/components/ui/button";
-import { TypographyH2, TypographySmall } from "@/components/ui/typography";
 import { Switch } from "@/components/ui/switch";
+import { TypographyH2, TypographySmall } from "@/components/ui/typography";
+import { RightViewProvider } from "@/components/views/home/right-section/contexts/RightViewContext";
+import { PosData } from "@/interfaces/pos";
+import { Power } from "lucide-react";
 import PosCard from "./components/PosCard";
 import UserCard from "./components/ui/UserCard";
 import OpenShift from "./OpenShift";
-import Drawer from "@/components/global/drawers/layout/Drawer";
-import Authorization from "@/components/global/drawers/auth/Authorization";
-import ModalConfirmCloseDay from "@/components/global/modal/ModalConfirmCloseDay";
-import { RightViewProvider } from "@/components/views/home/right-section/contexts/RightViewContext";
-import { PosData } from "@/interfaces/pos";
-import { createToast } from "@/components/global/Toasters";
 
 function SelectPosPage() {
   // Custom Hooks
@@ -176,8 +177,10 @@ function SelectPosPage() {
               <Button
                 onClick={handleClickCloseDay}
                 disabled={!checkDay || isDayClosing}
+                className="gap-x-2"
               >
-                Close Day
+                <Power className="w-4 h-4" />
+                <span>Close Day</span>
               </Button>
               <Button onClick={handleOpenDay} disabled={checkDay}>
                 Open new Day
