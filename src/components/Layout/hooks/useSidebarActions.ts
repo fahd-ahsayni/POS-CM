@@ -55,6 +55,9 @@ export const useSidebarActions = (
   }, [setOpenDropDrawer]);
 
   const handleResetApp = useCallback(async () => {
+    // Dispatch event to trigger HomePage loading
+    window.dispatchEvent(new Event("startLoading"));
+
     const posId = localStorage.getItem("posId");
 
     // Clear localStorage items
