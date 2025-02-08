@@ -1,3 +1,7 @@
+import {
+  launchSuiteCommand,
+  launchSuiteCommandForComboElement,
+} from "@/api/services";
 import { DishIcon, SuiteCommandIcon } from "@/assets/figma-icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,10 +27,6 @@ import { useOrderLine } from "../hooks/useOrderLine";
 import { useProductQuantity } from "../hooks/useProductQuantity";
 import OderLineAddComments from "../ui/OderLineAddComments";
 import ProductActions from "../ui/ProductActions";
-import {
-  launchSuiteCommand,
-  launchSuiteCommandForComboElement,
-} from "@/api/services";
 
 interface OrderLineProps {
   item: ProductSelected;
@@ -140,10 +140,14 @@ export function OrderLine({ item }: OrderLineProps) {
                     )
                   }
                   className={
-                    comboLaunchedMap[badgeKey] || variant.suite_ordred ? "bg-info-color text-white" : ""
+                    comboLaunchedMap[badgeKey] || variant.suite_ordred
+                      ? "bg-info-color text-white"
+                      : ""
                   }
                 >
-                  {comboLaunchedMap[badgeKey] || variant.suite_ordred ? "Launched" : "Launch"}
+                  {comboLaunchedMap[badgeKey] || variant.suite_ordred
+                    ? "Launched"
+                    : "Launch"}
                 </Badge>
               )}
             </span>
@@ -194,7 +198,9 @@ export function OrderLine({ item }: OrderLineProps) {
                             : ""
                         }
                       >
-                        {comboLaunchedMap[badgeKey]  || supp.suite_ordred ? "Launched" : "Launch"}
+                        {comboLaunchedMap[badgeKey] || supp.suite_ordred
+                          ? "Launched"
+                          : "Launch"}
                       </Badge>
                     )}
                   </span>
@@ -247,7 +253,9 @@ export function OrderLine({ item }: OrderLineProps) {
           onClick={letsLaunchSuiteCommand}
           className={cn(
             "absolute left-0 top-0",
-            launch || item.suite_ordred ? "bg-info-color" : "bg-interactive-dark-red"
+            launch || item.suite_ordred
+              ? "bg-info-color"
+              : "bg-interactive-dark-red"
           )}
         >
           {item.is_ordred && item.suite_commande && !item.is_combo && (

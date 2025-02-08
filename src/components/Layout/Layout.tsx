@@ -7,6 +7,7 @@ import { fetchPosData, selectPosData } from "@/store/slices/data/pos.slice";
 import { FC, memo, useCallback, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
+import BannerSessionExpired from "./components/BannerSessionExpired";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 
@@ -32,10 +33,24 @@ const Layout: FC = () => {
   const [isLoading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPos, setCurrentPos] = useState<PosData | null>(null);
+  const [expirationDate, setExpirationDate] = useState<string | null>(null);
+
+  const isExpirationNear = (dateString: string | null) => {
+    if (!dateString) return false;
+    const expirationTimestamp = new Date(dateString).getTime();
+    if (isNaN(expirationTimestamp)) return false;
+    const now = Date.now();
+    const fifteenDays = 15 * 24 * 60 * 60 * 1000;
+    return (
+      expirationTimestamp > now - fifteenDays &&
+      expirationTimestamp < now + fifteenDays
+    );
+  };
 
   const initializeLayout = useCallback(async () => {
     const hasGeneralData = localStorage.getItem("generalData");
     if (hasGeneralData) {
+      setExpirationDate(JSON.parse(hasGeneralData)["expiration_date"]);
       setLoading(false);
       return;
     }
@@ -55,6 +70,7 @@ const Layout: FC = () => {
       const response = await getGeneralData(foundPos._id);
       if (response?.data) {
         localStorage.setItem("generalData", JSON.stringify(response.data));
+        setExpirationDate(response.data["expiration_date"]);
       }
     } catch (error) {
       const errorMessage =
@@ -85,6 +101,8 @@ const Layout: FC = () => {
     );
   }
 
+  console.log(expirationDate);
+
   if (error) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -94,10 +112,13 @@ const Layout: FC = () => {
   }
 
   return (
-    <div className="flex relative w-screen h-screen overflow-hidden">
-      <BackgroundDecoration />
-      <MainContent />
-      <Sidebar />
+    <div className="relative w-screen h-screen overflow-hidden">
+      {isExpirationNear(expirationDate) && <BannerSessionExpired />}
+      <div className="flex justify-center">
+        <BackgroundDecoration />
+        <MainContent />
+        <Sidebar />
+      </div>
     </div>
   );
 };

@@ -75,6 +75,7 @@ export function ComboProvider({
 
   const [totalSupplementsPrice, setTotalSupplementsPrice] = useState(0);
   const navigationLock = useRef(false);
+  
   const handleSelect = useCallback(
     (
       variant: ProductVariant,
@@ -82,90 +83,92 @@ export function ComboProvider({
       isRequired: boolean,
       maxProducts?: number
     ) => {
-      if (isRequired && !isSupplement) return;
-
-      setSelections((prev) => {
-        const updatedVariants = isSupplement ? prev.supplements : prev.variants;
-        // Filter variants for current step (use currentStep directly)
-        const stepVariants = updatedVariants.filter(
-          (v) => v.stepIndex === currentStep
-        );
-
-        if (!isRequired && maxProducts) {
-          const totalQuantity = stepVariants.reduce(
-            (sum, v) => sum + (v.quantity || 1),
-            0
-          );
-
-          if (totalQuantity + 1 > maxProducts) {
-            toast.warning(
-              createToast(
-                "Selection Limit Reached",
-                `You can only select up to ${maxProducts} items`,
-                "warning"
-              )
+      // For non-required steps:
+      if (!isRequired) {
+        if (!isSupplement) {
+          // Optional main product: limit to maxProducts.
+          setSelections((prev) => {
+            const currentVariants = prev.variants.filter(
+              (v) => v.stepIndex === currentStep
             );
-            return prev;
-          }
-        }
-
-        // Check for duplicate selection using currentStep
-        const isDuplicate = updatedVariants.some(
-          (v) => v._id === variant._id && v.stepIndex === currentStep
-        );
-
-        if (isDuplicate) {
-          return prev;
-        }
-
-        const newSelections = isSupplement
-          ? {
-              ...prev,
-              supplements: [
-                ...prev.supplements,
-                {
-                  ...variant,
-                  quantity: 1,
-                  stepIndex: currentStep,
-                  suite_commande: false,
-                },
-              ],
+            if (maxProducts && currentVariants.length >= maxProducts) {
+              toast.warning(
+                createToast(
+                  "Selection Limit Exceeded",
+                  `You can't select more than ${maxProducts} products`,
+                  "warning"
+                )
+              );
+              return prev;
             }
-          : {
+            // Avoid duplicate
+            if (currentVariants.some((v) => v._id === variant._id)) return prev;
+            const newSelections = {
               ...prev,
               variants: [
                 ...prev.variants,
-                {
-                  ...variant,
-                  quantity: 1,
-                  stepIndex: currentStep,
-                  suite_commande: false,
-                },
+                { ...variant, quantity: 1, stepIndex: currentStep, suite_commande: false },
               ],
             };
-
-        // Use currentStep for checking selections count
-        const totalSelected = newSelections.variants.filter(
-          (v) => v.stepIndex === currentStep
-        ).length;
-
-        if (
-          !isRequired &&
-          maxProducts &&
-          totalSelected >= maxProducts &&
-          !navigationLock.current
-        ) {
-          navigationLock.current = true;
-          requestAnimationFrame(() => {
-            goToNextStep();
-            setTimeout(() => {
-              navigationLock.current = false;
-            }, 50);
+            // Auto navigate if limit reached
+            if (
+              maxProducts &&
+              newSelections.variants.filter((v) => v.stepIndex === currentStep)
+                .length === maxProducts
+            ) {
+              requestAnimationFrame(() => {
+                goToNextStep();
+                setTimeout(() => {
+                  navigationLock.current = false;
+                }, 50);
+              });
+            }
+            return newSelections;
+          });
+        } else {
+          // Optional supplement: allow infinite selections and quantity.
+          setSelections((prev) => {
+            // Avoid duplicate
+            if (
+              prev.supplements.some(
+                (s) => s._id === variant._id && s.stepIndex === currentStep
+              )
+            )
+              return prev;
+            return {
+              ...prev,
+              supplements: [
+                ...prev.supplements,
+                { ...variant, quantity: 1, stepIndex: currentStep, suite_commande: false },
+              ],
+            };
           });
         }
+        return;
+      }
 
-        return newSelections;
-      });
+      // For required steps:
+      if (!isSupplement) {
+        // Main product is preset by default; do not change.
+        return;
+      } else {
+        // If a supplement is required, process similarly to optional supplements.
+        setSelections((prev) => {
+          if (
+            prev.supplements.some(
+              (s) => s._id === variant._id && s.stepIndex === currentStep
+            )
+          )
+            return prev;
+          return {
+            ...prev,
+            supplements: [
+              ...prev.supplements,
+              { ...variant, quantity: 1, stepIndex: currentStep, suite_commande: false },
+            ],
+          };
+        });
+      }
     },
     [currentStep, goToNextStep]
   );
