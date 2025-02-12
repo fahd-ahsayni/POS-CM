@@ -81,47 +81,6 @@ export const useProductSelection = ({
     [customerIndex, orderType]
   );
 
-  // const updateExistingProduct = useCallback(
-  //   (
-  //     prevProducts: ProductSelected[],
-  //     product: Product, // Add product parameter
-  //     variantId: string,
-  //     price?: number,
-  //     notes?: string[]
-  //   ): ProductSelected[] => {
-  //     // Find existing product with same variant ID, customer index AND same notes
-  //     const existingProduct = prevProducts.find(p =>
-  //       p.product_variant_id === variantId &&
-  //       p.customer_index === customerIndex &&
-  //       JSON.stringify(p.notes) === JSON.stringify(notes)
-  //     );
-
-  //     if (existingProduct) {
-  //       // Update existing product if notes match
-  //       return prevProducts.map((p) =>
-  //         p === existingProduct
-  //           ? {
-  //             ...p,
-  //             quantity: p.quantity + 1,
-  //             price: price ? p.price + price : p.price,
-  //             order_type_id: orderType || "",
-  //           }
-  //           : p
-  //       );
-  //     } else {
-  //       // Create new product entry if notes don't match
-  //       const variant = findVariant(product, variantId);
-  //       if (!variant) return prevProducts;
-
-  //       const newProduct = createNewProduct(product, variant, price);
-  //       newProduct.notes = notes || [];
-
-  //       return [...prevProducts, newProduct];
-  //     }
-  //   },
-  //   [customerIndex, orderType, findVariant, createNewProduct]
-  // );
-
   const updateProductNotes = useCallback(
     (productId: string, notes: string[], customerIndex: number) => {
       setSelectedProducts((prevSelected) =>
@@ -185,15 +144,18 @@ export const useProductSelection = ({
 
         setSelectedProducts((prevSelected) => {
           const variant = findVariant(product, variantId);
-          if (!variant) {
-            toast.warning(
-              createToast(
-                "Variant not found",
-                "Choose another variant",
-                "warning"
-              )
+          if (!variant) return prevSelected;
+
+          // For combo products, check if already exists for current customer
+          if (variant.is_menu) {
+            const comboExistsForCustomer = prevSelected.some(
+              (p) => 
+                p.product_variant_id === variant._id && 
+                p.customer_index === customerIndex
             );
-            return prevSelected;
+            if (comboExistsForCustomer) {
+              return prevSelected;
+            }
           }
 
           // If the product is ordered, always create a new entry

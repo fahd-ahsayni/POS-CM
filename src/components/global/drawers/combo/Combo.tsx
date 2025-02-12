@@ -12,7 +12,7 @@ import AnimatedStepper from "@/components/global/AnimatedStepper";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 function ComboContent() {
-  const { selectedCombo, setOpenDrawerCombo } = useLeftViewContext();
+  const { selectedCombo } = useLeftViewContext();
   const { currentStep, setCurrentStep } = useCombo();
   const { handleNavigation } = useCombo();
   const { handleFinish, isFinishing, getStepDescription } = useComboLogic(

@@ -121,6 +121,7 @@ export const isComboProduct = (
 export interface Step {
   _id: string;
   name: string;
+  stepIndex: number;
   is_required: boolean;
   is_supplement: boolean;
   product_variant_id: string;
