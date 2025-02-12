@@ -67,7 +67,8 @@ export default function HandleApp() {
       glovo_pick_up_code: string;
       order_type_image: string;
     }) => {
-      if (import.meta.env.VITE_SOCKET_URL) return;
+      if (!import.meta.env.VITE_SOCKET_URL) return;
+
       // Reset audio position and play
       try {
         audio.currentTime = 0; // Rewind to start
