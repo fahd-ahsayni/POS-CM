@@ -1,5 +1,9 @@
 // src/store/slices/data/userSlice.ts
-import { fetchCashiers, fetchManagers } from "@/api/services";
+import {
+  fetchCashiers,
+  fetchManagers,
+  fetchWaiterForLogin,
+} from "@/api/services";
 import { User } from "@/interfaces/user";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
@@ -30,14 +34,16 @@ export const fetchUsers = createAsyncThunk(
   "users/fetchUsers",
   async (_, { rejectWithValue }) => {
     try {
-      const [cashiers, managers] = await Promise.all([
+      const [cashiers, managers, waiters] = await Promise.all([
         fetchCashiers(),
         fetchManagers(),
+        fetchWaiterForLogin(),
       ]);
 
       return {
         cashiers,
         managers,
+        waiters,
       };
     } catch (error) {
       if (axios.isAxiosError(error)) {

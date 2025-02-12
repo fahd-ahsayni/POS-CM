@@ -27,8 +27,10 @@ interface LeftViewContextType {
   setOpenDrawerCombo: React.Dispatch<React.SetStateAction<boolean>>;
   selectedCombo: any | null;
   setSelectedCombo: React.Dispatch<React.SetStateAction<any | null>>;
-  currentMenu: string | null;
-  setCurrentMenu: React.Dispatch<React.SetStateAction<string | null>>;
+  currentMenu: string | null | undefined;
+  setCurrentMenu: React.Dispatch<
+    React.SetStateAction<string | null | undefined>
+  >;
   breadcrumbs: Category[];
   setBreadcrumbs: React.Dispatch<React.SetStateAction<Category[]>>;
 }
@@ -54,7 +56,7 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
   const [openDrawerCombo, setOpenDrawerCombo] = useState(false);
   const [selectedCombo, setSelectedCombo] = useState<any | null>(null);
 
-  const [currentMenu, setCurrentMenu] = useState<string | null>(null);
+  const [currentMenu, setCurrentMenu] = useState<string | null | undefined>(null);
 
   const [breadcrumbs, setBreadcrumbs] = useState<Category[]>([]);
 

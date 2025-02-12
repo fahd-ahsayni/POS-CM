@@ -64,14 +64,14 @@ export function useApplyDiscount(
       const discountData = {
         discount_id: selectedDiscount,
         reason: selectedReason,
-        confirmed_by: admin.user.id
+        confirmed_by: admin.user.id,
       };
 
       // If there's a loaded order (editing existing order)
       if (selectedOrder?._id) {
         const response = await applyDiscount({
           order_id: selectedOrder._id,
-          ...discountData
+          ...discountData,
         });
 
         if (response.status === 200) {
@@ -83,6 +83,9 @@ export function useApplyDiscount(
             )
           );
         }
+
+        localStorage.removeItem("orderDiscount");
+        localStorage.setItem("orderDiscount", JSON.stringify(discountData));
       } else {
         // For new orders, use the Redux slice
         dispatch(setDiscount(discountData));
@@ -97,17 +100,21 @@ export function useApplyDiscount(
 
       setOpen(false);
     } catch (error) {
-      console.error('Discount error:', error);
+      console.error("Discount error:", error);
       toast.error(
-        createToast(
-          "Apply Discount failed",
-          "Please try again",
-          "error"
-        )
+        createToast("Apply Discount failed", "Please try again", "error")
       );
       setAuthorization(false);
     }
-  }, [selectedDiscount, selectedReason, admin.user.id, dispatch, setOpen, setAuthorization, selectedOrder]);
+  }, [
+    selectedDiscount,
+    selectedReason,
+    admin.user.id,
+    dispatch,
+    setOpen,
+    setAuthorization,
+    selectedOrder,
+  ]);
 
   return {
     selectedDiscount,

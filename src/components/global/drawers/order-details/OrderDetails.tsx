@@ -3,6 +3,7 @@ import {
   BillIcon,
   DishIcon,
   PrinterIcon,
+  SuiteCommandIcon,
   UserIcon,
 } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ import EditPrice from "../edit-price/EditPrice";
 import Payments from "../Payments/Payments";
 import { useOrderDetails } from "./hooks/useOrderDetails";
 import { Switch } from "@/components/ui/switch";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function OrderDetails() {
   const [editPriceOpen, setEditPriceOpen] = useState(false);
@@ -104,6 +106,7 @@ export default function OrderDetails() {
   const handlePrintKitchen = async () => {
     if (!selectedOrder?._id) return;
 
+    console.log(selectedOrderlines);
     try {
       if (selectedOrderlines.length > 0) {
         await printOrder(selectedOrder._id, selectedOrderlines);
@@ -128,9 +131,11 @@ export default function OrderDetails() {
         setOpen={setOpenOrderDetails}
         title={`Order Reference: ${selectedOrder.ref}`}
         position="left"
+        description="Shows order details, customer info, and action buttons for payment or cancellation."
+        classNames="max-w-md bg-neutral-bright-grey"
       >
-        <div className="h-full relative">
-          <div className="h-full p-1.5 w-full overflow-y-auto space-y-4 pb-32 pr-4">
+        <div className="h-full flex flex-col relative">
+          <ScrollArea className="flex-1 h-full px-1.5 w-full pr-4">
             {Object.entries(groupedOrderLines).map(([customerIndex, lines]) => (
               <div key={customerIndex} className="mb-8">
                 <div className="flex items-center gap-2 mb-2">
@@ -156,12 +161,12 @@ export default function OrderDetails() {
                     />
                   </div>
                 </div>
-                <div className="w-full space-y-2">
+                <div className="w-full space-y-2 px-1">
                   {(lines as any[]).map((orderLine) => (
                     <Card
                       key={orderLine._id}
                       className={cn(
-                        "flex flex-col gap-4 w-full dark:bg-primary-black bg-neutral-bright-grey py-4 px-4",
+                        "flex flex-col gap-4 w-full dark:bg-primary-black bg-white py-4 px-4",
                         orderLine.is_paid &&
                           "pointer-events-none cursor-not-allowed opacity-40",
                         selectedOrderlines.includes(orderLine._id) &&
@@ -183,30 +188,40 @@ export default function OrderDetails() {
                           orderLine.combo_supp_ids?.length > 0) && (
                           <div className="pl-2.5 space-y-1">
                             {orderLine.combo_prod_ids?.map((combo: any) => (
-                              <TypographySmall
-                                key={combo._id}
-                                className="dark:text-secondary-white text-primary-black text-sm flex"
-                              >
-                                <span className="font-semibold w-7">
-                                  x{combo.quantity}
-                                </span>
-                                <span className="dark:text-secondary-white/90 text-primary-black capitalize">
-                                  {toTitleCase(combo.product_variant_id.name)}
-                                </span>
-                              </TypographySmall>
+                              <span className="flex items-center gap-x-2">
+                                <TypographySmall
+                                  key={combo._id}
+                                  className="dark:text-secondary-white text-primary-black text-sm flex"
+                                >
+                                  <span className="font-semibold w-7">
+                                    x{combo.quantity}
+                                  </span>
+                                  <span className="dark:text-secondary-white/90 text-primary-black capitalize">
+                                    {toTitleCase(combo.product_variant_id.name)}
+                                  </span>
+                                </TypographySmall>
+                                {combo.suite_commande && (
+                                  <SuiteCommandIcon className="size-4 text-info-color" />
+                                )}
+                              </span>
                             ))}
                             {orderLine.combo_supp_ids?.map((supp: any) => (
-                              <TypographySmall
-                                key={supp._id}
-                                className="dark:text-secondary-white text-primary-black flex items-center text-sm"
-                              >
-                                <span className="font-semibold w-7">
-                                  x{supp.quantity}
-                                </span>
-                                <span className="dark:text-secondary-white/90 text-primary-black capitalize">
-                                  {toTitleCase(supp.product_variant_id.name)}
-                                </span>
-                              </TypographySmall>
+                              <span className="flex items-center gap-x-2">
+                                <TypographySmall
+                                  key={supp._id}
+                                  className="dark:text-secondary-white text-primary-black flex items-center text-sm"
+                                >
+                                  <span className="font-semibold w-7">
+                                    x{supp.quantity}
+                                  </span>
+                                  <span className="dark:text-secondary-white/90 text-primary-black capitalize">
+                                    {toTitleCase(supp.product_variant_id.name)}
+                                  </span>
+                                </TypographySmall>
+                                {supp.suite_commande && (
+                                  <SuiteCommandIcon className="size-4 text-info-color" />
+                                )}
+                              </span>
                             ))}
                           </div>
                         )}
@@ -225,8 +240,8 @@ export default function OrderDetails() {
                 </div>
               </div>
             ))}
-          </div>
-          <div className="absolute bottom-0 left-0 w-full h-12 bg-secondary-white dark:bg-secondary-black flex items-center p-4">
+          </ScrollArea>
+          <div className="w-full bg-neutral-bright-grey dark:bg-secondary-black flex items-center p-4">
             <div className="flex justify-between items-center gap-x-2 w-full">
               {selectedOrder.status === "canceled" ? (
                 <Button className="flex-1" disabled>
@@ -253,6 +268,7 @@ export default function OrderDetails() {
               {selectedOrder.status !== "new" && (
                 <Button size="icon">
                   <BillIcon className="w-5 h-5 dark:!fill-white fill-primary-black -mr-1 mt-0.5" />
+                  <span className="sr-only">Download Facture</span>
                 </Button>
               )}
               {selectedOrder.status === "new" && (

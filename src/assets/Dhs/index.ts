@@ -7,4 +7,4 @@ import Dhs50 from "./50-DHS.svg";
 import Dhs100 from "./100-DHS.svg";
 import Dhs200 from "./200-DHS.svg";
 
-export { Dhs1, Dhs2, Dhs5, Dhs10, Dhs20, Dhs50, Dhs100, Dhs200 };
+export { Dhs1, Dhs5, Dhs10, Dhs20, Dhs50, Dhs100, Dhs200 };

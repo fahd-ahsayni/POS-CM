@@ -11,6 +11,7 @@ import {
   OWN_DELIVERY_FORM_VIEW,
 } from "../constants";
 import { useRightViewContext } from "../contexts/RightViewContext";
+import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 
 export const useSelectOrderType = () => {
   const dispatch = useDispatch();
@@ -19,6 +20,7 @@ export const useSelectOrderType = () => {
   const [displayedTypes, setDisplayedTypes] = useState<OrderType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { setViews } = useRightViewContext();
+  const { setCurrentMenu } = useLeftViewContext();
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
@@ -76,6 +78,7 @@ export const useSelectOrderType = () => {
 
       dispatch(updateOrder({ order_type_id: orderType._id }));
 
+      if (orderType) setCurrentMenu(orderType.menu_id);
       localStorage.setItem("orderType", JSON.stringify(orderType));
       window.dispatchEvent(new Event("localStorageChange"));
 

@@ -1,9 +1,11 @@
 import Drawer from "@/components/global/drawers/layout/Drawer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
-import { cn } from "@/lib/utils";
 import { ProductVariant } from "@/interfaces/product";
+import { cn } from "@/lib/utils";
+import { currency } from "@/preferences";
 import { Minus, Plus } from "lucide-react";
 import { memo, useCallback, useMemo } from "react";
 import { ORDER_SUMMARY_VIEW } from "../../right-section/constants";
@@ -110,12 +112,13 @@ export default function ProductsVariants() {
       open={openDrawerVariants}
       setOpen={setOpenDrawerVariants}
       position="left"
+      classNames="bg-neutral-bright-grey max-w-md"
     >
-      <div className="h-full w-full relative flex justify-center">
-        <div className="w-full h-full overflow-auto space-y-4 p-2">
-          {variantCards}
-        </div>
-        <div className="w-full absolute bottom-0 h-16 flex items-end dark:!bg-secondary-black bg-secondary-white px-4 sm:px-6">
+      <div className="h-full w-full relative flex flex-col justify-center">
+        <ScrollArea className="w-full h-full pr-2">
+          <div className="space-y-4 px-2">{variantCards}</div>
+        </ScrollArea>
+        <div className="w-full flex items-end py-2 dark:!bg-secondary-black bg-neutral-bright-grey sm:px-4">
           <Button className="w-full" onClick={handleConfirm}>
             Add to cart
           </Button>
@@ -140,23 +143,26 @@ const VariantCard = memo<VariantCardProps>(
       <div onClick={() => onSelect()} tabIndex={0} role="button">
         <Card
           className={cn(
-            "w-full h-full px-4 py-4 rounded-lg dark:bg-primary-black bg-neutral-bright-grey",
-            isSelected && "!ring-2 !ring-primary-red"
+            "w-full h-full px-4 py-4 rounded-lg dark:bg-primary-black bg-secondary-white h-28 flex flex-col justify-between",
+            isSelected && "!ring-1 !ring-primary-red"
           )}
         >
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between">
             <TypographyP className="font-semibold capitalize text-sm">
               {variant.name.toLowerCase()}
               {variant.is_menu && (
-                <span className="ml-2 text-xs text-primary-red">(Combo)</span>
+                <span className="ml-2 text-xs text-primary-red">
+                  (Combo menu)
+                </span>
               )}
             </TypographyP>
             {isSelected && !variant.is_menu && (
               <div className="flex items-center gap-2">
                 <Button
                   slot="decrement"
-                  className="-ms-px h-6 w-6 rounded bg-accent-white/10 hover:bg-accent-black/10"
+                  className="-ms-px h-7 w-7 rounded"
                   size="icon"
+                  variant="secondary"
                   onClick={(e) => {
                     e.stopPropagation();
                     onQuantityChange(variant._id, false);
@@ -169,8 +175,9 @@ const VariantCard = memo<VariantCardProps>(
                 </TypographyP>
                 <Button
                   slot="increment"
-                  className="-ms-px h-6 w-6 rounded bg-accent-white/10 hover:bg-accent-black/10"
+                  className="-ms-px h-7 w-7 rounded"
                   size="icon"
+                  variant="secondary"
                   onClick={(e) => {
                     e.stopPropagation();
                     onQuantityChange(variant._id, true);
@@ -181,8 +188,8 @@ const VariantCard = memo<VariantCardProps>(
               </div>
             )}
           </div>
-          <TypographySmall className="text-neutral-dark-grey font-medium text-xs">
-            {variantPrice} Dhs
+          <TypographySmall className="text-neutral-dark-grey font-medium">
+            {variantPrice} {currency.currency}
           </TypographySmall>
         </Card>
       </div>

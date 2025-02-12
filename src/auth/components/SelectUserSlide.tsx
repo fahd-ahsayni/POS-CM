@@ -1,3 +1,4 @@
+import { User } from "@/interfaces/user";
 import { RootState } from "@/store";
 import { setSelectedUser } from "@/store/slices/data/users.slice";
 import { useEffect, useMemo, useState } from "react";
@@ -6,7 +7,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import NavigationButton from "./ui/NavigationButton";
 import UserCard from "./ui/UserCard";
 import UserCardSkeleton from "./ui/UserCardSkelton";
-import { User } from "@/interfaces/user";
 
 export interface SelectUserSlideProps {
   userType: string;
@@ -99,25 +99,9 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
     );
   }
 
-  if (false) {
-    return (
-      <div className="w-full text-center text-primary-red h-[300px] flex items-center justify-center">
-        <div
-          className="bg-red-100/50 border w-full border-primary-red text-primary-red px-4 py-3 rounded relative"
-          role="alert"
-        >
-          <strong className="font-semibold pr-2">Error!</strong>
-          <span className="block text-sm sm:inline">
-            No users available. Please contact support.
-          </span>
-        </div>
-      </div>
-    );
-  }
-
   if (processedUsers.length === 0) {
     return (
-      <div className="w-full text-center text-primary-red h-[300px] flex items-center justify-center">
+      <div className="w-full text-center text-primary-red h-[308px] flex items-center justify-center">
         <div
           className="bg-red-100/30 border w-full border-primary-red text-primary-red px-4 py-3 rounded relative"
           role="alert"
@@ -155,7 +139,7 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
                 <UserCard
                   user={user}
                   isActive={user._id === selectedUser?._id}
-                  className={isActive ? "scale-110" : "scale-90"}
+                  className={isActive ? "scale-110" : "scale-90 opacity-40"}
                 />
               )}
             </SwiperSlide>

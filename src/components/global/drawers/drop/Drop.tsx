@@ -134,7 +134,7 @@ export default function Drop({
     <Drawer open={open} setOpen={setOpen} title="Register a Cash Drop">
       <div className="flex flex-col gap-4 h-full relative">
         <div className="flex flex-col gap-2 h-full">
-          <div className="flex flex-col gap-y-6 px-4">
+          <div className="flex flex-col gap-y-6 px-2">
             {/* Amount Input with Virtual Keyboard */}
             <InputComponent
               config={{
@@ -174,7 +174,7 @@ export default function Drop({
               }}
             />
           </div>
-          <div className="w-full absolute bottom-0 px-4">
+          <div className="w-full absolute bottom-0 px-2">
             <Button className="w-full" onClick={handleSubmit}>
               Submit Cash Drop
             </Button>

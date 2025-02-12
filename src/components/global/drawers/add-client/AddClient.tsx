@@ -69,7 +69,7 @@ export default function AddClient({
       description="Add a new client to manage their orders and information"
     >
       <div className="relative h-full">
-        <div className="px-4">
+        <div className="px-2">
           <ClientForm
             formData={formData}
             errors={errors}
@@ -80,7 +80,7 @@ export default function AddClient({
             isSubmitting={isLoading}
           />
         </div>
-        <div className="flex gap-x-4 pb-2 absolute bottom-0 w-full px-4">
+        <div className="flex gap-x-2 pb-2 px-2 absolute bottom-0 w-full">
           <Button
             variant="secondary"
             className="flex-1 dark:bg-white/10 bg-white border border-border"

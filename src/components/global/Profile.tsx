@@ -50,7 +50,9 @@ export default function Profile() {
   const [user, setUser] = useState<UserData | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const pos = useSelector((state: RootState) => state.pos.data.pos);
+  const posFromLocalStorage = JSON.parse(localStorage.getItem("pos") || "{}");
   const navigate = useNavigate(); // added
+  const isWaiter = user?.position === "Waiter";
 
   const rightViewContext = useRightViewContext();
   const leftViewContext = useLeftViewContext();
@@ -66,7 +68,7 @@ export default function Profile() {
       const currentPos = pos.find(
         (p: PosData) => p.shift?.user_id?._id === user.id
       );
-      setCurrentPos(currentPos || null);
+      setCurrentPos(currentPos || posFromLocalStorage);
     }
   }, [pos, user]);
 
@@ -158,7 +160,7 @@ export default function Profile() {
 
   return (
     <>
-      <CloseShift open={open} setOpen={setOpen} />
+      {!isWaiter && <CloseShift open={open} setOpen={setOpen} />}
       <Dropdown>
         <Headless.MenuButton
           className="flex items-center gap-3 rounded-xl border border-transparent"
@@ -220,10 +222,12 @@ export default function Profile() {
 
           <DropdownDivider />
 
-          <DropdownItem onClick={() => setOpen(true)}>
-            <Power size={17} className="opacity-60" aria-hidden="true" />
-            <DropdownLabel className="pl-2">End Shift</DropdownLabel>
-          </DropdownItem>
+          {!isWaiter && (
+            <DropdownItem onClick={() => setOpen(true)}>
+              <Power size={17} className="opacity-60" aria-hidden="true" />
+              <DropdownLabel className="pl-2">End Shift</DropdownLabel>
+            </DropdownItem>
+          )}
 
           <DropdownItem onClick={handleLogout}>
             <LogOut

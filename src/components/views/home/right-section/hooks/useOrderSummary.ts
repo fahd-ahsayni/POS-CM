@@ -1,4 +1,8 @@
-import { createOrderWithOutPayment, updateOrder } from "@/api/services";
+import {
+  createOrderWithOutPayment,
+  logoutService,
+  updateOrder,
+} from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
 import { useAppDispatch } from "@/store/hooks";
 import { useHoldOrders } from "@/store/hooks/useHoldOrders";
@@ -21,6 +25,7 @@ import { useRightViewContext } from "../contexts/RightViewContext";
 import { useCustomerManagement } from "../hooks/useCustomerManagement";
 import { useCoasterCall } from "./useCoasterCall";
 import { useNumberOfTable } from "./useNumberOfTable";
+import { useNavigate } from "react-router-dom";
 
 interface OrderSummaryState {
   openModalConfirmHoldOrder: boolean;
@@ -30,6 +35,7 @@ interface OrderSummaryState {
 }
 
 export const useOrderSummary = () => {
+  const navigate = useNavigate();
   const [state, setState] = useState<OrderSummaryState>({
     openModalConfirmHoldOrder: false,
     openDrawerPayments: false,
@@ -56,6 +62,8 @@ export const useOrderSummary = () => {
 
   const orders = useSelector(selectOrders);
 
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
   const isActionsDisabled = useMemo(
     () => selectedProducts.length === 0,
     [selectedProducts.length]
@@ -63,6 +71,16 @@ export const useOrderSummary = () => {
 
   const updateState = useCallback(
     (key: keyof OrderSummaryState, value: boolean) => {
+      if (key === "openDrawerPayments" && user.position === "Waiter") {
+        toast.warning(
+          createToast(
+            "Payment Failed",
+            "You are not authorized as a cashier.",
+            "warning"
+          )
+        );
+        return;
+      }
       setState((prev) => ({ ...prev, [key]: value }));
     },
     []
@@ -162,6 +180,7 @@ export const useOrderSummary = () => {
                 "success"
               )
             );
+            console.log("Debug: Order updated, user.position =", user.position);
           } catch (error) {
             console.error("Order update error:", error);
             toast.error(
@@ -173,6 +192,10 @@ export const useOrderSummary = () => {
             );
           } finally {
             setIsUpdating(false);
+            if (user.position === "Waiter") {
+              await logoutService();
+              navigate("/login");
+            }
           }
         } else if (orderType?.creation_order_with_payment) {
           // Skip confirmation modal and go straight to payments
@@ -230,8 +253,9 @@ export const useOrderSummary = () => {
       },
       setOpenModalConfirmHoldOrder: (value: boolean) =>
         updateState("openModalConfirmHoldOrder", value),
-      setOpenDrawerPayments: (value: boolean) =>
-        updateState("openDrawerPayments", value),
+      setOpenDrawerPayments: (value: boolean) => {
+        updateState("openDrawerPayments", value);
+      },
       handleAddCustomer: () => {
         if (selectedProducts.length > 0) {
           addCustomer();

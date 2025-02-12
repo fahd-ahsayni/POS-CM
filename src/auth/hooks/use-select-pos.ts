@@ -85,7 +85,8 @@ export const useSelectPos = (): UseSelectPosReturn => {
         const isAuthorizedUser =
           selectedPos.shift?.user_id._id ===
             (userAuthenticated?.id || userAuthenticated?._id) ||
-          userAuthenticated?.position === "Manager";
+          userAuthenticated?.position === "Manager" ||
+          userAuthenticated?.position === "Waiter";
 
         if (selectedPos.shift?.status === "opening_control") {
           if (!isAuthorizedUser) {

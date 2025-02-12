@@ -9,6 +9,7 @@ import { useComboLogic } from "./hooks/use-combo-logic";
 import { loadingColors } from "@/preferences";
 import { useEffect, useState } from "react";
 import AnimatedStepper from "@/components/global/AnimatedStepper";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 function ComboContent() {
   const { selectedCombo } = useLeftViewContext();
@@ -68,9 +69,9 @@ function ComboContent() {
       <TypographySmall className="mb-2">
         {getStepDescription(currentStepData)}
       </TypographySmall>
-      <main className="flex-1 overflow-auto pr-2">
+      <ScrollArea className="flex-1 pr-2">
         {currentStepData && <StepContent step={currentStepData} />}
-      </main>
+      </ScrollArea>
 
       <footer className="flex gap-2 mt-4">
         {currentStep > 0 && (
@@ -122,6 +123,7 @@ export default function Combo() {
         setOpen={setOpenDrawerCombo}
         title={selectedCombo.name}
         position="left"
+        classNames="max-w-md bg-neutral-bright-grey"
       >
         <ComboContent />
       </Drawer>

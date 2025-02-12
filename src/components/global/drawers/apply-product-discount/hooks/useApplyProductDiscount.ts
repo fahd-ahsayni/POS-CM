@@ -38,6 +38,8 @@ export const useApplyProductDiscount = ({
     return JSON.parse(localStorage.getItem("generalData") || "{}");
   }, []);
 
+  const loadedOrder = JSON.parse(localStorage.getItem("loadedOrder") || "{}");
+
   const discounts = useMemo(() => {
     const discountData: Discount[] = generalData.discount || [];
     return discountData.map((discount) => ({
@@ -67,27 +69,33 @@ export const useApplyProductDiscount = ({
         confirmed_by: admin.user.id,
       };
 
-      // Update Redux store with discount info
-      dispatch(
-        updateOrderLine({
-          _id: orderLine._id,
-          customer_index: orderLine.customer_index,
-          discount: discountInfo,
-        })
-      );
+      if (loadedOrder) {
 
-      // Update selected products
-      setSelectedProducts((prevProducts) =>
-        prevProducts.map((product) =>
-          product._id === orderLine._id &&
-          product.customer_index === orderLine.customer_index
-            ? {
-                ...product,
-                discount: discountInfo,
-              }
-            : product
-        )
-      );
+        // logic discount for products
+
+      } else {
+        // Update Redux store with discount info
+        dispatch(
+          updateOrderLine({
+            _id: orderLine._id,
+            customer_index: orderLine.customer_index,
+            discount: discountInfo,
+          })
+        );
+
+        // Update selected products
+        setSelectedProducts((prevProducts) =>
+          prevProducts.map((product) =>
+            product._id === orderLine._id &&
+            product.customer_index === orderLine.customer_index
+              ? {
+                  ...product,
+                  discount: discountInfo,
+                }
+              : product
+          )
+        );
+      }
 
       toast.success(
         createToast(

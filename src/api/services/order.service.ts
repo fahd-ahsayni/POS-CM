@@ -6,7 +6,7 @@ import { ApiResponse } from "@/interfaces/api";
 export interface PrintOrderRequest {
   order_id: string;
   pos_id: string;
-  orderlines_ids?: string[];
+  orderline_ids?: string[];
 }
 
 export const getByTableName = async (tableName: string) => {
@@ -35,11 +35,20 @@ export const printOrder = async (
       throw new Error("POS ID not found in local storage");
     }
 
-    const requestData: PrintOrderRequest = {
-      order_id: orderId,
-      pos_id: posId,
-      ...(orderlines.length > 0 && { orderlines_ids: orderlines }),
-    };
+    let requestData: PrintOrderRequest;
+
+    if (orderlines) {
+      requestData = {
+        order_id: orderId,
+        pos_id: posId,
+        orderline_ids: orderlines,
+      };
+    } else {
+      requestData = {
+        order_id: orderId,
+        pos_id: posId,
+      };
+    }
 
     const response = await api.post("/order/printer", requestData);
 

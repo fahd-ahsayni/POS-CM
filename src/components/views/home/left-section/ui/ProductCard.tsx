@@ -123,7 +123,7 @@ export function ProductCard({
           </TypographySmall>
           <div className="flex items-center justify-between w-full">
             <TypographySmall className="font-medium text-neutral-dark-grey">
-              {price?.toFixed(2)} {currency.symbol}
+              {price?.toFixed(2)} {currency.currency}
             </TypographySmall>
             <BsInfoCircleFill className="text-info-color/90 w-4 h-4" />
           </div>

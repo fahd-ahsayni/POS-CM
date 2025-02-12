@@ -9,7 +9,7 @@ interface PriceCalculation {
 
 export const calculateProductPrice = (
   item: ProductSelected,
-  currentMenu: string | null,
+  currentMenu: string | null | undefined,
   quantity: number
 ): PriceCalculation => {
   const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");

@@ -51,7 +51,7 @@ export default function Drawer({
             classNames
           )}
         >
-          <div className="flex h-full flex-col pb-4">
+          <div className="flex h-full flex-col pb-2">
             <SheetHeader className="max-w-md pt-4 px-4">
               <SheetTitle className="-mb-1">
                 {toTitleCase(title.toLowerCase())}

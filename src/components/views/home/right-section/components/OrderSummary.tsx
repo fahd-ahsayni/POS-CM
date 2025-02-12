@@ -207,12 +207,10 @@ const OrderSummary = () => {
             {isUpdating ? (
               <>
                 <BeatLoader color={loadingColors.primary} size={8} />
-                Updating...
               </>
             ) : isProcessing ? (
               <>
                 <BeatLoader color={loadingColors.primary} size={8} />
-                Processing...
               </>
             ) : !!loadedOrder ? (
               "Update Order"

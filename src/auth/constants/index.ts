@@ -1,4 +1,4 @@
-import { Dhs1, Dhs5, Dhs10, Dhs20, Dhs50, Dhs100, Dhs200, Dhs2 } from "@/assets/Dhs";
+import { Dhs1, Dhs5, Dhs10, Dhs20, Dhs50, Dhs100, Dhs200 } from "@/assets/Dhs";
 
 export const CurrencyQuantityData = [
   {
@@ -35,12 +35,6 @@ export const CurrencyQuantityData = [
     placeholder: "Quantity of 5 MAD",
     value: 5,
     img: Dhs5,
-    className: "h-10 w-10",
-  },
-  {
-    placeholder: "Quantity of 2 MAD",
-    value: 2,
-    img: Dhs2,
     className: "h-10 w-10",
   },
   {

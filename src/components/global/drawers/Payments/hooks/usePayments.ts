@@ -1,5 +1,6 @@
 import {
   createPayment,
+  logoutService,
   payNewOrder,
   paySelectedProducts,
 } from "@/api/services";
@@ -11,15 +12,16 @@ import { useRightViewContext } from "@/components/views/home/right-section/conte
 import { useCoasterCall } from "@/components/views/home/right-section/hooks/useCoasterCall";
 import { useCustomerManagement } from "@/components/views/home/right-section/hooks/useCustomerManagement";
 import { useNumberOfTable } from "@/components/views/home/right-section/hooks/useNumberOfTable";
+import { Order } from "@/interfaces/order";
 import { currency } from "@/preferences";
 import {
   resetOrder,
   selectOrder,
   setCustomerCount,
 } from "@/store/slices/order/create-order.slice";
-import { Order } from "@/interfaces/order";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 /**
@@ -70,6 +72,9 @@ export function usePayments({
   const { setTableNumber } = useNumberOfTable();
   const { setNumber } = useCoasterCall();
 
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
   // Initialize payment methods
   useEffect(() => {
     const fetchPaymentMethods = () => {
@@ -95,7 +100,7 @@ export function usePayments({
         : order.changed_price !== null
         ? order.changed_price
         : order.total_amount);
-    
+
     const remaining = orderTotal - getTotalPaidAmount();
     return Number(remaining.toFixed(2));
   }, [
@@ -372,6 +377,10 @@ export function usePayments({
       );
     } finally {
       setIsProcessing(false);
+      if (user.position === "Waiter") {
+        await logoutService();
+        navigate("/login");
+      }
     }
   }, [
     isProcessing,

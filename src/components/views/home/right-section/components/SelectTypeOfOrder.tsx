@@ -9,17 +9,32 @@ import { memo, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { BeatLoader } from "react-spinners";
 import { toast } from "react-toastify";
-import "swiper/css/pagination";
-import { Pagination } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
 import { useSelectOrderType } from "../hooks/useSelectOrderType";
 import { OrderCard } from "../ui/OrderTypeCards";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { createToast } from "@/components/global/Toasters";
 
 function SelectTypeOfOrder() {
   const {
     state: { selectedType, displayedTypes, isLoading },
     actions: { handleOrderTypeSelect, handleBack },
   } = useSelectOrderType();
+
+  // Fallback to an empty array if orderTypes doesn't exist
+  const generalData = JSON.parse(localStorage.getItem("generalData") || "{}");
+  const orderTypesFromLocalStorage = generalData["orderTypes"] || [];
+
+  // Use displayedTypes if available, otherwise fallback to orderTypesFromLocalStorage
+  const typesToDisplay =
+    displayedTypes && displayedTypes.length
+      ? displayedTypes
+      : orderTypesFromLocalStorage;
 
   const dispatch = useDispatch();
 
@@ -32,12 +47,11 @@ function SelectTypeOfOrder() {
     ) {
       const shiftId = localStorage.getItem("shiftId");
       if (!shiftId) {
-        toast.error("No active shift found");
+        toast.error(createToast("Error", "No active shift found", "error"));
         return;
       }
       const singleType = displayedTypes[0];
       handleOrderTypeSelect(singleType);
-
       dispatch(updateOrder({ shift_id: shiftId }));
     }
   }, [displayedTypes, selectedType, handleOrderTypeSelect, dispatch]);
@@ -45,14 +59,11 @@ function SelectTypeOfOrder() {
   const handleTypeSelect = (type: OrderType) => (event: React.MouseEvent) => {
     event.preventDefault();
     const shiftId = localStorage.getItem("shiftId");
-
     if (!shiftId) {
-      toast.error("No active shift found");
+      toast.error(createToast("Error", "No active shift found", "error"));
       return;
     }
-
     handleOrderTypeSelect(type);
-
     dispatch(updateOrder({ shift_id: shiftId }));
   };
 
@@ -64,7 +75,7 @@ function SelectTypeOfOrder() {
     );
   }
 
-  if (!displayedTypes.length) {
+  if (!typesToDisplay.length) {
     return (
       <div className="flex items-center justify-center h-full">
         <p>No order types available</p>
@@ -87,40 +98,23 @@ function SelectTypeOfOrder() {
         </TypographyH3>
       </div>
       <div
-        className={cn(
-          "flex-1 flex h-full py-32 items-center justify-center relative",
-          displayedTypes.length > 3 ? "pr-8 pl-3" : "px-4"
-        )}
+        className={cn("h-full flex items-center justify-center relative px-4")}
       >
-        {displayedTypes.length > 3 ? (
-          <Swiper
-            direction="vertical"
-            slidesPerView={3}
-            spaceBetween={16}
-            className="w-full h-full products-swiper"
-            modules={[Pagination]}
-            pagination={{
-              clickable: true,
-              type: "bullets",
-            }}
-          >
-            {displayedTypes.map((type) => (
-              <SwiperSlide key={type._id} className="pl-5">
+        <Carousel
+          opts={{ align: "start" }}
+          orientation="vertical"
+          className="w-full"
+        >
+          <CarouselContent className="-mt-1 h-[350px]">
+            {typesToDisplay.map((type: OrderType) => (
+              <CarouselItem key={type._id} className="pt-2 basis-1/3">
                 <OrderCard orderType={type} onSelect={handleTypeSelect(type)} />
-              </SwiperSlide>
+              </CarouselItem>
             ))}
-          </Swiper>
-        ) : (
-          <div className="flex flex-col gap-4 w-full">
-            {displayedTypes.map((type) => (
-              <OrderCard
-                key={type._id}
-                orderType={type}
-                onSelect={handleTypeSelect(type)}
-              />
-            ))}
-          </div>
-        )}
+          </CarouselContent>
+          <CarouselPrevious className="bg-primary-red" />
+          <CarouselNext className="bg-primary-red" />
+        </Carousel>
       </div>
     </div>
   );

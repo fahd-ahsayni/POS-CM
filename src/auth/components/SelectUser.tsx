@@ -92,12 +92,7 @@ export default function SelectUser() {
       <header className="absolute top-0 left-0 z-10 flex h-16 flex-shrink-0">
         <div className="flex flex-1 justify-between px-4 sm:px-6">
           <div className="flex items-center gap-2">
-            <img
-              // src={theme.theme === "dark" ? logoDarkMode : logoLightMode}
-              src={logoWithoutText}
-              alt="logo"
-              className="w-8 h-auto"
-            />
+            <img src={logoWithoutText} alt="logo" className="w-8 h-auto" />
             <span>
               <TypographySmall className="font-semibold leading-[0] text-xs text-primary-black">
                 Caisse

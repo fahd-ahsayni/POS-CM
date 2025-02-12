@@ -125,12 +125,13 @@ const useVariantSelection = ({
                 : Math.max(0, product.quantity - 1);
 
               if (newQuantity === 0) {
-                return product; // Will be filtered out later
+                // Variant quantity reaches 0, so mark for removal.
+                return { ...product, quantity: 0 };
               }
 
               // Handle combo products
               if (product.is_combo && product.combo_items) {
-                // ... existing combo logic ...
+                // ...existing combo logic...
               }
 
               // Handle regular products

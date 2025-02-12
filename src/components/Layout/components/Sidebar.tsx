@@ -78,6 +78,8 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
 export default function Sidebar() {
   const { views } = useRightViewContext();
   const { theme } = useTheme();
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const isWaiter = user.position === "Waiter";
   const { pathname } = useLocation();
   const [openClientDrawer, setOpenClientDrawer] = useState(false);
   const [openDropDrawer, setOpenDropDrawer] = useState(false);
@@ -92,13 +94,17 @@ export default function Sidebar() {
 
   return (
     <div className="hidden w-full h-screen md:block z-10">
-      <AddClient open={openClientDrawer} setOpen={setOpenClientDrawer} />
-      <Drop open={openDropDrawer} setOpen={setOpenDropDrawer} />
-      <StaffList
-        open={openStaffList}
-        setOpen={setOpenStaffList}
-        onSelect={handleStaffSelect}
-      />
+      {!isWaiter && (
+        <>
+          <AddClient open={openClientDrawer} setOpen={setOpenClientDrawer} />
+          <Drop open={openDropDrawer} setOpen={setOpenDropDrawer} />
+          <StaffList
+            open={openStaffList}
+            setOpen={setOpenStaffList}
+            onSelect={handleStaffSelect}
+          />
+        </>
+      )}
       <div className="flex w-full flex-col h-full items-center py-3">
         <div className="w-full flex-1 flex flex-col border-l border-white/10 justify-between px-2">
           <div className="flex flex-col gap-y-6">
@@ -124,17 +130,24 @@ export default function Sidebar() {
                   route: item.route,
                   icon: item.icon,
                   isDisabled:
-                    item.name === "Clients"
+                    isWaiter &&
+                    ["Waiters", "Drop", "Clients", "Drawer"].includes(item.name)
+                      ? true
+                      : item.name === "Clients"
                       ? views !== ORDER_SUMMARY_VIEW
                       : item.name === "Waiters"
                       ? !storedOrderType || orderType.isWaitersDisabled()
                       : item.isDisabled,
-                  disabledMessage: item.disabledMessage,
+                  disabledMessage: isWaiter
+                    ? "Not available for waiters"
+                    : item.disabledMessage,
                 }}
                 pathname={pathname}
                 theme={theme}
                 onClick={
-                  item.name === "Waiters"
+                  isWaiter && ["Waiters", "Drop", "Clients", "Drawer"].includes(item.name)
+                    ? undefined
+                    : item.name === "Waiters"
                     ? () => setOpenStaffList(true)
                     : item.name === "Drop"
                     ? () => setOpenDropDrawer(true)

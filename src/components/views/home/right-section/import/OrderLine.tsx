@@ -327,7 +327,7 @@ export function OrderLine({ item }: OrderLineProps) {
                   className={cn(
                     "h-7 w-7 bg-accent-white/10 hover:bg-accent-white/20 rounded transition-colors duration-200",
                     suiteCommandCallToAction &&
-                      "ring-1 ring-error-color bg-error-color shadow-lg shadow-error-color/50"
+                      "ring-1 ring-error-color bg-error-color shadow-lg shadow-error-color/50 hover:bg-error-color"
                   )}
                   onClick={handleSuiteCommandCallToAction}
                 >

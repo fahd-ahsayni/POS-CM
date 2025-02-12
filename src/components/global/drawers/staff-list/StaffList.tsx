@@ -1,19 +1,19 @@
 import { fetchLivreurs, fetchWaiters, updateOrder } from "@/api/services";
+import { unknownUser } from "@/assets";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { TypographyP } from "@/components/ui/typography";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { TypographyP, TypographySmall } from "@/components/ui/typography";
+import { StaffUser } from "@/interfaces/staff";
 import { useAppDispatch } from "@/store/hooks";
 import {
   setDeliveryGuyId,
   setWaiterId,
 } from "@/store/slices/order/create-order.slice";
-import { StaffUser } from "@/interfaces/staff";
-import { Phone } from "lucide-react";
-import { useCallback, useEffect, useId, useState } from "react";
+import { Phone, Salad, Star } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import Drawer from "../layout/Drawer";
-import { unknownUser } from "@/assets";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import Verified from "./Verified";
 
 interface StaffListProps {
   open: boolean;
@@ -26,7 +26,6 @@ const StaffList = ({ open, setOpen }: StaffListProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedStaffId, setSelectedStaffId] = useState<string>("");
-  const id = useId();
 
   const dispatch = useAppDispatch();
 
@@ -108,48 +107,86 @@ const StaffList = ({ open, setOpen }: StaffListProps) => {
     setOpen(false);
   };
 
+  console.log(staffList);
+
   const renderContent = () => {
     if (isLoading) return <LoadingState />;
     if (error) return <ErrorState error={error} />;
     if (staffList.length === 0) return <EmptyState isDelivery={isDelivery} />;
 
     return (
-      <RadioGroup
-        className="gap-2"
-        value={selectedStaffId}
-        onValueChange={handleStaffSelection}
-      >
+      <div className="space-y-4">
         {staffList.map((staff) => (
           <div
             key={staff._id}
-            className="relative flex w-full items-start gap-4 rounded-lg border border-input p-4 shadow-sm shadow-black/5 has-[[data-state=checked]]:border-primary-red dark:bg-primary-black bg-white"
+            onClick={() => handleStaffSelection(staff._id)}
+            className={`relative flex gap-x-4 w-full cursor-pointer px-4 border bg-secondary-white dark:bg-primary-black rounded-lg py-3.5 ${
+              selectedStaffId === staff._id
+                ? "border-primary-red border"
+                : "border-input"
+            }`}
           >
-            <RadioGroupItem
-              value={staff._id}
-              id={`${id}-${staff._id}`}
-              className="order-1 after:absolute after:inset-0"
-            />
-            <div className="flex grow items-start gap-5">
-              <Avatar className="rounded-lg">
-                <AvatarImage
-                  src={
-                    staff?.image
-                      ? `${import.meta.env.VITE_BASE_URL}${staff?.image}`
-                      : unknownUser
-                  }
-                />
-              </Avatar>
-              <div className="grid grow gap-2">
-                <Label htmlFor={`${id}-${staff._id}`}>{staff.name}</Label>
-                <p className="text-xs text-muted-foreground flex items-center gap-x-2">
-                  <Phone className="size-3" />
-                  <span>{staff.phone}</span>
-                </p>
+            <div className="h-full">
+              <div className="relative">
+                <Avatar className="size-20 rounded-lg">
+                  <AvatarImage
+                    src={
+                      staff.image
+                        ? `${
+                            window.ENV?.VITE_BASE_URL ||
+                            import.meta.env.VITE_BASE_URL
+                          }${staff.image}`
+                        : unknownUser
+                    }
+                    alt={staff.name}
+                  />
+                </Avatar>
+              </div>
+            </div>
+            <div className="flex-1">
+              <div className="flex mb-1.5 justify-between items-center">
+                <div className="flex space-x-1">
+                  <TypographyP className="font-medium">
+                    {staff.name}
+                  </TypographyP>
+                  <Verified className="size-5" />
+                </div>
+                <div className="flex gap-x-1">
+                  <Star
+                    size={16}
+                    className="size-3.5 fill-yellow-500 stroke-yellow-500"
+                  />
+                  <TypographySmall className="-mt-0.5 font-semibold">
+                    4.9
+                  </TypographySmall>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-1">
+                <TypographySmall className="inline rounded-md bg-red-500/15 px-2 py-0.5 text-red-500 text-xs">
+                  Senior
+                </TypographySmall>
+                <TypographySmall className="inline rounded-md bg-amber-500/15 px-2 py-0.5 text-amber-500 text-xs">
+                  VIP Service
+                </TypographySmall>
+              </div>
+              <div className="pt-3 flex gap-x-4">
+                <span className="flex gap-x-1.5 dark:text-white/70 text-primary-black/70">
+                  <Phone size={14} />
+                  <TypographySmall className="inline text-xs font-medium">
+                    06 34 34 34 34 34
+                  </TypographySmall>
+                </span>
+                <span className="flex gap-x-1.5 dark:text-white/70 text-primary-black/70">
+                  <Salad size={14} />
+                  <TypographySmall className="inline text-xs font-medium">
+                    32
+                  </TypographySmall>
+                </span>
               </div>
             </div>
           </div>
         ))}
-      </RadioGroup>
+      </div>
     );
   };
 
@@ -158,27 +195,27 @@ const StaffList = ({ open, setOpen }: StaffListProps) => {
       open={open}
       setOpen={setOpen}
       title={isDelivery ? "Delivery Boys" : "Waiters"}
-      classNames="focus:outline-none max-w-md"
+      classNames="focus:outline-none max-w-md bg-neutral-bright-grey"
       description={`Select a ${
         isDelivery ? "delivery boy" : "waiter"
       } to assign`}
     >
       <div className="flex h-full flex-col">
-        <div className="flex-1 overflow-y-auto space-y-4 pr-3">
+        <ScrollArea className="flex-1 flex flex-col justify-center items-center pr-3">
           {renderContent()}
-        </div>
+        </ScrollArea>
 
         <div className="pt-4 flex items-center justify-center gap-2">
           <Button
             variant="secondary"
-            className="dark:bg-white/10 bg-white border border-border"
+            className="dark:bg-white/10 bg-white border border-border w-full"
             onClick={handleReset}
           >
             Reset
           </Button>
           <Button
             variant="default"
-            className="flex-1"
+            className="w-full"
             onClick={handleConfirm}
             disabled={!selectedStaffId}
           >

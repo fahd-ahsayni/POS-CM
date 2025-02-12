@@ -43,7 +43,7 @@ const AnimatedStepper: React.FC<StepperProps> = ({
 
   return (
     <ScrollArea className="w-full whitespace-nowrap rounded-md">
-      <div className="flex items-center pb-4 pt-2" ref={scrollAreaRef}>
+      <div className="flex items-center py-2" ref={scrollAreaRef}>
         {steps.map((step, index) => (
           <div key={step.number} className="flex flex-col items-center">
             <div className="flex items-center">
@@ -51,12 +51,12 @@ const AnimatedStepper: React.FC<StepperProps> = ({
                 <motion.div
                   onClick={() => onStepClick(step.number)}
                   className={cn(
-                    "w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold cursor-pointer",
+                    "w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold cursor-pointer",
                     step.number === currentStep
                       ? "bg-primary-red text-primary-foreground shadow-lg shadow-primary-red/40 text-white"
                       : step.number < currentStep
                       ? "bg-primary-red text-white"
-                      : "bg-primary-black dark:bg-white dark:text-primary-black text-secondary-white"
+                      : "bg-primary-black dark:bg-white dark:text-primary-black text-secondary-white opacity-50"
                   )}
                   initial={{ scale: 1 }}
                   whileHover={{ scale: 1.1 }}
@@ -96,7 +96,7 @@ const AnimatedStepper: React.FC<StepperProps> = ({
               </div>
               {index < steps.length - 1 && (
                 <motion.div
-                  className="w-14 h-[2px] mb-5 -mx-5"
+                  className="w-10 h-[2px] mb-5 -mx-5"
                   initial={{ backgroundColor: "hsl(var(--muted))" }}
                   animate={{
                     backgroundColor:

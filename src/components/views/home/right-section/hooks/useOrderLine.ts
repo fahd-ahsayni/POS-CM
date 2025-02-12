@@ -5,7 +5,7 @@ import { toTitleCase } from "@/functions/string-transforms";
 
 interface UseOrderLineProps {
   item: ProductSelected;
-  currentMenu: string | null;
+  currentMenu: string | null | undefined;
   customerIndex: number;
   setCustomerIndex: (index: number) => void;
 }
