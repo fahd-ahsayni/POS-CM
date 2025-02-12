@@ -149,9 +149,9 @@ const StaffList = ({ open, setOpen }: StaffListProps) => {
                   <TypographyP className="font-medium">
                     {staff.name}
                   </TypographyP>
-                  <Verified className="size-5" />
+                  {/* <Verified className="size-5" /> */}
                 </div>
-                <div className="flex gap-x-1">
+                {/* <div className="flex gap-x-1">
                   <Star
                     size={16}
                     className="size-3.5 fill-yellow-500 stroke-yellow-500"
@@ -159,29 +159,29 @@ const StaffList = ({ open, setOpen }: StaffListProps) => {
                   <TypographySmall className="-mt-0.5 font-semibold">
                     4.9
                   </TypographySmall>
-                </div>
+                </div> */}
               </div>
-              <div className="flex flex-wrap gap-1">
+              {/* <div className="flex flex-wrap gap-1">
                 <TypographySmall className="inline rounded-md bg-red-500/15 px-2 py-0.5 text-red-500 text-xs">
                   Senior
                 </TypographySmall>
                 <TypographySmall className="inline rounded-md bg-amber-500/15 px-2 py-0.5 text-amber-500 text-xs">
                   VIP Service
                 </TypographySmall>
-              </div>
+              </div> */}
               <div className="pt-3 flex gap-x-4">
                 <span className="flex gap-x-1.5 dark:text-white/70 text-primary-black/70">
                   <Phone size={14} />
                   <TypographySmall className="inline text-xs font-medium">
-                    06 34 34 34 34 34
+                    {staff.phone}
                   </TypographySmall>
                 </span>
-                <span className="flex gap-x-1.5 dark:text-white/70 text-primary-black/70">
+                {/* <span className="flex gap-x-1.5 dark:text-white/70 text-primary-black/70">
                   <Salad size={14} />
                   <TypographySmall className="inline text-xs font-medium">
                     32
                   </TypographySmall>
-                </span>
+                </span> */}
               </div>
             </div>
           </div>

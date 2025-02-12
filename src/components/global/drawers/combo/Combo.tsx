@@ -12,13 +12,27 @@ import AnimatedStepper from "@/components/global/AnimatedStepper";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 function ComboContent() {
-  const { selectedCombo } = useLeftViewContext();
+  const { selectedCombo, setOpenDrawerCombo } = useLeftViewContext();
   const { currentStep, setCurrentStep } = useCombo();
   const { handleNavigation } = useCombo();
   const { handleFinish, isFinishing, getStepDescription } = useComboLogic(
     currentStep,
     selectedCombo?.steps[currentStep]
   );
+
+  // Add this effect to handle single required step
+  useEffect(() => {
+    if (
+      selectedCombo?.steps.length === 1 &&
+      selectedCombo.steps[0].is_required &&
+      !selectedCombo.steps[0].is_supplement
+    ) {
+      const timeoutId = setTimeout(() => {
+        handleFinish();
+      }, 100);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [selectedCombo, handleFinish]);
 
   const steps =
     selectedCombo?.steps.map((_: any, index: number) => ({
@@ -29,6 +43,19 @@ function ComboContent() {
   const [visitedSteps, setVisitedSteps] = useState(new Set());
 
   if (!selectedCombo) return null;
+
+  // Don't render the UI for single required step
+  if (
+    selectedCombo.steps.length === 1 &&
+    selectedCombo.steps[0].is_required &&
+    !selectedCombo.steps[0].is_supplement
+  ) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <BeatLoader color={loadingColors.primary} size={8} />
+      </div>
+    );
+  }
 
   const isLastStep = currentStep === selectedCombo.steps.length - 1;
   const currentStepData = selectedCombo.steps[currentStep];

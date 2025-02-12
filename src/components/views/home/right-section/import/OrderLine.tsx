@@ -331,7 +331,12 @@ export function OrderLine({ item }: OrderLineProps) {
                   )}
                   onClick={handleSuiteCommandCallToAction}
                 >
-                  <SuiteCommandIcon className="dark:text-white text-primary-black" />
+                  <SuiteCommandIcon
+                    className={cn(
+                      "dark:text-white text-primary-black",
+                      suiteCommandCallToAction && "!dark:text-white !text-white"
+                    )}
+                  />
                   <span className="sr-only">Suite Command</span>
                 </Button>
               )}

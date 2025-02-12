@@ -24,19 +24,27 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
   const handleFinish = useCallback(async () => {
     if (!selectedCombo) return;
 
-    // Check if there are any selections
-    const hasVariants = selections.variants.length > 0;
-    const hasSupplements = selections.supplements.length > 0;
+    // For single required step, we don't need to check selections
+    const isSingleRequiredStep =
+      selectedCombo.steps.length === 1 &&
+      selectedCombo.steps[0].is_required &&
+      !selectedCombo.steps[0].is_supplement;
 
-    if (!hasVariants && !hasSupplements) {
-      toast.error(
-        createToast(
-          "Invalid Combo",
-          "Please select at least one product",
-          "warning"
-        )
-      );
-      return;
+    if (!isSingleRequiredStep) {
+      // Check if there are any selections
+      const hasVariants = selections.variants.length > 0;
+      const hasSupplements = selections.supplements.length > 0;
+
+      if (!hasVariants && !hasSupplements) {
+        toast.error(
+          createToast(
+            "Invalid Combo",
+            "Please select at least one product",
+            "warning"
+          )
+        );
+        return;
+      }
     }
 
     try {
