@@ -24,7 +24,7 @@ export function Input({
   const [isEditing, setIsEditing] = React.useState(false);
   const [inputValue, setInputValue] = React.useState(String(value));
 
-  const { openKeyboard } = useVirtualKeyboard(); // <-- grab context methods
+  const { openKeyboard } = useVirtualKeyboard();
 
   React.useEffect(() => {
     if (!isEditing) {
