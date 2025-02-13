@@ -31,10 +31,10 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
 
     // Deduplicate selections before processing
     const uniqueVariants = Array.from(
-      new Map(selections.variants.map(v => [v._id, v])).values()
+      new Map(selections.variants.map((v) => [v._id, v])).values()
     );
     const uniqueSupplements = Array.from(
-      new Map(selections.supplements.map(s => [s._id, s])).values()
+      new Map(selections.supplements.map((s) => [s._id, s])).values()
     );
 
     if (!isSingleRequiredStep) {
@@ -57,11 +57,7 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
     try {
       setIsFinishing(true);
 
-      // Check availability for all selected variants and supplements
-      const variantsToCheck = [
-        ...uniqueVariants,
-        ...uniqueSupplements,
-      ];
+      const variantsToCheck = [...uniqueVariants, ...uniqueSupplements];
 
       for (const variant of variantsToCheck) {
         const response = await checkProductAvailability(variant._id);
@@ -97,8 +93,8 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
       // Check if this combo is already selected for the current customer
       setSelectedProducts((prevProducts: any[]) => {
         const isComboAlreadySelectedForCustomer = prevProducts.some(
-          (p) => 
-            p.product_variant_id === selectedCombo._id && 
+          (p) =>
+            p.product_variant_id === selectedCombo._id &&
             p.customer_index === customerIndex
         );
 
@@ -109,9 +105,9 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
         }
 
         // Continue with normal combo creation
-        const uniqueComboId = `${selectedCombo._id}_${Date.now()}_${Math.random()
-          .toString(36)
-          .substr(2, 9)}`;
+        const uniqueComboId = `${
+          selectedCombo._id
+        }_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
         // Create combo product
         const comboProduct = {
@@ -178,6 +174,7 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
           "error"
         )
       );
+      setOpenDrawerCombo(false);
     } finally {
       setIsFinishing(false);
     }
@@ -200,7 +197,7 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
         ...prev,
         variants: [
           // Keep variants from other steps
-          ...prev.variants.filter(v => v.stepIndex !== currentStep),
+          ...prev.variants.filter((v) => v.stepIndex !== currentStep),
           // Add new required variants for current step
           ...selectedStep.product_variant_ids.map((variant) => ({
             ...variant,

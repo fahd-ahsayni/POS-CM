@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 import { toast } from "react-toastify";
-import { useStep } from "@/hooks/use-step"; // Add this import
+import { useStep } from "@/hooks/use-step";
 
 interface SelectionState {
   variants: SelectedVariant[];

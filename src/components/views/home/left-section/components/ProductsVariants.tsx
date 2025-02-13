@@ -143,7 +143,7 @@ const VariantCard = memo<VariantCardProps>(
       <div onClick={() => onSelect()} tabIndex={0} role="button">
         <Card
           className={cn(
-            "w-full h-full px-4 py-4 rounded-lg dark:bg-primary-black bg-secondary-white h-28 flex flex-col justify-between",
+            "w-full px-4 py-4 rounded-lg dark:bg-primary-black bg-secondary-white h-28 flex flex-col justify-between",
             isSelected && "!ring-1 !ring-primary-red"
           )}
         >

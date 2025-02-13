@@ -1,13 +1,14 @@
 import notificationSound from "@/assets/sound/notification.mp3";
 import createNewOrderReceivedNotification from "@/components/Layout/components/NewOrderReceived";
 import useSocket from "@/hooks/use-socket";
+import { useToast } from "@/hooks/use-toast";
 import { loadingColors } from "@/preferences";
 import { useTheme } from "@/providers/themeProvider";
 import { useAppSelector } from "@/store/hooks";
 import { Suspense, lazy, useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
-import { Bounce, ToastContainer, toast } from "react-toastify";
+import { Bounce, ToastContainer } from "react-toastify";
 
 // Lazy load components
 const LogInPage = lazy(() => import("../auth/LogInPage"));
@@ -56,6 +57,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 export default function HandleApp() {
   const { theme } = useTheme();
+  const { toast } = useToast();
   const { on, off } = useSocket<AppEvents>(import.meta.env.VITE_SOCKET_URL);
 
   useEffect(() => {
@@ -87,13 +89,17 @@ export default function HandleApp() {
 
       // Show notification
       if (isMounted) {
-        toast(() =>
-          createNewOrderReceivedNotification(
-            data.glovo_pick_up_code,
-            data.order_type_image,
-            "glovo_new_order_created"
-          )
-        );
+        toast({
+          action: (
+            <>
+              {createNewOrderReceivedNotification(
+                data.glovo_pick_up_code,
+                data.order_type_image,
+                "glovo_new_order_created"
+              )}
+            </>
+          ),
+        });
       }
     };
 
