@@ -23,7 +23,6 @@ const CustomerDisplay = lazy(
 const SessionExpired = lazy(() => import("@/components/errors/SessionExpired"));
 const ErrorOccurred = lazy(() => import("@/components/errors/ErrorOccurred"));
 const BrokenLink = lazy(() => import("@/components/errors/BrokenLink"));
-const Test = lazy(() => import("@/Test"));
 
 // Define AppEvents type
 type AppEvents = {
@@ -151,7 +150,6 @@ export default function HandleApp() {
           <Route path="/customer-display" element={<CustomerDisplay />} />
           <Route path="/session-expired" element={<SessionExpired />} />
           <Route path="/error" element={<ErrorOccurred />} />
-          <Route path="/test" element={<Test />} />
           <Route
             path="/"
             element={
