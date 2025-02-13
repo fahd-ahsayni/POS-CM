@@ -1,6 +1,5 @@
 import notificationSound from "@/assets/sound/notification.mp3";
 import createNewOrderReceivedNotification from "@/components/Layout/components/NewOrderReceived";
-import { Button } from "@/components/ui/button";
 import useSocket from "@/hooks/use-socket";
 import { useToast } from "@/hooks/use-toast";
 import { loadingColors } from "@/preferences";
