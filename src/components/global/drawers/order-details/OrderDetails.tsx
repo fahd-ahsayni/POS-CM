@@ -88,6 +88,9 @@ export default function OrderDetails() {
         notes: line.notes,
         is_paid: line.is_paid,
         is_ordred: line.is_ordred,
+        suite_commande: line.suite_commande || false,
+        high_priority: line.high_priority || false,
+        cancelled_qty: line.cancelled_qty,
         product_variant_id: {
           name: line.product_variant_id.name,
           price_ttc: line.product_variant_id.price_ttc,
@@ -113,6 +116,8 @@ export default function OrderDetails() {
         : [...outsideGroup, ...unpaidLineIds];
     });
   };
+
+  console.log(selectedOrder);
 
   const handlePrintKitchen = async () => {
     if (!selectedOrder?._id) return;
@@ -176,13 +181,16 @@ export default function OrderDetails() {
                       key={orderLine._id}
                       className={cn(
                         "flex flex-col gap-4 w-full dark:bg-primary-black bg-white py-4 px-4",
-                        orderLine.is_paid &&
+                        (orderLine.is_paid ||
+                          orderLine.cancelled_qty >= orderLine.quantity) &&
                           "pointer-events-none cursor-not-allowed opacity-40",
                         selectedOrderlines.includes(orderLine._id) &&
                           "ring-1 ring-primary-red"
                       )}
                       onClick={
-                        !orderLine.is_paid
+                        // Changed condition: only clickable when order is not paid AND not fully cancelled.
+                        !orderLine.is_paid ||
+                        orderLine.cancelled_qty < orderLine.quantity
                           ? () => toggleOrderLineSelection(orderLine._id)
                           : undefined
                       }
@@ -191,6 +199,16 @@ export default function OrderDetails() {
                         <TypographyP className="dark:text-white text-primary-black font-medium capitalize">
                           {orderLine.product_variant_id.name.toLowerCase()}
                         </TypographyP>
+                        {orderLine.cancelled_qty >= orderLine.quantity && (
+                          <TypographyP className="text-primary-red">
+                            Canceled
+                          </TypographyP>
+                        )}
+                        {orderLine.is_paid && (
+                          <TypographyP className="text-green-600">
+                            Paid
+                          </TypographyP>
+                        )}
                       </div>
                       <div className="border-l-2 dark:border-neutral-dark-grey/40 border-neutral-dark-grey/50">
                         {(orderLine.combo_prod_ids?.length > 0 ||

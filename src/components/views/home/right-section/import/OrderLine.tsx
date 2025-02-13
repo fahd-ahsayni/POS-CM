@@ -334,7 +334,7 @@ export function OrderLine({ item }: OrderLineProps) {
                   <SuiteCommandIcon
                     className={cn(
                       "dark:text-white text-primary-black",
-                      suiteCommandCallToAction && "!dark:text-white !text-white"
+                      suiteCommandCallToAction && "!dark:text-white text-white"
                     )}
                   />
                   <span className="sr-only">Suite Command</span>
