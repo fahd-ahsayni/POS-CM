@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { refreshOrders } from "@/store/slices/data/orders.slice";
 import { useCallback, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -37,6 +38,10 @@ export default function CancelOrderReason({
   const { selectedOrder, setOpenOrderDetails } = useOrder();
   const dispatch = useDispatch();
   const [selectedReason, setSelectedReason] = useState<string>("");
+  const [persistSelectedProducts] = useLocalStorage<string[]>(
+    "selectedProducts",
+    []
+  );
 
   const generalData = useMemo(() => {
     return JSON.parse(localStorage.getItem("generalData") || "{}");
@@ -70,30 +75,45 @@ export default function CancelOrderReason({
     if (!selectedOrder?._id) return;
 
     try {
-      const response = await cancelOrder({
-        order_id: selectedOrder._id,
-        reason: selectedReason,
-        confirmed_by: admin.user.id,
-      });
-
-      if (response.status === 200) {
-        toast.success(
-          createToast(
-            "Order canceled",
-            "Order canceled successfully",
-            "success"
-          )
-        );
+      let response;
+      if (persistSelectedProducts.length > 0) {
+        response = await cancelOrder({
+          orderline_id: persistSelectedProducts[0],
+          order_id: selectedOrder._id,
+          reason: selectedReason,
+          confirmed_by: admin.user.id,
+        });
+      } else {
+        response = await cancelOrder({
+          order_id: selectedOrder._id,
+          reason: selectedReason,
+          confirmed_by: admin.user.id,
+        });
+      }
+      if (response?.status === 200) {
+        if (persistSelectedProducts.length > 0) {
+          toast.success(
+            createToast(
+              "Orderline canceled",
+              "Orderline canceled successfully",
+              "success"
+            )
+          );
+        } else {
+          toast.success(
+            createToast(
+              "Order canceled",
+              "Order canceled successfully",
+              "success"
+            )
+          );
+        }
         setOpen(false);
         setOpenOrderDetails(false);
         dispatch(refreshOrders() as any);
-      } else {
-        throw new Error("Failed to cancel order");
       }
     } catch (error) {
-      toast.error(
-        createToast("Cancel Order failed", "Please try again", "error")
-      );
+      toast.error(createToast("Cancel failed", "Please try again", "error"));
       setAuthorization(false);
     }
   }, [

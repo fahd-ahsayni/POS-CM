@@ -23,11 +23,15 @@ import Payments from "../Payments/Payments";
 import { useOrderDetails } from "./hooks/useOrderDetails";
 import { Switch } from "@/components/ui/switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
 export default function OrderDetails() {
   const [editPriceOpen, setEditPriceOpen] = useState(false);
   const { setViews: setRightViews } = useRightViewContext();
   const { setViews: setLeftViews, setSelectedProducts } = useLeftViewContext();
+  const [persistSelectedProducts, setPersistSelectedProducts] = useLocalStorage<
+    string[]
+  >("selectedProducts", []);
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
@@ -56,6 +60,11 @@ export default function OrderDetails() {
       setOpenCancelOrder(false);
     }
   }, [openOrderDetails, openPayments, setOpenCancelOrder]);
+
+  useEffect(() => {
+    // Update localStorage when selectedOrderlines change
+    setPersistSelectedProducts(selectedOrderlines);
+  }, [selectedOrderlines]);
 
   const toggleOrderLineSelection = (orderId: string) => {
     setSelectedOrderlines((prev) =>
@@ -245,20 +254,22 @@ export default function OrderDetails() {
           </ScrollArea>
           <div className="w-full bg-neutral-bright-grey dark:bg-secondary-black flex items-center p-4">
             <div className="flex justify-between items-center gap-x-2 w-full">
-              {selectedOrder.status === "canceled" ? (
-                <Button className="flex-1" disabled>
-                  Cancel Order
-                </Button>
-              ) : (
-                <Button
-                  className="flex-1 dark:bg-white/10 bg-white border border-border"
-                  variant="secondary"
-                  onClick={() => setOpenCancelOrder(true)}
-                >
-                  Cancel Order
-                </Button>
-              )}
-              {selectedOrder.status === "new" && user.position !== "Waiter" &&
+              <Button
+                className="flex-1 dark:bg-white/10 bg-white border border-border"
+                variant="secondary"
+                onClick={() => setOpenCancelOrder(true)}
+                disabled={
+                  selectedOrder.status === "canceled" ||
+                  persistSelectedProducts.length > 1
+                }
+              >
+                {persistSelectedProducts.length > 0
+                  ? "Cancel This Product"
+                  : "Cancel All Products"}
+              </Button>
+
+              {selectedOrder.status === "new" &&
+                user.position !== "Waiter" &&
                 selectedOrder.total_amount > 0 && (
                   <Button className="flex-1" onClick={handleProcessPayment}>
                     Process Payment

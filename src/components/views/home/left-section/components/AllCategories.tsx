@@ -28,7 +28,7 @@ export default memo(function AllCategories() {
       <Card
         onClick={handleAllProductsClick}
         className={cn(
-          "flex cursor-pointer h-24 relative flex-col items-center h-full !rounded-lg overflow-hidden justify-center",
+          "flex cursor-pointer h-24 relative flex-col items-center !rounded-lg overflow-hidden justify-center",
           isInteractionDisabled && "pointer-events-none"
         )}
       >

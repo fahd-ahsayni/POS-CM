@@ -20,7 +20,7 @@ export default function createNewOrderReceivedNotification(
       <div className="flex items-center justify-start relative">
         <div className="h-9 w-10 rounded-md bg-yellow-600 overflow-hidden relative flex items-center justify-center">
           <img
-            className="absolute size-full object-cover absolute rounded-md"
+            className="size-full object-cover absolute rounded-md"
             src={`${
               window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL
             }${image}`}

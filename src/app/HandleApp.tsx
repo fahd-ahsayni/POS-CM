@@ -1,5 +1,6 @@
 import notificationSound from "@/assets/sound/notification.mp3";
 import createNewOrderReceivedNotification from "@/components/Layout/components/NewOrderReceived";
+import { Button } from "@/components/ui/button";
 import useSocket from "@/hooks/use-socket";
 import { useToast } from "@/hooks/use-toast";
 import { loadingColors } from "@/preferences";
@@ -117,6 +118,15 @@ export default function HandleApp() {
 
   return (
     <>
+    <Button onClick={() => {
+      toast({
+        action: <>
+          {createNewOrderReceivedNotification(9839, "", "glovo_new_order_created")}
+        </>
+      })
+    }}>
+    test
+    </Button>
       <ToastContainer
         position="top-left"
         autoClose={5000}

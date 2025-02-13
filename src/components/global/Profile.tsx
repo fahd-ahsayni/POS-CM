@@ -17,8 +17,6 @@ import { useRightViewContext } from "@/components/views/home/right-section/conte
 import { PosData } from "@/interfaces/pos";
 import { truncateName } from "@/lib/utils";
 import { AppDispatch, RootState } from "@/store";
-import { logout } from "@/store/slices/authentication/auth.slice";
-import { fetchGeneralData } from "@/store/slices/data/general-data.slice";
 import { fetchPosData } from "@/store/slices/data/pos.slice";
 import {
   resetOrder,
@@ -29,13 +27,13 @@ import { formatDistanceToNowStrict } from "date-fns";
 import { ChevronDown, LogOut, Power } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom"; // added import
 import { Avatar, AvatarImage } from "../ui/avatar";
 import { TypographySmall } from "../ui/typography";
 import {
   isCustomerDisplayOpen,
   openCustomerDisplay,
 } from "./customer-display/useCustomerDisplay";
-import { useNavigate } from "react-router-dom"; // added import
 
 interface UserData {
   id: string;
@@ -73,8 +71,6 @@ export default function Profile() {
   }, [pos, user]);
 
   const resetAppState = useCallback(async () => {
-    const posId = localStorage.getItem("posId");
-
     // Clear localStorage items
     localStorage.removeItem("orderType");
     localStorage.removeItem("loadedOrder");
@@ -103,54 +99,16 @@ export default function Profile() {
     // Reset Redux Store
     dispatch(resetOrder());
     dispatch(resetStaffIds());
+  }, [rightViewContext, leftViewContext]);
 
-    // Fetch fresh general data if posId exists
-    if (posId) {
-      try {
-        // Initialize with empty data before fetching
-        const emptyData = {
-          floors: [],
-          configs: [],
-          defineNote: [],
-          orderTypes: [],
-          discount: [],
-          paymentMethods: [],
-          waiters: [],
-          livreurs: [],
-        };
-        localStorage.setItem("generalData", JSON.stringify(emptyData));
-
-        // Fetch new data
-        await dispatch(fetchGeneralData(posId)).unwrap();
-      } catch (error) {
-        console.error("Failed to fetch general data:", error);
-        // Ensure we still have empty data if fetch fails
-        const emptyData = {
-          floors: [],
-          configs: [],
-          defineNote: [],
-          orderTypes: [],
-          discount: [],
-          paymentMethods: [],
-          waiters: [],
-          livreurs: [],
-        };
-        localStorage.setItem("generalData", JSON.stringify(emptyData));
-      }
-    }
-  }, [dispatch, rightViewContext, leftViewContext]);
-
-  const handleLogout = useCallback(() => {
+  const handleLogout = async () => {
     // Reset the app state before logging out
-    resetAppState();
-
-    // Perform logout actions
-    dispatch(logout());
-    logoutService();
+    await resetAppState();
+    await logoutService();
 
     // Navigate to the login page after logout
     navigate("/login");
-  }, [dispatch, resetAppState, navigate]);
+  };
 
   const handleCustomerDisplay = () => {
     if (!isCustomerDisplayOpen()) {
