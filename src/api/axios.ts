@@ -28,7 +28,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 403 && user.position === "waiter") {
+    if (error.response?.status === 403 && user.position !== "waiter") {
       window.location.href = "/session-expired";
     }
     return Promise.reject(error);

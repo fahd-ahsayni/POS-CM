@@ -10,10 +10,9 @@ import {
   setDeliveryGuyId,
   setWaiterId,
 } from "@/store/slices/order/create-order.slice";
-import { Phone, Salad, Star } from "lucide-react";
+import { Phone } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import Drawer from "../layout/Drawer";
-import Verified from "./Verified";
 
 interface StaffListProps {
   open: boolean;
