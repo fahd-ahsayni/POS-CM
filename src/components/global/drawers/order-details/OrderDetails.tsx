@@ -8,22 +8,22 @@ import {
 } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Switch } from "@/components/ui/switch";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
 import { toTitleCase } from "@/functions/string-transforms";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { cn } from "@/lib/utils";
 import { currency } from "@/preferences";
 import { ChevronDown } from "lucide-react";
-import { useState, useEffect } from "react";
-import Drawer from "../layout/Drawer";
+import { useEffect, useState } from "react";
 import CancelOrder from "../cancel-order/CancelOrder";
 import EditPrice from "../edit-price/EditPrice";
+import Drawer from "../layout/Drawer";
 import Payments from "../Payments/Payments";
 import { useOrderDetails } from "./hooks/useOrderDetails";
-import { Switch } from "@/components/ui/switch";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useLocalStorage } from "@/hooks/use-local-storage";
 
 export default function OrderDetails() {
   const [editPriceOpen, setEditPriceOpen] = useState(false);
@@ -116,8 +116,6 @@ export default function OrderDetails() {
 
   const handlePrintKitchen = async () => {
     if (!selectedOrder?._id) return;
-
-    console.log(selectedOrderlines);
     try {
       if (selectedOrderlines.length > 0) {
         await printOrder(selectedOrder._id, selectedOrderlines);

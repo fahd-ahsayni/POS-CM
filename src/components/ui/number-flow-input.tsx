@@ -1,6 +1,6 @@
 "use client";
+import { useVirtualKeyboard } from "@/components/keyboard/VirtualKeyboardGlobalContext"; // <-- new import
 import { cn } from "@/lib/utils";
-import NumberFlow from "@number-flow/react";
 import { Minus, Plus } from "lucide-react";
 import * as React from "react";
 
@@ -21,10 +21,10 @@ export function Input({
 }: Props) {
   const defaultValue = React.useRef(value);
   const inputRef = React.useRef<HTMLInputElement>(null);
-  const [animated, setAnimated] = React.useState(true);
-  const [showCaret, setShowCaret] = React.useState(true);
   const [isEditing, setIsEditing] = React.useState(false);
   const [inputValue, setInputValue] = React.useState(String(value));
+
+  const { openKeyboard } = useVirtualKeyboard(); // <-- grab context methods
 
   React.useEffect(() => {
     if (!isEditing) {
@@ -35,7 +35,6 @@ export function Input({
   const handleInput: React.ChangeEventHandler<HTMLInputElement> = ({
     currentTarget: el,
   }) => {
-    setAnimated(false);
     setInputValue(el.value);
 
     if (el.value === "") {
@@ -46,13 +45,46 @@ export function Input({
     const num = parseInt(el.value);
     if (!isNaN(num)) {
       if ((min != null && num < min) || (max != null && num > max)) {
-        // Revert input's value if outside bounds
         setInputValue(String(value));
       } else {
         onChange?.(num);
       }
     }
   };
+
+  // New callback to handle virtual keyboard input using functional state update
+  const handleVirtualKeyPress = React.useCallback(
+    (key: string, _cursorAdjustment: number) => {
+      setInputValue((prev) => {
+        let newInput = prev;
+        if (key === "Backspace") {
+          newInput = prev.slice(0, -1);
+        } else if (key === "Delete") {
+          newInput = "";
+        } else if (key === "\n") {
+          // Do nothing for enter key
+          return prev;
+        } else {
+          newInput = prev + key;
+        }
+        if (newInput === "") {
+          onChange?.(defaultValue.current);
+          return newInput;
+        }
+        const num = parseInt(newInput);
+        if (!isNaN(num)) {
+          if ((min != null && num < min) || (max != null && num > max)) {
+            return String(value);
+          } else {
+            onChange?.(num);
+            return newInput;
+          }
+        }
+        return prev;
+      });
+    },
+    [min, max, onChange, value]
+  );
 
   const handleBlur = () => {
     setIsEditing(false);
@@ -63,12 +95,11 @@ export function Input({
 
   const handleFocus = () => {
     setIsEditing(true);
-    setAnimated(false);
+    openKeyboard("numberFlowInput", handleVirtualKeyPress); // <-- open keyboard with callback
   };
 
   const handlePointerDown =
     (diff: number) => (event: React.PointerEvent<HTMLButtonElement>) => {
-      setAnimated(true);
       if (event.pointerType === "mouse") {
         event?.preventDefault();
       }
@@ -92,13 +123,12 @@ export function Input({
       >
         <Minus className="size-3.5" absoluteStrokeWidth strokeWidth={2.5} />
       </button>
-      <div className="relative grid items-center justify-items-center text-center [grid-template-areas:'overlap'] *:[grid-area:overlap]">
+      <div className="relative grid items-center justify-items-center text-center">
         <input
           ref={inputRef}
           className={cn(
-            showCaret ? "caret-primary" : "caret-transparent",
-            "spin-hide w-[2em] bg-transparent py-1.5 text-center font-[inherit] outline-none appearance-none",
-            isEditing ? "text-inherit" : "text-transparent"
+            "caret-primary",
+            "spin-hide w-[2em] bg-transparent py-1.5 text-center font-[inherit] outline-none appearance-none text-inherit"
           )}
           style={{ fontKerning: "none" }}
           type="text"
@@ -109,21 +139,9 @@ export function Input({
           max={max}
           value={inputValue}
           onInput={handleInput}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
+          onFocus={handleFocus} // <-- modified to open virtual keyboard
+          onBlur={handleBlur} // <-- modified to close virtual keyboard
         />
-        {!isEditing && (
-          <NumberFlow
-            value={value}
-            format={{ useGrouping: false }}
-            aria-hidden
-            animated={animated}
-            onAnimationsStart={() => setShowCaret(false)}
-            onAnimationsFinish={() => setShowCaret(true)}
-            className="pointer-events-none"
-            willChange
-          />
-        )}
       </div>
       <button
         aria-hidden

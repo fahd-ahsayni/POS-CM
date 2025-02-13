@@ -16,6 +16,7 @@ import {
 } from "@/store/slices/order/create-order.slice";
 import { useCallback, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ALL_CATEGORIES_VIEW } from "../../left-section/constants";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
@@ -25,7 +26,6 @@ import { useRightViewContext } from "../contexts/RightViewContext";
 import { useCustomerManagement } from "../hooks/useCustomerManagement";
 import { useCoasterCall } from "./useCoasterCall";
 import { useNumberOfTable } from "./useNumberOfTable";
-import { useNavigate } from "react-router-dom";
 
 interface OrderSummaryState {
   openModalConfirmHoldOrder: boolean;
@@ -180,9 +180,7 @@ export const useOrderSummary = () => {
                 "success"
               )
             );
-            console.log("Debug: Order updated, user.position =", user.position);
           } catch (error) {
-            console.error("Order update error:", error);
             toast.error(
               createToast(
                 "Order Update Failed",

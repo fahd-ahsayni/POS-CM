@@ -106,8 +106,6 @@ const StaffList = ({ open, setOpen }: StaffListProps) => {
     setOpen(false);
   };
 
-  console.log(staffList);
-
   const renderContent = () => {
     if (isLoading) return <LoadingState />;
     if (error) return <ErrorState error={error} />;

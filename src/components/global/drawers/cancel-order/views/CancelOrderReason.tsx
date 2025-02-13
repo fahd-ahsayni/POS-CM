@@ -14,6 +14,8 @@ import { useCallback, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { useOrder } from "../../order-details/context/OrderContext";
+import { Label } from "@/components/ui/label";
+import { Input as NumberFlowInput } from "@/components/ui/number-flow-input";
 
 interface DefineNote {
   type: string;
@@ -42,6 +44,7 @@ export default function CancelOrderReason({
     "selectedProducts",
     []
   );
+  const [quantity, setQuantity] = useState<number>(1); // new state for quantity
 
   const generalData = useMemo(() => {
     return JSON.parse(localStorage.getItem("generalData") || "{}");
@@ -82,6 +85,7 @@ export default function CancelOrderReason({
           order_id: selectedOrder._id,
           reason: selectedReason,
           confirmed_by: admin.user.id,
+          quantity, // pass the selected quantity
         });
       } else {
         response = await cancelOrder({
@@ -124,6 +128,8 @@ export default function CancelOrderReason({
     setOpenOrderDetails,
     dispatch,
     setAuthorization,
+    persistSelectedProducts,
+    quantity,
   ]);
 
   return (
@@ -141,6 +147,10 @@ export default function CancelOrderReason({
             ))}
           </SelectContent>
         </Select>
+        <div className="flex justify-between items-center w-full">
+          <Label>Enter the Quantity</Label>
+          <NumberFlowInput value={quantity} min={1} onChange={setQuantity} />
+        </div>
       </div>
       <div className="flex justify-center gap-4 w-full px-4">
         <Button

@@ -1,7 +1,16 @@
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { setCustomerCount } from "@/store/slices/order/create-order.slice";
-import { createContext, ReactNode, useCallback, useContext, useMemo, useState, useEffect } from "react";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { useDispatch } from "react-redux";
 import { TYPE_OF_ORDER_VIEW } from "../constants";
-import { useDispatch } from 'react-redux';
 
 interface RightViewState {
   views: string;
@@ -19,32 +28,39 @@ interface RightViewContextType extends RightViewState {
   setOrderType: (type: string | null) => void;
 }
 
-const RightViewContext = createContext<RightViewContextType>({} as RightViewContextType);
+const RightViewContext = createContext<RightViewContextType>(
+  {} as RightViewContextType
+);
 
 export const RightViewProvider = ({ children }: { children: ReactNode }) => {
   const dispatch = useDispatch();
+  const [orderTypeFromLS] = useLocalStorage<any>("orderType", {});
   const [state, setState] = useState<RightViewState>({
     views: TYPE_OF_ORDER_VIEW,
     selectedOrderType: null,
     customerIndex: 1,
     tableNumber: "",
-    orderType: TYPE_OF_ORDER_VIEW,
+    orderType: orderTypeFromLS._id ? orderTypeFromLS._id : "",
   });
 
-  const updateState = useCallback(<K extends keyof RightViewState>(
-    key: K,
-    value: RightViewState[K]
-  ) => {
-    setState(prev => ({ ...prev, [key]: value }));
-  }, []);
-
-  const handlers = useMemo(() => ({
-    setViews: (view: string) => updateState('views', view),
-    setSelectedOrderType: (type: string | null) => updateState('selectedOrderType', type),
-    setCustomerIndex: (index: number) => updateState('customerIndex', index),
-    setTableNumber: (number: string) => updateState('tableNumber', number),
-    setOrderType: (type: string | null) => updateState('orderType', type),
-  }), [updateState]);
+  const updateState = useCallback(
+    <K extends keyof RightViewState>(key: K, value: RightViewState[K]) => {
+      setState((prev) => ({ ...prev, [key]: value }));
+    },
+    []
+  );
+  
+  const handlers = useMemo(
+    () => ({
+      setViews: (view: string) => updateState("views", view),
+      setSelectedOrderType: (type: string | null) =>
+        updateState("selectedOrderType", type),
+      setCustomerIndex: (index: number) => updateState("customerIndex", index),
+      setTableNumber: (number: string) => updateState("tableNumber", number),
+      setOrderType: (type: string | null) => updateState("orderType", type),
+    }),
+    [updateState]
+  );
 
   useEffect(() => {
     const validCustomerCount = Math.max(1, state.customerIndex);
@@ -54,7 +70,7 @@ export const RightViewProvider = ({ children }: { children: ReactNode }) => {
   const contextValue = useMemo(
     () => ({
       ...state,
-      ...handlers
+      ...handlers,
     }),
     [state, handlers]
   );
@@ -69,7 +85,9 @@ export const RightViewProvider = ({ children }: { children: ReactNode }) => {
 export const useRightViewContext = () => {
   const context = useContext(RightViewContext);
   if (!context) {
-    throw new Error("useRightViewContext must be used within RightViewProvider");
+    throw new Error(
+      "useRightViewContext must be used within RightViewProvider"
+    );
   }
   return context;
 };
