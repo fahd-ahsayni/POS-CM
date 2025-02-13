@@ -29,6 +29,8 @@ export default function OrderDetails() {
   const { setViews: setRightViews } = useRightViewContext();
   const { setViews: setLeftViews, setSelectedProducts } = useLeftViewContext();
 
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
   const {
     selectedOrder,
     openOrderDetails,
@@ -256,7 +258,7 @@ export default function OrderDetails() {
                   Cancel Order
                 </Button>
               )}
-              {selectedOrder.status === "new" &&
+              {selectedOrder.status === "new" && user.position !== "Waiter" &&
                 selectedOrder.total_amount > 0 && (
                   <Button className="flex-1" onClick={handleProcessPayment}>
                     Process Payment
