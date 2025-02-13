@@ -11,7 +11,7 @@ import { BeatLoader } from "react-spinners";
 import { Bounce, ToastContainer } from "react-toastify";
 
 // Lazy load components
-const LogInPage = lazy(() => import("../auth/LogInPage"));
+const LogInPage = lazy(() => import("@/auth/LogInPage"));
 const SelectPosPage = lazy(() => import("@/auth/SelectPosPage"));
 const Layout = lazy(() => import("@/components/Layout/Layout"));
 const HomePage = lazy(() => import("./HomePage"));

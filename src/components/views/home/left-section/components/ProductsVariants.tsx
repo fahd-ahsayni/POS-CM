@@ -116,7 +116,7 @@ export default function ProductsVariants() {
     >
       <div className="h-full w-full relative flex flex-col justify-center">
         <ScrollArea className="w-full h-full pr-2">
-          <div className="space-y-4 px-2">{variantCards}</div>
+          <div className="space-y-4 px-2 pt-2">{variantCards}</div>
         </ScrollArea>
         <div className="w-full flex items-end py-2 dark:!bg-secondary-black bg-neutral-bright-grey sm:px-4">
           <Button className="w-full" onClick={handleConfirm}>
