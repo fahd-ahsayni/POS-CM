@@ -118,15 +118,6 @@ export default function HandleApp() {
 
   return (
     <>
-    <Button onClick={() => {
-      toast({
-        action: <>
-          {createNewOrderReceivedNotification(9839, "", "glovo_new_order_created")}
-        </>
-      })
-    }}>
-    test
-    </Button>
       <ToastContainer
         position="top-left"
         autoClose={5000}
