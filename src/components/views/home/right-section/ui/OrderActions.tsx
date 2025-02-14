@@ -8,6 +8,7 @@ import ApplyDiscount from "@/components/global/drawers/apply-discount/ApplyDisco
 import ModalOrderComments from "@/components/global/modal/ModalOrderComments";
 import { Switch } from "@/components/ui/switch";
 import { updateOrder } from "@/functions/updateOrder";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { cn } from "@/lib/utils";
 import { setOneTime, setUrgent } from "@/store/slices/order/create-order.slice";
 import * as Headless from "@headlessui/react";
@@ -16,7 +17,6 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch } from "react-redux";
 import { NUMBER_OF_TABLE_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
 import { useRightViewContext } from "../contexts/RightViewContext";
-import { useLocalStorage } from "@/hooks/use-local-storage";
 
 export default function OtherActionsOrderLines() {
   const dispatch = useDispatch();
@@ -41,8 +41,6 @@ export default function OtherActionsOrderLines() {
     dispatch(updateOrder({ one_time: value }));
     dispatch(setOneTime(value));
   };
-
-  console.log(loadedOrder);
 
   return (
     <>

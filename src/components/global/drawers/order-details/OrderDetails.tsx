@@ -116,9 +116,6 @@ export default function OrderDetails() {
         : [...outsideGroup, ...unpaidLineIds];
     });
   };
-
-  console.log(selectedOrder);
-
   const handlePrintKitchen = async () => {
     if (!selectedOrder?._id) return;
     try {
