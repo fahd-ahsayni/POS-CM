@@ -24,40 +24,29 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
   const handleFinish = useCallback(async () => {
     if (!selectedCombo) return;
 
-    const isSingleRequiredStep =
-      selectedCombo.steps.length === 1 &&
-      selectedCombo.steps[0].is_required &&
-      !selectedCombo.steps[0].is_supplement;
+    // Check if there are any selections
+    const hasVariants = selections.variants.length > 0;
+    const hasSupplements = selections.supplements.length > 0;
 
-    // Deduplicate selections before processing
-    const uniqueVariants = Array.from(
-      new Map(selections.variants.map((v) => [v._id, v])).values()
-    );
-    const uniqueSupplements = Array.from(
-      new Map(selections.supplements.map((s) => [s._id, s])).values()
-    );
-
-    if (!isSingleRequiredStep) {
-      // Check if there are any selections
-      const hasVariants = uniqueVariants.length > 0;
-      const hasSupplements = uniqueSupplements.length > 0;
-
-      if (!hasVariants && !hasSupplements) {
-        toast.error(
-          createToast(
-            "Invalid Combo",
-            "Please select at least one product",
-            "warning"
-          )
-        );
-        return;
-      }
+    if (!hasVariants && !hasSupplements) {
+      toast.error(
+        createToast(
+          "Invalid Combo",
+          "Please select at least one product",
+          "warning"
+        )
+      );
+      return;
     }
 
     try {
       setIsFinishing(true);
 
-      const variantsToCheck = [...uniqueVariants, ...uniqueSupplements];
+      // Check availability for all selected variants and supplements
+      const variantsToCheck = [
+        ...selections.variants,
+        ...selections.supplements,
+      ];
 
       for (const variant of variantsToCheck) {
         const response = await checkProductAvailability(variant._id);
@@ -80,7 +69,7 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
         )?.price_ttc || selectedCombo.default_price;
 
       // Calculate supplements total price
-      const supplementsPrice = uniqueSupplements.reduce((total, supp) => {
+      const supplementsPrice = selections.supplements.reduce((total, supp) => {
         const suppPrice =
           supp.menus?.find((menu: any) => menu.menu_id === orderType?.menu_id)
             ?.price_ttc ||
@@ -90,70 +79,56 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
         return total + suppPrice * supp.quantity;
       }, 0);
 
-      // Check if this combo is already selected for the current customer
-      setSelectedProducts((prevProducts: any[]) => {
-        const isComboAlreadySelectedForCustomer = prevProducts.some(
-          (p) =>
-            p.product_variant_id === selectedCombo._id &&
-            p.customer_index === customerIndex
-        );
+      // Generate a unique ID for this combo instance
+      const uniqueComboId = `${selectedCombo._id}_${Date.now()}_${Math.random()
+        .toString(36)
+        .substr(2, 9)}`;
 
-        if (isComboAlreadySelectedForCustomer) {
-          // If combo already exists for this customer, don't add it again
-          setOpenDrawerCombo(false);
-          return prevProducts;
-        }
-
-        // Continue with normal combo creation
-        const uniqueComboId = `${
-          selectedCombo._id
-        }_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-        // Create combo product
-        const comboProduct = {
-          _id: uniqueComboId,
-          id: uniqueComboId,
-          name: selectedCombo.name,
-          quantity: 1,
-          price: menuPrice + supplementsPrice,
-          variants: [selectedCombo],
-          product_variant_id: selectedCombo._id,
-          customer_index: customerIndex,
-          order_type_id: orderType?._id || "",
-          uom_id: selectedCombo.uom_id?._id || "",
-          is_combo: true,
-          is_ordered: false,
-          is_paid: false,
-          combo_items: {
-            variants: uniqueVariants.map((variant) => ({
-              ...variant,
+      // Create combo product with unique ID
+      const comboProduct = {
+        _id: uniqueComboId,
+        id: uniqueComboId,
+        name: selectedCombo.name,
+        quantity: 1,
+        price: menuPrice + supplementsPrice,
+        variants: [selectedCombo],
+        product_variant_id: selectedCombo._id,
+        customer_index: customerIndex,
+        order_type_id: orderType?._id || "",
+        uom_id: selectedCombo.uom_id?._id || "",
+        is_combo: true,
+        is_ordered: false,
+        is_paid: false,
+        combo_items: {
+          variants: selections.variants.map((variant) => ({
+            ...variant,
+            combo_id: uniqueComboId,
+            suite_commande: variant.suite_commande || false, // Preserve suite_commande
+          })),
+          supplements: selections.supplements.map((supp) => {
+            const suppPrice =
+              supp.menus?.find(
+                (menu: any) => menu.menu_id === orderType?.menu_id
+              )?.price_ttc ||
+              supp.default_price ||
+              supp.price_ttc ||
+              0;
+            return {
+              ...supp,
               combo_id: uniqueComboId,
-              suite_commande: variant.suite_commande || false, // Preserve suite_commande
-            })),
-            supplements: uniqueSupplements.map((supp) => {
-              const suppPrice =
-                supp.menus?.find(
-                  (menu: any) => menu.menu_id === orderType?.menu_id
-                )?.price_ttc ||
-                supp.default_price ||
-                supp.price_ttc ||
-                0;
-              return {
-                ...supp,
-                combo_id: uniqueComboId,
-                price: suppPrice,
-                suite_commande: supp.suite_commande || false, // Preserve suite_commande
-              };
-            }),
-          },
-          notes: [],
-          discount: null,
-          suite_commande: false,
-          high_priority: false,
-        };
+              price: suppPrice,
+              suite_commande: supp.suite_commande || false, // Preserve suite_commande
+            };
+          }),
+        },
+        notes: [],
+        discount: null,
+        suite_commande: false,
+        high_priority: false,
+      };
 
-        return [...prevProducts, comboProduct];
-      });
+      // Add the combo product to selected products
+      setSelectedProducts((prev: any) => [...prev, comboProduct]);
 
       // Reset combo state
       setSelections({
@@ -174,7 +149,6 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
           "error"
         )
       );
-      setOpenDrawerCombo(false);
     } finally {
       setIsFinishing(false);
     }
@@ -191,19 +165,14 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
   ]);
 
   useEffect(() => {
-    if (selectedStep?.is_required && !selectedStep.is_supplement) {
-      // Clear existing selections for this step before adding new ones
+    if (selectedStep?.is_required) {
       setSelections((prev) => ({
         ...prev,
         variants: [
-          // Keep variants from other steps
-          ...prev.variants.filter((v) => v.stepIndex !== currentStep),
-          // Add new required variants for current step
           ...selectedStep.product_variant_ids.map((variant) => ({
             ...variant,
             quantity: 1,
             stepIndex: currentStep,
-            suite_commande: false,
           })),
         ],
       }));

@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 import { toast } from "react-toastify";
-import { useStep } from "@/hooks/use-step";
+import { useStep } from "@/hooks/use-step"; // Add this import
 
 interface SelectionState {
   variants: SelectedVariant[];
@@ -83,52 +83,94 @@ export function ComboProvider({
       isRequired: boolean,
       maxProducts?: number
     ) => {
-      // For required steps, don't allow manual selection
-      if (isRequired) {
+      // For non-required steps:
+      if (!isRequired) {
+        if (!isSupplement) {
+          // Optional main product: limit to maxProducts.
+          setSelections((prev) => {
+            const currentVariants = prev.variants.filter(
+              (v) => v.stepIndex === currentStep
+            );
+            if (maxProducts && currentVariants.length >= maxProducts) {
+              toast.warning(
+                createToast(
+                  "Selection Limit Exceeded",
+                  `You can't select more than ${maxProducts} products`,
+                  "warning"
+                )
+              );
+              return prev;
+            }
+            // Avoid duplicate
+            if (currentVariants.some((v) => v._id === variant._id)) return prev;
+            const newSelections = {
+              ...prev,
+              variants: [
+                ...prev.variants,
+                { ...variant, quantity: 1, stepIndex: currentStep, suite_commande: false },
+              ],
+            };
+            // Auto navigate if limit reached
+            if (
+              maxProducts &&
+              newSelections.variants.filter((v) => v.stepIndex === currentStep)
+                .length === maxProducts
+            ) {
+              requestAnimationFrame(() => {
+                goToNextStep();
+                setTimeout(() => {
+                  navigationLock.current = false;
+                }, 50);
+              });
+            }
+            return newSelections;
+          });
+        } else {
+          // Optional supplement: allow infinite selections and quantity.
+          setSelections((prev) => {
+            // Avoid duplicate
+            if (
+              prev.supplements.some(
+                (s) => s._id === variant._id && s.stepIndex === currentStep
+              )
+            )
+              return prev;
+            return {
+              ...prev,
+              supplements: [
+                ...prev.supplements,
+                { ...variant, quantity: 1, stepIndex: currentStep, suite_commande: false },
+              ],
+            };
+          });
+        }
         return;
       }
 
-      setSelections((prev) => {
-        const targetArray = isSupplement ? 'supplements' : 'variants';
-        const currentStepItems = prev[targetArray].filter(
-          (v) => v.stepIndex === currentStep
-        );
-
-        // Check if variant is already selected in current step
-        const isAlreadySelected = currentStepItems.some(
-          (v) => v._id === variant._id
-        );
-        
-        if (isAlreadySelected) {
-          return prev;
-        }
-
-        // Check max products limit for non-supplements
-        if (!isSupplement && maxProducts && currentStepItems.length >= maxProducts) {
-          toast.warning(
-            createToast(
-              "Selection Limit",
-              `Maximum ${maxProducts} items allowed`,
-              "warning"
+      // For required steps:
+      if (!isSupplement) {
+        // Main product is preset by default; do not change.
+        return;
+      } else {
+        // If a supplement is required, process similarly to optional supplements.
+        setSelections((prev) => {
+          if (
+            prev.supplements.some(
+              (s) => s._id === variant._id && s.stepIndex === currentStep
             )
-          );
-          return prev;
-        }
-
-        const newItem = {
-          ...variant,
-          quantity: 1,
-          stepIndex: currentStep,
-          suite_commande: false,
-        };
-
-        return {
-          ...prev,
-          [targetArray]: [...prev[targetArray], newItem],
-        };
-      });
+          )
+            return prev;
+          return {
+            ...prev,
+            supplements: [
+              ...prev.supplements,
+              { ...variant, quantity: 1, stepIndex: currentStep, suite_commande: false },
+            ],
+          };
+        });
+      }
     },
-    [currentStep]
+    [currentStep, goToNextStep]
   );
 
   const handleQuantityChange = (

@@ -64,7 +64,7 @@ export function VariantCard({
   return (
     <Card
       className={cn(
-        "px-4 py-4 h-28 cursor-pointer transition-colors dark:!bg-primary-black !bg-secondary.white",
+        "px-3 py-2 h-28 cursor-pointer transition-colors dark:!bg-primary-black !bg-neutral-bright-grey",
         isSelected ? "ring-1 ring-primary-red" : ""
       )}
       onClick={isRequired ? undefined : onClick}
@@ -82,22 +82,23 @@ export function VariantCard({
         </div>
 
         <div className="flex flex-col justify-between items-end h-full">
-          <div className="flex items-center justify-end gap-2 -mt-2">
+          <div className="flex items-center justify-end gap-2">
             {((step.is_supplement && !step.is_required) ||
               (!step.is_required && !step.is_supplement)) &&
               isSelected && (
-                <div className="flex items-end gap-2 h-8">
+                <div className="flex items-center gap-2 h-8">
                   <Button
                     type="button"
-                    variant="secondary"
+                    variant="outline"
                     size="icon"
-                    className="-ms-px h-7 w-7 rounded"
+                    className="-ms-px h-7 w-7 rounded bg-accent-white/10 hover:bg-accent-white/20"
                     onClick={(e) => handleQuantityChange(e, false)}
                   >
                     <Minus
                       size={16}
                       strokeWidth={2}
                       aria-hidden="true"
+                      className="text-primary-black dark:text-white"
                     />
                   </Button>
                   <TypographyP className="px-1.5 font-medium">
@@ -105,15 +106,16 @@ export function VariantCard({
                   </TypographyP>
                   <Button
                     type="button"
-                    variant="secondary"
+                    variant="outline"
                     size="icon"
-                    className="-ms-px h-7 w-7 rounded"
+                    className="-ms-px h-7 w-7 rounded bg-accent-white/10 hover:bg-accent-white/20"
                     onClick={(e) => handleQuantityChange(e, true)}
                   >
                     <Plus
                       size={16}
                       strokeWidth={2}
                       aria-hidden="true"
+                      className="text-primary-black dark:text-white"
                     />
                   </Button>
                 </div>

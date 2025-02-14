@@ -9,10 +9,9 @@ interface StepContentProps {
 export function StepContent({ step }: StepContentProps) {
   const { selections, handleSelect, handleQuantityChange } = useCombo();
 
-  // Get only selections for current step
-  const currentStepSelections = {
-    variants: selections.variants.filter(v => v.stepIndex === step.stepIndex),
-    supplements: selections.supplements.filter(s => s.stepIndex === step.stepIndex),
+  const currentSelections = {
+    variants: selections.variants || [],
+    supplements: selections.supplements || [],
   };
 
   const handleVariantQuantityChange = (
@@ -27,10 +26,10 @@ export function StepContent({ step }: StepContentProps) {
       <div className="space-y-4 p-1">
         {step.product_variant_ids.map((variant) => {
           const selectedVariant = step.is_supplement
-            ? currentStepSelections.supplements.find(
+            ? currentSelections.supplements.find(
                 (v: any) => v._id === variant._id
               )
-            : currentStepSelections.variants.find(
+            : currentSelections.variants.find(
                 (v: any) => v._id === variant._id
               );
 
