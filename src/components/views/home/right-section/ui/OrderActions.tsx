@@ -14,8 +14,9 @@ import * as Headless from "@headlessui/react";
 import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch } from "react-redux";
-import { TYPE_OF_ORDER_VIEW } from "../constants";
+import { NUMBER_OF_TABLE_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
 import { useRightViewContext } from "../contexts/RightViewContext";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
 export default function OtherActionsOrderLines() {
   const dispatch = useDispatch();
@@ -25,8 +26,9 @@ export default function OtherActionsOrderLines() {
   const [isUrgent, setIsUrgent] = useState(false);
   const [isOneTime, setIsOneTime] = useState(false);
 
+  const [loadedOrder] = useLocalStorage("loadedOrder", {});
+
   const { setViews } = useRightViewContext();
-  const loadedOrder = localStorage.getItem("loadedOrder");
 
   const handleUrgentToggle = (value: boolean) => {
     setIsUrgent(value);
@@ -39,6 +41,8 @@ export default function OtherActionsOrderLines() {
     dispatch(updateOrder({ one_time: value }));
     dispatch(setOneTime(value));
   };
+
+  console.log(loadedOrder);
 
   return (
     <>
@@ -64,12 +68,17 @@ export default function OtherActionsOrderLines() {
         </Headless.MenuButton>
 
         <DropdownMenu className="z-[9999] p-3">
-          <DropdownItem
-            onClick={() => setViews(TYPE_OF_ORDER_VIEW)}
-            disabled={!!loadedOrder}
-          >
-            Change Order Type
-          </DropdownItem>
+          {!loadedOrder && (
+            <DropdownItem onClick={() => setViews(TYPE_OF_ORDER_VIEW)}>
+              Change Order Type
+            </DropdownItem>
+          )}
+
+          {loadedOrder && (
+            <DropdownItem onClick={() => setViews(NUMBER_OF_TABLE_VIEW)}>
+              Change table
+            </DropdownItem>
+          )}
 
           <DropdownItem onClick={() => setOpenModalApplyDiscount(true)}>
             Apply Discount

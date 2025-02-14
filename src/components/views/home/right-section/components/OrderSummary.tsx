@@ -18,6 +18,7 @@ import OrderLines from "../import/OrderLines";
 import Ticket from "../layouts/Ticket";
 import OrderActions from "../ui/OrderActions";
 import { OrderBannerOnSummary } from "../ui/OrderInfo";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
 const OrderSummary = () => {
   const { selectedProducts } = useLeftViewContext();
@@ -45,7 +46,7 @@ const OrderSummary = () => {
     },
   } = useOrderSummary();
 
-  const loadedOrder = localStorage.getItem("loadedOrder");
+  const [loadedOrder] = useLocalStorage<any>("loadedOrder", {});
   const discount = JSON.parse(
     localStorage.getItem("generalData") || "{}"
   ).discount;
@@ -54,10 +55,10 @@ const OrderSummary = () => {
   const hasOrderChanges = useMemo(() => {
     if (!loadedOrder) return true;
 
-    const originalOrder = JSON.parse(loadedOrder);
+    const originalOrder = loadedOrder;
     const originalOrderLines = originalOrder.orderline_ids;
 
-    if (originalOrderLines.length !== selectedProducts.length) return true;
+    if (originalOrderLines?.length !== selectedProducts?.length) return true;
 
     return selectedProducts.some((newLine) => {
       const originalLine = originalOrderLines.find(

@@ -1,9 +1,11 @@
-import { getByTableName } from "@/api/services";
 import { updateOrder } from "@/functions/updateOrder";
+import { getByTableName } from "@/api/services";
+import { updateOrder as updateNewOrder } from "@/api/services/order.service";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { ORDER_SUMMARY_VIEW, TYPE_OF_ORDER_VIEW } from "../constants";
 import { useRightViewContext } from "../contexts/RightViewContext";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
 type TableValidState = "valid" | "invalid" | "not-found";
 
@@ -13,6 +15,9 @@ export const useNumberOfTable = () => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const data = JSON.parse(localStorage.getItem("generalData") || "{}").floors;
+
+  const [loadedOrder, setLoadedOrder] = useLocalStorage<any>("loadedOrder", {});
+  const [_, setTableNumberFromLS] = useLocalStorage<any>("tableNumber", 0);
 
   useEffect(() => {
     setTableValid("valid");
@@ -40,18 +45,37 @@ export const useNumberOfTable = () => {
 
   const handleConfirm = async (number: string) => {
     setIsLoading(true);
-    try {
-      const response = await getByTableName(number);
+    const table = findTableByName(number);
+    const tableId = table?._id;
+    if (!tableId) {
+      setTableValid("not-found");
+      setIsLoading(false);
+      return;
+    }
 
-      if (response.status === 204) {
-        const tableId = findTableByName(number)?._id;
-        dispatch(updateOrder({ table_id: tableId }));
-        setTableValid("valid");
-        localStorage.setItem("tableNumber", number);
-        setTableNumber(number);
-        setViews(ORDER_SUMMARY_VIEW);
-      } else if (response.status === 200) {
-        setTableValid("invalid");
+    try {
+      if (!loadedOrder) {
+        const response = await getByTableName(number);
+        if (response.status === 204) {
+          dispatch(updateOrder({ table_id: tableId }));
+          setTableNumberFromLS(number);
+          setTableNumber(number);
+          setViews(ORDER_SUMMARY_VIEW);
+          setTableValid("valid");
+        } else if (response.status === 200) {
+          setTableValid("invalid");
+        }
+      } else {
+        const response = await updateNewOrder(
+          { table_id: tableId },
+          loadedOrder._id
+        );
+        if (response.status === 200) {
+          setTableNumberFromLS(number);
+          setTableNumber(number);
+          setLoadedOrder(response.data);
+          setViews(ORDER_SUMMARY_VIEW);
+        }
       }
     } catch (error) {
       setTableValid("not-found");

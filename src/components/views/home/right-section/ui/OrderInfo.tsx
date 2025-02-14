@@ -9,6 +9,7 @@ import { getTableById } from "@/functions/getTableById";
 import { selectOrder } from "@/store/slices/order/create-order.slice";
 import { ProductVariant } from "@/interfaces/product";
 import { useSelector } from "react-redux";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
 interface OrderType {
   type: "takeAway" | "delivery" | "onPlace";
@@ -99,8 +100,8 @@ const DeliveryOrder: React.FC<{ order: any; orderType: OrderType }> = ({
 const OnPlaceOrder: React.FC<{ order: any; orderType: OrderType }> = ({
   orderType,
 }) => {
-  const TableNumber = localStorage.getItem("tableNumber");
-  const tableSeats = getTableById(TableNumber || "")?.seats;
+  const [tableNumber] = useLocalStorage<any>("tableNumber", 0);
+  const tableSeats = getTableById(tableNumber || "")?.seats;
 
   const TableIcon =
     tableSeats && tableSeats > 7
@@ -116,11 +117,11 @@ const OnPlaceOrder: React.FC<{ order: any; orderType: OrderType }> = ({
       <OrderContainer>
         <OrderBadge>
           <div className="flex items-center justify-center space-x-1.5">
-            {TableNumber && (
+            {tableNumber && (
               <TableIcon className="w-auto h-8 text-primary-black dark:text-white/80" />
             )}
             <TypographySmall className="font-medium">
-              {TableNumber ? `Table N° ${TableNumber}` : orderType.name}
+              {tableNumber ? `Table N° ${tableNumber}` : orderType.name}
             </TypographySmall>
           </div>
         </OrderBadge>

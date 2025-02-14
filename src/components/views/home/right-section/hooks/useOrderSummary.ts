@@ -26,6 +26,7 @@ import { useRightViewContext } from "../contexts/RightViewContext";
 import { useCustomerManagement } from "../hooks/useCustomerManagement";
 import { useCoasterCall } from "./useCoasterCall";
 import { useNumberOfTable } from "./useNumberOfTable";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
 interface OrderSummaryState {
   openModalConfirmHoldOrder: boolean;
@@ -131,9 +132,7 @@ export const useOrderSummary = () => {
         if (isProcessing || selectedProducts.length === 0) return;
 
         const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
-        const loadedOrder = JSON.parse(
-          localStorage.getItem("loadedOrder") || "{}"
-        );
+        const [loadedOrder] = useLocalStorage<any>("loadedOrder", {});
         const existingOrder =
           orders.orders &&
           orders?.orders?.find(

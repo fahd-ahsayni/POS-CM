@@ -1,6 +1,7 @@
 import { cancelOrder } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
 import { Button } from "@/components/ui/button";
+import { Input as NumberFlowInput } from "@/components/ui/number-flow-input";
 import {
   Select,
   SelectContent,
@@ -8,14 +9,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TypographySmall } from "@/components/ui/typography";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { refreshOrders } from "@/store/slices/data/orders.slice";
 import { useCallback, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { useOrder } from "../../order-details/context/OrderContext";
-import { Label } from "@/components/ui/label";
-import { Input as NumberFlowInput } from "@/components/ui/number-flow-input";
 
 interface DefineNote {
   type: string;
@@ -103,6 +103,7 @@ export default function CancelOrderReason({
               "success"
             )
           );
+          localStorage.removeItem("selectedProducts");
         } else {
           toast.success(
             createToast(
@@ -147,10 +148,12 @@ export default function CancelOrderReason({
             ))}
           </SelectContent>
         </Select>
-        <div className="flex justify-between items-center w-full">
-          <Label>Enter the Quantity</Label>
-          <NumberFlowInput value={quantity} min={1} onChange={setQuantity} />
-        </div>
+        {persistSelectedProducts.length && (
+          <div className="flex justify-between items-center w-full">
+            <TypographySmall>Enter the Quantity</TypographySmall>
+            <NumberFlowInput value={quantity} min={1} onChange={setQuantity} />
+          </div>
+        )}
       </div>
       <div className="flex justify-center gap-4 w-full px-4">
         <Button
