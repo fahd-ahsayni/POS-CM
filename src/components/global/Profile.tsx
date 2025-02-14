@@ -14,7 +14,6 @@ import { ALL_CATEGORIES_VIEW } from "@/components/views/home/left-section/consta
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 import { TYPE_OF_ORDER_VIEW } from "@/components/views/home/right-section/constants";
 import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
-import { useLocalStorage } from "@/hooks/use-local-storage";
 import { PosData } from "@/interfaces/pos";
 import { truncateName } from "@/lib/utils";
 import { AppDispatch, RootState } from "@/store";
@@ -54,8 +53,6 @@ export default function Profile() {
   const posFromLocalStorage = JSON.parse(localStorage.getItem("pos") || "{}");
   const navigate = useNavigate(); // added
   const isWaiter = user?.position === "Waiter";
-
-  const [shiftId] = useLocalStorage<any>("shiftId", "");
 
   const rightViewContext = useRightViewContext();
   const leftViewContext = useLeftViewContext();

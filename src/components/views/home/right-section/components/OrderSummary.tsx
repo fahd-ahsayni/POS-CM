@@ -213,7 +213,7 @@ const OrderSummary = () => {
               <>
                 <BeatLoader color={loadingColors.primary} size={8} />
               </>
-            ) : !!loadedOrder ? (
+            ) : loadedOrder._id ? (
               "Update Order"
             ) : (
               "Proceed Order"

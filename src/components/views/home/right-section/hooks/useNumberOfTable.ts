@@ -46,15 +46,18 @@ export const useNumberOfTable = () => {
   const handleConfirm = async (number: string) => {
     setIsLoading(true);
     const table = findTableByName(number);
+    console.log(table);
     const tableId = table?._id;
+    console.log(tableId);
     if (!tableId) {
+      console.log("1");
       setTableValid("not-found");
       setIsLoading(false);
       return;
     }
 
     try {
-      if (!loadedOrder) {
+      if (!loadedOrder._id) {
         const response = await getByTableName(number);
         if (response.status === 204) {
           dispatch(updateOrder({ table_id: tableId }));
@@ -65,7 +68,7 @@ export const useNumberOfTable = () => {
         } else if (response.status === 200) {
           setTableValid("invalid");
         }
-      } else {
+      } else if (loadedOrder._id) {
         const response = await updateNewOrder(
           { table_id: tableId },
           loadedOrder._id
@@ -78,6 +81,7 @@ export const useNumberOfTable = () => {
         }
       }
     } catch (error) {
+      console.log("2");
       setTableValid("not-found");
     } finally {
       setIsLoading(false);

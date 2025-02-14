@@ -70,6 +70,8 @@ export const useOrderSummary = () => {
     [selectedProducts.length]
   );
 
+  const [loadedOrder] = useLocalStorage<any>("loadedOrder", {});
+
   const updateState = useCallback(
     (key: keyof OrderSummaryState, value: boolean) => {
       if (key === "openDrawerPayments" && user.position === "Waiter") {
@@ -132,7 +134,6 @@ export const useOrderSummary = () => {
         if (isProcessing || selectedProducts.length === 0) return;
 
         const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
-        const [loadedOrder] = useLocalStorage<any>("loadedOrder", {});
         const existingOrder =
           orders.orders &&
           orders?.orders?.find(

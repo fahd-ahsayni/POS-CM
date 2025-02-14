@@ -4,9 +4,11 @@ import AllCategories from "../components/AllCategories";
 import AllProducts from "../components/AllProducts";
 import Header from "../components/Header";
 import ProductsByCategory from "../components/ProductsByCategory";
+import TablesPlan from "../components/TablesPlan";
 
 // Define constants for tab values
 export const ALL_CATEGORIES_VIEW = "AllCategories";
+export const TABLES_PLAN_VIEW = "TablesPlan";
 export const ALL_PRODUCTS_VIEW = "AllProducts";
 export const PRODUCTS_BY_CATEGORY_VIEW = "ProductsByCategory";
 
@@ -34,6 +36,13 @@ export const tabsConfig = [
           </div>
         </div>
       </>
+    ),
+    className: "flex-1",
+  },
+  {
+    value: TABLES_PLAN_VIEW,
+    component: (
+      <TablesPlan />
     ),
     className: "flex-1",
   },

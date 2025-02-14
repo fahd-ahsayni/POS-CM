@@ -7,6 +7,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { ALL_CATEGORIES_VIEW } from "../constants";
 
 interface LeftViewContextType {
   views: string;
@@ -38,7 +39,7 @@ interface LeftViewContextType {
 const LeftViewContext = createContext<LeftViewContextType | null>(null);
 
 export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
-  const [views, setViews] = useState("AllCategories");
+  const [views, setViews] = useState(ALL_CATEGORIES_VIEW);
   const [selectedProducts, setSelectedProducts] = useState<ProductSelected[]>(
     []
   );
@@ -56,7 +57,9 @@ export const LeftViewProvider = ({ children }: { children: ReactNode }) => {
   const [openDrawerCombo, setOpenDrawerCombo] = useState(false);
   const [selectedCombo, setSelectedCombo] = useState<any | null>(null);
 
-  const [currentMenu, setCurrentMenu] = useState<string | null | undefined>(null);
+  const [currentMenu, setCurrentMenu] = useState<string | null | undefined>(
+    null
+  );
 
   const [breadcrumbs, setBreadcrumbs] = useState<Category[]>([]);
 
