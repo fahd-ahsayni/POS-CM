@@ -12,6 +12,10 @@ import {
 } from "../constants";
 import { useRightViewContext } from "../contexts/RightViewContext";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
+import {
+  ALL_CATEGORIES_VIEW,
+  TABLES_PLAN_VIEW,
+} from "../../left-section/constants";
 
 export const useSelectOrderType = () => {
   const dispatch = useDispatch();
@@ -20,7 +24,7 @@ export const useSelectOrderType = () => {
   const [displayedTypes, setDisplayedTypes] = useState<OrderType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { setViews } = useRightViewContext();
-  const { setCurrentMenu } = useLeftViewContext();
+  const { setViews: setLeftView, setCurrentMenu } = useLeftViewContext();
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
@@ -79,6 +83,14 @@ export const useSelectOrderType = () => {
       dispatch(updateOrder({ order_type_id: orderType._id }));
 
       if (orderType) setCurrentMenu(orderType.menu_id);
+
+      // Added: if the order type is on-place, update left view to tablePlans
+      if (orderType.type === "onPlace") {
+        setLeftView(TABLES_PLAN_VIEW);
+      } else {
+        setLeftView(ALL_CATEGORIES_VIEW);
+      }
+
       localStorage.setItem("orderType", JSON.stringify(orderType));
       window.dispatchEvent(new Event("localStorageChange"));
 

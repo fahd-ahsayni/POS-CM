@@ -9,25 +9,24 @@ import { ThemeProvider } from "./providers/themeProvider";
 
 export default function App() {
   return (
-    <VirtualKeyboardProvider>
-      <Toaster />
-      <main>
-        <div className="block md:hidden">
-          <NoMobileResponsive />
-        </div>
-        <div className="hidden md:block">
-          <ContextsProvider>
+    <ContextsProvider>
+      <VirtualKeyboardProvider>
+        <Toaster />
+        <main>
+          <div className="block md:hidden">
+            <NoMobileResponsive />
+          </div>
+          <div className="hidden md:block">
             <Fonts>
               <ThemeProvider defaultTheme="dark" storageKey="pos-theme">
                 <HandleApp />
               </ThemeProvider>
             </Fonts>
-          </ContextsProvider>
-        </div>
-      </main>
+          </div>
+        </main>
 
-      {/* Global virtual keyboard is rendered here */}
-      <GlobalVirtualKeyboard />
-    </VirtualKeyboardProvider>
+        <GlobalVirtualKeyboard />
+      </VirtualKeyboardProvider>
+    </ContextsProvider>
   );
 }

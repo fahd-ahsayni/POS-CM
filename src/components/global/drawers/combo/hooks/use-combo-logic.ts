@@ -29,13 +29,6 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
     const hasSupplements = selections.supplements.length > 0;
 
     if (!hasVariants && !hasSupplements) {
-      toast.error(
-        createToast(
-          "Invalid Combo",
-          "Please select at least one product",
-          "warning"
-        )
-      );
       return;
     }
 

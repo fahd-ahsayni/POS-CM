@@ -12,7 +12,7 @@ import AnimatedStepper from "@/components/global/AnimatedStepper";
 
 function ComboContent() {
   const { selectedCombo } = useLeftViewContext();
-  const { currentStep, setCurrentStep } = useCombo();
+  const { currentStep, setCurrentStep, handleSelect } = useCombo(); // added handleSelect
   const { handleNavigation } = useCombo();
   const { handleFinish, isFinishing, getStepDescription } = useComboLogic(
     currentStep,
@@ -49,6 +49,32 @@ function ComboContent() {
       return () => clearTimeout(timeoutId);
     }
   }, [currentStep, currentStepData, isLastStep]);
+
+  // New effect: For a single required step auto-select and finish.
+  useEffect(() => {
+    if (
+      selectedCombo &&
+      selectedCombo.steps.length === 1 &&
+      currentStepData &&
+      currentStepData.is_required &&
+      !currentStepData.is_supplement &&
+      currentStep === 0
+    ) {
+      if (currentStepData.product_variant_ids.length > 0) {
+        // Auto-select the first variant if not already selected.
+        handleSelect(
+          currentStepData.product_variant_ids[0],
+          currentStepData.is_supplement,
+          currentStepData.is_required,
+          currentStepData.number_of_products
+        );
+      }
+      const timeoutId = setTimeout(() => {
+        handleFinish();
+      }, 50);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [selectedCombo, currentStepData, currentStep, handleSelect, handleFinish]);
 
   const handleNavigationWithTracking = (direction: "next" | "previous") => {
     if (direction === "next") {
