@@ -62,7 +62,7 @@ export default function TablesPlan() {
         <Tabs defaultValue={generalData.floors[0]?.name}>
           <TabsList className="dark:bg-white/5">
             {generalData.floors.map((floor) => (
-              <TabsTrigger key={floor._id} value={floor.name}>
+              <TabsTrigger key={floor._id} value={floor.name} className="px-8">
                 {floor.name}
               </TabsTrigger>
             ))}
