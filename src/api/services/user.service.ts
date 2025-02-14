@@ -25,3 +25,5 @@ export const fetchManagers = () => fetchUsersByPosition("Manager");
 export const fetchWaiterForLogin = () => fetchUsersByPosition("Waiter");
 export const fetchWaiters = () => api.get("/users/with-token?position=Waiter");
 export const fetchLivreurs = () => api.get("users/with-token?position=Livreur");
+
+

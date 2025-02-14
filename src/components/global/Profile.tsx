@@ -1,4 +1,4 @@
-import { logoutService } from "@/api/services";
+import { logoutService, printRAZ } from "@/api/services";
 import { unknownUser } from "@/assets";
 import { DisplayIcon } from "@/assets/figma-icons";
 import CloseShift from "@/auth/CloseShift";
@@ -14,6 +14,7 @@ import { ALL_CATEGORIES_VIEW } from "@/components/views/home/left-section/consta
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 import { TYPE_OF_ORDER_VIEW } from "@/components/views/home/right-section/constants";
 import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { PosData } from "@/interfaces/pos";
 import { truncateName } from "@/lib/utils";
 import { AppDispatch, RootState } from "@/store";
@@ -24,16 +25,18 @@ import {
 } from "@/store/slices/order/create-order.slice";
 import * as Headless from "@headlessui/react";
 import { formatDistanceToNowStrict } from "date-fns";
-import { ChevronDown, LogOut, Power } from "lucide-react";
+import { ChevronDown, LogOut, Power, Printer } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom"; // added import
+import { toast } from "react-toastify";
 import { Avatar, AvatarImage } from "../ui/avatar";
 import { TypographySmall } from "../ui/typography";
 import {
   isCustomerDisplayOpen,
   openCustomerDisplay,
 } from "./customer-display/useCustomerDisplay";
+import { createToast } from "./Toasters";
 
 interface UserData {
   id: string;
@@ -51,6 +54,8 @@ export default function Profile() {
   const posFromLocalStorage = JSON.parse(localStorage.getItem("pos") || "{}");
   const navigate = useNavigate(); // added
   const isWaiter = user?.position === "Waiter";
+
+  const [shiftId] = useLocalStorage<any>("shiftId", "");
 
   const rightViewContext = useRightViewContext();
   const leftViewContext = useLeftViewContext();
@@ -116,6 +121,19 @@ export default function Profile() {
     }
   };
 
+  const handlePrintRAZUser = async () => {
+    const res = await printRAZ();
+    if (res.status === 200) {
+      toast.success(
+        createToast(
+          "Print Successful",
+          "RAZ report has been printed successfully",
+          "success"
+        )
+      );
+    }
+  };
+
   return (
     <>
       {!isWaiter && <CloseShift open={open} setOpen={setOpen} />}
@@ -176,6 +194,11 @@ export default function Profile() {
           <DropdownItem onClick={handleCustomerDisplay}>
             <DisplayIcon className="opacity-60" aria-hidden="true" />
             <DropdownLabel className="pl-2">Customer Display</DropdownLabel>
+          </DropdownItem>
+
+          <DropdownItem onClick={handlePrintRAZUser}>
+            <Printer size={18} className="opacity-60" aria-hidden="true" />
+            <DropdownLabel className="pl-2">Print RAZ</DropdownLabel>
           </DropdownItem>
 
           <DropdownDivider />

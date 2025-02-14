@@ -33,4 +33,8 @@ export class ShiftService {
   static async dropCash(data: any) {
     return api.post("/drop", data);
   }
-} 
+}
+
+export const printRAZ = () => {
+  return api.get("/pos-raz/waiters");
+};
