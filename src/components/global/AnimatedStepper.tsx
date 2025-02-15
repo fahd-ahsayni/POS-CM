@@ -1,12 +1,34 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import AnimatedCheck from "../design/AnimatedCheck";
 
+// Animation constants and variants
+const TRANSITION_DURATION = 0.1;
+const circleVariants = {
+  current: { scale: 1, transition: { duration: TRANSITION_DURATION } },
+  default: { scale: 1, transition: { duration: TRANSITION_DURATION } },
+};
+const textVariants = {
+  current: { opacity: 1, transition: { duration: TRANSITION_DURATION } },
+  default: { opacity: 0.5, transition: { duration: TRANSITION_DURATION } },
+};
+const lineVariants = {
+  completed: {
+    backgroundColor: "hsl(var(--primary))",
+    transition: { duration: TRANSITION_DURATION },
+  },
+  pending: {
+    backgroundColor: "hsl(var(--muted))",
+    transition: { duration: TRANSITION_DURATION },
+  },
+};
+
 interface Step {
   number: number;
   label: string;
+  name: string;
 }
 
 interface StepperProps {
@@ -22,11 +44,11 @@ const AnimatedStepper: React.FC<StepperProps> = ({
 }) => {
   const scrollAreaRef = useRef<HTMLDivElement | null>(null);
 
-  const scrollToCurrentStep = (stepIndex: number) => {
+  // Optimized scroll function using useCallback
+  const scrollToCurrentStep = useCallback((stepIndex: number) => {
     const scrollArea = scrollAreaRef.current;
     if (scrollArea && scrollArea.children.length) {
       const stepElement = scrollArea.children[stepIndex] as HTMLElement;
-
       if (stepElement) {
         stepElement.scrollIntoView({
           behavior: "smooth",
@@ -35,11 +57,11 @@ const AnimatedStepper: React.FC<StepperProps> = ({
         });
       }
     }
-  };
+  }, []);
 
   useEffect(() => {
     scrollToCurrentStep(currentStep - 1);
-  }, [currentStep]);
+  }, [currentStep, scrollToCurrentStep]);
 
   return (
     <ScrollArea className="w-full whitespace-nowrap rounded-md">
@@ -51,31 +73,29 @@ const AnimatedStepper: React.FC<StepperProps> = ({
                 <motion.div
                   onClick={() => onStepClick(step.number)}
                   className={cn(
-                    "w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold cursor-pointer",
+                    "h-9 flex items-center justify-center text-sm font-semibold cursor-pointer",
                     step.number === currentStep
-                      ? "bg-primary-red text-primary-foreground shadow-lg shadow-primary-red/40 text-white"
+                      ? "w-auto bg-primary-red text-primary-foreground shadow-lg shadow-primary-red/40 text-white rounded-lg px-4 relative"
                       : step.number < currentStep
-                      ? "bg-primary-red text-white"
-                      : "bg-primary-black dark:bg-white dark:text-primary-black text-secondary-white opacity-50"
+                      ? "w-9 rounded-lg bg-primary-red text-white"
+                      : "w-9 rounded-lg bg-primary-black dark:bg-white/60 dark:text-primary-black text-secondary-white opacity-50"
                   )}
-                  initial={{ scale: 1 }}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  animate={{
-                    scale: step.number === currentStep ? 1.1 : 1,
-                    transition: { duration: 0.3 },
-                  }}
+                  initial="default"
+                  animate={step.number === currentStep ? "current" : "default"}
+                  variants={circleVariants}
                 >
                   {step.number < currentStep ? (
                     <motion.div
                       initial={{ opacity: 0, scale: 0 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: TRANSITION_DURATION }}
                     >
                       <AnimatedCheck className="w-5 h-5" />
                     </motion.div>
-                  ) : (
+                  ) : step.number > currentStep ? (
                     step.number
+                  ) : (
+                    step.name
                   )}
                 </motion.div>
                 <motion.div
@@ -85,11 +105,9 @@ const AnimatedStepper: React.FC<StepperProps> = ({
                       ? "text-black font-bold"
                       : "text-black"
                   )}
-                  initial={{ opacity: 0.5 }}
-                  animate={{
-                    opacity: step.number === currentStep ? 1 : 0.5,
-                    transition: { duration: 0.3 },
-                  }}
+                  initial="default"
+                  animate={step.number === currentStep ? "current" : "default"}
+                  variants={textVariants}
                 >
                   <span className="opacity-0">{step.label}</span>
                 </motion.div>
@@ -97,14 +115,9 @@ const AnimatedStepper: React.FC<StepperProps> = ({
               {index < steps.length - 1 && (
                 <motion.div
                   className="w-10 h-[2px] mb-5 -mx-5"
-                  initial={{ backgroundColor: "hsl(var(--muted))" }}
-                  animate={{
-                    backgroundColor:
-                      step.number <= currentStep
-                        ? "hsl(var(--primary))"
-                        : "hsl(var(--muted))",
-                    transition: { duration: 0.3 },
-                  }}
+                  initial="pending"
+                  animate={step.number <= currentStep ? "completed" : "pending"}
+                  variants={lineVariants}
                 />
               )}
             </div>

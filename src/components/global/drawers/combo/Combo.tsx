@@ -20,9 +20,10 @@ function ComboContent() {
   );
 
   const steps =
-    selectedCombo?.steps.map((_: any, index: number) => ({
+    selectedCombo?.steps.map((step: any, index: number) => ({
       number: index + 1,
       label: `Step ${index + 1}`,
+      name: step.name,
     })) || [];
 
   const [visitedSteps, setVisitedSteps] = useState(new Set());

@@ -174,13 +174,13 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
 
   return {
     getStepDescription: (step: Step): string => {
-      if (step.is_required && !step.is_supplement) {
+      if (step?.is_required && !step?.is_supplement) {
         return "All variants are automatically selected";
       }
-      if (!step.is_required && !step.is_supplement) {
+      if (!step?.is_required && !step?.is_supplement) {
         return `You can select up to ${step.number_of_products} items`;
       }
-      if (!step.is_required && step.is_supplement) {
+      if (!step?.is_required && step?.is_supplement) {
         return "Select supplements and adjust quantities as needed";
       }
       return "";

@@ -1,6 +1,8 @@
 import { useState } from "react";
-import BaseModal from "./Layout/BaseModal";
+import { toast } from "react-toastify";
 import InputComponent from "../InputComponent";
+import { createToast } from "../Toasters";
+import BaseModal from "./Layout/BaseModal";
 
 interface IpAddressModalProps {
   isOpen: boolean;
@@ -17,6 +19,32 @@ export default function IpAddressModal({
   const [port, setPort] = useState("");
 
   const handleConfirm = () => {
+    // Validate IP address (IPv4) and port (1-65535)
+    const ipRegex =
+      /^(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}$/;
+    const portRegex = /^[0-9]{1,5}$/;
+
+    if (!ipRegex.test(ipAddress)) {
+      toast.warning(
+        createToast(
+          "Invalid IP address",
+          "Please enter a valid IPv4",
+          "warning"
+        )
+      );
+      return;
+    }
+    if (!portRegex.test(port) || parseInt(port, 10) > 65535) {
+      toast.warning(
+        createToast(
+          "Invalid port number",
+          "Port must be between 1 and 65535",
+          "warning"
+        )
+      );
+      return;
+    }
+
     onConfirm(ipAddress, port);
   };
 
