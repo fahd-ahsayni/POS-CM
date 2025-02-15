@@ -38,13 +38,7 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    const updateTime = () => {
-      setCurrentTime(new Date());
-    };
-
-    updateTime();
-    const interval = setInterval(updateTime, 60000); // Update every minute
-    return () => clearInterval(interval);
+    setCurrentTime(new Date());
   }, []);
 
   const motivatedMessages = [
@@ -102,7 +96,7 @@ export default function Navbar() {
               <LucideMaximize size={16} />
               <span className="sr-only">Full screen</span>
             </Button>
-            
+
             <Separator
               orientation="vertical"
               className="h-6 !bg-neutral-dark-grey/50"

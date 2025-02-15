@@ -46,8 +46,8 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
   }, [users, userType]);
 
   const initialSlideIndex = useMemo(() => {
-    if (!selectedUser || processedUsers.length === 0) return 0;
-    const index = processedUsers.findIndex(
+    if (!selectedUser || processedUsers?.length === 0) return 0;
+    const index = processedUsers?.findIndex(
       (user) => user._id === selectedUser._id
     );
     return index >= 0 ? index : 0;

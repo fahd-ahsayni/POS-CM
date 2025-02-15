@@ -24,7 +24,6 @@ export default function App() {
             </Fonts>
           </div>
         </main>
-
         <GlobalVirtualKeyboard />
       </VirtualKeyboardProvider>
     </ContextsProvider>

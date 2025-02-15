@@ -1,6 +1,9 @@
+import { loginWithRfid } from "@/api/services";
 import { logoWithoutText } from "@/assets";
+import IpAddressModal from "@/components/global/modal/IpAddressModal";
 import ShineBorder from "@/components/ui/shine-border";
 import { TypographySmall } from "@/components/ui/typography";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { cn } from "@/lib/utils";
 import type { AppDispatch, RootState } from "@/store";
 import { useCallback, useEffect, useState } from "react";
@@ -10,12 +13,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import SegmentedControl from "./SegmentedControl";
 import SelectUserSlide from "./SelectUserSlide";
-import { loginWithRfid } from "@/api/services";
 
 export default function SelectUser() {
   const [activeTab, setActiveTab] = useState("cashiers");
   const [rfidInput, setRfidInput] = useState("");
   const [isScanning, setIsScanning] = useState(false);
+  const [ipModalOpen, setIpModalOpen] = useState(false);
+
+  const [_, setIpAddress] = useLocalStorage<string>("ipAddress", "");
 
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -88,68 +93,86 @@ export default function SelectUser() {
   }, [rfidInput, handleRfidSubmit, resetRfidBuffer]);
 
   return (
-    <div className="relative w-1/2 bg-secondary-white hidden flex-1 lg:flex flex-col">
-      <header className="absolute top-0 left-0 z-10 flex h-16 flex-shrink-0">
-        <div className="flex flex-1 justify-between px-4 sm:px-6">
-          <div className="flex items-center gap-2">
-            <img src={logoWithoutText} alt="logo" className="w-8 h-auto" />
-            <span>
-              <TypographySmall className="font-semibold leading-[0] text-xs text-primary-black">
-                Caisse
-              </TypographySmall>
-              <TypographySmall className="font-semibold leading-[0] text-xs text-primary-black">
-                Manager
-              </TypographySmall>
-            </span>
-          </div>
-        </div>
-      </header>
-      <div className="sm:px-6 px-4 h-full flex flex-col justify-center">
-        <div className="mt-6">
-          <h2 className="tracking-tight scroll-m-20 text-3xl font-semibold text-zinc-950">
-            Authenticate your access
-          </h2>
-          <p className="mt-1 text-sm text-zinc-500">
-            Choose your account or scan your RFID to authenticate.
-          </p>
-        </div>
-        <div className="mt-10 flex justify-between items-center">
-          {/* <SelectUserCombobox /> */}
-
-          <SegmentedControl activeTab={activeTab} onChange={setActiveTab} />
-        </div>
-        <div className="mt-8">
-          <SelectUserSlide userType={activeTab} />
-          <div className="flex justify-center items-center mt-4">
-            <Tilt
-              tiltMaxAngleX={10}
-              tiltMaxAngleY={10}
-              perspective={1000}
-              transitionSpeed={2000}
-              className="pt-10 border-t-2 border-neutral-bright-grey"
+    <>
+      <div className="relative w-1/2 bg-secondary-white hidden flex-1 lg:flex flex-col">
+        <header className="absolute top-0 left-0 z-10 flex h-16 flex-shrink-0">
+          <div className="flex flex-1 justify-between px-4 sm:px-6">
+            <div
+              onClick={() => setIpModalOpen(true)}
+              className="flex items-center gap-2"
             >
-              <ShineBorder
-                className={cn(
-                  "flex cursor-pointer justify-center items-center gap-4 py-2 px-8",
-                  loading && "opacity-50"
-                )}
-                color="#fff"
-                borderWidth={2}
+              <img src={logoWithoutText} alt="logo" className="w-8 h-auto" />
+              <span>
+                <TypographySmall className="font-semibold leading-[0] text-xs text-primary-black">
+                  Caisse
+                </TypographySmall>
+                <TypographySmall className="font-semibold leading-[0] text-xs text-primary-black">
+                  Manager
+                </TypographySmall>
+              </span>
+            </div>
+          </div>
+        </header>
+        <div className="sm:px-6 px-4 h-full flex flex-col justify-center">
+          <div className="mt-6">
+            <h2 className="tracking-tight scroll-m-20 text-3xl font-semibold text-zinc-950">
+              Authenticate your access
+            </h2>
+            <p className="mt-1 text-sm text-zinc-500">
+              Choose your account or scan your RFID to authenticate.
+            </p>
+          </div>
+          <div className="mt-10 flex justify-between items-center">
+            {/* <SelectUserCombobox /> */}
+
+            <SegmentedControl activeTab={activeTab} onChange={setActiveTab} />
+          </div>
+          <div className="mt-8">
+            <SelectUserSlide userType={activeTab} />
+            <div className="flex justify-center items-center mt-4">
+              <Tilt
+                tiltMaxAngleX={10}
+                tiltMaxAngleY={10}
+                perspective={1000}
+                transitionSpeed={2000}
+                className="pt-10 border-t-2 border-neutral-bright-grey"
               >
-                <RiRfidFill
-                  size={22}
-                  className={cn("text-white", isScanning && "animate-pulse")}
-                />
-                {loading
-                  ? "Authenticating..."
-                  : isScanning
-                  ? "Reading card..."
-                  : "Scan your badge"}
-              </ShineBorder>
-            </Tilt>
+                <ShineBorder
+                  className={cn(
+                    "flex cursor-pointer justify-center items-center gap-4 py-2 px-8",
+                    loading && "opacity-50"
+                  )}
+                  color="#fff"
+                  borderWidth={2}
+                >
+                  <RiRfidFill
+                    size={22}
+                    className={cn("text-white", isScanning && "animate-pulse")}
+                  />
+                  {loading
+                    ? "Authenticating..."
+                    : isScanning
+                    ? "Reading card..."
+                    : "Scan your badge"}
+                </ShineBorder>
+              </Tilt>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      <IpAddressModal
+        isOpen={ipModalOpen}
+        onConfirm={(ip, port) => {
+          const formattedIp =
+            ip.startsWith("http://") || ip.startsWith("https://")
+              ? `${ip}/api`
+              : `http://${ip}:${port}/api`;
+          setIpAddress(formattedIp);
+          setIpModalOpen(false);
+        }}
+        onCancel={() => setIpModalOpen(false)}
+      />
+    </>
   );
 }

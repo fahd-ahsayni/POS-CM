@@ -1,8 +1,11 @@
 import axios from "axios";
 
-const baseURL = window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL;
-
 const user = JSON.parse(localStorage.getItem("user") || "{}");
+const ipAddress = localStorage.getItem("ipAddress");
+
+const baseURL = ipAddress
+  ? ipAddress
+  : window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL;
 
 export const api = axios.create({
   baseURL,

@@ -36,6 +36,7 @@ import {
   openCustomerDisplay,
 } from "./customer-display/useCustomerDisplay";
 import { createToast } from "./Toasters";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
 interface UserData {
   id: string;
@@ -53,7 +54,7 @@ export default function Profile() {
   const posFromLocalStorage = JSON.parse(localStorage.getItem("pos") || "{}");
   const navigate = useNavigate(); // added
   const isWaiter = user?.position === "Waiter";
-
+  const [ipAddress] = useLocalStorage<string>("ipAddress", "");
   const rightViewContext = useRightViewContext();
   const leftViewContext = useLeftViewContext();
 
@@ -143,7 +144,12 @@ export default function Profile() {
             <AvatarImage
               src={
                 user?.image
-                  ? `${import.meta.env.VITE_BASE_URL}${user?.image}`
+                  ? `${
+                      ipAddress
+                        ? ipAddress
+                        : window.ENV?.VITE_BASE_URL ||
+                          import.meta.env.VITE_BASE_URL
+                    }${user?.image}`
                   : unknownUser
               }
             />

@@ -3,12 +3,16 @@ import { User } from "@/interfaces/user";
 
 type UserPosition = "Cashier" | "Manager" | "Waiter" | "Livreur";
 
+const ipAddress = localStorage.getItem("ipAddress");
+
 const fetchUsersByPosition = async (
   position: UserPosition
 ): Promise<User[]> => {
   const response = await api.get<User[]>(
     `${
-      window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL
+      ipAddress
+        ? ipAddress
+        : window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL
     }/users?position=${position}`,
     {
       timeout: 5000,
@@ -25,5 +29,3 @@ export const fetchManagers = () => fetchUsersByPosition("Manager");
 export const fetchWaiterForLogin = () => fetchUsersByPosition("Waiter");
 export const fetchWaiters = () => api.get("/users/with-token?position=Waiter");
 export const fetchLivreurs = () => api.get("users/with-token?position=Livreur");
-
-

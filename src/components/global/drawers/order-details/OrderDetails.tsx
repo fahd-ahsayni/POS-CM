@@ -102,20 +102,24 @@ export default function OrderDetails() {
     }, {}) || {};
 
   const handleCustomerGroupSelection = (_: any, lines: any[]) => {
-    const unpaidLines = lines.filter((line) => !line.is_paid);
-    const unpaidLineIds = unpaidLines.map((line) => line._id);
-    const currentlySelected = selectedOrderlines.filter((id) =>
-      unpaidLineIds.includes(id)
+    // Only consider lines that are unpaid and not fully cancelled
+    const validLines = lines.filter(
+      (line) => !line.is_paid && line.cancelled_qty < line.quantity
     );
-    const allUnpaidSelected = currentlySelected.length === unpaidLineIds.length;
+    const validLineIds = validLines.map((line) => line._id);
+    const currentlySelected = selectedOrderlines.filter((id) =>
+      validLineIds.includes(id)
+    );
+    const allValidSelected = currentlySelected.length === validLineIds.length;
 
     setSelectedOrderlines((prev) => {
-      const outsideGroup = prev.filter((id) => !unpaidLineIds.includes(id));
-      return allUnpaidSelected
+      const outsideGroup = prev.filter((id) => !validLineIds.includes(id));
+      return allValidSelected
         ? outsideGroup
-        : [...outsideGroup, ...unpaidLineIds];
+        : [...outsideGroup, ...validLineIds];
     });
   };
+
   const handlePrintKitchen = async () => {
     if (!selectedOrder?._id) return;
     try {
@@ -185,8 +189,7 @@ export default function OrderDetails() {
                           "ring-1 ring-primary-red"
                       )}
                       onClick={
-                        // Changed condition: only clickable when order is not paid AND not fully cancelled.
-                        !orderLine.is_paid ||
+                        !orderLine.is_paid &&
                         orderLine.cancelled_qty < orderLine.quantity
                           ? () => toggleOrderLineSelection(orderLine._id)
                           : undefined

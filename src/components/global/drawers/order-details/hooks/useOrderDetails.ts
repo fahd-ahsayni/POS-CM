@@ -37,7 +37,12 @@ export const useOrderDetails = (
   }, [selectedOrder, selectedOrderlines]);
 
   const handleProcessPayment = () => {
-    // Remove the warning and requirement for selection
+    if (selectedOrder) {
+      const validOrderLineIds = selectedOrder.orderline_ids
+        .filter((line: any) => !line.is_paid && line.cancelled_qty < line.quantity)
+        .map((line: any) => line._id);
+      setSelectedOrderlines(validOrderLineIds);
+    }
     setOpenOrderDetails(false);
     setOpenPayments(true);
   };
