@@ -6,6 +6,9 @@ export default function createNewOrderReceivedNotification(
   image: any,
   type: ToastType
 ) {
+  // Compute baseUrl dynamically
+  const baseUrl = localStorage.getItem("ipAddress") || window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL;
+
   const bgColorMap = {
     glovo_new_order_created: "bg-yellow-600",
     default: "bg-gray-500",
@@ -21,9 +24,7 @@ export default function createNewOrderReceivedNotification(
         <div className="h-9 w-10 rounded-md bg-yellow-600 overflow-hidden relative flex items-center justify-center">
           <img
             className="size-full object-cover absolute rounded-md"
-            src={`${
-              window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL
-            }${image}`}
+            src={`${baseUrl}${image}`}
             alt={type}
             crossOrigin="anonymous"
           />

@@ -21,6 +21,9 @@ interface StaffListProps {
 }
 
 const StaffList = ({ open, setOpen }: StaffListProps) => {
+  // Compute baseUrl dynamically
+  const baseUrl = localStorage.getItem("ipAddress") || window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL;
+
   const [staffList, setStaffList] = useState<StaffUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -129,10 +132,7 @@ const StaffList = ({ open, setOpen }: StaffListProps) => {
                   <AvatarImage
                     src={
                       staff.image
-                        ? `${
-                            window.ENV?.VITE_BASE_URL ||
-                            import.meta.env.VITE_BASE_URL
-                          }${staff.image}`
+                        ? `${baseUrl}${staff.image}`
                         : unknownUser
                     }
                     alt={staff.name}

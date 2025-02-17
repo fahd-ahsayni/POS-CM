@@ -8,6 +8,9 @@ import { ALL_CATEGORIES_VIEW } from "../constants";
 import { useLeftViewContext } from "../contexts/LeftViewContext";
 
 export default function Header() {
+  // Compute baseUrl dynamically
+  const baseUrl = localStorage.getItem("ipAddress") || window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL;
+
   const { setViews, category, setCategory, setSubCategory, setBreadcrumbs } =
     useLeftViewContext();
 
@@ -30,9 +33,7 @@ export default function Header() {
         <Card className="flex overflow-hidden relative cursor-pointer flex-col items-center h-full w-full justify-center border-2 !border-primary-red">
           {category && (
             <img
-              src={`${
-                window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL
-              }${category.image}`}
+              src={`${baseUrl}${category.image}`}
               className="absolute w-full h-full object-cover brightness-[0.5]"
               alt={category.name}
               crossOrigin="anonymous"

@@ -3,7 +3,6 @@ import { logoWithoutText } from "@/assets";
 import IpAddressModal from "@/components/global/modal/IpAddressModal";
 import ShineBorder from "@/components/ui/shine-border";
 import { TypographySmall } from "@/components/ui/typography";
-import { useLocalStorage } from "@/hooks/use-local-storage";
 import { cn } from "@/lib/utils";
 import type { AppDispatch, RootState } from "@/store";
 import { useCallback, useEffect, useState } from "react";
@@ -19,8 +18,6 @@ export default function SelectUser() {
   const [rfidInput, setRfidInput] = useState("");
   const [isScanning, setIsScanning] = useState(false);
   const [ipModalOpen, setIpModalOpen] = useState(false);
-
-  const [_, setIpAddress] = useLocalStorage<string>("ipAddress", "");
 
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -168,7 +165,7 @@ export default function SelectUser() {
             ip.startsWith("http://") || ip.startsWith("https://")
               ? `${ip}/api`
               : `http://${ip}:${port}/api`;
-          setIpAddress(formattedIp);
+          localStorage.setItem("ipAddress", formattedIp);
           setIpModalOpen(false);
         }}
         onCancel={() => setIpModalOpen(false)}

@@ -62,6 +62,9 @@ const DeliveryOrder: React.FC<{ order: any; orderType: OrderType }> = ({
   order,
   orderType,
 }) => {
+  // Compute baseUrl dynamically
+  const baseUrl = localStorage.getItem("ipAddress") || window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL;
+
   const getDeliveryText = () => {
     if (order.delivery_guy_id === null && orderType.select_delivery_boy) {
       return orderType.name;
@@ -84,7 +87,7 @@ const DeliveryOrder: React.FC<{ order: any; orderType: OrderType }> = ({
       {orderType.image && (
         <div className="h-6 w-6 rounded-md relative overflow-hidden">
           <img
-            src={`${import.meta.env.VITE_BASE_URL}${orderType.image}`}
+            src={`${baseUrl}${orderType.image}`}
             alt="order-type-image"
             loading="lazy"
             crossOrigin="anonymous"

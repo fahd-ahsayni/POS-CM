@@ -20,6 +20,9 @@ export function ProductCard({
   selectedProducts,
   onProductClick,
 }: ProductCardProps) {
+  // Compute baseUrl dynamically
+  const baseUrl = localStorage.getItem("ipAddress") || window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL;
+
   // Get the current orderType from localStorage
   const currentMenu = useMemo(() => {
     try {
@@ -89,8 +92,8 @@ export function ProductCard({
           <div className="flex items-center justify-center h-full">
             <img
               src={
-                product.image
-                  ? `${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}${product.image}`
+                product.image 
+                  ? `${baseUrl}${product.image}`
                   : unknownProduct
               }
               alt={product.name}

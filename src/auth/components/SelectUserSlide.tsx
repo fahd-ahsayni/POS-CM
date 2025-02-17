@@ -36,13 +36,12 @@ const SelectUserSlide: React.FC<SelectUserSlideProps> = ({ userType }) => {
   }, [reduxLoading]);
 
   const processedUsers = useMemo(() => {
-    const originalUsers = users[userType as keyof typeof users] || [];
-
-    if (originalUsers.length > 1 && originalUsers.length < 4) {
-      return [...originalUsers, ...originalUsers];
+    const originalUsers = users[userType as keyof typeof users];
+    const userArray = Array.isArray(originalUsers) ? originalUsers : [];
+    if (userArray.length > 1 && userArray.length < 4) {
+      return [...userArray, ...userArray];
     }
-
-    return originalUsers;
+    return userArray;
   }, [users, userType]);
 
   const initialSlideIndex = useMemo(() => {

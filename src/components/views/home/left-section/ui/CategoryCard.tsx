@@ -17,6 +17,9 @@ export const CategoryCard = memo(function CategoryCard({
   isDisabled,
   onClick,
 }: CategoryCardProps) {
+  // Compute baseUrl dynamically
+  const baseUrl = localStorage.getItem("ipAddress") || window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL;
+
   return (
     <div className="h-24">
       <Card
@@ -27,18 +30,13 @@ export const CategoryCard = memo(function CategoryCard({
         )}
       >
         <Image
-          src={`${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}${
-            category.image
-          }`}
+          src={`${baseUrl}${category.image}`}
           alt={category.name}
           layout="fullWidth"
-          loading="lazy"
           crossOrigin="anonymous"
           className={cn(
             "object-cover grayscale brightness-[0.4] transition-all duration-150 size-full",
-            isDisabled
-              ? "grayscale brightness-[0.3]"
-              : "grayscale-0"
+            isDisabled ? "grayscale brightness-[0.3]" : "grayscale-0"
           )}
         />
         <TypographyH4 className="text-center absolute text-white px-4 line-clamp-2">

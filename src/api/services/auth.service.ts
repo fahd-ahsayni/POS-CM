@@ -9,19 +9,17 @@ interface AuthResponse {
   user: User;
 }
 
-const ipAddress = localStorage.getItem("ipAddress");
-
 export const login = async (
   id: string,
   password: string
 ): Promise<AuthResponse> => {
   try {
+    const ipAddress = localStorage.getItem("ipAddress");
+    const baseUrl =
+      ipAddress || window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL;
+
     const response = await api.post(
-      `${
-        ipAddress
-          ? ipAddress
-          : window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL
-      }/auth/login`,
+      `${baseUrl}/auth/login`,
       { id, password },
       {
         headers: {

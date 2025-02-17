@@ -17,10 +17,11 @@ export const fetchGeneralData = createAsyncThunk<
 >("generalData/fetchGeneralData", async (id, { rejectWithValue }) => {
   try {
     const token = localStorage.getItem("token");
+    // Compute baseUrl dynamically
+    const baseUrl = localStorage.getItem("ipAddress") || window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL;
     
-    // Remove categories fetch from Promise.all
     const generalDataResponse = await axios.get(
-      `${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}/general-data/pos/${id}`,
+      `${baseUrl}/general-data/pos/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }
@@ -53,8 +54,11 @@ export const fetchPaginatedGeneralData = createAsyncThunk<
   async ({ id, page, limit }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
+      // Compute baseUrl dynamically
+      const baseUrl = localStorage.getItem("ipAddress") || window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL;
+      
       const response = await axios.get(
-        `${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}/general-data/pos/${id}`,
+        `${baseUrl}/general-data/pos/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
           params: { page, limit },

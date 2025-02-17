@@ -33,6 +33,9 @@ interface OrdersTableProps {
 
 const OrderTypeCell = ({ order }: { order: any }) => {
   const orderType = order.order_type_id;
+  
+  // Compute baseUrl dynamically
+  const baseUrl = localStorage.getItem("ipAddress") || window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL;
 
   if (!orderType) return <span>-</span>;
 
@@ -107,7 +110,7 @@ const OrderTypeCell = ({ order }: { order: any }) => {
       {orderType.image && (
         <div className="h-6 w-6 rounded-md relative overflow-hidden">
           <img
-            src={`${import.meta.env.VITE_BASE_URL}${orderType.image}`}
+            src={`${baseUrl}${orderType.image}`}
             alt="order-type"
             loading="lazy"
             crossOrigin="anonymous"

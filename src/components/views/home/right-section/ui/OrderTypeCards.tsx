@@ -30,6 +30,12 @@ export const OrderCard = memo(
     onSelect: (event: React.MouseEvent) => void;
     fixedLightDark?: boolean;
   }) => {
+    // Compute baseUrl dynamically
+    const baseUrl =
+      localStorage.getItem("ipAddress") ||
+      window.ENV?.VITE_BASE_URL ||
+      import.meta.env.VITE_BASE_URL;
+
     const iconType = orderType?.type?.toLowerCase();
     const isDeliveryChild = orderType?.parent_id && iconType === "delivery";
     const showDescription = !orderType?.parent_id;
@@ -48,7 +54,7 @@ export const OrderCard = memo(
           {orderType.image || isDeliveryChild ? (
             <img
               src={
-                `${import.meta.env.VITE_BASE_URL}${orderType.image}` ||
+                `${baseUrl}${orderType.image}` ||
                 "/path/to/delivery-image.png"
               }
               alt={orderType.name}

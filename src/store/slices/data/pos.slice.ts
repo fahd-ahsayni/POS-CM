@@ -45,9 +45,11 @@ export const fetchPosData = createAsyncThunk(
       if (!token) {
         throw new Error("No authentication token found");
       }
-
+      // Compute baseUrl dynamically
+      const baseUrl = localStorage.getItem("ipAddress") || window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL;
+      
       const response = await axios.get<PosState["data"]>(
-        `${window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL}/pos`,
+        `${baseUrl}/pos`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
