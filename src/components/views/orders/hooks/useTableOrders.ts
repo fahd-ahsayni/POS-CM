@@ -13,8 +13,11 @@ interface OrderItem {
     _id: string;
     type: string | null;
   };
+  ref: string;
   status?: string;
-  // ... other properties
+  table_id: {
+    name: string;
+  };
 }
 
 interface UseTableOrdersProps<T extends OrderItem> {
@@ -103,11 +106,7 @@ export function useTableOrders<T extends OrderItem>({
   };
 
   const sortedData = useMemo(() => {
-    let filtered = filterCriteria.tableNumber
-      ? Array.isArray(tableData)
-        ? tableData
-        : []
-      : [...data];
+    let filtered = [...data]; // Start with all data
 
     if (filterCriteria) {
       filtered = filtered.filter((item) => {
@@ -117,7 +116,8 @@ export function useTableOrders<T extends OrderItem>({
             ?.toLowerCase()
             .includes(filterCriteria.employee.toLowerCase());
 
-        const matchesOrderType = !filterCriteria.orderType || 
+        const matchesOrderType =
+          !filterCriteria.orderType ||
           item.order_type_id?._id === filterCriteria.orderType;
 
         const itemStatus = normalizeStatus(getNestedValue(item, "status"));
@@ -130,8 +130,17 @@ export function useTableOrders<T extends OrderItem>({
             ?.toLowerCase()
             .includes(filterCriteria.orderId.toLowerCase());
 
+        const matchesTableNumber =
+          !filterCriteria.tableNumber ||
+          String(item.table_id?.name).toLowerCase() ===
+            String(filterCriteria.tableNumber).toLowerCase();
+
         return (
-          matchesEmployee && matchesOrderType && matchesStatus && matchesOrderId
+          matchesEmployee &&
+          matchesOrderType &&
+          matchesStatus &&
+          matchesOrderId &&
+          matchesTableNumber
         );
       });
     }

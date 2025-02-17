@@ -8,18 +8,18 @@ const fetchUsersByPosition = async (
 ): Promise<User[]> => {
   // Retrieve ipAddress on each call
   const ipAddress = localStorage.getItem("ipAddress");
-  console.log("ipAddress: ", ipAddress)
   const baseUrl =
-    ipAddress ||
-    window.ENV?.VITE_BASE_URL ||
-    import.meta.env.VITE_BASE_URL;
-    
-  const response = await api.get<User[]>(`${baseUrl}/users?position=${position}`, {
-    timeout: 5000,
-    headers: {
-      Authorization: `Api-Key ${import.meta.env.VITE_API_KEY}`,
-    },
-  });
+    ipAddress || window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL;
+
+  const response = await api.get<User[]>(
+    `${baseUrl}/users?position=${position}`,
+    {
+      timeout: 5000,
+      headers: {
+        Authorization: `Api-Key ${import.meta.env.VITE_API_KEY}`,
+      },
+    }
+  );
   return response.data;
 };
 

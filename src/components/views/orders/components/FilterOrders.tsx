@@ -1,5 +1,6 @@
 import { FilterIcon } from "@/assets/figma-icons";
 import InputComponent from "@/components/global/InputComponent";
+import { useVirtualKeyboard } from "@/components/keyboard/VirtualKeyboardGlobalContext";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -15,8 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { FilterCriteria } from "@/interfaces/general";
-import { useState, useRef } from "react";
-import { useVirtualKeyboard } from "@/components/keyboard/VirtualKeyboardGlobalContext";
+import { useRef, useState } from "react";
 import useFilterCriteria from "./hooks/useFilterOrder";
 
 interface FilterOrdersProps {
@@ -33,6 +33,13 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
   // Ref for the Order ID input
   const orderIdRef = useRef<HTMLInputElement | null>(null);
 
+  // Add ref for table number input
+  const tableNumberRef = useRef<HTMLInputElement | null>(null);
+
+  // Add state for table number cursor position
+  const [tableNumberCursorPosition, setTableNumberCursorPosition] =
+    useState<number>(0);
+
   const {
     selectedEmployee,
     setSelectedEmployee,
@@ -42,6 +49,8 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
     setSelectedStatus,
     orderId,
     setOrderId,
+    tableNumber,
+    setTableNumber,
     employees,
     orderTypesData,
     statuses,
@@ -93,6 +102,54 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
     setTimeout(() => {
       orderIdRef.current?.setSelectionRange(newPosition, newPosition);
       orderIdRef.current?.focus();
+    }, 0);
+  };
+
+  // Add handler for table number keyboard input
+  const handleTableNumberKeyPress = (key: string, cursorAdjustment: number) => {
+    if (!tableNumberRef.current) return;
+
+    let currentValue = tableNumber;
+    let newValue = currentValue;
+    let newPosition = tableNumberCursorPosition;
+
+    switch (key) {
+      case "Backspace":
+        if (tableNumberCursorPosition > 0) {
+          newValue =
+            currentValue.slice(0, tableNumberCursorPosition - 1) +
+            currentValue.slice(tableNumberCursorPosition);
+          newPosition = tableNumberCursorPosition - 1;
+        }
+        break;
+      case "ArrowLeft":
+        newPosition = Math.max(0, tableNumberCursorPosition - 1);
+        break;
+      case "ArrowRight":
+        newPosition = Math.min(
+          currentValue.length,
+          tableNumberCursorPosition + 1
+        );
+        break;
+      case "Delete":
+        newValue = "";
+        newPosition = 0;
+        break;
+      default:
+        newValue =
+          currentValue.slice(0, tableNumberCursorPosition) +
+          key +
+          currentValue.slice(tableNumberCursorPosition);
+        newPosition = tableNumberCursorPosition + cursorAdjustment;
+        break;
+    }
+
+    setTableNumber(newValue);
+    setTableNumberCursorPosition(newPosition);
+
+    setTimeout(() => {
+      tableNumberRef.current?.setSelectionRange(newPosition, newPosition);
+      tableNumberRef.current?.focus();
     }, 0);
   };
 
@@ -152,6 +209,41 @@ export default function FilterOrders({ onFilterChange }: FilterOrdersProps) {
                     );
                   },
                   ref: orderIdRef,
+                }}
+              />
+            </div>
+
+            {/* Table Number Input */}
+            <div>
+              <div className="flex items-center justify-between">
+                <Label className="pl-2">Table Number</Label>
+                <span
+                  className="text-xs font-medium text-error-color cursor-pointer"
+                  onClick={() => handleClearFilter("tableNumber")}
+                >
+                  Clear
+                </span>
+              </div>
+              <InputComponent
+                config={{
+                  type: "text",
+                  placeholder: "Enter Table Number",
+                  value: tableNumber,
+                  setValue: (value: string | number | null) =>
+                    setTableNumber(value ? value.toString() : ""),
+                  onFocus: () => {
+                    openKeyboard("table-number", handleTableNumberKeyPress);
+                    setTableNumberCursorPosition(
+                      tableNumberRef.current?.selectionStart || 0
+                    );
+                    setOpen(true);
+                  },
+                  onSelect: (e) => {
+                    setTableNumberCursorPosition(
+                      (e.target as HTMLInputElement).selectionStart || 0
+                    );
+                  },
+                  ref: tableNumberRef,
                 }}
               />
             </div>
