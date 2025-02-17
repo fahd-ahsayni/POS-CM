@@ -1,10 +1,10 @@
-import { useState, useMemo, useCallback } from "react";
-import { useDispatch } from "react-redux";
 import { applyDiscount } from "@/api/services";
-import { useOrder } from "@/components/global/drawers/order-details/context/OrderContext";
-import { setDiscount } from "@/store/slices/order/create-order.slice";
-import { toast } from "react-toastify";
 import { createToast } from "@/components/global/Toasters";
+import { useLocalStorage } from "@/hooks/use-local-storage";
+import { setDiscount } from "@/store/slices/order/create-order.slice";
+import { useCallback, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 
 interface Discount {
   _id: string;
@@ -22,7 +22,7 @@ export function useApplyDiscount(
   setAuthorization: (authorization: boolean) => void
 ) {
   const dispatch = useDispatch();
-  const { selectedOrder } = useOrder();
+  const [loadedOrder] = useLocalStorage<any>("loadedOrder", {});
   const [selectedDiscount, setSelectedDiscount] = useState<string>("");
   const [selectedReason, setSelectedReason] = useState<string>("");
 
@@ -68,9 +68,9 @@ export function useApplyDiscount(
       };
 
       // If there's a loaded order (editing existing order)
-      if (selectedOrder?._id) {
+      if (loadedOrder?._id) {
         const response = await applyDiscount({
-          order_id: selectedOrder._id,
+          order_id: loadedOrder._id,
           ...discountData,
         });
 
@@ -113,7 +113,6 @@ export function useApplyDiscount(
     dispatch,
     setOpen,
     setAuthorization,
-    selectedOrder,
   ]);
 
   return {

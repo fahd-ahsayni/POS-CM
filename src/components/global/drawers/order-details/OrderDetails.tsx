@@ -53,7 +53,6 @@ export default function OrderDetails() {
   } = useOrderDetails(setLeftViews, setRightViews, setSelectedProducts);
 
   useEffect(() => {
-    // Clear orderlines only if drawer is closed and payments are not active
     if (!openOrderDetails && !openPayments) {
       setSelectedOrderlines([]);
       setEditedAmount(null);
