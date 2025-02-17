@@ -26,7 +26,7 @@ export default function OtherActionsOrderLines() {
   const [isUrgent, setIsUrgent] = useState(false);
   const [isOneTime, setIsOneTime] = useState(false);
 
-  const [loadedOrder] = useLocalStorage("loadedOrder", {});
+  const [loadedOrder] = useLocalStorage("loadedOrder", {_id: ""});
 
   const { setViews } = useRightViewContext();
 
@@ -66,13 +66,13 @@ export default function OtherActionsOrderLines() {
         </Headless.MenuButton>
 
         <DropdownMenu className="z-[9999] p-3">
-          {!loadedOrder && (
+          {!loadedOrder._id && (
             <DropdownItem onClick={() => setViews(TYPE_OF_ORDER_VIEW)}>
               Change Order Type
             </DropdownItem>
           )}
 
-          {loadedOrder && (
+          {loadedOrder._id && (
             <DropdownItem onClick={() => setViews(NUMBER_OF_TABLE_VIEW)}>
               Change table
             </DropdownItem>
