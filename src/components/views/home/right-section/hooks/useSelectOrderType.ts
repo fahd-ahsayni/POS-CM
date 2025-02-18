@@ -85,7 +85,7 @@ export const useSelectOrderType = () => {
       if (orderType) setCurrentMenu(orderType.menu_id);
 
       // Added: if the order type is on-place, update left view to tablePlans
-      if (orderType.type === "onPlace") {
+      if (orderType.select_table) {
         setLeftView(TABLES_PLAN_VIEW);
       } else {
         setLeftView(ALL_CATEGORIES_VIEW);
