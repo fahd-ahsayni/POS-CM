@@ -1,25 +1,25 @@
-import { useEffect, useState, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { BeatLoader } from "react-spinners";
 import OrderDetails from "@/components/global/drawers/order-details/OrderDetails";
+import { TextShimmer } from "@/components/ui/text-shimmer";
 import OrdersTable from "@/components/views/orders/components/OrdersTable";
 import { useTableOrders } from "@/components/views/orders/hooks/useTableOrders";
-import { AppDispatch, RootState } from "@/store";
+import { FilterCriteria } from "@/interfaces/general";
+import { loadingColors } from "@/preferences";
+import { AppDispatch } from "@/store";
 import {
   fetchOrders,
   refreshOrders,
   setFilteredDataLength,
 } from "@/store/slices/data/orders.slice";
-import { FilterCriteria } from "@/interfaces/general";
+import { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { BeatLoader } from "react-spinners";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
-import { TextShimmer } from "@/components/ui/text-shimmer";
-import { loadingColors } from "@/preferences";
 
 export default function OrdersPage() {
   const dispatch = useDispatch<AppDispatch>();
   const [loading, setLoading] = useState(false);
-  const { orders } = useSelector((state: RootState) => state.orders);
+  const { orders } = useSelector((state: any) => state.orders);
 
   const [filterCriteria, setFilterCriteria] = useState<FilterCriteria>({
     employee: "",

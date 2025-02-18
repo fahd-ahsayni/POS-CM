@@ -8,33 +8,21 @@ interface SortConfig {
   direction: "ascending" | "descending";
 }
 
-interface OrderItem {
-  order_type_id?: {
-    _id: string;
-    type: string | null;
-  };
-  ref: string;
-  status?: string;
-  table_id: {
-    name: string;
-  };
-}
-
-interface UseTableOrdersProps<T extends OrderItem> {
-  data: T[];
+interface UseTableOrdersProps {
+  data: any[];
   filterCriteria: FilterCriteria;
   defaultSort?: SortConfig;
 }
 
-export function useTableOrders<T extends OrderItem>({
+export function useTableOrders({
   data,
   filterCriteria,
   defaultSort,
-}: UseTableOrdersProps<T>) {
+}: UseTableOrdersProps) {
   const [sortConfig, setSortConfig] = useState<SortConfig | null>(
     defaultSort || null
   );
-  const [tableData, setTableData] = useState<T[]>([]);
+  const [tableData, setTableData] = useState<any[]>([]);
 
   const ordersVersion = useSelector((state: any) => state.orders.version);
   const ordersStatus = useSelector((state: any) => state.orders.status);

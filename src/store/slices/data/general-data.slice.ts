@@ -1,6 +1,5 @@
 import { logoutService } from "@/api/services";
 // Import required modules
-import { GeneralData, GeneralDataState } from "@/interfaces/general";
 import {
   createAsyncThunk,
   createSlice,
@@ -11,7 +10,7 @@ import axios from "axios";
 
 // Async thunk to fetch general data
 export const fetchGeneralData = createAsyncThunk<
-  GeneralData,
+  any,
   string,
   { rejectValue: string }
 >("generalData/fetchGeneralData", async (id, { rejectWithValue }) => {
@@ -46,7 +45,7 @@ export const fetchGeneralData = createAsyncThunk<
 
 // Async thunk to fetch paginated general data
 export const fetchPaginatedGeneralData = createAsyncThunk<
-  GeneralData,
+  any,
   { id: string; page: number; limit: number },
   { rejectValue: string }
 >(
@@ -77,7 +76,7 @@ export const fetchPaginatedGeneralData = createAsyncThunk<
 );
 
 // Define initial state with localStorage check
-const initialState: GeneralDataState = {
+const initialState: any = {
   data: JSON.parse(localStorage.getItem("generalData") || JSON.stringify({
     floors: [],
     configs: [],
@@ -110,7 +109,7 @@ const generalDataSlice = createSlice({
       })
       .addCase(
         fetchGeneralData.fulfilled,
-        (state, action: PayloadAction<GeneralData>) => {
+        (state, action: PayloadAction<any>) => {
           state.status = "succeeded";
           state.data = action.payload;
           // Save data to local storage
@@ -147,11 +146,11 @@ export const { resetGeneralData } = generalDataSlice.actions;
 
 // Create a single object for all selectors
 export const generalDataSelectors = {
-  selectGeneralData: (state: { generalData: GeneralDataState }) =>
+  selectGeneralData: (state: { generalData: any }) =>
     state.generalData.data,
-  selectFloors: (state: { generalData: GeneralDataState }) =>
+  selectFloors: (state: { generalData: any }) =>
     state.generalData.data.floors,
-  selectOrderTypes: (state: { generalData: GeneralDataState }) =>
+  selectOrderTypes: (state: { generalData: any }) =>
     state.generalData.data.orderTypes,
 };
 

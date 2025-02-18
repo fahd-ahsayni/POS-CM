@@ -25,7 +25,7 @@ import { SortDesc } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 
 interface OrdersTableProps {
-  data: Order[];
+  data: any;
   withPrintButton?: boolean;
   onSort?: (key: string) => void;
   sortConfig?: { key: string; direction: "ascending" | "descending" } | null;
@@ -33,9 +33,12 @@ interface OrdersTableProps {
 
 const OrderTypeCell = ({ order }: { order: any }) => {
   const orderType = order.order_type_id;
-  
+
   // Compute baseUrl dynamically
-  const baseUrl = localStorage.getItem("ipAddress") || window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL;
+  const baseUrl =
+    localStorage.getItem("ipAddress") ||
+    window.ENV?.VITE_BASE_URL ||
+    import.meta.env.VITE_BASE_URL;
 
   if (!orderType) return <span>-</span>;
 
@@ -275,7 +278,7 @@ export default function OrdersTable({
         </TableHeader>
         <TableBody>
           {paginatedData.length > 0 ? (
-            paginatedData.map((order) => (
+            paginatedData.map((order: any) => (
               <TableRow
                 key={order._id}
                 onClick={() => handleRowClick(order)}
