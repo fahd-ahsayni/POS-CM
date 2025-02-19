@@ -26,15 +26,10 @@ function SelectTypeOfOrder() {
     actions: { handleOrderTypeSelect, handleBack },
   } = useSelectOrderType();
 
-  // Fallback to an empty array if orderTypes doesn't exist
   const generalData = JSON.parse(localStorage.getItem("generalData") || "{}");
   const orderTypesFromLocalStorage = generalData["orderTypes"] || [];
-
-  // Use displayedTypes if available, otherwise fallback to orderTypesFromLocalStorage
   const typesToDisplay =
-    displayedTypes && displayedTypes.length
-      ? displayedTypes
-      : orderTypesFromLocalStorage;
+    displayedTypes?.length > 0 ? displayedTypes : orderTypesFromLocalStorage;
 
   const dispatch = useDispatch();
 
@@ -69,16 +64,19 @@ function SelectTypeOfOrder() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-full">
+      <div className="flex flex-col items-center justify-center h-full gap-4">
         <BeatLoader color={loadingColors.secondary} size={10} />
       </div>
     );
   }
 
-  if (!typesToDisplay.length) {
+  if (!isLoading && (!typesToDisplay || typesToDisplay.length === 0)) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <p>No order types available</p>
+      <div className="flex flex-col items-center justify-center h-full gap-4">
+        <p className="text-lg text-muted-foreground">
+          No order types available
+        </p>
+        <Button onClick={() => window.location.reload()}>Retry</Button>
       </div>
     );
   }

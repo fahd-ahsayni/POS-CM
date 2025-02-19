@@ -28,19 +28,32 @@ export const useSelectOrderType = () => {
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    const loadOrderTypes = () => {
+    const loadOrderTypes = async () => {
       setIsLoading(true);
       try {
-        const storedGeneralData = JSON.parse(
-          localStorage.getItem("generalData") || "{}"
-        );
-        const rootOrderTypes = storedGeneralData.orderTypes.filter(
+        // Add a small delay to ensure localStorage is ready
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        const storedGeneralData = localStorage.getItem("generalData");
+        if (!storedGeneralData) {
+          throw new Error("No general data found");
+        }
+
+        const data = JSON.parse(storedGeneralData);
+        if (!data.orderTypes || !Array.isArray(data.orderTypes)) {
+          throw new Error("Invalid order types data");
+        }
+
+        const rootOrderTypes = data.orderTypes.filter(
           (type: OrderType) => !type.parent_id
         );
+        
         setOrderTypes(rootOrderTypes);
         setDisplayedTypes(rootOrderTypes);
       } catch (error) {
         console.error("Error loading order types:", error);
+        setOrderTypes([]);
+        setDisplayedTypes([]);
       } finally {
         setIsLoading(false);
       }
@@ -84,7 +97,6 @@ export const useSelectOrderType = () => {
 
       if (orderType) setCurrentMenu(orderType.menu_id);
 
-      // Added: if the order type is on-place, update left view to tablePlans
       if (orderType.select_table) {
         setLeftView(TABLES_PLAN_VIEW);
       } else {

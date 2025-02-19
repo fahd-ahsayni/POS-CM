@@ -63,7 +63,10 @@ const DeliveryOrder: React.FC<{ order: any; orderType: OrderType }> = ({
   orderType,
 }) => {
   // Compute baseUrl dynamically
-  const baseUrl = localStorage.getItem("ipAddress") || window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL;
+  const baseUrl =
+    localStorage.getItem("ipAddress") ||
+    window.ENV?.VITE_BASE_URL ||
+    import.meta.env.VITE_BASE_URL;
 
   const getDeliveryText = () => {
     if (order.delivery_guy_id === null && orderType.select_delivery_boy) {
@@ -103,7 +106,7 @@ const DeliveryOrder: React.FC<{ order: any; orderType: OrderType }> = ({
 const OnPlaceOrder: React.FC<{ order: any; orderType: OrderType }> = ({
   orderType,
 }) => {
-  const [tableNumber] = useLocalStorage<any>("tableNumber", 0);
+  const [tableNumber] = useLocalStorage<any>("tableNumber", null);
   const tableSeats = getTableById(tableNumber || "")?.seats;
 
   const TableIcon =
@@ -123,9 +126,15 @@ const OnPlaceOrder: React.FC<{ order: any; orderType: OrderType }> = ({
             {tableNumber && (
               <TableIcon className="w-auto h-8 text-primary-black dark:text-white/80" />
             )}
-            <TypographySmall className="font-medium">
-              {tableNumber ? `Table N° ${tableNumber}` : orderType.name}
-            </TypographySmall>
+            {tableNumber ? (
+              <TypographySmall className="font-medium">
+                `Table N° ${tableNumber}
+              </TypographySmall>
+            ) : (
+              <TypographySmall className="font-medium">
+                {orderType.name}
+              </TypographySmall>
+            )}
           </div>
         </OrderBadge>
       </OrderContainer>
