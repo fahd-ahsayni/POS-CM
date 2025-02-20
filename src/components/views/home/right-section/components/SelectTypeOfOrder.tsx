@@ -96,7 +96,7 @@ function SelectTypeOfOrder() {
         </TypographyH3>
       </div>
       <div
-        className={cn("h-full flex items-center justify-center relative px-4")}
+        className={cn("h-full flex items-center justify-center relative")}
       >
         <Carousel
           opts={{ align: "start" }}

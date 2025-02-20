@@ -119,7 +119,7 @@ export const useCloseShift = () => {
     const response = await checkIsNewOrders(
       localStorage.getItem("shiftId") || ""
     );
-    if (!selectedCashier && response.status === 200) {
+    if (!selectedCashier && response.data.newOrder) {
       toast.error(
         createToast(
           "Please select the next cashier",

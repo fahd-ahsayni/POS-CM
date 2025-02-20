@@ -134,11 +134,12 @@ export const useOrderDetails = (
             )
           );
 
-          const variant = product?.variants.find(
+          // Instead of using the first variant, find the exact variant from the order
+          const selectedVariant = product?.variants.find(
             (v: ProductVariant) => v._id === line.product_variant_id._id
           );
 
-          if (!product || !variant) {
+          if (!product || !selectedVariant) {
             console.warn("Product or variant not found:", line);
             return null;
           }
@@ -174,13 +175,14 @@ export const useOrderDetails = (
           return {
             ...product,
             id: line._id,
-            product_variant_id: variant._id,
+            product_variant_id: selectedVariant._id,
+            variants: [selectedVariant], // Set variants array to only contain the selected variant
             quantity: line.quantity,
             suite_ordred: line.suite_ordred,
             price: line.price,
             customer_index: line.customer_index,
             order_type_id: line.order_type_id?._id || null,
-            uom_id: variant.uom_id?._id || "",
+            uom_id: selectedVariant.uom_id?._id || "",
             notes: line.notes || [],
             discount: null,
             is_paid: line.is_paid,

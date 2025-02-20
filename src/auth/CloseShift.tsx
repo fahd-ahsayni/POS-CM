@@ -62,7 +62,7 @@ const CloseShift = memo(({ open, setOpen }: CloseShiftProps) => {
 
       try {
         const res = await checkIsNewOrders(shiftId);
-        setIsNewOrders(res.status === 200);
+        setIsNewOrders(res.data.newOrder);
       } catch (error) {
         console.error("Error checking for new orders:", error);
         setIsNewOrders(false);
