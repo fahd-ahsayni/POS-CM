@@ -107,12 +107,11 @@ export const useCloseShift = () => {
   };
 
   const getPaymentAmounts = (): PaymentAmount[] => {
-    return Object.entries(paymentAmounts)
-      .filter(([_, amount]) => amount !== null && !isNaN(amount))
-      .map(([_id, amount]) => ({
-        payment_method: _id,
-        cashier_amount: Number(amount),
-      }));
+    // Ensure all payment methods have a value, defaulting to 0 if empty
+    return paymentMethods.map(method => ({
+      payment_method: method._id,
+      cashier_amount: Number(paymentAmounts[method._id]) || 0
+    }));
   };
 
   const validateForm = async (): Promise<boolean> => {
