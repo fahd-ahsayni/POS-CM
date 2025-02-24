@@ -10,12 +10,15 @@ import { TypographyP } from "@/components/ui/typography";
 import { LucideMaximize } from "lucide-react";
 import { useEffect, useState } from "react";
 import Logo from "./Logo";
-import { handleFullScreen } from "@/lib/utils";
+import { cn, handleFullScreen } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { useOnlineStatus } from "@/hooks/use-online-status";
 
 export default function Navbar() {
   const [greeting, setGreeting] = useState("Good Morning");
   const [timeIcon, setTimeIcon] = useState(sunrise);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const onlineStatus = useOnlineStatus();
 
   useEffect(() => {
     const updateGreetingAndIcon = () => {
@@ -84,6 +87,15 @@ export default function Navbar() {
             </TextShimmer>
           </div>
           <div className="ml-2 flex items-center space-x-4 sm:ml-6 sm:space-x-3">
+            <Badge className="h-8 rounded-lg space-x-1">
+              <span
+                className={cn(
+                  "size-2 rounded-full",
+                  onlineStatus ? "bg-green-600" : "bg-error-color"
+                )}
+              />
+              <span>{onlineStatus ? "Online" : "Offline"}</span>
+            </Badge>
             <Button size="icon" className="relative">
               <AlertIcon className="w-[1.2rem] h-auto fill-white" />
               <span className="absolute h-2 w-2 -top-0.5 ring-1 ring-background left-full -translate-x-1/2 bg-red-500 rounded-full" />
