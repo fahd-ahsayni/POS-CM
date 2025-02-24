@@ -1,4 +1,6 @@
+import { useVirtualKeyboard } from "@/components/keyboard/VirtualKeyboardGlobalContext";
 import { Button } from "@/components/ui/button";
+import { DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { TypographyH4, TypographyP } from "@/components/ui/typography";
 import { RootState } from "@/store";
@@ -6,7 +8,6 @@ import { setNotes } from "@/store/slices/order/create-order.slice";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ModalLayout from "./Layout";
-import { useVirtualKeyboard } from "@/components/keyboard/VirtualKeyboardGlobalContext";
 
 interface ModalOrderCommentsProps {
   isOpen: boolean;
@@ -88,6 +89,8 @@ export default function ModalOrderComments({
 
   return (
     <ModalLayout isOpen={isOpen} closeModal={() => setOpen(false)}>
+      <DialogTitle className="sr-only">Caisse Manager</DialogTitle>
+      <DialogDescription className="sr-only">Caisse Manager</DialogDescription>
       <div className="flex flex-col items-center justify-center gap-6">
         <TypographyH4 className="mb-4">Add Order Comment</TypographyH4>
         <div className="w-full mb-2">

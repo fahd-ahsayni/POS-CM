@@ -1,5 +1,5 @@
 import { logoutService } from "@/api/services";
-import { IoFastFoodOutline } from "react-icons/io5";
+import { ValidIcon } from "@/assets/figma-icons";
 import { useNavigate } from "react-router-dom";
 import BaseModal from "./Layout/BaseModal";
 
@@ -29,7 +29,7 @@ export default function ModalConfirmOrder({
       closeModal={() => setOpen(false)}
       title="Confirm Order"
       description="Are you sure you want to proceed with this order?"
-      icon={<IoFastFoodOutline className="h-6 w-6 text-success-color" />}
+      icon={<ValidIcon className="h-12 w-12 text-success-color" />}
       confirmText={isProcessing ? "Processing..." : "Yes, Proceed"}
       onConfirm={async () => {
         await handleConfirm();
