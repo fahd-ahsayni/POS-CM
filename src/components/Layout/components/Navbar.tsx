@@ -2,17 +2,17 @@ import { moon, sunrise, sunset } from "@/assets";
 import { AlertIcon } from "@/assets/figma-icons";
 import { ModeToggleWithDropdown } from "@/components/global/mode-toggle";
 import Profile from "@/components/global/Profile";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { TextLoop } from "@/components/ui/text-loop";
 import { TextShimmer } from "@/components/ui/text-shimmer";
 import { TypographyP } from "@/components/ui/typography";
+import { useOnlineStatus } from "@/hooks/use-online-status";
+import { cn, handleFullScreen } from "@/lib/utils";
 import { LucideMaximize } from "lucide-react";
 import { useEffect, useState } from "react";
 import Logo from "./Logo";
-import { cn, handleFullScreen } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
-import { useOnlineStatus } from "@/hooks/use-online-status";
 
 export default function Navbar() {
   const [greeting, setGreeting] = useState("Good Morning");
