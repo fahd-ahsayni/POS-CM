@@ -2,7 +2,7 @@ import { TypographyP } from "@/components/ui/typography";
 import { calculateProductPrice } from "@/functions/priceCalculations";
 import { currency } from "@/preferences";
 import { RootState } from "@/store";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";

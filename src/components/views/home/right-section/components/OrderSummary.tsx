@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { currency, loadingColors } from "@/preferences";
 import { useAppSelector } from "@/store/hooks";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import debounce from "lodash/debounce";
 import { memo, useMemo } from "react";
 import { BeatLoader } from "react-spinners";

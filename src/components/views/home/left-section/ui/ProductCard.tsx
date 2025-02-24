@@ -5,7 +5,7 @@ import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { toTitleCase } from "@/functions/string-transforms";
 import { currency } from "@/preferences";
 import { Product, ProductSelected } from "@/interfaces/product";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useMemo } from "react";
 import { BsInfoCircleFill } from "react-icons/bs";
 

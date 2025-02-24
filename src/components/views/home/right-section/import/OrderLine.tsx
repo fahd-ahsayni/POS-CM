@@ -18,7 +18,7 @@ import {
   selectOrder,
   updateSuiteCommande,
 } from "@/store/slices/order/create-order.slice";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { memo, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";

@@ -1,4 +1,3 @@
-import { useRef, useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import {
@@ -9,6 +8,7 @@ import {
   ComboboxOptions,
 } from "@headlessui/react";
 import { ChevronDown } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 interface ComboboxSelectOnChangeProps<T> {
   label?: string;
@@ -53,10 +53,10 @@ export default function ComboboxSelectOnChange<T>({
 }: ComboboxSelectOnChangeProps<T>) {
   const [query, setQuery] = useState("");
 
-  // Sync query with external value changes (e.g., from virtual keyboard)
   useEffect(() => {
     // If value is a string, use it. Otherwise, derive a string using displayValue (if exists)
-    const newQuery = typeof value === "string" ? value : value ? displayValue(value) : "";
+    const newQuery =
+      typeof value === "string" ? value : value ? displayValue(value) : "";
     setQuery(newQuery);
   }, [value, displayValue]);
 
@@ -130,23 +130,23 @@ export default function ComboboxSelectOnChange<T>({
               />
             </ComboboxButton>
 
-            {(filteredItems.length > 0 && (open || query.length > 0)) && (
+            {filteredItems.length > 0 && (open || query.length > 0) && (
               <ComboboxOptions className="absolute z-10 mt-2 max-h-56 min-w-64 w-full overflow-auto rounded-md dark:bg-secondary-black bg-white py-2 shadow-lg dark:shadow-black/50 ring-1 ring-black ring-opacity-5 focus:outline-none px-2">
                 {filteredItems.map((item, index) => (
                   <ComboboxOption
                     key={index}
                     value={item}
-                    className={({ active }) =>
+                    className={({ focus }) =>
                       cn(
                         "relative cursor-default select-none py-2 pl-3 pr-9 text-[.8rem] rounded-md",
-                        active
+                        focus
                           ? "dark:bg-white/5 bg-primary-black/5 dark:text-white text-primary-black"
                           : "dark:text-white text-primary-black"
                       )
                     }
                   >
-                    {({ active, selected }) =>
-                      renderOption(item, active, selected)
+                    {({ focus, selected }) =>
+                      renderOption(item, focus, selected)
                     }
                   </ComboboxOption>
                 ))}

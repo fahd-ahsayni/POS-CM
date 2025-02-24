@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { TypographyH3, TypographyH4 } from "@/components/ui/typography";
 
 import { glovo, kaalix, ownDelivery, yassir } from "@/assets";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import {
   ORDER_SUMMARY_VIEW,
   OWN_DELIVERY_FORM_VIEW,

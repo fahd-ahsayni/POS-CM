@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { TypographyH4 } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { Category } from "@/interfaces/product";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { memo } from "react";
 import { useCategories } from "../hooks/useCategories";
 import { CategoryCard } from "../ui/CategoryCard";

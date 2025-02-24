@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import AnimatedCheck from "../design/AnimatedCheck";

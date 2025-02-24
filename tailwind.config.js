@@ -1,4 +1,3 @@
-const { heroui } = require("@heroui/theme");
 /** @type {import('tailwindcss').Config} */
 
 import defaultTheme from "tailwindcss/defaultTheme";
@@ -170,5 +169,5 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), heroui()],
+  plugins: [require("tailwindcss-animate")],
 };

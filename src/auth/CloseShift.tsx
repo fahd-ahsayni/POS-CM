@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { memo, useCallback, useEffect, useId, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { CurrencyQuantityData } from "./constants";

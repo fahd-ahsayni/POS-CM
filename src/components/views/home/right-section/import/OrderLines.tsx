@@ -8,7 +8,7 @@ import { useProductQuantity } from "../hooks/useProductQuantity";
 import { useCustomerManagement } from "../hooks/useCustomerManagement";
 import OrderLineIndex from "./OrderLineIndex";
 import { getMaxCustomerIndex } from "@/functions/getMaxCustomerIndex";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "motion/react";
 
 export default function OrderLines() {
   const { selectedProducts } = useLeftViewContext();

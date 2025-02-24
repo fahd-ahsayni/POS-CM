@@ -1,5 +1,5 @@
 import { useTheme } from "@/providers/themeProvider";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 
 interface Props {

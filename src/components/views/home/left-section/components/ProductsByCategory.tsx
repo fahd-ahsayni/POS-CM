@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { TypographyP } from "@/components/ui/typography";
 import { toTitleCase } from "@/functions/string-transforms";
 import { Category, Product, ProductSelected } from "@/interfaces/product";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { ArrowLeft } from "lucide-react";
 import { memo, useEffect, useMemo, useState } from "react";
 import { useProducts } from "../hooks/useProducts";
