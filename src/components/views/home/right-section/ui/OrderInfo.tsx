@@ -128,7 +128,7 @@ const OnPlaceOrder: React.FC<{ order: any; orderType: OrderType }> = ({
             )}
             {tableNumber ? (
               <TypographySmall className="font-medium">
-                `Table N° ${tableNumber}
+                Table N° {tableNumber}
               </TypographySmall>
             ) : (
               <TypographySmall className="font-medium">
