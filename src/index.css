@@ -7,8 +7,6 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
-
-  /* font-feature-settings: ; */
 }
 
 input::selection,
@@ -45,6 +43,10 @@ input {
   --toastify-color-progress-success: #0fb420;
   --toastify-color-progress-warning: #f79009;
   --toastify-color-progress-error: #f04438;
+  /* ----------------- THEMES ---------------------- */
+  --primary-red: #fb0000;
+  --secondary-black: #1e1e1e;
+  --primary-black: #121212;
 }
 
 @layer base {
@@ -132,24 +134,24 @@ input {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: theme("colors.background");
+  background: var(--primary-black);
   border-radius: 10px;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: theme("colors.primary-red");
+  background: var(--primary-red);
   border-radius: 10px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: theme("colors.primary-red");
+  background: var(--primary-red);
 }
 
 .products-swiper {
-  --swiper-pagination-color: theme("colors.primary-red");
-  --swiper-pagination-bullet-inactive-color: theme("colors.secondary-black");
+  --swiper-pagination-color: var(--primary-red);
+  --swiper-pagination-bullet-inactive-color: var(--primary-red);
   --swiper-pagination-bullet-inactive-opacity: 1;
   --swiper-pagination-bullet-size: 5px;
   --swiper-pagination-bullet-horizontal-gap: 5px;

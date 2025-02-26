@@ -1,5 +1,6 @@
 import { OrderType } from "./order";
 import { Category, Product } from "./product";
+import { StaffUser } from "./staff";
 
 export interface GeneralData {
   floors: object[];

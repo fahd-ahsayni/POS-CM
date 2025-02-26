@@ -1,45 +1,18 @@
 import { DishIcon } from "@/assets/figma-icons";
 import Logo from "@/components/Layout/components/Logo";
-import { TextShimmer } from "@/components/ui/text-shimmer";
 import {
+  TypographyH2,
   TypographyH4,
   TypographyP,
   TypographySmall,
 } from "@/components/ui/typography";
 import { calculateProductPrice } from "@/functions/priceCalculations";
-import { currency } from "@/preferences";
+import { GroupedProducts, Product } from "@/interfaces/customer-display";
 import { ProductSelected } from "@/interfaces/product";
+import { currency } from "@/preferences";
 import { useEffect, useState } from "react";
 
-interface Product {
-  customer_index: number;
-  variants: Array<{ 
-    name: string; 
-    price_ttc: number;
-    menus?: Array<{ menu_id: string; price_ttc: number }>;
-    default_price?: number;
-    is_menu?: boolean;
-  }>;
-  name: string;
-  quantity: number;
-  price: number;
-  is_combo?: boolean;
-  combo_items?: {
-    variants: Array<any>;
-    supplements: Array<any>;
-  };
-  discount?: {
-    discount_id: string;
-    reason: string;
-    confirmed_by: string;
-  };
-  product_variant_id?: string;
-}
-
-interface GroupedProducts {
-  [key: string]: Product[];
-}
-
+const BRAND_NAME = import.meta.env.VITE_BRAND_NAME;
 export default function CustomerDisplay() {
   const [groupedProducts, setGroupedProducts] = useState<GroupedProducts>({});
 
@@ -81,7 +54,8 @@ export default function CustomerDisplay() {
 
   const calculateGrandTotal = () => {
     return Object.values(groupedProducts).reduce(
-      (total, customerProducts) => total + calculateCustomerTotal(customerProducts),
+      (total, customerProducts) =>
+        total + calculateCustomerTotal(customerProducts),
       0
     );
   };
@@ -104,12 +78,17 @@ export default function CustomerDisplay() {
         className="absolute rounded-full -top-48 -right-48 w-[320px] h-[320px] bg-primary-red/50 blur-3xl"
         aria-hidden="true"
       />
-      <TypographyH4 className="text-center mb-4">Order Details</TypographyH4>
-      <div className="max-w-2xl mx-auto relative z-10">
+      <div className="max-w-md px-8 text-center mx-auto relative z-10 w-full h-full flex items-center justify-center flex-col">
         {Object.keys(groupedProducts).length === 0 ? (
-          <TypographySmall className="text-center text-muted-foreground">
-            <TextShimmer>Waiting for products...</TextShimmer>
-          </TypographySmall>
+          <>
+            <TypographyH2 className="tracking-wide">
+              Welcome to {BRAND_NAME}!<br /> We’re glad you’re here.
+            </TypographyH2>
+            <TypographyP className="mt-4 text-foreground/60">
+              Whenever you’re ready, our menu is waiting. Just let us know what
+              you’d like!
+            </TypographyP>
+          </>
         ) : (
           <>
             {Object.entries(groupedProducts).map(
@@ -145,7 +124,8 @@ export default function CustomerDisplay() {
                         )}
                       </div>
                       <TypographySmall className="font-semibold">
-                        {getDisplayPrice(product).toFixed(2)} {currency.currency}
+                        {getDisplayPrice(product).toFixed(2)}{" "}
+                        {currency.currency}
                       </TypographySmall>
                     </div>
                   ))}
