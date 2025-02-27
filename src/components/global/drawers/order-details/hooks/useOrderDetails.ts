@@ -37,23 +37,23 @@ export const useOrderDetails = (
   }, [selectedOrder, selectedOrderlines]);
 
   const handleProcessPayment = () => {
-    if (selectedOrder) {
-      // Get all valid orderlines (not canceled and not paid)
-      const validOrderLineIds = selectedOrder.orderline_ids
-        .filter((line: any) => !line.is_paid && line.cancelled_qty < line.quantity)
-        .map((line: any) => line._id);
-      
-      // If user has manually selected products, respect their selection
-      if (selectedOrderlines.length > 0) {
-        // Keep their selection, but filter out any invalid selections
-        const validSelectedOrderlines = selectedOrderlines.filter(id => 
-          validOrderLineIds.includes(id)
-        );
-        setSelectedOrderlines(validSelectedOrderlines);
-      } else {
-        // Otherwise, select all valid orderlines
-        setSelectedOrderlines(validOrderLineIds);
-      }
+    if (!selectedOrder || selectedOrder.status === "canceled") return;
+    
+    // Get all valid orderlines (not canceled and not paid)
+    const validOrderLineIds = selectedOrder.orderline_ids
+      .filter((line: any) => !line.is_paid && line.cancelled_qty < line.quantity)
+      .map((line: any) => line._id);
+    
+    // If user has manually selected products, respect their selection
+    if (selectedOrderlines.length > 0) {
+      // Keep their selection, but filter out any invalid selections
+      const validSelectedOrderlines = selectedOrderlines.filter(id => 
+        validOrderLineIds.includes(id)
+      );
+      setSelectedOrderlines(validSelectedOrderlines);
+    } else {
+      // Otherwise, select all valid orderlines
+      setSelectedOrderlines(validOrderLineIds);
     }
     setOpenOrderDetails(false);
     setOpenPayments(true);
@@ -89,7 +89,7 @@ export const useOrderDetails = (
   };
 
   const handleLoadOrder = useCallback(() => {
-    if (!selectedOrder) return;
+    if (!selectedOrder || selectedOrder.status === "canceled") return;
 
     try {
       const generalData = JSON.parse(

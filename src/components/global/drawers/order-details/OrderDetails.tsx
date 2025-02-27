@@ -66,6 +66,9 @@ export default function OrderDetails() {
   }, [selectedOrderlines]);
 
   const toggleOrderLineSelection = (orderId: string) => {
+    // Don't allow toggling if the order is canceled
+    if (selectedOrder?.status === "canceled") return;
+
     setSelectedOrderlines((prev) =>
       prev.includes(orderId)
         ? prev.filter((id) => id !== orderId)
@@ -101,6 +104,9 @@ export default function OrderDetails() {
     }, {}) || {};
 
   const handleCustomerGroupSelection = (_: any, lines: any[]) => {
+    // Don't allow selection if the order is canceled
+    if (selectedOrder?.status === "canceled") return;
+
     // Only consider lines that are unpaid and not fully cancelled
     const validLines = lines.filter(
       (line) => !line.is_paid && line.cancelled_qty < line.quantity
@@ -138,8 +144,6 @@ export default function OrderDetails() {
 
   if (!selectedOrder) return null;
 
-  console.log(selectedOrder);
-
   return (
     <>
       <Drawer
@@ -173,7 +177,10 @@ export default function OrderDetails() {
                           lines as any[]
                         )
                       }
-                      disabled={(lines as any[]).every((line) => line.is_paid)}
+                      disabled={
+                        (lines as any[]).every((line) => line.is_paid) ||
+                        selectedOrder.status === "canceled"
+                      }
                     />
                   </div>
                 </div>
@@ -184,14 +191,16 @@ export default function OrderDetails() {
                       className={cn(
                         "flex flex-col gap-4 w-full dark:bg-primary-black bg-white py-4 px-4",
                         (orderLine.is_paid ||
-                          orderLine.cancelled_qty >= orderLine.quantity) &&
+                          orderLine.cancelled_qty >= orderLine.quantity ||
+                          selectedOrder.status === "canceled") &&
                           "pointer-events-none cursor-not-allowed opacity-40",
                         selectedOrderlines.includes(orderLine._id) &&
                           "ring-1 ring-primary-red"
                       )}
                       onClick={
                         !orderLine.is_paid &&
-                        orderLine.cancelled_qty < orderLine.quantity
+                        orderLine.cancelled_qty < orderLine.quantity &&
+                        selectedOrder.status !== "canceled"
                           ? () => toggleOrderLineSelection(orderLine._id)
                           : undefined
                       }
