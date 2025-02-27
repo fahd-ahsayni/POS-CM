@@ -138,6 +138,8 @@ export default function OrderDetails() {
 
   if (!selectedOrder) return null;
 
+  console.log(selectedOrder)
+
   return (
     <>
       <Drawer
@@ -255,7 +257,7 @@ export default function OrderDetails() {
                       <div className="flex justify-between">
                         <TypographyP className="dark:text-white text-primary-black font-medium tracking-wide flex items-center gap-x-1">
                           <DishIcon className="w-5 h-5 dark:fill-white fill-primary-black" />
-                          <span>{orderLine.quantity}</span>
+                          <span>{orderLine.quantity - orderLine.cancelled_qty}</span>
                         </TypographyP>
                         <TypographyP className="dark:text-white text-primary-black font-medium">
                           {calculateTotalPrice(orderLine)} {currency.currency}

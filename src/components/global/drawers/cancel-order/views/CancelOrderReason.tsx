@@ -148,12 +148,12 @@ export default function CancelOrderReason({
             ))}
           </SelectContent>
         </Select>
-        {persistSelectedProducts.length && (
+        {persistSelectedProducts.length ? (
           <div className="flex justify-between items-center w-full">
             <TypographySmall>Enter the Quantity</TypographySmall>
             <NumberFlowInput value={quantity} min={1} onChange={setQuantity} />
           </div>
-        )}
+        ) : null}
       </div>
       <div className="flex justify-center gap-4 w-full px-4">
         <Button
