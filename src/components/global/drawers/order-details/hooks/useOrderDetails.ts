@@ -43,9 +43,6 @@ export const useOrderDetails = (
         .filter((line: any) => !line.is_paid && line.cancelled_qty < line.quantity)
         .map((line: any) => line._id);
       
-      // // Check if all orderlines are valid
-      // const allOrderlinesValid = validOrderLineIds.length === selectedOrder.orderline_ids.length;
-      
       // If user has manually selected products, respect their selection
       if (selectedOrderlines.length > 0) {
         // Keep their selection, but filter out any invalid selections
@@ -139,7 +136,6 @@ export const useOrderDetails = (
       const selectedProducts = selectedOrder.orderline_ids
         .map((line: any) => {
           if (!line.product_variant_id?._id) {
-            console.warn("Product variant ID is missing:", line);
             return null;
           }
 

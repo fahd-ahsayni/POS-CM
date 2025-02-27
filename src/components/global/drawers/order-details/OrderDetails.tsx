@@ -138,7 +138,7 @@ export default function OrderDetails() {
 
   if (!selectedOrder) return null;
 
-  console.log(selectedOrder)
+  console.log(selectedOrder);
 
   return (
     <>
@@ -215,24 +215,31 @@ export default function OrderDetails() {
                         {(orderLine.combo_prod_ids?.length > 0 ||
                           orderLine.combo_supp_ids?.length > 0) && (
                           <div className="pl-2.5 space-y-1">
-                            {orderLine.combo_prod_ids?.map((combo: any) => (
-                              <span className="flex items-center gap-x-2">
-                                <TypographySmall
-                                  key={combo._id}
-                                  className="dark:text-secondary-white text-primary-black text-sm flex"
+                            {orderLine.combo_prod_ids?.map(
+                              (combo: any, index: number) => (
+                                <span
+                                  key={index}
+                                  className="flex items-center gap-x-2"
                                 >
-                                  <span className="font-semibold w-7">
-                                    x{combo.quantity}
-                                  </span>
-                                  <span className="dark:text-secondary-white/90 text-primary-black capitalize">
-                                    {toTitleCase(combo.product_variant_id.name)}
-                                  </span>
-                                </TypographySmall>
-                                {combo.suite_commande && (
-                                  <SuiteCommandIcon className="size-4 text-info-color" />
-                                )}
-                              </span>
-                            ))}
+                                  <TypographySmall
+                                    key={combo._id}
+                                    className="dark:text-secondary-white text-primary-black text-sm flex"
+                                  >
+                                    <span className="font-semibold w-7">
+                                      x{combo.quantity}
+                                    </span>
+                                    <span className="dark:text-secondary-white/90 text-primary-black capitalize">
+                                      {toTitleCase(
+                                        combo.product_variant_id.name
+                                      )}
+                                    </span>
+                                  </TypographySmall>
+                                  {combo.suite_commande && (
+                                    <SuiteCommandIcon className="size-4 text-info-color" />
+                                  )}
+                                </span>
+                              )
+                            )}
                             {orderLine.combo_supp_ids?.map((supp: any) => (
                               <span className="flex items-center gap-x-2">
                                 <TypographySmall
@@ -257,7 +264,9 @@ export default function OrderDetails() {
                       <div className="flex justify-between">
                         <TypographyP className="dark:text-white text-primary-black font-medium tracking-wide flex items-center gap-x-1">
                           <DishIcon className="w-5 h-5 dark:fill-white fill-primary-black" />
-                          <span>{orderLine.quantity - orderLine.cancelled_qty}</span>
+                          <span>
+                            {orderLine.quantity - orderLine.cancelled_qty}
+                          </span>
                         </TypographyP>
                         <TypographyP className="dark:text-white text-primary-black font-medium">
                           {calculateTotalPrice(orderLine)} {currency.currency}

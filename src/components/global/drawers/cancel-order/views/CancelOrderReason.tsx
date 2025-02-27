@@ -12,7 +12,7 @@ import {
 import { TypographySmall } from "@/components/ui/typography";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { refreshOrders } from "@/store/slices/data/orders.slice";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { useOrder } from "../../order-details/context/OrderContext";
@@ -44,7 +44,24 @@ export default function CancelOrderReason({
     "selectedProducts",
     []
   );
-  const [quantity, setQuantity] = useState<number>(1); // new state for quantity
+  const [quantity, setQuantity] = useState<number>(1);
+  const [maxQuantity, setMaxQuantity] = useState<number>(1);
+
+  // Find the selected orderline and get its quantity
+  useEffect(() => {
+    if (selectedOrder && persistSelectedProducts.length > 0) {
+      const selectedOrderLine = selectedOrder.orderline_ids.find(
+        (line: any) => line._id === persistSelectedProducts[0]
+      );
+      
+      if (selectedOrderLine) {
+        // Calculate available quantity (total quantity minus already cancelled quantity)
+        const availableQuantity = selectedOrderLine.quantity - (selectedOrderLine.cancelled_qty || 0);
+        setMaxQuantity(availableQuantity);
+        setQuantity(availableQuantity); // Set default quantity to the available quantity
+      }
+    }
+  }, [selectedOrder, persistSelectedProducts]);
 
   const generalData = useMemo(() => {
     return JSON.parse(localStorage.getItem("generalData") || "{}");
@@ -151,7 +168,12 @@ export default function CancelOrderReason({
         {persistSelectedProducts.length ? (
           <div className="flex justify-between items-center w-full">
             <TypographySmall>Enter the Quantity</TypographySmall>
-            <NumberFlowInput value={quantity} min={1} onChange={setQuantity} />
+            <NumberFlowInput 
+              value={quantity} 
+              min={1} 
+              max={maxQuantity}
+              onChange={(value) => setQuantity(Math.min(value, maxQuantity))} 
+            />
           </div>
         ) : null}
       </div>
