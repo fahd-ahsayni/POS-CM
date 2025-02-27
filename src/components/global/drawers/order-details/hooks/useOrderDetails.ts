@@ -43,8 +43,8 @@ export const useOrderDetails = (
         .filter((line: any) => !line.is_paid && line.cancelled_qty < line.quantity)
         .map((line: any) => line._id);
       
-      // Check if all orderlines are valid
-      const allOrderlinesValid = validOrderLineIds.length === selectedOrder.orderline_ids.length;
+      // // Check if all orderlines are valid
+      // const allOrderlinesValid = validOrderLineIds.length === selectedOrder.orderline_ids.length;
       
       // If user has manually selected products, respect their selection
       if (selectedOrderlines.length > 0) {
