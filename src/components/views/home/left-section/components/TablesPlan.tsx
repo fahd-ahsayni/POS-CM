@@ -66,7 +66,7 @@ export default function TablesPlan() {
     <>
       {floors.length > 0 ? (
         <Tabs defaultValue={floors[0]?.name}>
-          <TabsList className="dark:bg-white/5">
+          <TabsList className="bg-white/5">
             {floors.map((floor) => (
               <TabsTrigger key={floor._id} value={floor.name} className="px-8">
                 {floor.name}
@@ -89,7 +89,7 @@ export default function TablesPlan() {
                     <Card
                       key={table._id}
                       className={cn(
-                        "h-20 flex items-center justify-start relative",
+                        "h-20 flex items-center justify-start relative bg-zinc-900 border-neutral-700",
                         table.status === "available" && "cursor-pointer"
                       )}
                       onClick={() => handleTableClick(table)}
@@ -99,11 +99,11 @@ export default function TablesPlan() {
                           className={cn(
                             "w-auto absolute left-2 h-14",
                             table.status === "available"
-                              ? "text-primary-black/10 dark:text-white/10"
+                              ? " text-white/10"
                               : "text-primary-red/70"
                           )}
                         />
-                        <span className="font-semibold relative">
+                        <span className="font-semibold relative text-white">
                           Table {table.name}
                         </span>
                       </div>
