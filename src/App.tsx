@@ -7,26 +7,31 @@ import ContextsProvider from "./providers/ContextsProvider";
 import Fonts from "./providers/Fonts";
 import { ThemeProvider } from "./providers/themeProvider";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { OrderProvider } from "@/components/global/drawers/order-details/context/OrderContext";
+import OrderDetails from "@/components/global/drawers/order-details/OrderDetails";
 
 export default function App() {
   return (
     <ErrorBoundary>
       <ContextsProvider>
         <VirtualKeyboardProvider>
-          <Toaster />
-          <main>
-            <div className="block md:hidden">
-              <NoMobileResponsive />
-            </div>
-            <div className="hidden md:block">
-              <Fonts>
-                <ThemeProvider defaultTheme="dark" storageKey="pos-theme">
-                  <HandleApp />
-                </ThemeProvider>
-              </Fonts>
-            </div>
-          </main>
-          <GlobalVirtualKeyboard />
+          <OrderProvider>
+            <Toaster />
+            <main>
+              <div className="block md:hidden">
+                <NoMobileResponsive />
+              </div>
+              <div className="hidden md:block">
+                <Fonts>
+                  <ThemeProvider defaultTheme="dark" storageKey="pos-theme">
+                    <HandleApp />
+                  </ThemeProvider>
+                </Fonts>
+              </div>
+            </main>
+            <OrderDetails />
+            <GlobalVirtualKeyboard />
+          </OrderProvider>
         </VirtualKeyboardProvider>
       </ContextsProvider>
     </ErrorBoundary>

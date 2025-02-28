@@ -271,7 +271,7 @@ export function usePayments({
 
   const handleComplete = useCallback(async () => {
     if (isProcessing) return;
-  
+
     const remainingAmount = getRemainingAmount();
     if (remainingAmount > 0) {
       toast.warning(
@@ -285,12 +285,12 @@ export function usePayments({
       );
       return;
     }
-  
+
     setIsProcessing(true);
-  
+
     try {
       const shiftId = localStorage.getItem("shiftId");
-  
+
       // Calculate actual customer count from order lines
       const uniqueCustomerIndices = new Set(
         order.orderlines.map((line) => line.customer_index)
@@ -300,27 +300,30 @@ export function usePayments({
         customerIndex,
         1
       );
-  
+
       // Update customer count before payment
       dispatch(setCustomerCount(actualCustomerCount));
-  
+
       if (selectedOrder) {
         // Check if there are selected orderlines
         if (selectedOrderlines && selectedOrderlines.length > 0) {
           // Determine if all valid orderlines are selected
           const allValidOrderLineIds = selectedOrder.orderline_ids
-            .filter((line: any) => !line.is_paid && line.cancelled_qty < line.quantity)
+            .filter(
+              (line: any) => !line.is_paid && line.cancelled_qty < line.quantity
+            )
             .map((line: any) => line._id);
-          
-          const allValidOrderlinesSelected = 
+
+          const allValidOrderlinesSelected =
             selectedOrderlines.length === allValidOrderLineIds.length &&
-            selectedOrderlines.every(id => allValidOrderLineIds.includes(id));
-  
+            selectedOrderlines.every((id) => allValidOrderLineIds.includes(id));
+
           // If all valid orderlines are selected and they're all the orderlines in the order,
           // use payNewOrder, otherwise use paySelectedProducts
-          if (allValidOrderlinesSelected && 
-              allValidOrderLineIds.length === selectedOrder.orderline_ids.length) {
-            console.log("Processing full payment for order");
+          if (
+            allValidOrderlinesSelected &&
+            allValidOrderLineIds.length === selectedOrder.orderline_ids.length
+          ) {
             await payNewOrder({
               order_id: selectedOrder._id,
               shift_id: shiftId,
@@ -330,7 +333,6 @@ export function usePayments({
               })),
             });
           } else {
-            console.log("Processing partial payment for selected orderlines:", selectedOrderlines);
             await paySelectedProducts({
               orderlines: selectedOrderlines,
               order_id: selectedOrder._id,
@@ -342,7 +344,6 @@ export function usePayments({
             });
           }
         } else {
-          console.log("No orderlines selected for payment");
           toast.error(
             createToast(
               "Payment failed",
@@ -368,7 +369,7 @@ export function usePayments({
           })),
         });
       }
-  
+
       // Handle success
       await onComplete?.(selectedPayments);
       setSelectedPayments([]);
@@ -379,7 +380,7 @@ export function usePayments({
       dispatch(resetOrder());
       setViewsLeft(ALL_CATEGORIES_VIEW);
       setViewsRight(TYPE_OF_ORDER_VIEW);
-  
+
       toast.success(
         createToast(
           "Payment completed successfully",
@@ -389,7 +390,7 @@ export function usePayments({
           "success"
         )
       );
-  
+
       setTableNumber("");
       setNumber("");
     } catch (error) {
@@ -426,7 +427,6 @@ export function usePayments({
     selectedOrderlines,
     getRemainingAmount,
   ]);
-  
 
   const resetPayments = useCallback(() => {
     setSelectedPayments([]);

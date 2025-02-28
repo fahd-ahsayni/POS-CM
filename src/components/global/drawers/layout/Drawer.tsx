@@ -37,7 +37,7 @@ export default function Drawer({
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetPortal>
-        <SheetOverlay className="bg-black/30" />
+        <SheetOverlay />
         <SheetContent
           side={position}
           // Use onPointerDownOutside to intercept outside clicks

@@ -144,8 +144,6 @@ export default function OrderDetails() {
 
   if (!selectedOrder) return null;
 
-  console.log(selectedOrder);
-
   return (
     <>
       <Drawer

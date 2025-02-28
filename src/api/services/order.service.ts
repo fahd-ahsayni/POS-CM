@@ -1,7 +1,7 @@
 import { api } from "@/api/axios";
 import { createToast } from "@/components/global/Toasters";
-import { toast } from "react-toastify";
 import { ApiResponse } from "@/interfaces/api";
+import { toast } from "react-toastify";
 
 export interface PrintOrderRequest {
   order_id: string;
@@ -133,3 +133,7 @@ export class OrderService {
     return api.post("/order/create-with-payment", data);
   }
 }
+
+export const getOrderByTableId = async (tableId: string) => {
+  return api.get(`/order/by-table/${tableId}`);
+};

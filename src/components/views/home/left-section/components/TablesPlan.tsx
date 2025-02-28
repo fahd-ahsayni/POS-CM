@@ -1,3 +1,4 @@
+import { getOrderByTableId } from "@/api/services";
 import { getFloors } from "@/api/services/floors.service";
 import {
   Table2Seats,
@@ -5,13 +6,14 @@ import {
   Table6Seats,
   Table8Seats,
 } from "@/assets/tables-icons";
-import { createToast } from "@/components/global/Toasters";
+import { useOrder } from "@/components/global/drawers/order-details/context/OrderContext";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNumberOfTable } from "@/components/views/home/right-section/hooks/useNumberOfTable";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { createToast } from "@/components/global/Toasters";
 
 interface Table {
   _id: string;
@@ -36,6 +38,7 @@ interface Floor {
 export default function TablesPlan() {
   const [floors, setFloors] = useState<Floor[]>([]);
   const { handleConfirm } = useNumberOfTable();
+  const { setSelectedOrder, setOpenOrderDetails } = useOrder();
 
   useEffect(() => {
     const fetchAllFloors = async () => {
@@ -46,19 +49,39 @@ export default function TablesPlan() {
     fetchAllFloors();
   }, []);
 
-  console.log(floors)
-
   const handleTableClick = async (table: Table) => {
     if (table.status !== "available") {
-      toast.warning(
-        createToast(
-          "Table not available",
-          "This table is already Taken",
-          "warning"
-        )
-      );
+      try {
+        const response = await getOrderByTableId(table._id);
+        const order = response.data;
+        
+        // If order exists, set it and open the order details drawer
+        if (order) {
+          setSelectedOrder(order);
+          setOpenOrderDetails(true);
+        } else {
+          toast.warning(
+            createToast(
+              "Table not available",
+              "This table is already taken but no active order found",
+              "warning"
+            )
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching order by table ID:", error);
+        toast.error(
+          createToast(
+            "Error",
+            "Failed to fetch order information",
+            "error"
+          )
+        );
+      }
       return;
     }
+    
+    // If table is available, proceed with table selection
     await handleConfirm(table.name);
   };
 
@@ -101,7 +124,7 @@ export default function TablesPlan() {
                             table.status === "available"
                               ? " text-white/10"
                               : "text-primary-red/70"
-                          )}
+                          )} 
                         />
                         <span className="font-semibold relative text-white">
                           Table {table.name}
