@@ -12,10 +12,10 @@ export default function LeftSection() {
     <div className="w-full h-full mt-4">
       {views !== TABLES_PLAN_VIEW && (
         <div className="flex items-center justify-between relative flex-shrink-0">
-          <TypographyP className="absolute pr-4 bg-background font-medium text-sm">
+          <TypographyP className="absolute pr-4 bg-zinc-900 text-white font-medium text-sm">
             Categories
           </TypographyP>
-          <Separator />
+          <Separator className="bg-white/5" />
         </div>
       )}
       <Tabs value={views} className="w-full h-full flex">

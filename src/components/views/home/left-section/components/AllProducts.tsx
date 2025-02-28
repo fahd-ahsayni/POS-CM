@@ -60,19 +60,21 @@ const AllProducts = memo(function AllProducts() {
     loadProducts();
   }, [loadProducts]);
 
-  if (loading) {
-    return <ProductsLoadingSkeleton />;
-  }
-
   return (
-    <div className="space-y-2">
-      <Combo />
-      <ProductsVariants />
-      <ProductsGrid
-        products={productsWithVariants}
-        selectedProducts={selectedProducts}
-        onProductClick={handleProductClick}
-      />
+    <div className="space-y-2 dark bg-zinc-900 text-white">
+      {loading ? (
+        <ProductsLoadingSkeleton />
+      ) : (
+        <>
+          <Combo />
+          <ProductsVariants />
+          <ProductsGrid
+            products={productsWithVariants}
+            selectedProducts={selectedProducts}
+            onProductClick={handleProductClick}
+          />
+        </>
+      )}
     </div>
   );
 });

@@ -36,12 +36,12 @@ export default function Logo({ size = "sm" }: LogoProps) {
       />
       <span>
         <TypographySmall
-          className={cn("font-semibold leading-[0]", sizeClasses[size].text)}
+          className={cn("font-semibold leading-[0] text-white", sizeClasses[size].text)}
         >
           Caisse
         </TypographySmall>
         <TypographySmall
-          className={cn("font-semibold -mt-0.5", sizeClasses[size].text)}
+          className={cn("font-semibold -mt-0.5 text-white", sizeClasses[size].text)}
         >
           Manager
         </TypographySmall>

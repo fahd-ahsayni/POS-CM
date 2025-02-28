@@ -1,15 +1,16 @@
+import { getFloors } from "@/api/services/floors.service";
 import {
-    Table2Seats,
-    Table4Seats,
-    Table6Seats,
-    Table8Seats,
+  Table2Seats,
+  Table4Seats,
+  Table6Seats,
+  Table8Seats,
 } from "@/assets/tables-icons";
 import { createToast } from "@/components/global/Toasters";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNumberOfTable } from "@/components/views/home/right-section/hooks/useNumberOfTable";
-import { useLocalStorage } from "@/hooks/use-local-storage";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 interface Table {
@@ -32,15 +33,20 @@ interface Floor {
   table_ids: Table[];
 }
 
-interface GeneralData {
-  floors: Floor[];
-}
-
 export default function TablesPlan() {
-  const [generalData] = useLocalStorage<GeneralData>("generalData", {
-    floors: [],
-  });
+  const [floors, setFloors] = useState<Floor[]>([]);
   const { handleConfirm } = useNumberOfTable();
+
+  useEffect(() => {
+    const fetchAllFloors = async () => {
+      const response = await getFloors();
+      setFloors(response.data);
+    };
+
+    fetchAllFloors();
+  }, []);
+
+  console.log(floors)
 
   const handleTableClick = async (table: Table) => {
     if (table.status !== "available") {
@@ -58,16 +64,16 @@ export default function TablesPlan() {
 
   return (
     <>
-      {generalData.floors.length > 0 ? (
-        <Tabs defaultValue={generalData.floors[0]?.name}>
+      {floors.length > 0 ? (
+        <Tabs defaultValue={floors[0]?.name}>
           <TabsList className="dark:bg-white/5">
-            {generalData.floors.map((floor) => (
+            {floors.map((floor) => (
               <TabsTrigger key={floor._id} value={floor.name} className="px-8">
                 {floor.name}
               </TabsTrigger>
             ))}
           </TabsList>
-          {generalData.floors.map((floor) => (
+          {floors.map((floor) => (
             <TabsContent key={floor._id} value={floor.name}>
               <div className="w-full grid grid-cols-5 gap-3 pt-4">
                 {floor.table_ids.map((table) => {

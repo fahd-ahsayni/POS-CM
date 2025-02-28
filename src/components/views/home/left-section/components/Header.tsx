@@ -30,7 +30,7 @@ export default function Header() {
         <ArrowLeft className="text-white" />
       </div>
       <div className="h-14 w-[230px]">
-        <Card className="flex overflow-hidden relative cursor-pointer flex-col items-center h-full w-full justify-center border-2 !border-primary-red">
+        <Card className="flex overflow-hidden relative cursor-pointer flex-col items-center h-full w-full justify-center border-2 !border-primary-red bg-secondary-black">
           {category && (
             <img
               src={`${baseUrl}${category.image}`}
@@ -41,7 +41,7 @@ export default function Header() {
           )}
           <TypographyP
             className={cn(
-              "text-center relative font-semibold line-clamp-2",
+              "text-center relative font-semibold line-clamp-2 text-white",
               category && "text-white"
             )}
           >

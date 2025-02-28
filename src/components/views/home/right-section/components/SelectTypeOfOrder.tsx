@@ -1,4 +1,12 @@
+import { createToast } from "@/components/global/Toasters";
 import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { TypographyH3 } from "@/components/ui/typography";
 import { updateOrder } from "@/functions/updateOrder";
 import { OrderType } from "@/interfaces/order";
@@ -11,14 +19,6 @@ import { BeatLoader } from "react-spinners";
 import { toast } from "react-toastify";
 import { useSelectOrderType } from "../hooks/useSelectOrderType";
 import { OrderCard } from "../ui/OrderTypeCards";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import { createToast } from "@/components/global/Toasters";
 
 function SelectTypeOfOrder() {
   const {
@@ -95,9 +95,7 @@ function SelectTypeOfOrder() {
             : "What type of order would you like to process?"}
         </TypographyH3>
       </div>
-      <div
-        className={cn("h-full flex items-center justify-center relative")}
-      >
+      <div className={cn("h-full flex items-center justify-center relative")}>
         <Carousel
           opts={{ align: "start" }}
           orientation="vertical"
@@ -110,8 +108,8 @@ function SelectTypeOfOrder() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="bg-primary-red" />
-          <CarouselNext className="bg-primary-red" />
+          <CarouselPrevious className="bg-primary-red text-white hover:bg-primary-red hover:text-white" />
+          <CarouselNext className="bg-primary-red text-white hover:bg-primary-red hover:text-white" />
         </Carousel>
       </div>
     </div>

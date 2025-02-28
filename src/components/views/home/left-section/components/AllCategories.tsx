@@ -28,11 +28,11 @@ export default memo(function AllCategories() {
       <Card
         onClick={handleAllProductsClick}
         className={cn(
-          "flex cursor-pointer h-24 relative flex-col items-center !rounded-lg overflow-hidden justify-center",
+          "flex cursor-pointer h-24 relative flex-col items-center !rounded-lg overflow-hidden justify-center bg-secondary-black border border-white/15",
           isInteractionDisabled && "pointer-events-none"
         )}
       >
-        <TypographyH4 className="text-center">All Items</TypographyH4>
+        <TypographyH4 className="text-center text-white">All Items</TypographyH4>
       </Card>
 
       {categories.map((category: Category) => (

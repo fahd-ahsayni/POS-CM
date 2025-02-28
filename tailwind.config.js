@@ -20,6 +20,7 @@ module.exports = {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
+        "zinc-900": "#09090b",
         "primary-red": "#FB0000",
         "primary-black": "#121212",
         "secondary-red": "#C70000",
@@ -40,6 +41,7 @@ module.exports = {
         "success-color": "#0FB420",
         "error-color": "#F04438",
         "info-color": "#007BFF",
+        "body-background-color": "#09090b",
         red: {
           50: "#FFDCDC",
           100: "#FFC8C8",

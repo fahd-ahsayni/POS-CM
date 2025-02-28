@@ -55,38 +55,41 @@ export default function Navbar() {
   return (
     <header className="w-full">
       <div className="relative z-10 flex h-16 flex-shrink-0">
-        <div className="flex flex-1 justify-between px-4 sm:px-6">
-          <Logo />
-          <div className="lg:flex flex-col justify-center flex-1 ml-12 hidden">
-            <TypographyP className="flex items-center gap-1 text-xs font-medium py-0.5 overflow-hidden">
-              <span>
-                <img src={timeIcon} alt="time-icon" className="w-4 h-auto" />
-              </span>
-              <span>
-                {greeting}!{" "}
-                <TextLoop transition={{ duration: 0.25 }} interval={3}>
-                  {motivatedMessages.map((message) => (
-                    <span key={message}>{message}</span>
-                  ))}
-                </TextLoop>
-              </span>
-            </TypographyP>
-            <TextShimmer
-              duration={2}
-              className="text-[0.7rem] leading-3 mt-0.5"
-            >
-              {`Last updated on ${currentTime.toLocaleDateString("en-US", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-              })}, at ${currentTime.toLocaleTimeString("en-US", {
-                hour: "numeric",
-                minute: "2-digit",
-                hour12: true,
-              })}`}
-            </TextShimmer>
+        <div className="flex flex-1 justify-between mr-4">
+          <div className="lg:w-8/12 md:w-3/5 w-4/12 bg-zinc-900 flex items-center px-4 sm:px-6">
+            <div className="h-full absolute w-40 -left-20 bg-zinc-900" />
+            <Logo />
+            <div className="lg:flex flex-col justify-center flex-1 ml-12 hidden">
+              <TypographyP className="flex items-center gap-1 text-xs font-medium py-0.5 overflow-hidden text-white">
+                <span>
+                  <img src={timeIcon} alt="time-icon" className="w-4 h-auto" />
+                </span>
+                <span>
+                  {greeting}!{" "}
+                  <TextLoop transition={{ duration: 0.25 }} interval={3}>
+                    {motivatedMessages.map((message) => (
+                      <span key={message}>{message}</span>
+                    ))}
+                  </TextLoop>
+                </span>
+              </TypographyP>
+              <TextShimmer
+                duration={2}
+                className="text-[0.7rem] leading-3 mt-0.5"
+              >
+                {`Last updated on ${currentTime.toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}, at ${currentTime.toLocaleTimeString("en-US", {
+                  hour: "numeric",
+                  minute: "2-digit",
+                  hour12: true,
+                })}`}
+              </TextShimmer>
+            </div>
           </div>
-          <div className="ml-2 flex items-center space-x-4 sm:ml-6 sm:space-x-3">
+          <div className="lg:w-4/12 md:w-2/5 w-8/12 flex items-center justify-end space-x-4 sm:space-x-3">
             <Badge className="h-8 rounded-lg space-x-1">
               <span
                 className={cn(

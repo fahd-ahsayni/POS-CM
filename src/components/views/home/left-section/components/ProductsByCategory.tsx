@@ -104,7 +104,7 @@ export default memo(function ProductsByCategory() {
   }, [products.length, loadProducts]);
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col dark bg-zinc-900 text-white">
       <Header />
       <div className="max-w-full">
         {(category?.children?.length ?? 0) > 0 && (
@@ -118,7 +118,7 @@ export default memo(function ProductsByCategory() {
                   onClick: () => handleCategoryClick(crumb),
                 }))}
               />
-              <Separator />
+              <Separator className="bg-white/10" />
             </div>
             <div className="mt-4 max-w-full relative">
               <div className="flex gap-2 pb-2 overflow-x-auto scrollbar-hide">
@@ -141,9 +141,9 @@ export default memo(function ProductsByCategory() {
                       >
                         <Card
                           onClick={() => setSubCategory(subCategory)}
-                          className="text-center h-16 flex items-center justify-center px-4 py-2 rounded-lg cursor-pointer min-w-[150px]"
+                          className="text-center h-16 flex items-center justify-center px-4 py-2 rounded-lg cursor-pointer min-w-[150px] bg-secondary-black border border-white/15 text-white"
                         >
-                          <TypographyP className="text-sm font-medium">
+                          <TypographyP className="text-sm font-medium text-white">
                             {toTitleCase(subCategory.name.toLowerCase())}
                           </TypographyP>
                         </Card>
@@ -156,8 +156,8 @@ export default memo(function ProductsByCategory() {
                       transition={{ duration: 0.25 }}
                       className="h-16 w-[230px] flex-shrink-0"
                     >
-                      <Card className="flex overflow-hidden relative cursor-pointer flex-col items-center h-full w-full justify-center !border-2 !border-red-600">
-                        <TypographyP className="text-center relative font-medium">
+                      <Card className="flex overflow-hidden relative cursor-pointer flex-col items-center h-full w-full justify-center !border-2 !border-red-600 bg-secondary-black text-white">
+                        <TypographyP className="text-center relative font-medium text-white">
                           {breadcrumbs[breadcrumbs.length - 1]?.name}
                         </TypographyP>
                       </Card>
@@ -169,17 +169,17 @@ export default memo(function ProductsByCategory() {
           </>
         )}
       </div>
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden bg-zinc-900">
         {products.length > 0 && (
           <>
             <div className="flex items-center justify-between relative flex-shrink-0 mt-4 w-full">
-              <TypographyP className="pr-4 bg-background font-medium text-sm">
+              <TypographyP className="pr-4 bg-zinc-900 text-white font-medium text-sm">
                 Products
               </TypographyP>
-              <Separator className="h-[0.5px]" />
+              <Separator className="h-[0.5px] bg-white/10" />
             </div>
 
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto bg-zinc-900">
               <div className="pt-6">
                 <Combo />
                 <ProductsVariants />

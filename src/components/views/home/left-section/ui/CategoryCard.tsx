@@ -25,7 +25,7 @@ export const CategoryCard = memo(function CategoryCard({
       <Card
         onClick={onClick}
         className={cn(
-          "flex cursor-pointer relative flex-col items-center h-full overflow-hidden justify-center",
+          "flex cursor-pointer relative flex-col items-center h-full overflow-hidden justify-center border-zinc-500 dark:border-border border",
           isDisabled && "pointer-events-none"
         )}
       >

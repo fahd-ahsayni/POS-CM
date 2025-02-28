@@ -17,7 +17,7 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="flex flex-1 w-[calc(100vw-80px)] items-center justify-center">
+      <div className="flex flex-1 w-[calc(100vw-80px)] items-center justify-center relative">
         <BeatLoader color="#fB0000" size={10} />
       </div>
     );
@@ -25,8 +25,8 @@ export default function HomePage() {
   
   return (
     <>
-      <div className="flex flex-1 w-[calc(100vw-80px)]">
-        <div className="lg:w-8/12 md:w-3/5 2 w-4/12 pr-8 pl-6 overflow-hidden relative">
+      <div className="flex flex-1 w-[calc(100vw-80px)] gap-x-4 h-full">
+        <div className="lg:w-8/12 md:w-3/5 w-4/12 pl-6 pr-5 overflow-hidden relative bg-zinc-900">
           <LeftSection />
         </div>
         <div className="lg:w-4/12 md:w-2/5 w-8/12">
