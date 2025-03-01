@@ -146,40 +146,78 @@ export const useOrderSummary = () => {
         if (loadedOrder && existingOrder) {
           setIsUpdating(true);
           try {
-            const updatedOrderlines = selectedProducts.map((product) => ({
-              _id: product._id,
-              product_variant_id: product.product_variant_id,
-              quantity: product.quantity,
-              price: product.price,
-              customer_index: product.customer_index,
-              notes: product.notes || [],
-              is_ordred: product.is_ordred || false,
-              is_paid: product.is_paid || false,
-              suite_commande: product.suite_commande || false,
-              high_priority: product.high_priority || false,
-              discount: product.discount || null,
-              uom_id: product.uom_id,
-              order_type_id: product.order_type_id,
-              // Add any other necessary fields
-            }));
+            // Filter out products that are already ordered (is_ordred === true)
+            const newOrderLines = selectedProducts.filter(product => !product.is_ordred);
+            
+            const updatedOrderlines = newOrderLines.map((product) => {
+              const orderline = {
+                product_variant_id: product.product_variant_id,
+                quantity: product.quantity,
+                price: product.price,
+                customer_index: product.customer_index,
+                notes: product.notes || [],
+                is_ordred: false, // These are new items, not yet ordered
+                is_paid: false,
+                suite_commande: product.suite_commande || false,
+                high_priority: product.high_priority || false,
+                discount: product.discount || null,
+                uom_id: product.uom_id,
+                order_type_id: product.order_type_id,
+              };
 
-            await updateOrder(
-              {
-                orderlines: updatedOrderlines,
-              },
-              loadedOrder._id
-            );
+              // Add combo items if this is a combo product
+              if (product.is_combo && product.combo_items) {
+                return {
+                  ...orderline,
+                  combo_prod_ids: product.combo_items.variants.map((variant: any) => ({
+                    product_variant_id: variant._id || variant.product_variant_id,
+                    quantity: variant.quantity || 1,
+                    notes: variant.notes || [],
+                    suite_commande: variant.suite_commande || false,
+                    order_type_id: variant.order_type_id || product.order_type_id,
+                  })),
+                  combo_supp_ids: product.combo_items.supplements.map((supp: any) => ({
+                    product_variant_id: supp._id || supp.product_variant_id,
+                    quantity: supp.quantity || 1,
+                    notes: supp.notes || [],
+                    suite_commande: supp.suite_commande || false, 
+                    order_type_id: supp.order_type_id || product.order_type_id,
+                  })),
+                };
+              }
+              
+              return orderline;
+            });
+
+            // Only proceed if there are new items to add
+            if (updatedOrderlines.length > 0) {
+              await updateOrder(
+                {
+                  orderlines: updatedOrderlines,
+                },
+                loadedOrder._id
+              );
+              
+              toast.success(
+                createToast(
+                  "Order Updated Successfully",
+                  "Your order has been updated",
+                  "success"
+                )
+              );
+            } else {
+              toast.info(
+                createToast(
+                  "No Changes Made",
+                  "No new items to add to the order",
+                  "info"
+                )
+              );
+            }
 
             localStorage.removeItem("loadedOrder");
             resetOrderState();
             dispatch(refreshOrders());
-            toast.success(
-              createToast(
-                "Order Updated Successfully",
-                "Your order has been updated",
-                "success"
-              )
-            );
           } catch (error) {
             toast.error(
               createToast(

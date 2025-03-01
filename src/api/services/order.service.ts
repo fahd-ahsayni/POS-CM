@@ -18,6 +18,23 @@ export const createOrder = async (data: any) => {
 };
 
 export const updateOrder = async (data: any, orderId: string) => {
+  // Make sure orderlines with combo items are properly structured
+  if (data.orderlines) {
+    data.orderlines = data.orderlines.map((line: any) => {
+      // Ensure combo_prod_ids and combo_supp_ids are included if they exist
+      const cleanedLine = { ...line };
+      
+      // Remove undefined or null properties
+      Object.keys(cleanedLine).forEach(key => {
+        if (cleanedLine[key] === undefined || cleanedLine[key] === null) {
+          delete cleanedLine[key];
+        }
+      });
+      
+      return cleanedLine;
+    });
+  }
+  
   return api.patch(`/order/update/${orderId}`, data);
 };
 

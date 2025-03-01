@@ -31,6 +31,11 @@ export const useProductQuantity = () => {
                 quantity: newQuantity,
                 price: calculateProductPrice(item, currentMenu, newQuantity)
                   .totalPrice,
+                // Preserve combo data if it exists
+                ...(item.is_combo && item.combo_items ? {
+                  is_combo: true,
+                  combo_items: item.combo_items
+                } : {})
               }
             : item
         );
