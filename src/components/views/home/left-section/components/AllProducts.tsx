@@ -1,5 +1,4 @@
 import Combo from "@/components/global/drawers/combo/Combo";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Product, ProductSelected } from "@/interfaces/product";
 import { memo, useEffect, useMemo } from "react";
 import { useProducts } from "../hooks/useProducts";
