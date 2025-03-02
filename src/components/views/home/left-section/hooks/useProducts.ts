@@ -108,23 +108,59 @@ export const useProducts = (initialProducts?: Product[]) => {
       if (product.variants.length === 1) {
         const variant = product.variants[0];
         if (variant.is_menu) {
-          setSelectedCombo(variant);
-          setOpenDrawerCombo(true);
+          if (variant.steps.length <= 1) {
+            // Auto-select and finish for single required step; do not open drawer
+            const orderTypeLS = JSON.parse(localStorage.getItem("orderType") || "{}");
+            const menuPrice =
+              variant.menus?.find((menu: any) => menu.menu_id === orderTypeLS.menu_id)?.price_ttc ||
+              variant.default_price;
+            const uniqueId = `combo_${Date.now()}_${Math.random().toString(36).substr(2,9)}`;
+            const comboProduct = {
+              _id: uniqueId,
+              id: uniqueId,
+              name: product.name,
+              quantity: 1,
+              price: menuPrice,
+              variants: [variant],
+              product_variant_id: variant._id,
+              customer_index: customerIndex,
+              order_type_id: orderTypeLS._id || "",
+              uom_id: variant.uom_id?._id || "",
+              is_combo: true,
+              is_ordred: false,
+              is_paid: false,
+              combo_items: {
+                variants:
+                  variant.steps[0]?.product_variant_ids?.map((v: any) => ({
+                    ...v,
+                    combo_id: uniqueId,
+                    suite_commande: v.suite_commande || false,
+                  })) || [],
+                supplements: [],
+              },
+              notes: [],
+              discount: null,
+              suite_commande: false,
+              high_priority: false,
+            };
+            setSelectedProducts((prev: any) => [...prev, comboProduct]);
+            return;
+          } else {
+            setSelectedCombo(variant);
+            setOpenDrawerCombo(true);
+          }
         } else {
-          addOrUpdateProduct(product, variant._id, undefined, notes); // Pass notes here
+          addOrUpdateProduct(product, variant._id, undefined, notes);
         }
       } else if (product.variants.length > 1) {
-        // Check if any variant is a combo menu
-        const hasComboVariant = product.variants.some(variant => variant.is_menu);
+        const hasComboVariant = product.variants.some((variant) => variant.is_menu);
         if (hasComboVariant) {
-          // Find the first combo variant
-          const comboVariant = product.variants.find(variant => variant.is_menu);
+          const comboVariant = product.variants.find((variant) => variant.is_menu);
           if (comboVariant) {
             setSelectedCombo(comboVariant);
             setOpenDrawerCombo(true);
           }
         } else {
-          // Regular variants handling
           setSelectedProduct(product);
           setOpenDrawerVariants(true);
         }
@@ -136,6 +172,8 @@ export const useProducts = (initialProducts?: Product[]) => {
       setSelectedProduct,
       setOpenDrawerCombo,
       setSelectedCombo,
+      setSelectedProducts,
+      customerIndex,
     ]
   );
 
