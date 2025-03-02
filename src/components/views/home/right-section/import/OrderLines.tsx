@@ -1,6 +1,6 @@
 import { UserIcon } from "@/assets/figma-icons";
 import { TypographySmall } from "@/components/ui/typography";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { useOrderLines } from "../contexts/OrderLinesContext";
 import { useRightViewContext } from "../contexts/RightViewContext";
@@ -32,6 +32,14 @@ export default function OrderLines() {
       }, {} as Record<number, any[]>),
     [selectedProducts]
   );
+
+  // Create a ref for the bottom dummy element
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to keep the last orderline in view when selectedProducts change
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [selectedProducts]);
 
   useEffect(() => {
     initializeCustomer(customerIndex);
@@ -74,6 +82,8 @@ export default function OrderLines() {
               />
             </div>
           ))}
+          {/* Dummy element to scroll into view */}
+          <div ref={bottomRef} />
         </div>
       </ScrollArea>
     </AnimatePresence>
