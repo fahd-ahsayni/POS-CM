@@ -43,6 +43,7 @@ export interface ProductVariant extends BaseEntity {
   product_id: string;
   suite_commande: boolean;
   tax_id: Tax;
+  steps: any[];
   uom_id: UnitOfMeasure;
   stages_timing: any;
   menus: {
