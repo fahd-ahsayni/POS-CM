@@ -9,6 +9,7 @@ import { useCustomerManagement } from "../hooks/useCustomerManagement";
 import OrderLineIndex from "./OrderLineIndex";
 import { getMaxCustomerIndex } from "@/functions/getMaxCustomerIndex";
 import { AnimatePresence } from "motion/react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function OrderLines() {
   const { selectedProducts } = useLeftViewContext();
@@ -53,7 +54,7 @@ export default function OrderLines() {
 
   return (
     <AnimatePresence mode="popLayout">
-      <div className="z-10 h-full w-full overflow-x-hidden">
+      <ScrollArea className="z-10 h-full w-full overflow-x-hidden pr-2">
         <div className="space-y-4 w-full px-1 pt-1">
           {Array.from({
             length: Math.max(
@@ -74,7 +75,7 @@ export default function OrderLines() {
             </div>
           ))}
         </div>
-      </div>
+      </ScrollArea>
     </AnimatePresence>
   );
 }
