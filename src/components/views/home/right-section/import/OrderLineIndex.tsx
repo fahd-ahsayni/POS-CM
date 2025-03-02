@@ -5,7 +5,7 @@ import { calculateProductPrice } from "@/functions/priceCalculations";
 import { currency } from "@/preferences";
 import { ProductSelected } from "@/interfaces/product";
 import { ChevronDown } from "lucide-react";
-import { memo, useCallback, useMemo } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { useRightViewContext } from "../contexts/RightViewContext";
 import OrderLine from "./OrderLine";
@@ -32,6 +32,22 @@ const OrderLineIndex = ({
   const { customerIndex: selectedCustomerIndex, setCustomerIndex } =
     useRightViewContext();
   const { currentMenu } = useLeftViewContext();
+  const lastProductRef = useRef<HTMLDivElement>(null);
+  const prevProductsCountRef = useRef<number>(0);
+
+  // Track product count changes to detect when new products are added
+  useEffect(() => {
+    const currentProductsCount = products.length;
+    
+    if (currentProductsCount > prevProductsCountRef.current && lastProductRef.current && isExpanded) {
+      lastProductRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest'
+      });
+    }
+    
+    prevProductsCountRef.current = currentProductsCount;
+  }, [products.length, isExpanded]);
 
   const loadedOrder = useMemo(
     () => JSON.parse(localStorage.getItem("loadedOrder") || "{}"),
@@ -144,14 +160,21 @@ const OrderLineIndex = ({
 
       {isExpanded && (
         <div className="flex flex-col gap-2">
-          {products.map((product, index) => (
-            <OrderLine
-              key={product.id || index}
-              item={product}
-              increment={() => incrementQuantity(product)}
-              decrement={() => decrementQuantity(product)}
-            />
-          ))}
+          {products.map((product, index) => {
+            const isLastProduct = index === products.length - 1;
+            return (
+              <div 
+                key={product.id || index}
+                ref={isLastProduct ? lastProductRef : undefined}
+              >
+                <OrderLine
+                  item={product}
+                  increment={() => incrementQuantity(product)}
+                  decrement={() => decrementQuantity(product)}
+                />
+              </div>
+            );
+          })}
         </div>
       )}
     </>

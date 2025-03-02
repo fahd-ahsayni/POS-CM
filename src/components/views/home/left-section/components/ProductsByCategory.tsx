@@ -1,12 +1,13 @@
 import Combo from "@/components/global/drawers/combo/Combo";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { TypographyP } from "@/components/ui/typography";
 import { toTitleCase } from "@/functions/string-transforms";
 import { Category, Product, ProductSelected } from "@/interfaces/product";
-import { motion } from "motion/react";
 import { ArrowLeft } from "lucide-react";
+import { motion } from "motion/react";
 import { memo, useEffect, useMemo, useState } from "react";
 import { useProducts } from "../hooks/useProducts";
 import { useProductsByCategory } from "../hooks/useProductsByCategory";
@@ -121,7 +122,7 @@ export default memo(function ProductsByCategory() {
               <Separator className="bg-white/10" />
             </div>
             <div className="mt-4 max-w-full relative">
-              <div className="flex gap-2 pb-2 overflow-x-auto scrollbar-hide">
+              <div className="flex gap-2 pb-2">
                 <Button
                   onClick={handleBack}
                   disabled={breadcrumbs.length === 1}
@@ -129,41 +130,44 @@ export default memo(function ProductsByCategory() {
                 >
                   <ArrowLeft className="text-white" />
                 </Button>
-                <div className="flex gap-3 overflow-x-auto w-full scrollbar-hide">
-                  {sortedSubCategories.length > 0 ? (
-                    sortedSubCategories.map((subCategory, index) => (
+
+                <ScrollArea className="w-full" orientation="horizontal">
+                  <div className="flex gap-3 pb-2">
+                    {sortedSubCategories.length > 0 ? (
+                      sortedSubCategories.map((subCategory, index) => (
+                        <motion.div
+                          key={`${subCategory._id}-${index}`}
+                          initial={{ opacity: 0, x: 30 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.25, delay: index * 0.05 }}
+                          className="flex-shrink-0"
+                        >
+                          <Card
+                            onClick={() => setSubCategory(subCategory)}
+                            className="text-center h-16 flex items-center justify-center px-4 py-2 rounded-lg cursor-pointer min-w-[150px] bg-secondary-black border border-white/15 text-white"
+                          >
+                            <TypographyP className="text-sm font-medium text-white">
+                              {toTitleCase(subCategory.name.toLowerCase())}
+                            </TypographyP>
+                          </Card>
+                        </motion.div>
+                      ))
+                    ) : (
                       <motion.div
-                        key={`${subCategory._id}-${index}`}
                         initial={{ opacity: 0, x: 30 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.25, delay: index * 0.05 }}
-                        className="flex-shrink-0"
+                        transition={{ duration: 0.25 }}
+                        className="h-16 w-[230px] flex-shrink-0"
                       >
-                        <Card
-                          onClick={() => setSubCategory(subCategory)}
-                          className="text-center h-16 flex items-center justify-center px-4 py-2 rounded-lg cursor-pointer min-w-[150px] bg-secondary-black border border-white/15 text-white"
-                        >
-                          <TypographyP className="text-sm font-medium text-white">
-                            {toTitleCase(subCategory.name.toLowerCase())}
+                        <Card className="flex overflow-hidden relative cursor-pointer flex-col items-center h-full w-full justify-center !border-2 !border-red-600 bg-secondary-black text-white">
+                          <TypographyP className="text-center relative font-medium text-white">
+                            {breadcrumbs[breadcrumbs.length - 1]?.name}
                           </TypographyP>
                         </Card>
                       </motion.div>
-                    ))
-                  ) : (
-                    <motion.div
-                      initial={{ opacity: 0, x: 30 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.25 }}
-                      className="h-16 w-[230px] flex-shrink-0"
-                    >
-                      <Card className="flex overflow-hidden relative cursor-pointer flex-col items-center h-full w-full justify-center !border-2 !border-red-600 bg-secondary-black text-white">
-                        <TypographyP className="text-center relative font-medium text-white">
-                          {breadcrumbs[breadcrumbs.length - 1]?.name}
-                        </TypographyP>
-                      </Card>
-                    </motion.div>
-                  )}
-                </div>
+                    )}
+                  </div>
+                </ScrollArea>
               </div>
             </div>
           </>
@@ -172,14 +176,14 @@ export default memo(function ProductsByCategory() {
       <div className="flex-1 flex flex-col overflow-hidden bg-zinc-900">
         {products.length > 0 && (
           <>
-            <div className="flex items-center justify-between relative flex-shrink-0 mt-4 w-full">
+            <div className="flex items-center justify-between relative flex-shrink-0 mt-2 w-full">
               <TypographyP className="pr-4 bg-zinc-900 text-white font-medium text-sm">
                 Products
               </TypographyP>
               <Separator className="h-[0.5px] bg-white/10" />
             </div>
 
-            <div className="flex-1 overflow-y-auto bg-zinc-900">
+            <ScrollArea className="flex-1 bg-zinc-900">
               <div className="pt-6">
                 <Combo />
                 <ProductsVariants />
@@ -193,7 +197,7 @@ export default memo(function ProductsByCategory() {
                   />
                 )}
               </div>
-            </div>
+            </ScrollArea>
           </>
         )}
       </div>

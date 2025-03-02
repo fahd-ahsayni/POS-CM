@@ -9,7 +9,6 @@ import { useCustomerManagement } from "../hooks/useCustomerManagement";
 import OrderLineIndex from "./OrderLineIndex";
 import { getMaxCustomerIndex } from "@/functions/getMaxCustomerIndex";
 import { AnimatePresence } from "motion/react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function OrderLines() {
   const { selectedProducts } = useLeftViewContext();
@@ -18,6 +17,9 @@ export default function OrderLines() {
     useOrderLines();
   const { incrementQuantity, decrementQuantity } = useProductQuantity();
   const { deleteCustomer } = useCustomerManagement();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const lastItemRef = useRef<HTMLDivElement>(null);
+  const prevProductsCountRef = useRef<number>(0);
 
   // Group products by customer index
   const groupedProducts = useMemo(
@@ -33,17 +35,26 @@ export default function OrderLines() {
     [selectedProducts]
   );
 
-  // Create a ref for the bottom dummy element
-  const bottomRef = useRef<HTMLDivElement>(null);
-
-  // Auto-scroll to keep the last orderline in view when selectedProducts change
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [selectedProducts]);
-
   useEffect(() => {
     initializeCustomer(customerIndex);
   }, [customerIndex, initializeCustomer]);
+
+  // Scroll to the last item when new products are added
+  useEffect(() => {
+    const currentProductsCount = selectedProducts.length;
+
+    if (
+      currentProductsCount > prevProductsCountRef.current &&
+      lastItemRef.current
+    ) {
+      lastItemRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
+    }
+
+    prevProductsCountRef.current = currentProductsCount;
+  }, [selectedProducts]);
 
   if (selectedProducts.length < 1) {
     return (
@@ -62,30 +73,43 @@ export default function OrderLines() {
 
   return (
     <AnimatePresence mode="popLayout">
-      <ScrollArea className="z-10 h-full w-full overflow-x-hidden pr-2">
+      <div
+        ref={containerRef}
+        className="z-10 h-full w-full overflow-y-auto overflow-x-hidden pr-2"
+      >
         <div className="space-y-4 w-full px-1 pt-1">
           {Array.from({
             length: Math.max(
               customerIndex,
               getMaxCustomerIndex(selectedProducts)
             ),
-          }).map((_, index) => (
-            <div key={`customer-${index + 1}`}>
-              <OrderLineIndex
-                customerIndex={index + 1}
-                products={groupedProducts[index + 1] || []}
-                incrementQuantity={incrementQuantity}
-                decrementQuantity={decrementQuantity}
-                deleteCustomer={deleteCustomer}
-                isExpanded={expandedCustomers[index + 1]}
-                onToggle={() => toggleCustomer(index + 1)}
-              />
-            </div>
-          ))}
-          {/* Dummy element to scroll into view */}
-          <div ref={bottomRef} />
+          }).map((_, index) => {
+            const isLastItem =
+              index ===
+              Math.max(
+                customerIndex - 1,
+                getMaxCustomerIndex(selectedProducts) - 1
+              );
+
+            return (
+              <div
+                key={`customer-${index + 1}`}
+                ref={isLastItem ? lastItemRef : undefined}
+              >
+                <OrderLineIndex
+                  customerIndex={index + 1}
+                  products={groupedProducts[index + 1] || []}
+                  incrementQuantity={incrementQuantity}
+                  decrementQuantity={decrementQuantity}
+                  deleteCustomer={deleteCustomer}
+                  isExpanded={expandedCustomers[index + 1]}
+                  onToggle={() => toggleCustomer(index + 1)}
+                />
+              </div>
+            );
+          })}
         </div>
-      </ScrollArea>
+      </div>
     </AnimatePresence>
   );
 }

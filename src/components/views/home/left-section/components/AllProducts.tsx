@@ -1,4 +1,5 @@
 import Combo from "@/components/global/drawers/combo/Combo";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Product, ProductSelected } from "@/interfaces/product";
 import { memo, useEffect, useMemo } from "react";
 import { useProducts } from "../hooks/useProducts";
@@ -68,11 +69,13 @@ const AllProducts = memo(function AllProducts() {
         <>
           <Combo />
           <ProductsVariants />
-          <ProductsGrid
-            products={productsWithVariants}
-            selectedProducts={selectedProducts}
-            onProductClick={handleProductClick}
-          />
+          <div className="pr-3">
+            <ProductsGrid
+              products={productsWithVariants}
+              selectedProducts={selectedProducts}
+              onProductClick={handleProductClick}
+            />
+          </div>
         </>
       )}
     </div>

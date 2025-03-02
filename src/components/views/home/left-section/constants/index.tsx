@@ -1,5 +1,6 @@
 import { TypographyP } from "@/components/ui/typography";
 import { Separator } from "@radix-ui/react-separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import AllCategories from "../components/AllCategories";
 import AllProducts from "../components/AllProducts";
 import Header from "../components/Header";
@@ -17,7 +18,7 @@ export const tabsConfig = [
   {
     value: ALL_CATEGORIES_VIEW,
     component: <AllCategories />,
-    className: "flex-1 overflow-auto scrollbar-hide",
+    className: "flex-1",
   },
   {
     value: ALL_PRODUCTS_VIEW,
@@ -30,10 +31,10 @@ export const tabsConfig = [
           </TypographyP>
           <Separator />
         </div>
-        <div className="w-full h-[90%] relative">
-          <div className="h-full overflow-auto pr-3 pb-52">
+        <div className="w-full h-[80%] relative">
+          <ScrollArea className="h-full">
             <AllProducts />
-          </div>
+          </ScrollArea>
         </div>
       </>
     ),
@@ -41,9 +42,7 @@ export const tabsConfig = [
   },
   {
     value: TABLES_PLAN_VIEW,
-    component: (
-      <TablesPlan />
-    ),
+    component: <TablesPlan />,
     className: "flex-1",
   },
   {
