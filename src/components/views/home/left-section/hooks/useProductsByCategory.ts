@@ -225,6 +225,7 @@ export const useProductsByCategory = () => {
                   ...v,
                   combo_id: uniqueId,
                   suite_commande: v.suite_commande || false,
+                  quantity: 1, // Add quantity field
                 })) || [],
                 supplements: []
               },

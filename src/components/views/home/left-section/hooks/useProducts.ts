@@ -110,11 +110,16 @@ export const useProducts = (initialProducts?: Product[]) => {
         if (variant.is_menu) {
           if (variant.steps.length <= 1) {
             // Auto-select and finish for single required step; do not open drawer
-            const orderTypeLS = JSON.parse(localStorage.getItem("orderType") || "{}");
+            const orderTypeLS = JSON.parse(
+              localStorage.getItem("orderType") || "{}"
+            );
             const menuPrice =
-              variant.menus?.find((menu: any) => menu.menu_id === orderTypeLS.menu_id)?.price_ttc ||
-              variant.default_price;
-            const uniqueId = `combo_${Date.now()}_${Math.random().toString(36).substr(2,9)}`;
+              variant.menus?.find(
+                (menu: any) => menu.menu_id === orderTypeLS.menu_id
+              )?.price_ttc || variant.default_price;
+            const uniqueId = `combo_${Date.now()}_${Math.random()
+              .toString(36)
+              .substr(2, 9)}`;
             const comboProduct = {
               _id: uniqueId,
               id: uniqueId,
@@ -135,6 +140,7 @@ export const useProducts = (initialProducts?: Product[]) => {
                     ...v,
                     combo_id: uniqueId,
                     suite_commande: v.suite_commande || false,
+                    quantity: 1, // Add quantity field
                   })) || [],
                 supplements: [],
               },
@@ -153,9 +159,13 @@ export const useProducts = (initialProducts?: Product[]) => {
           addOrUpdateProduct(product, variant._id, undefined, notes);
         }
       } else if (product.variants.length > 1) {
-        const hasComboVariant = product.variants.some((variant) => variant.is_menu);
+        const hasComboVariant = product.variants.some(
+          (variant) => variant.is_menu
+        );
         if (hasComboVariant) {
-          const comboVariant = product.variants.find((variant) => variant.is_menu);
+          const comboVariant = product.variants.find(
+            (variant) => variant.is_menu
+          );
           if (comboVariant) {
             setSelectedCombo(comboVariant);
             setOpenDrawerCombo(true);
