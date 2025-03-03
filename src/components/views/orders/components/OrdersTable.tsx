@@ -23,6 +23,7 @@ import { Order } from "@/interfaces/order";
 import { format } from "date-fns";
 import { SortDesc } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface OrdersTableProps {
   data: any;
@@ -241,7 +242,7 @@ export default function OrdersTable({
   );
 
   return (
-    <div className="rounded-md h-full relative pr-3 [&>div]:max-h-[530px]">
+    <ScrollArea className="h-full relative pr-3 [&>div]:max-h-[530px]">
       <Table>
         <TableHeader className="sticky top-0 z-10 dark:bg-secondary-black bg-white">
           <TableRow>
@@ -306,6 +307,6 @@ export default function OrdersTable({
           )}
         </TableBody>
       </Table>
-    </div>
+    </ScrollArea>
   );
 }

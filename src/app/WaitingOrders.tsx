@@ -11,18 +11,19 @@ import { useWaitingOrders } from "@/components/views/orders/hooks/useWaitingOrde
 import { currency } from "@/preferences";
 import { format } from "date-fns";
 import Header from "./components/Header";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function WaitingOrders() {
   const { holdOrders, getOrderTypeName, handleRowClick } = useWaitingOrders();
 
   return (
-    <div className="flex h-full w-[calc(100vw-80px)] flex-col overflow-hidden px-4 pt-8 sm:px-6">
+    <ScrollArea className="flex rounded-md h-full w-[calc(100vw-80px)] flex-col overflow-hidden px-4 pt-8 sm:px-6">
       <Header title="Waiting Orders" />
       <Table className="mt-6">
         {holdOrders.length === 0 && (
           <TableCaption>List of waiting orders</TableCaption>
         )}
-        <TableHeader className="sticky top-0 bg-white dark:bg-secondary-black rounded">
+        <TableHeader className="sticky top-0 bg-white dark:bg-secondary-black">
           <TableRow>
             <TableHead className="text-primary-black dark:text-white">
               Date & Time
@@ -57,6 +58,6 @@ export default function WaitingOrders() {
           ))}
         </TableBody>
       </Table>
-    </div>
+    </ScrollArea>
   );
 }
