@@ -1,12 +1,52 @@
 import { checkAuthorization } from "@/api/services";
 import { checkAdminRfid } from "@/api/services"; // Import the RFID check function
-import CirclesAnimation from "@/auth/components/ui/CirclesAnimation";
 import NumberPad from "@/components/global/NumberPad";
 import ShineBorder from "@/components/ui/shine-border";
 import { TypographyP } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { RiRfidFill } from "react-icons/ri";
+import { motion } from "framer-motion";
+
+// Inline circle animation component
+interface PasscodeCirclesProps {
+  totalCircles: number;
+  filledCircles: number;
+  circleSize?: number;
+  activeColor?: string;
+  inactiveColor?: string;
+  spacing?: number;
+}
+
+const PasscodeCircles = ({ 
+  totalCircles, 
+  filledCircles, 
+  circleSize = 12,
+  activeColor = "#ffffff", 
+  inactiveColor = "rgba(255, 255, 255, 0.3)",
+  spacing = 12
+}: PasscodeCirclesProps) => {
+  return (
+    <div className="flex" style={{ gap: `${spacing}px` }}>
+      {Array.from({ length: totalCircles }).map((_, index) => (
+        <motion.div
+          key={index}
+          initial={{ scale: 1 }}
+          animate={{
+            scale: index < filledCircles ? 1.05 : 1,
+            backgroundColor: index < filledCircles ? activeColor : inactiveColor,
+          }}
+          transition={{ duration: 0.15 }}
+          style={{
+            width: circleSize,
+            height: circleSize,
+            borderRadius: "50%",
+          }}
+        />
+      ))}
+    </div>
+  );
+};
 
 export default function Authorization({
   setAuthorization,
@@ -95,16 +135,24 @@ export default function Authorization({
         <TypographyP className="text-sm text-center max-w-sm pb-8 dark:text-white/70 text-primary-black/70">
           Enter admin code or scan badge to continue.
         </TypographyP>
-        <CirclesAnimation
-          currentLength={passcode.length}
-          isFixedLightDark={true}
-        />
+
+        <div className="flex justify-center mb-6">
+          <PasscodeCircles
+            totalCircles={6}
+            filledCircles={passcode.length}
+            circleSize={12}
+            activeColor="#ffffff"
+            inactiveColor="rgba(255, 255, 255, 0.3)"
+          />
+        </div>
+
         <NumberPad
           onNumberClick={handleNumberClick}
           numbers={shuffledNumbers}
           fixLightDark
         />
       </div>
+      
       <div className="flex justify-center gap-4 w-full px-8 pb-8">
         <ShineBorder
           className={cn(

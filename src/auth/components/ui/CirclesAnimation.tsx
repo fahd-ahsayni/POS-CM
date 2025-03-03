@@ -31,7 +31,7 @@ export default function CirclesAnimation({
   const currentColor = () => {
     if (theme === "light") {
       if (isFixedLightDark) {
-        return "#121212";
+        return "#FF0000";
       }
       return "#1E1E1E";
     } else if (theme === "dark") {
