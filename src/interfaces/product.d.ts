@@ -105,6 +105,7 @@ export interface ProductSelected extends Product {
   is_ordred: boolean;
   suite_commande: boolean;
   high_priority: boolean;
+  cancelled_qty: number;
   is_combo?: boolean;
   combo_items?: {
     variants: any[];

@@ -209,11 +209,11 @@ export default function OrderDetails() {
                         <TypographyP className="dark:text-white text-primary-black font-medium capitalize">
                           {orderLine.product_variant_id.name.toLowerCase()}
                         </TypographyP>
-                        {orderLine.cancelled_qty >= orderLine.quantity && (
-                          <TypographyP className="text-primary-red">
+                        {/* {orderLine.cancelled_qty >= orderLine.quantity && (
+                          <TypographyP className="text-error-color">
                             Canceled
                           </TypographyP>
-                        )}
+                        )} */}
                         {orderLine.is_paid && (
                           <TypographyP className="text-green-600">
                             Paid
@@ -271,12 +271,32 @@ export default function OrderDetails() {
                         )}
                       </div>
                       <div className="flex justify-between">
-                        <TypographyP className="dark:text-white text-primary-black font-medium tracking-wide flex items-center gap-x-1">
-                          <DishIcon className="w-5 h-5 dark:fill-white fill-primary-black" />
-                          <span>
-                            {orderLine.quantity - orderLine.cancelled_qty}
-                          </span>
-                        </TypographyP>
+                        <span className="flex gap-x-4">
+                          {orderLine.quantity - orderLine.cancelled_qty !==
+                            0 && (
+                            <TypographyP className="dark:text-white text-primary-black font-medium tracking-wide flex items-center gap-x-1">
+                              <DishIcon className="w-5 h-5 dark:fill-white fill-primary-black" />
+                              <span>
+                                {orderLine.quantity - orderLine.cancelled_qty}
+                              </span>
+                            </TypographyP>
+                          )}
+                          {orderLine.cancelled_qty > 0 && (
+                            <div className="relative flex gap-x-1 -mb-1">
+                              <TypographySmall className="text-error-color font-medium flex items-center">
+                                <DishIcon className="w-4 h-4 dark:fill-error-color" />
+                                <span>{orderLine.cancelled_qty}</span>
+                                <span className="pl-2">Canceled</span>
+                              </TypographySmall>
+                            </div>
+                          )}
+
+                          {orderLine.suite_commande && (
+                            <span>
+                              <SuiteCommandIcon className="w-4 h-4 text-info-color" />
+                            </span>
+                          )}
+                        </span>
                         <TypographyP className="dark:text-white text-primary-black font-medium">
                           {calculateTotalPrice(orderLine)} {currency.currency}
                         </TypographyP>

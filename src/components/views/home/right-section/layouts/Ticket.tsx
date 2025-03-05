@@ -1,5 +1,6 @@
 import { TypographyP } from "@/components/ui/typography";
 import { calculateProductPrice } from "@/functions/priceCalculations";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { currency } from "@/preferences";
 import { RootState } from "@/store";
 import { motion } from "motion/react";
@@ -12,7 +13,29 @@ export default function Ticket() {
   const order = useSelector((state: RootState) => state.createOrder);
   const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
 
+  const [loadedOrder] = useLocalStorage<any>("loadedOrder", {});
+
   const calculations = useMemo(() => {
+    // If loadedOrder has total_amount, use the loaded order values
+    if (loadedOrder && loadedOrder.total_amount) {
+      // Calculate subtotal from orderlines if it's not provided
+      const subtotal = loadedOrder.orderline_ids
+        ? loadedOrder.orderline_ids.reduce((total: number, line: any) => {
+            const lineTotal =
+              (line.quantity - (line.cancelled_qty || 0)) * line.price;
+            return total + lineTotal;
+          }, 0)
+        : loadedOrder.total_amount + (loadedOrder.discount_amount || 0);
+
+      return {
+        subtotal: subtotal || 0,
+        discountAmount: loadedOrder.discount_amount || 0,
+        tax: (subtotal * 10) / 110, // Assuming same 10% tax rate
+        total: loadedOrder.total_amount || 0,
+      };
+    }
+
+    // Otherwise calculate as before
     const subtotal = selectedProducts.reduce((total, product) => {
       const price = calculateProductPrice(
         product,
@@ -43,7 +66,7 @@ export default function Ticket() {
         : subtotal - discountAmount;
 
     return { subtotal, discountAmount, tax, total };
-  }, [selectedProducts, currentMenu, order.data.discount]);
+  }, [selectedProducts, currentMenu, order.data.discount, loadedOrder]);
 
   const { toFixed, currency: currencySymbol } = currency;
 

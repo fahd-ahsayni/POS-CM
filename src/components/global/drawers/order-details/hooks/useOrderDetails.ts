@@ -1,8 +1,6 @@
 import { createToast } from "@/components/global/Toasters";
 import { ALL_CATEGORIES_VIEW } from "@/components/views/home/left-section/constants";
 import { ORDER_SUMMARY_VIEW } from "@/components/views/home/right-section/constants";
-import { useLocalStorage } from "@/hooks/use-local-storage";
-import { GeneralData } from "@/interfaces/general.d";
 import { Product, ProductVariant } from "@/interfaces/product";
 import { refreshOrders } from "@/store/slices/data/orders.slice";
 import {
@@ -101,15 +99,13 @@ export const useOrderDetails = (
       const generalData = JSON.parse(generalDataStr);
       const products = generalData.products || [];
 
-      // Filter out canceled and paid orderlines before saving to localStorage
-      const filteredOrderlines = selectedOrder.orderline_ids.filter(
-        (line: any) => !line.is_paid && line.cancelled_qty < line.quantity
-      );
-      
+      // Use all orderlines without filtering paid or cancelled ones
+      const filteredOrderlines = selectedOrder.orderline_ids;
+
       // Create a filtered version of the order to save to localStorage
       const filteredOrder = {
         ...selectedOrder,
-        orderline_ids: filteredOrderlines
+        orderline_ids: filteredOrderlines,
       };
 
       // Save the filtered order to localStorage
@@ -213,6 +209,7 @@ export const useOrderDetails = (
             discount: null,
             is_paid: line.is_paid,
             is_ordred: line.is_ordred,
+            cancelled_qty: line.cancelled_qty,
             suite_commande: line.suite_commande,
             high_priority: line.high_priority,
             is_combo: comboProducts.length > 0 || comboSupplements.length > 0,

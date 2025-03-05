@@ -53,6 +53,8 @@ export function OrderLine({ item }: OrderLineProps) {
     setLaunch(false);
   }, [item]);
 
+  console.log(item);
+
   const craetedOrder = useSelector(selectOrder);
 
   const currentProduct: OrderLineInterface = craetedOrder.orderlines.find(
@@ -280,12 +282,30 @@ export function OrderLine({ item }: OrderLineProps) {
             </div>
             <div className="flex items-center gap-x-2">
               {item.is_ordred ? (
-                <div className="flex items-center">
-                  <TypographyP className="px-1.5 font-medium">
-                    {item.quantity}
-                  </TypographyP>
-                  <DishIcon className="w-5 h-auto fill-secondary-black dark:fill-secondary-white" />
-                </div>
+                <>
+                  {item.is_paid ? (
+                    <div>
+                      <TypographyP className="text-green-500">Paid</TypographyP>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-x-2">
+                      {item.cancelled_qty === item.quantity ? (
+                        <TypographyP className="text-error-color">
+                          Canceled
+                        </TypographyP>
+                      ) : (
+                        <div className="flex items-center">
+                          <TypographyP className="px-1.5 font-medium">
+                            {item.cancelled_qty
+                              ? item.quantity - item.cancelled_qty
+                              : item.quantity}
+                          </TypographyP>
+                          <DishIcon className="w-5 h-auto fill-secondary-black dark:fill-secondary-white" />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </>
               ) : (
                 <div className="flex items-center justify-end">
                   <NumberFlowInput
