@@ -284,7 +284,7 @@ export default function OrderDetails() {
                           {orderLine.cancelled_qty > 0 && (
                             <div className="relative flex gap-x-1 -mb-1">
                               <TypographySmall className="text-error-color font-medium flex items-center">
-                                <DishIcon className="w-4 h-4 dark:fill-error-color" />
+                                <DishIcon className="w-4 h-4 fill-error-color" />
                                 <span>{orderLine.cancelled_qty}</span>
                                 <span className="pl-2">Canceled</span>
                               </TypographySmall>
