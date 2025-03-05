@@ -12,6 +12,7 @@ import { useOnlineStatus } from "@/hooks/use-online-status";
 import { cn, handleFullScreen } from "@/lib/utils";
 import { LucideMaximize } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import Logo from "./Logo";
 
 export default function Navbar() {
@@ -19,6 +20,8 @@ export default function Navbar() {
   const [timeIcon, setTimeIcon] = useState(sunrise);
   const [currentTime, setCurrentTime] = useState(new Date());
   const onlineStatus = useOnlineStatus();
+
+  const location = useLocation();
 
   useEffect(() => {
     const updateGreetingAndIcon = () => {
@@ -56,11 +59,28 @@ export default function Navbar() {
     <header className="w-full">
       <div className="relative z-10 flex h-16 flex-shrink-0">
         <div className="flex flex-1 justify-between mr-4">
-          <div className="lg:w-8/12 md:w-3/5 w-4/12 bg-zinc-900 flex items-center px-4 sm:px-6">
-            <div className="h-full absolute w-40 -left-20 bg-zinc-900" />
+          <div
+            className={cn(
+              `lg:w-8/12 md:w-3/5 w-4/12  flex items-center px-4 sm:px-6`,
+              location.pathname === "/" ? "bg-zinc-900" : "bg-background"
+            )}
+          >
+            <div
+              className={cn(
+                "h-full absolute w-40 -left-20",
+                location.pathname === "/" ? "bg-zinc-900" : "bg-background"
+              )}
+            />
             <Logo />
             <div className="lg:flex flex-col justify-center flex-1 ml-12 hidden">
-              <TypographyP className="flex items-center gap-1 text-xs font-medium py-0.5 overflow-hidden text-white">
+              <TypographyP
+                className={cn(
+                  "flex items-center gap-1 text-xs font-medium py-0.5 overflow-hidden",
+                  location.pathname === "/"
+                    ? "text-white"
+                    : "text-primary-black dark:text-white"
+                )}
+              >
                 <span>
                   <img src={timeIcon} alt="time-icon" className="w-4 h-auto" />
                 </span>
