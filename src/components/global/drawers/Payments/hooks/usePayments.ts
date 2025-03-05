@@ -32,13 +32,20 @@ interface PaymentMethod {
   name: string;
   amount: number;
   originalId?: string;
+  children?: PaymentMethod[];
+  image?: string;
+  is_situation?: boolean;
+  is_cash?: boolean;
+  is_cmi?: boolean;
+  is_tpe?: boolean;
+  parent_id?: number;
 }
 
 /**
  * Props for the usePayments hook
  */
 interface UsePaymentsProps {
-  onComplete?: (payments: PaymentMethod[]) => Promise<void>;
+  onComplete?: (payments: Array<Pick<PaymentMethod, '_id' | 'name' | 'amount' | 'originalId'>>) => Promise<void>;
   selectedOrder?: Order;
   totalAmount?: number;
   selectedOrderlines?: any[]; // Add this prop

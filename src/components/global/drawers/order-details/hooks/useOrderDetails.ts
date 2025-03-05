@@ -1,13 +1,15 @@
 import { createToast } from "@/components/global/Toasters";
 import { ALL_CATEGORIES_VIEW } from "@/components/views/home/left-section/constants";
 import { ORDER_SUMMARY_VIEW } from "@/components/views/home/right-section/constants";
+import { useLocalStorage } from "@/hooks/use-local-storage";
+import { GeneralData } from "@/interfaces/general.d";
+import { Product, ProductVariant } from "@/interfaces/product";
 import { refreshOrders } from "@/store/slices/data/orders.slice";
 import {
   setDeliveryGuyId,
   setOrderData,
   setWaiterId,
 } from "@/store/slices/order/create-order.slice";
-import { Product, ProductVariant } from "@/interfaces/product";
 import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -38,16 +40,18 @@ export const useOrderDetails = (
 
   const handleProcessPayment = () => {
     if (!selectedOrder || selectedOrder.status === "canceled") return;
-    
+
     // Get all valid orderlines (not canceled and not paid)
     const validOrderLineIds = selectedOrder.orderline_ids
-      .filter((line: any) => !line.is_paid && line.cancelled_qty < line.quantity)
+      .filter(
+        (line: any) => !line.is_paid && line.cancelled_qty < line.quantity
+      )
       .map((line: any) => line._id);
-    
+
     // If user has manually selected products, respect their selection
     if (selectedOrderlines.length > 0) {
       // Keep their selection, but filter out any invalid selections
-      const validSelectedOrderlines = selectedOrderlines.filter(id => 
+      const validSelectedOrderlines = selectedOrderlines.filter((id) =>
         validOrderLineIds.includes(id)
       );
       setSelectedOrderlines(validSelectedOrderlines);
@@ -92,8 +96,9 @@ export const useOrderDetails = (
     if (!selectedOrder || selectedOrder.status === "canceled") return;
 
     try {
-      const generalData = JSON.parse(
-        localStorage.getItem("generalData") || "{}"
+      const [generalData] = useLocalStorage<GeneralData | any>(
+        "generalData",
+        {}
       );
       const products = generalData.products || [];
 

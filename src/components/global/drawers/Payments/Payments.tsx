@@ -1,39 +1,54 @@
 import { Dhs100, Dhs20, Dhs200, Dhs50 } from "@/assets/Dhs";
+import cmiAnimation from "@/assets/lottie/cmi-animation.json";
 import NumberPad from "@/components/global/NumberPad";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Dialog, DialogContent } from "@/components/ui/dialog"; // NEW
 import { Separator } from "@/components/ui/separator";
 import {
   TypographyH2,
   TypographyP,
   TypographySmall,
 } from "@/components/ui/typography";
+import { Order } from "@/interfaces/order";
 import { cn } from "@/lib/utils";
 import { currency, loadingColors } from "@/preferences/index";
 import { selectOrder } from "@/store/slices/order/create-order.slice";
-import { Order } from "@/interfaces/order";
-import { AnimatePresence, motion } from "motion/react";
+import Lottie from "lottie-react";
 import { Pencil, X } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { BeatLoader } from "react-spinners";
 import type { Swiper as SwiperType } from "swiper";
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import Drawer from "../layout/Drawer";
 import EditPrice from "../edit-price/EditPrice";
+import Drawer from "../layout/Drawer";
 import { usePayments } from "./hooks/usePayments";
 
 interface PaymentMethod {
   _id: string;
   name: string;
   amount: number;
+  originalId?: string;
+  children?: PaymentMethod[];
+  image?: string;
+  is_situation?: boolean;
+  is_cash?: boolean;
+  is_cmi?: boolean;
+  is_tpe?: boolean;
+  parent_id?: number;
 }
 
 interface PaymentsProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  onComplete?: (payments: PaymentMethod[]) => Promise<void>;
+  onComplete?: (
+    payments: Array<
+      Pick<PaymentMethod, "_id" | "name" | "amount" | "originalId">
+    >
+  ) => Promise<void>;
   selectedOrder?: Order;
   totalAmount?: number;
   selectedOrderlines?: string[];
@@ -48,7 +63,8 @@ export default function Payments({
   selectedOrderlines,
 }: PaymentsProps) {
   const [editPriceOpen, setEditPriceOpen] = useState(false);
-
+  const [cmiDialogOpen, setCmiDialogOpen] = useState(false);
+  // Removed pendingPayment state
   const {
     paymentMethods,
     selectedPayments,
@@ -105,6 +121,19 @@ export default function Payments({
     isManualSwipe.current = false;
   }, [selectedPayments.length]);
 
+  // New: Handle complete payment with CMI check
+  const handleProceedPayment = () => {
+    if (selectedPayments.some((payment) => payment.is_cmi)) {
+      setCmiDialogOpen(true);
+      setTimeout(() => {
+        setCmiDialogOpen(false);
+        handleComplete();
+      }, 3000);
+    } else {
+      handleComplete();
+    }
+  };
+
   const getPaymentStatus = () => {
     const totalPaid = getTotalPaidAmount();
     const orderTotal =
@@ -151,7 +180,10 @@ export default function Payments({
               paymentMethods.map((method) => (
                 <div key={method._id}>
                   <Card
-                    onClick={() => handlePaymentMethodSelect(method)}
+                    // Modified: Always call handlePaymentMethodSelect directly
+                    onClick={() => {
+                      handlePaymentMethodSelect(method);
+                    }}
                     className="h-[3.5rem] rounded-md flex items-center justify-start px-6 cursor-pointer dark:bg-primary-black bg-neutral-bright-grey dark:border-white/20 border-primary-black/20"
                   >
                     <TypographyP className="font-medium">
@@ -305,8 +337,7 @@ export default function Payments({
                                 e.stopPropagation();
                                 removePaymentMethod(payment._id);
                               }}
-                              className="p-1 hover:bg-neutral-100 rounded-full 
-                                 dark:hover:bg-primary-black/80"
+                              className="p-1 hover:bg-neutral-100 rounded-full dark:hover:bg-primary-black/80"
                             >
                               <X className="h-5 w-5 text-primary-red" />
                             </button>
@@ -335,7 +366,7 @@ export default function Payments({
             <Button
               className="flex-1"
               disabled={isProcessing}
-              onClick={handleComplete}
+              onClick={handleProceedPayment}
             >
               {isProcessing ? (
                 <BeatLoader color={loadingColors.primary} size={8} />
@@ -357,6 +388,43 @@ export default function Payments({
           </div>
         </div>
       </div>
+      {/* NEW: CMI Wait Loading Dialog */}
+      {cmiDialogOpen && (
+        <Dialog
+          open={cmiDialogOpen}
+          onOpenChange={(open) => {
+            if (!open) {
+              setCmiDialogOpen(false);
+            }
+          }}
+        >
+          <DialogContent className="bg-white dark:bg-primary-black">
+            <div className="flex flex-col items-center gap-4">
+              <div className="size-72">
+                <Lottie
+                  animationData={cmiAnimation}
+                  loop={true}
+                  autoplay={true}
+                />
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <TypographySmall className="text-warning-color text-xs text-center">
+                  Processing CMI payment. Canceling will abort the transaction.
+                </TypographySmall>
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    setCmiDialogOpen(false);
+                  }}
+                  className="w-full"
+                >
+                  Cancel Payment
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
       <EditPrice
         open={editPriceOpen}
         setOpen={setEditPriceOpen}
