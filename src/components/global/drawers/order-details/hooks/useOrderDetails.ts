@@ -96,14 +96,24 @@ export const useOrderDetails = (
     if (!selectedOrder || selectedOrder.status === "canceled") return;
 
     try {
-      const [generalData] = useLocalStorage<GeneralData | any>(
-        "generalData",
-        {}
-      );
+      // Get generalData directly from localStorage to prevent the invalid hook call
+      const generalDataStr = localStorage.getItem("generalData") || "{}";
+      const generalData = JSON.parse(generalDataStr);
       const products = generalData.products || [];
 
-      // Save the loaded order to localStorage
-      localStorage.setItem("loadedOrder", JSON.stringify(selectedOrder));
+      // Filter out canceled and paid orderlines before saving to localStorage
+      const filteredOrderlines = selectedOrder.orderline_ids.filter(
+        (line: any) => !line.is_paid && line.cancelled_qty < line.quantity
+      );
+      
+      // Create a filtered version of the order to save to localStorage
+      const filteredOrder = {
+        ...selectedOrder,
+        orderline_ids: filteredOrderlines
+      };
+
+      // Save the filtered order to localStorage
+      localStorage.setItem("loadedOrder", JSON.stringify(filteredOrder));
 
       // Update order type in localStorage
       if (selectedOrder.order_type_id) {
@@ -138,7 +148,7 @@ export const useOrderDetails = (
         dispatch(setWaiterId(selectedOrder.waiter_id || null));
       }
 
-      const selectedProducts = selectedOrder.orderline_ids
+      const selectedProducts = filteredOrderlines
         .map((line: any) => {
           if (!line.product_variant_id?._id) {
             return null;
