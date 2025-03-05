@@ -8,7 +8,6 @@ import { ALL_CATEGORIES_VIEW } from "../constants";
 import { useLeftViewContext } from "../contexts/LeftViewContext";
 
 export default function Header() {
-  // Compute baseUrl dynamically
   const baseUrl = localStorage.getItem("ipAddress") || window.ENV?.VITE_BASE_URL || import.meta.env.VITE_BASE_URL;
 
   const { setViews, category, setCategory, setSubCategory, setBreadcrumbs } =
