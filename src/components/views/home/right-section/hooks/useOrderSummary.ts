@@ -46,14 +46,13 @@ export const useOrderSummary = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const { setViews: setViewsLeft, setSelectedProducts } = useLeftViewContext();
+  const { setViews: setViewsLeft, setSelectedProducts, selectedProducts } = useLeftViewContext();
   const { setViews: setViewsRight, customerIndex } = useRightViewContext();
   const { handlePaymentComplete, addCustomer } = useCustomerManagement();
 
   const dispatch = useAppDispatch();
   const order = useSelector(selectOrder);
 
-  const { selectedProducts } = useLeftViewContext();
   const { expandedCustomers, toggleAllCustomers } = useOrderLines();
 
   const { setNumber: setCoasterNumber } = useCoasterCall();
@@ -63,15 +62,17 @@ export const useOrderSummary = () => {
 
   const orders = useSelector(selectOrders);
 
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const [orderType] = useLocalStorage<any>("orderType", {});
+  const [user] = useLocalStorage<any>("user", {});
+  const [loadedOrder] = useLocalStorage<any>("loadedOrder", {});
 
   const isActionsDisabled = useMemo(
     () => selectedProducts.length === 0,
     [selectedProducts.length]
   );
 
-  const [loadedOrder] = useLocalStorage<any>("loadedOrder", {});
-
+  console.log(selectedProducts);
+  
   const updateState = useCallback(
     (key: keyof OrderSummaryState, value: boolean) => {
       if (key === "openDrawerPayments" && user.position === "Waiter") {
@@ -132,8 +133,6 @@ export const useOrderSummary = () => {
       },
       handleProceedOrder: async () => {
         if (isProcessing || selectedProducts.length === 0) return;
-
-        const orderType = JSON.parse(localStorage.getItem("orderType") || "{}");
         const existingOrder =
           orders.orders &&
           orders?.orders?.find(
@@ -147,8 +146,10 @@ export const useOrderSummary = () => {
           setIsUpdating(true);
           try {
             // Filter out products that are already ordered (is_ordred === true)
-            const newOrderLines = selectedProducts.filter(product => !product.is_ordred);
-            
+            const newOrderLines = selectedProducts.filter(
+              (product) => !product.is_ordred
+            );
+
             const updatedOrderlines = newOrderLines.map((product) => {
               const orderline = {
                 product_variant_id: product.product_variant_id,
@@ -169,23 +170,30 @@ export const useOrderSummary = () => {
               if (product.is_combo && product.combo_items) {
                 return {
                   ...orderline,
-                  combo_prod_ids: product.combo_items.variants.map((variant: any) => ({
-                    product_variant_id: variant._id || variant.product_variant_id,
-                    quantity: variant.quantity || 1,
-                    notes: variant.notes || [],
-                    suite_commande: variant.suite_commande || false,
-                    order_type_id: variant.order_type_id || product.order_type_id,
-                  })),
-                  combo_supp_ids: product.combo_items.supplements.map((supp: any) => ({
-                    product_variant_id: supp._id || supp.product_variant_id,
-                    quantity: supp.quantity || 1,
-                    notes: supp.notes || [],
-                    suite_commande: supp.suite_commande || false, 
-                    order_type_id: supp.order_type_id || product.order_type_id,
-                  })),
+                  combo_prod_ids: product.combo_items.variants.map(
+                    (variant: any) => ({
+                      product_variant_id:
+                        variant._id || variant.product_variant_id,
+                      quantity: variant.quantity || 1,
+                      notes: variant.notes || [],
+                      suite_commande: variant.suite_commande || false,
+                      order_type_id:
+                        variant.order_type_id || product.order_type_id,
+                    })
+                  ),
+                  combo_supp_ids: product.combo_items.supplements.map(
+                    (supp: any) => ({
+                      product_variant_id: supp._id || supp.product_variant_id,
+                      quantity: supp.quantity || 1,
+                      notes: supp.notes || [],
+                      suite_commande: supp.suite_commande || false,
+                      order_type_id:
+                        supp.order_type_id || product.order_type_id,
+                    })
+                  ),
                 };
               }
-              
+
               return orderline;
             });
 
@@ -197,7 +205,7 @@ export const useOrderSummary = () => {
                 },
                 loadedOrder._id
               );
-              
+
               toast.success(
                 createToast(
                   "Order Updated Successfully",
@@ -246,9 +254,6 @@ export const useOrderSummary = () => {
         setIsProcessing(true);
 
         try {
-          const orderType = JSON.parse(
-            localStorage.getItem("orderType") || "{}"
-          );
           dispatch(setCustomerCount(Math.max(customerIndex, 1)));
 
           if (orderType?.creation_order_with_payment) {

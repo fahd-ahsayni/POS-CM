@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Input as NumberFlowInput } from "@/components/ui/number-flow-input";
 import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { toTitleCase } from "@/functions/string-transforms";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { OrderLine as OrderLineInterface } from "@/interfaces/order";
 import type { ProductSelected } from "@/interfaces/product";
 import { cn } from "@/lib/utils";
@@ -37,8 +38,11 @@ interface OrderLineProps {
 export function OrderLine({ item }: OrderLineProps) {
   const dispatch = useAppDispatch();
   const { customerIndex, setCustomerIndex } = useRightViewContext();
-  const { currentMenu } = useLeftViewContext();
+  const { currentMenu, selectedProducts, setSelectedProducts } =
+    useLeftViewContext();
   const { updateQuantity } = useProductQuantity();
+  const [loadedOrder] = useLocalStorage<any>("loadedOrder", {});
+  const [generalData] = useLocalStorage<any>("generalData", {});
 
   const { prices, itemVariants, selectCustomer, getDisplayName } = useOrderLine(
     {
@@ -52,8 +56,6 @@ export function OrderLine({ item }: OrderLineProps) {
   useEffect(() => {
     setLaunch(false);
   }, [item]);
-
-  console.log(item);
 
   const craetedOrder = useSelector(selectOrder);
 
@@ -85,12 +87,25 @@ export function OrderLine({ item }: OrderLineProps) {
     const newSuiteCommandStatus = !suiteCommandCallToAction;
     setSuiteCommandCallToAction(newSuiteCommandStatus);
 
-    dispatch(
-      updateSuiteCommande({
-        product_variant_id: item.product_variant_id,
-        suite_commande: newSuiteCommandStatus,
-      })
-    );
+    if (loadedOrder._id) {
+      const updatedProducts = selectedProducts.map((product) => {
+        if (product._id === item._id) {
+          return {
+            ...product,
+            suite_commande: newSuiteCommandStatus,
+          };
+        }
+        return product;
+      });
+      setSelectedProducts(updatedProducts);
+    } else {
+      dispatch(
+        updateSuiteCommande({
+          product_variant_id: item.product_variant_id,
+          suite_commande: newSuiteCommandStatus,
+        })
+      );
+    }
   };
 
   const letsLaunchSuiteCommand = async () => {
@@ -234,7 +249,11 @@ export function OrderLine({ item }: OrderLineProps) {
         ease: "easeInOut",
       }}
       className="flex relative cursor-pointer items-center h-full w-full rounded-r-lg"
-      onClick={(item.cancelled_qty === item.quantity || item.is_paid) ? undefined : selectCustomer}
+      onClick={
+        item.cancelled_qty === item.quantity || item.is_paid
+          ? undefined
+          : selectCustomer
+      }
     >
       <Card
         className={cn(
@@ -242,7 +261,8 @@ export function OrderLine({ item }: OrderLineProps) {
           item.is_ordred && item.suite_commande && !item.is_combo
             ? "pl-14"
             : "pl-5",
-          (item.cancelled_qty === item.quantity || item.is_paid) && "opacity-50 pointer-events-none"
+          (item.cancelled_qty === item.quantity || item.is_paid) &&
+            "opacity-50 pointer-events-none"
         )}
       >
         <div
@@ -327,40 +347,41 @@ export function OrderLine({ item }: OrderLineProps) {
               <TypographyP className="text-sm font-medium">
                 {prices.totalPrice.toFixed(2)} {currency.currency}
               </TypographyP>
-              {item.discount?.discount_id &&
-                localStorage.getItem("generalData") && (
-                  <Badge variant="secondary">
-                    -
-                    {JSON.parse(
-                      localStorage.getItem("generalData") || "{}"
-                    )?.discount.find(
-                      (d: any) => d._id === item.discount?.discount_id
-                    )?.value || 0}
-                    %
-                  </Badge>
-                )}
+              {item.discount?.discount_id && localStorage.discount && (
+                <Badge variant="secondary">
+                  -
+                  {generalData?.discount.find(
+                    (d: any) => d._id === item.discount?.discount_id
+                  )?.value || 0}
+                  %
+                </Badge>
+              )}
             </div>
             <div className="flex items-center gap-x-3">
-              {!item.is_combo && !item.is_ordred && !item.cancelled_qty && !item.is_paid && (
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className={cn(
-                    "h-7 w-7 bg-accent-white/10 hover:bg-accent-white/20 rounded transition-colors duration-200",
-                    suiteCommandCallToAction &&
-                      "ring-1 ring-error-color bg-error-color shadow-lg shadow-error-color/50 hover:bg-error-color"
-                  )}
-                  onClick={handleSuiteCommandCallToAction}
-                >
-                  <SuiteCommandIcon
+              {!item.is_combo &&
+                !item.is_ordred &&
+                !item.cancelled_qty &&
+                !item.is_paid && (
+                  <Button
+                    size="icon"
+                    variant="ghost"
                     className={cn(
-                      "dark:text-white text-primary-black",
-                      suiteCommandCallToAction && "!dark:text-white text-white"
+                      "h-7 w-7 bg-accent-white/10 hover:bg-accent-white/20 rounded transition-colors duration-200",
+                      suiteCommandCallToAction &&
+                        "ring-1 ring-error-color bg-error-color shadow-lg shadow-error-color/50 hover:bg-error-color"
                     )}
-                  />
-                  <span className="sr-only">Suite Command</span>
-                </Button>
-              )}
+                    onClick={handleSuiteCommandCallToAction}
+                  >
+                    <SuiteCommandIcon
+                      className={cn(
+                        "dark:text-white text-primary-black",
+                        suiteCommandCallToAction &&
+                          "!dark:text-white text-white"
+                      )}
+                    />
+                    <span className="sr-only">Suite Command</span>
+                  </Button>
+                )}
               <OderLineAddComments
                 productId={item._id}
                 customerIndex={item.customer_index || customerIndex}
