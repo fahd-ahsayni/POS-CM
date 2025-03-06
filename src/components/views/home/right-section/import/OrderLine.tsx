@@ -143,7 +143,7 @@ export function OrderLine({ item }: OrderLineProps) {
                   }
                   className={
                     comboLaunchedMap[badgeKey] || variant.suite_ordred
-                      ? "bg-info-color text-white"
+                      ? "text-white"
                       : ""
                   }
                 >
@@ -196,7 +196,7 @@ export function OrderLine({ item }: OrderLineProps) {
                         }
                         className={
                           comboLaunchedMap[badgeKey] || supp.suite_ordred
-                            ? "bg-info-color text-white"
+                            ? "text-white"
                             : ""
                         }
                       >
@@ -234,14 +234,15 @@ export function OrderLine({ item }: OrderLineProps) {
         ease: "easeInOut",
       }}
       className="flex relative cursor-pointer items-center h-full w-full rounded-r-lg"
-      onClick={selectCustomer}
+      onClick={(item.cancelled_qty === item.quantity || item.is_paid) ? undefined : selectCustomer}
     >
       <Card
         className={cn(
           "flex w-full overflow-hidden relative pr-3 py-2.5 transition-all duration-300 ease-in-out",
           item.is_ordred && item.suite_commande && !item.is_combo
             ? "pl-14"
-            : "pl-5"
+            : "pl-5",
+          (item.cancelled_qty === item.quantity || item.is_paid) && "opacity-50 pointer-events-none"
         )}
       >
         <div
@@ -255,7 +256,7 @@ export function OrderLine({ item }: OrderLineProps) {
           onClick={letsLaunchSuiteCommand}
           className={cn(
             "absolute left-0 top-0",
-            launch || item.suite_ordred
+            launch || item.is_ordred
               ? "bg-info-color"
               : "bg-interactive-dark-red"
           )}
@@ -340,7 +341,7 @@ export function OrderLine({ item }: OrderLineProps) {
                 )}
             </div>
             <div className="flex items-center gap-x-3">
-              {!item.is_combo && !item.is_ordred && (
+              {!item.is_combo && !item.is_ordred && !item.cancelled_qty && !item.is_paid && (
                 <Button
                   size="icon"
                   variant="ghost"

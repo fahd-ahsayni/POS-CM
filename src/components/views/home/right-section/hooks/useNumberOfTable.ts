@@ -59,11 +59,9 @@ export const useNumberOfTable = () => {
   };
 
   const handleConfirm = async (number: string) => {
-    console.log("table number from confirm", number);
     setIsLoading(true);
     const table = findTableByName(number);
     const tableId = table?._id;
-    console.log("table id from confirm", tableId);
 
     if (!tableId) {
       setTableValid("not-found");
@@ -79,7 +77,6 @@ export const useNumberOfTable = () => {
 
     try {
       if (!loadedOrder._id) {
-        console.log("not loaded order");
         const response = await getByTableName(number);
         if (response.status === 204 || response.status === 200) {
           dispatch(updateOrder({ table_id: tableId }));

@@ -51,7 +51,6 @@ export default function TablesPlan() {
   }, []);
 
   const handleTableClick = async (table: Table) => {
-    console.log("table", table);
     if (table.status == "occupied") {
       try {
         const response = await getOrderByTableId(table._id);
