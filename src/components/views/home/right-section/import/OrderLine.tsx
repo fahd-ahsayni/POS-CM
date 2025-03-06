@@ -382,11 +382,13 @@ export function OrderLine({ item }: OrderLineProps) {
                     <span className="sr-only">Suite Command</span>
                   </Button>
                 )}
-              <OderLineAddComments
-                productId={item._id}
-                customerIndex={item.customer_index || customerIndex}
-                initialNotes={item.notes || []}
-              />
+              {!item.is_ordred && (
+                <OderLineAddComments
+                  productId={item._id}
+                  customerIndex={item.customer_index || customerIndex}
+                  initialNotes={item.notes || []}
+                />
+              )}
               <ProductActions item={item} />
             </div>
           </div>

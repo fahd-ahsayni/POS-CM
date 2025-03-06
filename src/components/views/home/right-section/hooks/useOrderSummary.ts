@@ -70,8 +70,6 @@ export const useOrderSummary = () => {
     () => selectedProducts.length === 0,
     [selectedProducts.length]
   );
-
-  console.log(selectedProducts);
   
   const updateState = useCallback(
     (key: keyof OrderSummaryState, value: boolean) => {
