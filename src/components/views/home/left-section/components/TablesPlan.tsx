@@ -51,7 +51,8 @@ export default function TablesPlan() {
   }, []);
 
   const handleTableClick = async (table: Table) => {
-    if (table.status !== "available") {
+    console.log("table", table);
+    if (table.status == "occupied") {
       try {
         const response = await getOrderByTableId(table._id);
         const order = response.data;
@@ -76,10 +77,9 @@ export default function TablesPlan() {
         );
       }
       return;
+    } else {
+      await handleConfirm(table.name);
     }
-
-    // If table is available, proceed with table selection
-    await handleConfirm(table.name);
   };
 
   return (
@@ -101,7 +101,11 @@ export default function TablesPlan() {
           </ScrollArea>
           <ScrollArea className="flex-grow h-[calc(100%-50px)] overflow-auto">
             {floors.map((floor) => (
-              <TabsContent key={floor._id} value={floor.name} className="h-full mt-0 p-4">
+              <TabsContent
+                key={floor._id}
+                value={floor.name}
+                className="h-full mt-0 p-4"
+              >
                 <div className="w-full grid grid-cols-5 gap-3">
                   {floor.table_ids.map((table) => {
                     const TableIcon =

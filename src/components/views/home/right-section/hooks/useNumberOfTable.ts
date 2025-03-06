@@ -1,7 +1,9 @@
 import { getByTableName } from "@/api/services";
+import { getFloors } from "@/api/services/floors.service";
 import { updateOrder as updateNewOrder } from "@/api/services/order.service";
 import { updateOrder } from "@/functions/updateOrder";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { Floor } from "@/interfaces/table";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { ALL_CATEGORIES_VIEW } from "../../left-section/constants";
@@ -17,10 +19,15 @@ export const useNumberOfTable = () => {
   const [tableValid, setTableValid] = useState<TableValidState>("valid");
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
-  // Safely retrieve floors from localStorage with optional chaining and default empty array
-  const data = JSON.parse(
-    localStorage.getItem("generalData") || '{"floors": []}'
-  ).floors;
+  const [floors, setFloors] = useState<Floor[]>([]);
+
+  useEffect(() => {
+    const fetchAllFloors = async () => {
+      const response = await getFloors();
+      setFloors(response.data);
+    };
+    fetchAllFloors();
+  }, []);
 
   const [loadedOrder, setLoadedOrder] = useLocalStorage<any>("loadedOrder", {});
   // Ensure tableNumber is handled as a string by using an empty string default
@@ -43,7 +50,7 @@ export const useNumberOfTable = () => {
   };
 
   const findTableByName = (tableName: string) => {
-    return Object.values(data)
+    return Object.values(floors)
       .map((floor: any) =>
         floor.table_ids?.filter((table: any) => table.name === tableName)
       )
@@ -52,27 +59,35 @@ export const useNumberOfTable = () => {
   };
 
   const handleConfirm = async (number: string) => {
+    console.log("table number from confirm", number);
     setIsLoading(true);
     const table = findTableByName(number);
     const tableId = table?._id;
+    console.log("table id from confirm", tableId);
+
     if (!tableId) {
       setTableValid("not-found");
       setIsLoading(false);
       return;
     }
 
+    if (table?.status !== "available") {
+      setTableValid("invalid");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       if (!loadedOrder._id) {
+        console.log("not loaded order");
         const response = await getByTableName(number);
-        if (response.status === 204) {
+        if (response.status === 204 || response.status === 200) {
           dispatch(updateOrder({ table_id: tableId }));
           setTableNumberFromLS(number);
           setTableNumber(number);
           setViews(ORDER_SUMMARY_VIEW);
           setLeftView(ALL_CATEGORIES_VIEW);
           setTableValid("valid");
-        } else if (response.status === 200) {
-          setTableValid("invalid");
         }
       } else if (loadedOrder._id) {
         const response = await updateNewOrder(
@@ -88,6 +103,7 @@ export const useNumberOfTable = () => {
         }
       }
     } catch (error) {
+      console.error("Error confirming table:", error);
       setTableValid("not-found");
     } finally {
       setIsLoading(false);
@@ -97,7 +113,7 @@ export const useNumberOfTable = () => {
   const getValidationMessage = () => {
     switch (tableValid) {
       case "invalid":
-        return "Table is already taken";
+        return "Table is already taken or not available";
       case "not-found":
         return "Table not found";
       default:
