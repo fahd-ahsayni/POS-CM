@@ -33,7 +33,7 @@ export const login = async (
     toast.error(
       createToast(
         "Error logging in",
-        "Please check your credentials and try again",
+        "Please check your credentials",
         "error"
       )
     );
