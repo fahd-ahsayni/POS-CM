@@ -94,8 +94,12 @@ export default function OrderDetails() {
         high_priority: line.high_priority || false,
         cancelled_qty: line.cancelled_qty,
         product_variant_id: {
-          name: line.product_variant_id.name,
-          price_ttc: line.product_variant_id.price_ttc,
+          name: line?.product_variant_id?.name
+            ? line?.product_variant_id?.name
+            : "",
+          price_ttc: line?.product_variant_id?.price_ttc
+            ? line?.product_variant_id?.price_ttc
+            : 0,
         },
         combo_prod_ids: line.combo_prod_ids || [],
         combo_supp_ids: line.combo_supp_ids || [],
@@ -207,7 +211,9 @@ export default function OrderDetails() {
                     >
                       <div className="flex justify-between items-center">
                         <TypographyP className="dark:text-white text-primary-black font-medium capitalize">
-                          {orderLine.product_variant_id.name.toLowerCase()}
+                          {orderLine.product_variant_id
+                            ? orderLine.product_variant_id?.name.toLowerCase()
+                            : ""}
                         </TypographyP>
                         {/* {orderLine.cancelled_qty >= orderLine.quantity && (
                           <TypographyP className="text-error-color">
@@ -238,9 +244,11 @@ export default function OrderDetails() {
                                       x{combo.quantity}
                                     </span>
                                     <span className="dark:text-secondary-white/90 text-primary-black capitalize">
-                                      {toTitleCase(
-                                        combo.product_variant_id.name
-                                      )}
+                                      {combo.product_variant_id
+                                        ? toTitleCase(
+                                            combo.product_variant_id?.name
+                                          )
+                                        : ""}
                                     </span>
                                   </TypographySmall>
                                   {combo.suite_commande && (
@@ -259,7 +267,11 @@ export default function OrderDetails() {
                                     x{supp.quantity}
                                   </span>
                                   <span className="dark:text-secondary-white/90 text-primary-black capitalize">
-                                    {toTitleCase(supp.product_variant_id.name)}
+                                    {supp.product_variant_id
+                                      ? toTitleCase(
+                                          supp.product_variant_id?.name
+                                        )
+                                      : ""}
                                   </span>
                                 </TypographySmall>
                                 {supp.suite_commande && (
