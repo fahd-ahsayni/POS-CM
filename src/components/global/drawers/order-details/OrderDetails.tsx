@@ -19,9 +19,11 @@ import { cn } from "@/lib/utils";
 import { currency } from "@/preferences";
 import { ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
+import { BsCashCoin } from "react-icons/bs";
 import CancelOrder from "../cancel-order/CancelOrder";
 import EditPrice from "../edit-price/EditPrice";
 import Drawer from "../layout/Drawer";
+import PaymentHistory from "../payment-history/PaymentHistory";
 import Payments from "../Payments/Payments";
 import { useOrderDetails } from "./hooks/useOrderDetails";
 
@@ -32,6 +34,7 @@ export default function OrderDetails() {
   const [persistSelectedProducts, setPersistSelectedProducts] = useLocalStorage<
     string[]
   >("selectedProducts", []);
+  const [paymentHistoryOpen, setPaymentHistoryOpen] = useState(false);
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
@@ -94,8 +97,8 @@ export default function OrderDetails() {
         high_priority: line.high_priority || false,
         cancelled_qty: line.cancelled_qty,
         product_variant_id: {
-          name: line.product_variant_id.name,
-          price_ttc: line.product_variant_id.price_ttc,
+          name: line.product_variant_id?.name,
+          price_ttc: line.product_variant_id?.price_ttc,
         },
         combo_prod_ids: line.combo_prod_ids || [],
         combo_supp_ids: line.combo_supp_ids || [],
@@ -320,7 +323,7 @@ export default function OrderDetails() {
               >
                 {persistSelectedProducts.length > 0
                   ? "Cancel This Product"
-                  : "Cancel All Products"}
+                  : "Cancel order"}
               </Button>
 
               {selectedOrder.status === "new" &&
@@ -330,6 +333,13 @@ export default function OrderDetails() {
                     Process Payment
                   </Button>
                 )}
+              {selectedOrder.status === "paid" && (
+                // on click her please open Drawer named payement history
+                <Button size="icon" onClick={() => setPaymentHistoryOpen(true)}>
+                  <BsCashCoin size={20} />
+                  <span className="sr-only">payment history</span>
+                </Button>
+              )}
               <Button size="icon" onClick={handlePrintKitchen}>
                 <PrinterIcon className="w-5 h-5 dark:!fill-white fill-primary-black" />
               </Button>
@@ -366,6 +376,11 @@ export default function OrderDetails() {
             : selectedOrder?.total_amount || 0
         }
         selectedOrderlines={selectedOrderlines}
+      />
+      <PaymentHistory
+        open={paymentHistoryOpen}
+        setOpen={setPaymentHistoryOpen}
+        orderId={selectedOrder?._id}
       />
     </>
   );
