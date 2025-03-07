@@ -407,20 +407,6 @@ export default function Payments({
                   autoplay={true}
                 />
               </div>
-              <div className="flex flex-col items-center gap-2">
-                <TypographySmall className="text-warning-color text-xs text-center">
-                  Processing CMI payment. Canceling will abort the transaction.
-                </TypographySmall>
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    setCmiDialogOpen(false);
-                  }}
-                  className="w-full"
-                >
-                  Cancel Payment
-                </Button>
-              </div>
             </div>
           </DialogContent>
         </Dialog>
