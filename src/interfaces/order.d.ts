@@ -63,6 +63,7 @@ export interface Order extends BaseEntity {
   notes: string[] | null;
   customer_count: number;
   one_time: boolean;
+  payments: any[];
   urgent: boolean;
   status: string;
   client_id: string;

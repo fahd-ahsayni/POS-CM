@@ -381,6 +381,7 @@ export default function OrderDetails() {
         open={paymentHistoryOpen}
         setOpen={setPaymentHistoryOpen}
         orderId={selectedOrder?._id}
+        selectedOrder={selectedOrder}
       />
     </>
   );

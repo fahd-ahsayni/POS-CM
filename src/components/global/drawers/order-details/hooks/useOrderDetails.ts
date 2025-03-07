@@ -255,6 +255,7 @@ export const useOrderDetails = (
         total_amount: selectedOrder.total_amount || 0,
         changed_price: selectedOrder.changed_price || null,
         order_type_id: selectedOrder.order_type_id?._id || null,
+        payments: selectedOrder.payments || [], // Add this line
         orderlines: selectedProducts.map((line: any) => ({
           product_variant_id: line.product_variant_id,
           quantity: line.quantity,

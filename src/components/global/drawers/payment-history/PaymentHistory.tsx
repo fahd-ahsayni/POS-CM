@@ -1,24 +1,25 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-    TypographyP,
-    TypographySmall
-} from "@/components/ui/typography";
+import { TypographyP, TypographySmall } from "@/components/ui/typography";
 import { currency } from "@/preferences";
 import Drawer from "../layout/Drawer";
-import { payementsHistory } from "./test";
 
 interface PaymentHistoryProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   orderId?: string;
+  selectedOrder: any; // TODO: Add proper type
 }
 
 export default function PaymentHistory({
   open,
   setOpen,
+  selectedOrder,
 }: PaymentHistoryProps) {
+  const payments = selectedOrder.payments;
+
+  console.log(selectedOrder);
   return (
     <Drawer
       open={open}
@@ -30,7 +31,7 @@ export default function PaymentHistory({
     >
       <ScrollArea className="h-full">
         <div className="flex flex-col gap-y-2.5">
-          {payementsHistory.map((payement) => (
+          {payments?.map((payement: any) => (
             <Card className="p-4 flex justify-between !bg-primary-black">
               <div>
                 <TypographySmall>{payement.name}</TypographySmall>
