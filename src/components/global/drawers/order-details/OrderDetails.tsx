@@ -1,4 +1,4 @@
-import { printOrder } from "@/api/services";
+import { printOrder } from "@/api/services/print.service";
 import {
   BillIcon,
   DishIcon,

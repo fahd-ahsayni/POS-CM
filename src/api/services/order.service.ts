@@ -1,13 +1,5 @@
 import { api } from "@/api/axios";
-import { createToast } from "@/components/global/Toasters";
-import { ApiResponse } from "@/interfaces/api";
-import { toast } from "react-toastify";
 
-export interface PrintOrderRequest {
-  order_id: string;
-  pos_id: string;
-  orderline_ids?: string[];
-}
 
 export const getByTableName = async (tableName: string) => {
   return api.get(`/order/by-table-name/${tableName}`);
@@ -23,79 +15,23 @@ export const updateOrder = async (data: any, orderId: string) => {
     data.orderlines = data.orderlines.map((line: any) => {
       // Ensure combo_prod_ids and combo_supp_ids are included if they exist
       const cleanedLine = { ...line };
-      
+
       // Remove undefined or null properties
-      Object.keys(cleanedLine).forEach(key => {
+      Object.keys(cleanedLine).forEach((key) => {
         if (cleanedLine[key] === undefined || cleanedLine[key] === null) {
           delete cleanedLine[key];
         }
       });
-      
+
       return cleanedLine;
     });
   }
-  
+
   return api.patch(`/order/update/${orderId}`, data);
 };
 
 export const getOrdersByDay = async () => {
   return api.get("/order/by-day");
-};
-
-export const printOrder = async (
-  orderId: string,
-  orderlines: string[] = []
-): Promise<ApiResponse<any> | null> => {
-  try {
-    const posId = localStorage.getItem("posId");
-    if (!posId) {
-      throw new Error("POS ID not found in local storage");
-    }
-
-    let requestData: PrintOrderRequest;
-
-    if (orderlines) {
-      requestData = {
-        order_id: orderId,
-        pos_id: posId,
-        orderline_ids: orderlines,
-      };
-    } else {
-      requestData = {
-        order_id: orderId,
-        pos_id: posId,
-      };
-    }
-
-    const response = await api.post("/order/printer", requestData);
-
-    const message =
-      response.status === 200
-        ? ([
-            "Order printed successfully",
-            "The order has been sent to the printer",
-            "success",
-          ] as const)
-        : ([
-            "Failed to print order",
-            "Please check the printer connection",
-            "error",
-          ] as const);
-
-    toast[message[2] as "success" | "error"](
-      createToast(message[0], message[1], message[2])
-    );
-    return response;
-  } catch (error) {
-    toast.error(
-      createToast(
-        "Error printing order",
-        "An unexpected error occurred while trying to print the order",
-        "error"
-      )
-    );
-    return null;
-  }
 };
 
 export const createOrderWithOutPayment = async (data: any) => {

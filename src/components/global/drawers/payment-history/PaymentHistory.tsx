@@ -6,6 +6,7 @@ import { currency } from "@/preferences";
 import Drawer from "../layout/Drawer";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { printOrder } from "@/api/services/print.service";
 
 interface PaymentHistoryProps {
   open: boolean;
@@ -35,11 +36,17 @@ export default function PaymentHistory({
         <div className="flex flex-col gap-y-2.5">
           {payments?.length > 0 ? (
             payments?.map((payement: any) => (
-              <Card key={payement.id} className="p-4 flex flex-col justify-between dark:!bg-primary-black gap-y-4">
+              <Card
+                key={payement.id}
+                className="p-4 flex flex-col justify-between dark:!bg-primary-black gap-y-4"
+              >
                 <span className="flex items-center justify-between gap-x-2">
                   <Badge>{payement.payment_method_id.name}</Badge>
                   <TypographySmall className="dark:text-white/40 text-primary-black/30">
-                    {format(new Date(payement.updatedAt), "dd MMM yyyy - HH:mm")}
+                    {format(
+                      new Date(payement.updatedAt),
+                      "dd MMM yyyy - HH:mm"
+                    )}
                   </TypographySmall>
                 </span>
                 <div className="flex items-center justify-between">
@@ -51,7 +58,13 @@ export default function PaymentHistory({
                   {payement.payment_method_id.is_cmi && (
                     <div className="flex items-center gap-x-2.5">
                       <Button variant="secondary">Cancel</Button>
-                      <Button>Duplicate</Button>
+                      <Button
+                        onClick={() =>
+                          printOrder(selectedOrder.id, [], payement.id)
+                        }
+                      >
+                        Duplicate
+                      </Button>
                     </div>
                   )}
                 </div>

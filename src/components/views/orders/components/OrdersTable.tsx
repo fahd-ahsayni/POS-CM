@@ -1,4 +1,5 @@
-import { getOrderById, printOrder } from "@/api/services";
+import { getOrderById} from "@/api/services";
+import { printOrder } from "@/api/services/print.service";
 import { PrinterIcon } from "@/assets/figma-icons";
 import {
   Table2Seats,
