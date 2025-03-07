@@ -45,7 +45,6 @@ export default function OrdersPage() {
     },
   });
 
-  // Update filtered data length in Redux store
   useEffect(() => {
     dispatch(setFilteredDataLength(filteredOrders.length));
   }, [filteredOrders.length, dispatch]);

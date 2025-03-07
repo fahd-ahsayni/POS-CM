@@ -75,7 +75,7 @@ function SelectPosPage() {
         confirmed_by: admin?.user.id || "",
       });
 
-      if (response.status === 200) {
+      if (response.status) {
         toast.success(
           createToast("Closed success", "The Day is close", "success")
         );
@@ -84,7 +84,6 @@ function SelectPosPage() {
       toast.error(createToast("Close faild", "Close Day is close", "error"));
     } finally {
       setIsModalOpen(false);
-      window.location.reload();
     }
   }, [withOpenNewDay, setIsModalOpen, admin]);
 

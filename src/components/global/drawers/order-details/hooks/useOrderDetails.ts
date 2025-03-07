@@ -128,7 +128,7 @@ export const useOrderDetails = (
       if (selectedOrder.table_id) {
         const tableName =
           typeof selectedOrder.table_id === "object"
-            ? (selectedOrder.table_id as { name: string }).name
+            ? (selectedOrder.table_id as { name: string })?.name
             : selectedOrder.table_id;
         localStorage.setItem("tableNumber", tableName.toString());
       } else {
@@ -171,7 +171,7 @@ export const useOrderDetails = (
             line.combo_prod_ids?.map((combo: any) => ({
               _id: combo._id,
               quantity: combo.quantity,
-              name: combo.product_variant_id.name,
+              name: combo.product_variant_id?.name ? combo.product_variant_id?.name : "",
               notes: combo.notes || [],
               suite_commande: combo.suite_commande,
               suite_ordred: combo.suite_ordred,
@@ -185,7 +185,7 @@ export const useOrderDetails = (
             line.combo_supp_ids?.map((supp: any) => ({
               _id: supp._id,
               quantity: supp.quantity,
-              name: supp.product_variant_id.name,
+              name: supp.product_variant_id?.name ? supp.product_variant_id?.name : "",
               notes: supp.notes || [],
               suite_ordred: supp.suite_ordred,
               suite_commande: supp.suite_commande,
