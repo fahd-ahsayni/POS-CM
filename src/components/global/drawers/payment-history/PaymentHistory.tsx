@@ -33,29 +33,35 @@ export default function PaymentHistory({
     >
       <ScrollArea className="h-full">
         <div className="flex flex-col gap-y-2.5">
-          {payments?.map((payement: any) => (
-            <Card className="p-4 flex flex-col justify-between dark:!bg-primary-black gap-y-4">
-              <span className="flex items-center justify-between gap-x-2">
-                <Badge>{payement.payment_method_id.name}</Badge>
-                <TypographySmall className="dark:text-white/40 text-primary-black/30">
-                  {format(new Date(payement.updatedAt), "dd MMM yyyy - HH:mm")}
-                </TypographySmall>
-              </span>
-              <div className="flex items-center justify-between">
-                <div className="space-y-2">
-                  <TypographyP>
-                    {Number(payement.amount).toFixed(2)} {currency.currency}
-                  </TypographyP>
-                </div>
-                {payement.payment_method_id.is_cmi && (
-                  <div className="flex items-center gap-x-2.5">
-                    <Button variant="secondary">Cancel</Button>
-                    <Button>Duplicate</Button>
+          {payments?.length > 0 ? (
+            payments?.map((payement: any) => (
+              <Card key={payement.id} className="p-4 flex flex-col justify-between dark:!bg-primary-black gap-y-4">
+                <span className="flex items-center justify-between gap-x-2">
+                  <Badge>{payement.payment_method_id.name}</Badge>
+                  <TypographySmall className="dark:text-white/40 text-primary-black/30">
+                    {format(new Date(payement.updatedAt), "dd MMM yyyy - HH:mm")}
+                  </TypographySmall>
+                </span>
+                <div className="flex items-center justify-between">
+                  <div className="space-y-2">
+                    <TypographyP>
+                      {Number(payement.amount).toFixed(2)} {currency.currency}
+                    </TypographyP>
                   </div>
-                )}
-              </div>
-            </Card>
-          ))}
+                  {payement.payment_method_id.is_cmi && (
+                    <div className="flex items-center gap-x-2.5">
+                      <Button variant="secondary">Cancel</Button>
+                      <Button>Duplicate</Button>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            ))
+          ) : (
+            <TypographyP className="text-center text-neutral-dark-grey">
+              No payment history available
+            </TypographyP>
+          )}
         </div>
       </ScrollArea>
     </Drawer>
