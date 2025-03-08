@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Logo from "./Logo";
 import { BorderBeam } from "@/components/ui/border-beam";
+import { useTheme } from "@/providers/themeProvider";
 
 export default function Navbar() {
   const [greeting, setGreeting] = useState("Good Morning");
@@ -21,6 +22,7 @@ export default function Navbar() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const onlineStatus = useOnlineStatus();
 
+  const { theme } = useTheme();
   const location = useLocation();
 
   useEffect(() => {
@@ -110,7 +112,7 @@ export default function Navbar() {
             </div>
           </div>
           <div className="lg:w-4/12 md:w-2/5 w-8/12 flex items-center justify-end space-x-4 sm:space-x-3">
-            <span className="size-8 bg-secondary-black relative flex items-center justify-center rounded-lg border border-border">
+            <span className="size-8 dark:bg-secondary-black bg-white relative flex items-center justify-center rounded-lg border border-border">
               {onlineStatus ? (
                 <Wifi
                   size={16}
@@ -126,7 +128,7 @@ export default function Navbar() {
               )}
               <BorderBeam
                 colorFrom={onlineStatus ? "#00FB00" : "#FB0000"}
-                colorTo={onlineStatus ? "#005200" : "#520000"}
+                colorTo={theme === "dark" ? (onlineStatus ? "#005200" : "#520000") : (onlineStatus ? "#00FB00" : "#FB0000")}
                 size={20}
                 borderWidth={1.5}
                 duration={5}
