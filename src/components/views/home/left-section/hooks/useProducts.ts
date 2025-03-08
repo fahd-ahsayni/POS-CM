@@ -108,7 +108,7 @@ export const useProducts = (initialProducts?: Product[]) => {
       if (product.variants.length === 1) {
         const variant = product.variants[0];
         if (variant.is_menu) {
-          if (variant.steps.length <= 1 && !variant.steps[0]?.is_supplement) {
+          if (variant.steps.length <= 1 && variant.steps[0]?.is_required) {
             // Auto-select and finish for single required step; do not open drawer
             const orderTypeLS = JSON.parse(
               localStorage.getItem("orderType") || "{}"
