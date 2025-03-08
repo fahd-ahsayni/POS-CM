@@ -36,7 +36,7 @@ export default function OrderDetails() {
   >("selectedProducts", []);
   const [paymentHistoryOpen, setPaymentHistoryOpen] = useState(false);
 
-  const [user] = useLocalStorage<any>("user", null);
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const {
     selectedOrder,
@@ -172,9 +172,10 @@ export default function OrderDetails() {
         }
         if (selectedOrder.coaster_call === null && orderType.select_table) {
           const tableName =
-              typeof selectedOrder.table_id === "object" && selectedOrder.table_id !== null
-                ? (selectedOrder.table_id as { name: string }).name
-                : selectedOrder.table_id;
+            typeof selectedOrder.table_id === "object" &&
+            selectedOrder.table_id !== null
+              ? (selectedOrder.table_id as { name: string }).name
+              : selectedOrder.table_id;
           return `Table ${tableName || ""} - Takeaway`;
         }
         return `${orderType.name}`;
@@ -191,7 +192,10 @@ export default function OrderDetails() {
           !orderType.select_delivery_boy
         ) {
           if (orderType.delivery_companies_name === "Glovo") {
-            if ('glovo_pick_up_code' in selectedOrder && selectedOrder.glovo_pick_up_code) {
+            if (
+              "glovo_pick_up_code" in selectedOrder &&
+              selectedOrder.glovo_pick_up_code
+            ) {
               return `Glovo - N° ${selectedOrder.glovo_pick_up_code}`;
             } else {
               return `Glovo`;
@@ -210,9 +214,12 @@ export default function OrderDetails() {
 
       case "onPlace":
         return selectedOrder.table_id
-          ? `Table N° ${typeof selectedOrder.table_id === "object" && selectedOrder.table_id !== null 
-              ? (selectedOrder.table_id as { name: string }).name 
-              : selectedOrder.table_id}`
+          ? `Table N° ${
+              typeof selectedOrder.table_id === "object" &&
+              selectedOrder.table_id !== null
+                ? (selectedOrder.table_id as { name: string }).name
+                : selectedOrder.table_id
+            }`
           : `${orderType.name}`;
 
       default:

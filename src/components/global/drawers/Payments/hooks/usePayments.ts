@@ -411,7 +411,7 @@ export function usePayments({
       );
     } finally {
       setIsProcessing(false);
-      if (user.position === "Waiter") {
+      if (user?.position === "Waiter") {
         await logoutService();
         navigate("/login");
       }
