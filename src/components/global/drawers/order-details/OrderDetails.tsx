@@ -408,7 +408,7 @@ export default function OrderDetails() {
               </Button>
 
               {selectedOrder.status === "new" &&
-                user.position !== "Waiter" &&
+                user?.position !== "Waiter" &&
                 selectedOrder.total_amount > 0 && (
                   <Button className="flex-1" onClick={handleProcessPayment}>
                     Process Payment
