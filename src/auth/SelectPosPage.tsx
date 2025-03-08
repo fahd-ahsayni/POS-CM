@@ -3,7 +3,7 @@ import { useShift } from "@/auth/context/ShiftContext";
 import { useAppDispatch } from "@/store/hooks";
 import { logout } from "@/store/slices/authentication/auth.slice";
 import { selectPosError } from "@/store/slices/data/pos.slice";
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { useAuthorizationWorkflow } from "./hooks/use-authorization-work-flow";
@@ -54,8 +54,21 @@ function SelectPosPage() {
   // State Management
   const [withOpenNewDay, setWithOpenNewDay] = useState(false);
   const [isDayClosing, setIsDayClosing] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
 
   const userAuthenticated = JSON.parse(localStorage.getItem("user") || "null");
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (countdown !== null && countdown > 0) {
+      timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+    } else if (countdown === 0) {
+      window.location.reload();
+    }
+    return () => clearTimeout(timer);
+  }, [countdown]);
 
   // Event Handlers
   const handleChangeAccount = useCallback(() => {
@@ -77,20 +90,33 @@ function SelectPosPage() {
 
       if (response.status) {
         toast.success(
-          createToast("Closed success", "The Day is close", "success")
+          createToast("Closed success", "The Day is closed", "success")
         );
+        setCountdown(5); // Start 5 second countdown
       }
     } catch (error: any) {
-      toast.error(createToast("Close faild", "Close Day is close", "error"));
-    } finally {
-      setIsModalOpen(false);
+      toast.error(createToast("Close failed", "Close Day failed", "error"));
+      setIsDayClosing(false);
     }
-  }, [withOpenNewDay, setIsModalOpen, admin]);
+  }, [withOpenNewDay, admin]);
 
   if (error) return <SessionExpired />;
 
   return (
     <div className="flex h-screen overflow-hidden relative">
+      {countdown !== null && (
+        <div className="w-screen h-screen bg-black/90 z-50 fixed top-0 left-0 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4 text-center justify-center">
+            <TypographyH2 className="text-white">
+              System will restart in {countdown} seconds
+            </TypographyH2>
+            <TypographySmall className="text-white/60">
+              Please wait while the system refreshes...
+            </TypographySmall>
+          </div>
+        </div>
+      )}
+
       <RightViewProvider>
         <OpenShift
           open={open}

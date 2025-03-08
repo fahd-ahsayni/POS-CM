@@ -19,7 +19,7 @@ export default function WaitingOrders() {
   return (
     <ScrollArea className="flex rounded-md h-full w-[calc(100vw-80px)] flex-col overflow-hidden px-4 pt-8 sm:px-6">
       <Header title="Waiting Orders" />
-      <Table className="mt-6">
+      <Table className="mt-6 !rounded-lg overflow-hidden">
         {holdOrders.length === 0 && (
           <TableCaption>List of waiting orders</TableCaption>
         )}
