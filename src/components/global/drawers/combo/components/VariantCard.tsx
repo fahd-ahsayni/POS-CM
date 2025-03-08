@@ -93,6 +93,7 @@ export function VariantCard({
                     size="icon"
                     className="-ms-px h-7 w-7 rounded bg-accent-white/10 hover:bg-accent-white/20"
                     onClick={(e) => handleQuantityChange(e, false)}
+                    disabled={quantity === 0}
                   >
                     <Minus
                       size={16}

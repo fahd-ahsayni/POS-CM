@@ -166,14 +166,14 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
         // If we already have selections, don't override them
         if (hasExistingSelections) return prev;
         
-        // Otherwise, add the required variants
+        // Otherwise, add the required variants with quantity 1
         return {
           ...prev,
           variants: [
             ...prev.variants,
             ...selectedStep.product_variant_ids.map((variant) => ({
               ...variant,
-              quantity: 1,
+              quantity: 1, // Required variants start with quantity 1
               stepIndex: currentStep,
             })),
           ],

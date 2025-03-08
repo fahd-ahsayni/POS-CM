@@ -86,9 +86,25 @@ export function ComboProvider({
         if (!isSupplement) {
           // Optional main product: limit to maxProducts.
           setSelections((prev) => {
+            const stepIndex = currentStep - 1;
             const currentVariants = prev.variants.filter(
-              (v) => v.stepIndex === currentStep - 1
+              (v) => v.stepIndex === stepIndex
             );
+            
+            // Check if variant is already selected in this step
+            const isAlreadySelected = currentVariants.some((v) => v._id === variant._id);
+            
+            if (isAlreadySelected) {
+              // If already selected, we should remove it (toggle behavior)
+              return {
+                ...prev,
+                variants: prev.variants.filter(
+                  (v) => !(v._id === variant._id && v.stepIndex === stepIndex)
+                ),
+              };
+            }
+            
+            // Check if adding would exceed max products
             if (maxProducts && currentVariants.length >= maxProducts) {
               toast.warning(
                 createToast(
@@ -100,34 +116,22 @@ export function ComboProvider({
               return prev;
             }
             
-            // Check if variant is already selected in this step
-            const isAlreadySelected = currentVariants.some((v) => v._id === variant._id);
-            
-            if (isAlreadySelected) {
-              // If already selected, we should remove it (toggle behavior)
-              return {
-                ...prev,
-                variants: prev.variants.filter(
-                  (v) => !(v._id === variant._id && v.stepIndex === currentStep - 1)
-                ),
-              };
-            }
-            
-            // Otherwise add it to selections
+            // Otherwise add it to selections with quantity 1
             return {
               ...prev,
               variants: [
                 ...prev.variants,
-                { ...variant, quantity: 1, stepIndex: currentStep - 1, suite_commande: false },
+                { ...variant, quantity: 1, stepIndex, suite_commande: false },
               ],
             };
           });
         } else {
-          // Optional supplement: allow infinite selections and quantity.
+          // Optional supplement
           setSelections((prev) => {
+            const stepIndex = currentStep - 1;
             // Check if already selected in this step
             const isAlreadySelected = prev.supplements.some(
-              (s) => s._id === variant._id && s.stepIndex === currentStep - 1
+              (s) => s._id === variant._id && s.stepIndex === stepIndex
             );
             
             if (isAlreadySelected) {
@@ -135,7 +139,7 @@ export function ComboProvider({
               return {
                 ...prev,
                 supplements: prev.supplements.filter(
-                  (s) => !(s._id === variant._id && s.stepIndex === currentStep - 1)
+                  (s) => !(s._id === variant._id && s.stepIndex === stepIndex)
                 ),
               };
             }
@@ -144,7 +148,7 @@ export function ComboProvider({
               ...prev,
               supplements: [
                 ...prev.supplements,
-                { ...variant, quantity: 1, stepIndex: currentStep - 1, suite_commande: false },
+                { ...variant, quantity: 1, stepIndex, suite_commande: false },
               ],
             };
           });
@@ -159,15 +163,16 @@ export function ComboProvider({
       } else {
         // If a supplement is required, process similarly to optional supplements.
         setSelections((prev) => {
+          const stepIndex = currentStep - 1;
           const isAlreadySelected = prev.supplements.some(
-            (s) => s._id === variant._id && s.stepIndex === currentStep - 1
+            (s) => s._id === variant._id && s.stepIndex === stepIndex
           );
           
           if (isAlreadySelected) {
             return {
               ...prev,
               supplements: prev.supplements.filter(
-                (s) => !(s._id === variant._id && s.stepIndex === currentStep - 1)
+                (s) => !(s._id === variant._id && s.stepIndex === stepIndex)
               ),
             };
           }
@@ -176,7 +181,7 @@ export function ComboProvider({
             ...prev,
             supplements: [
               ...prev.supplements,
-              { ...variant, quantity: 1, stepIndex: currentStep - 1, suite_commande: false },
+              { ...variant, quantity: 1, stepIndex, suite_commande: false },
             ],
           };
         });
