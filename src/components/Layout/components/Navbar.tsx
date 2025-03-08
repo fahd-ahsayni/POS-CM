@@ -2,7 +2,6 @@ import { moon, sunrise, sunset } from "@/assets";
 import { AlertIcon } from "@/assets/figma-icons";
 import { ModeToggleWithDropdown } from "@/components/global/mode-toggle";
 import Profile from "@/components/global/Profile";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { TextLoop } from "@/components/ui/text-loop";
@@ -10,10 +9,11 @@ import { TextShimmer } from "@/components/ui/text-shimmer";
 import { TypographyP } from "@/components/ui/typography";
 import { useOnlineStatus } from "@/hooks/use-online-status";
 import { cn, handleFullScreen } from "@/lib/utils";
-import { LucideMaximize } from "lucide-react";
+import { LucideMaximize, Wifi, WifiOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Logo from "./Logo";
+import { BorderBeam } from "@/components/ui/border-beam";
 
 export default function Navbar() {
   const [greeting, setGreeting] = useState("Good Morning");
@@ -110,15 +110,32 @@ export default function Navbar() {
             </div>
           </div>
           <div className="lg:w-4/12 md:w-2/5 w-8/12 flex items-center justify-end space-x-4 sm:space-x-3">
-            <Badge className="h-8 rounded-lg space-x-1">
-              <span
-                className={cn(
-                  "size-2 rounded-full",
-                  onlineStatus ? "bg-green-600" : "bg-error-color"
-                )}
+            <span className="size-8 bg-secondary-black relative flex items-center justify-center rounded-lg border border-border">
+              {onlineStatus ? (
+                <Wifi
+                  size={16}
+                  strokeWidth={2}
+                  className="w-4 h-4 text-green-500"
+                />
+              ) : (
+                <WifiOff
+                  size={16}
+                  strokeWidth={2}
+                  className="size-4 text-error-color"
+                />
+              )}
+              <BorderBeam
+                colorFrom={onlineStatus ? "#00FB00" : "#FB0000"}
+                colorTo={onlineStatus ? "#005200" : "#520000"}
+                size={20}
+                borderWidth={1.5}
+                duration={5}
               />
-              <span>{onlineStatus ? "Online" : "Offline"}</span>
-            </Badge>
+            </span>
+            <Separator
+              orientation="vertical"
+              className="h-6 !bg-neutral-dark-grey/50"
+            />
             <Button size="icon" className="relative">
               <AlertIcon className="w-[1.2rem] h-auto fill-white" />
               <span className="absolute h-2 w-2 -top-0.5 ring-1 ring-background left-full -translate-x-1/2 bg-red-500 rounded-full" />
