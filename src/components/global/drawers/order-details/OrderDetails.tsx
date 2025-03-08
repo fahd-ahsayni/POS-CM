@@ -36,7 +36,7 @@ export default function OrderDetails() {
   >("selectedProducts", []);
   const [paymentHistoryOpen, setPaymentHistoryOpen] = useState(false);
 
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const [user] = useLocalStorage<any>("user", null);
 
   const {
     selectedOrder,
@@ -151,14 +151,83 @@ export default function OrderDetails() {
 
   if (!selectedOrder) return null;
 
+  // Function to determine the order type title
+  const getOrderTypeTitle = () => {
+    const orderType = selectedOrder.order_type_id;
+    if (!orderType) return `Order Reference: ${selectedOrder.ref}`;
+
+    switch (orderType.type) {
+      case "takeAway":
+        if (
+          selectedOrder.coaster_call !== null &&
+          orderType.select_coaster_call
+        ) {
+          return `Coaster Call - N° ${selectedOrder.coaster_call}`;
+        }
+        if (
+          selectedOrder.coaster_call === null &&
+          !orderType.select_coaster_call
+        ) {
+          return `Takeaway`;
+        }
+        if (selectedOrder.coaster_call === null && orderType.select_table) {
+          const tableName =
+              typeof selectedOrder.table_id === "object" && selectedOrder.table_id !== null
+                ? (selectedOrder.table_id as { name: string }).name
+                : selectedOrder.table_id;
+          return `Table ${tableName || ""} - Takeaway`;
+        }
+        return `${orderType.name}`;
+
+      case "delivery":
+        if (
+          selectedOrder.delivery_guy_id === null &&
+          orderType.select_delivery_boy
+        ) {
+          return `${orderType.name}`;
+        }
+        if (
+          selectedOrder.delivery_guy_id === null &&
+          !orderType.select_delivery_boy
+        ) {
+          if (orderType.delivery_companies_name === "Glovo") {
+            if ('glovo_pick_up_code' in selectedOrder && selectedOrder.glovo_pick_up_code) {
+              return `Glovo - N° ${selectedOrder.glovo_pick_up_code}`;
+            } else {
+              return `Glovo`;
+            }
+          } else {
+            return `${orderType.name}`;
+          }
+        }
+        if (
+          selectedOrder.delivery_guy_id !== null &&
+          orderType.select_delivery_boy
+        ) {
+          return `${orderType.name}`;
+        }
+        return `${orderType.name}`;
+
+      case "onPlace":
+        return selectedOrder.table_id
+          ? `Table N° ${typeof selectedOrder.table_id === "object" && selectedOrder.table_id !== null 
+              ? (selectedOrder.table_id as { name: string }).name 
+              : selectedOrder.table_id}`
+          : `${orderType.name}`;
+
+      default:
+        return `${orderType.name || "Order"}`;
+    }
+  };
+
   return (
     <>
       <Drawer
         open={openOrderDetails}
         setOpen={setOpenOrderDetails}
-        title={`Order Reference: ${selectedOrder.ref}`}
+        title={getOrderTypeTitle()}
         position="left"
-        description="Shows order details, customer info, and action buttons for payment or cancellation."
+        description={`Shows order details for order ref: ${selectedOrder.ref}`}
         classNames="max-w-md bg-neutral-bright-grey"
       >
         <div className="h-full flex flex-col relative">

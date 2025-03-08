@@ -7,12 +7,12 @@ import { StepContent } from "./components/StepContent";
 import { ComboProvider, useCombo } from "./context/ComboContext";
 import { useComboLogic } from "./hooks/use-combo-logic";
 import { loadingColors } from "@/preferences";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import AnimatedStepper from "@/components/global/AnimatedStepper";
 
 function ComboContent() {
   const { selectedCombo } = useLeftViewContext();
-  const { currentStep, setCurrentStep, handleSelect } = useCombo(); // added handleSelect
+  const { currentStep, setCurrentStep, handleSelect } = useCombo();
   const { handleNavigation } = useCombo();
   const { handleFinish, isFinishing, getStepDescription } = useComboLogic(
     currentStep,
@@ -26,30 +26,10 @@ function ComboContent() {
       name: step.name,
     })) || [];
 
-  const [visitedSteps, setVisitedSteps] = useState(new Set());
-
   if (!selectedCombo) return null;
 
   const isLastStep = currentStep === selectedCombo.steps.length - 1;
   const currentStepData = selectedCombo.steps[currentStep];
-
-  useEffect(() => {
-    if (
-      currentStepData &&
-      currentStepData.is_required &&
-      !currentStepData.is_supplement &&
-      !visitedSteps.has(currentStep)
-    ) {
-      const timeoutId = setTimeout(() => {
-        if (!isLastStep) {
-          setVisitedSteps((prev) => new Set(prev).add(currentStep)); // Mark step as visited
-          handleNavigation("next");
-        }
-      }, 50);
-
-      return () => clearTimeout(timeoutId);
-    }
-  }, [currentStep, currentStepData, isLastStep]);
 
   // New effect: For a single required step auto-select and finish.
   useEffect(() => {

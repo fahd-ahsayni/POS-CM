@@ -7,11 +7,12 @@ interface StepContentProps {
 }
 
 export function StepContent({ step }: StepContentProps) {
-  const { selections, handleSelect, handleQuantityChange } = useCombo();
+  const { selections, handleSelect, handleQuantityChange, currentStep } = useCombo();
 
+  // Filter selections to only show those for the current step
   const currentSelections = {
-    variants: selections.variants || [],
-    supplements: selections.supplements || [],
+    variants: selections.variants.filter(v => v.stepIndex === currentStep) || [],
+    supplements: selections.supplements.filter(s => s.stepIndex === currentStep) || [],
   };
 
   const handleVariantQuantityChange = (
@@ -27,10 +28,10 @@ export function StepContent({ step }: StepContentProps) {
         {step.product_variant_ids.map((variant) => {
           const selectedVariant = step.is_supplement
             ? currentSelections.supplements.find(
-                (v: any) => v._id === variant._id
+                (v) => v._id === variant._id
               )
             : currentSelections.variants.find(
-                (v: any) => v._id === variant._id
+                (v) => v._id === variant._id
               );
 
           return (

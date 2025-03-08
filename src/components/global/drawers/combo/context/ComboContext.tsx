@@ -4,11 +4,10 @@ import {
   createContext,
   useCallback,
   useContext,
-  useRef,
   useState,
 } from "react";
 import { toast } from "react-toastify";
-import { useStep } from "@/hooks/use-step"; // Add this import
+import { useStep } from "@/hooks/use-step";
 
 interface SelectionState {
   variants: SelectedVariant[];
@@ -74,7 +73,6 @@ export function ComboProvider({
   });
 
   const [totalSupplementsPrice, setTotalSupplementsPrice] = useState(0);
-  const navigationLock = useRef(false);
   
   const handleSelect = useCallback(
     (
@@ -89,7 +87,7 @@ export function ComboProvider({
           // Optional main product: limit to maxProducts.
           setSelections((prev) => {
             const currentVariants = prev.variants.filter(
-              (v) => v.stepIndex === currentStep
+              (v) => v.stepIndex === currentStep - 1
             );
             if (maxProducts && currentVariants.length >= maxProducts) {
               toast.warning(
@@ -101,45 +99,52 @@ export function ComboProvider({
               );
               return prev;
             }
-            // Avoid duplicate
-            if (currentVariants.some((v) => v._id === variant._id)) return prev;
-            const newSelections = {
+            
+            // Check if variant is already selected in this step
+            const isAlreadySelected = currentVariants.some((v) => v._id === variant._id);
+            
+            if (isAlreadySelected) {
+              // If already selected, we should remove it (toggle behavior)
+              return {
+                ...prev,
+                variants: prev.variants.filter(
+                  (v) => !(v._id === variant._id && v.stepIndex === currentStep - 1)
+                ),
+              };
+            }
+            
+            // Otherwise add it to selections
+            return {
               ...prev,
               variants: [
                 ...prev.variants,
-                { ...variant, quantity: 1, stepIndex: currentStep, suite_commande: false },
+                { ...variant, quantity: 1, stepIndex: currentStep - 1, suite_commande: false },
               ],
             };
-            // Auto navigate if limit reached
-            if (
-              maxProducts &&
-              newSelections.variants.filter((v) => v.stepIndex === currentStep)
-                .length === maxProducts
-            ) {
-              requestAnimationFrame(() => {
-                goToNextStep();
-                setTimeout(() => {
-                  navigationLock.current = false;
-                }, 50);
-              });
-            }
-            return newSelections;
           });
         } else {
           // Optional supplement: allow infinite selections and quantity.
           setSelections((prev) => {
-            // Avoid duplicate
-            if (
-              prev.supplements.some(
-                (s) => s._id === variant._id && s.stepIndex === currentStep
-              )
-            )
-              return prev;
+            // Check if already selected in this step
+            const isAlreadySelected = prev.supplements.some(
+              (s) => s._id === variant._id && s.stepIndex === currentStep - 1
+            );
+            
+            if (isAlreadySelected) {
+              // If already selected, we should remove it (toggle behavior)
+              return {
+                ...prev,
+                supplements: prev.supplements.filter(
+                  (s) => !(s._id === variant._id && s.stepIndex === currentStep - 1)
+                ),
+              };
+            }
+            
             return {
               ...prev,
               supplements: [
                 ...prev.supplements,
-                { ...variant, quantity: 1, stepIndex: currentStep, suite_commande: false },
+                { ...variant, quantity: 1, stepIndex: currentStep - 1, suite_commande: false },
               ],
             };
           });
@@ -154,23 +159,30 @@ export function ComboProvider({
       } else {
         // If a supplement is required, process similarly to optional supplements.
         setSelections((prev) => {
-          if (
-            prev.supplements.some(
-              (s) => s._id === variant._id && s.stepIndex === currentStep
-            )
-          )
-            return prev;
+          const isAlreadySelected = prev.supplements.some(
+            (s) => s._id === variant._id && s.stepIndex === currentStep - 1
+          );
+          
+          if (isAlreadySelected) {
+            return {
+              ...prev,
+              supplements: prev.supplements.filter(
+                (s) => !(s._id === variant._id && s.stepIndex === currentStep - 1)
+              ),
+            };
+          }
+          
           return {
             ...prev,
             supplements: [
               ...prev.supplements,
-              { ...variant, quantity: 1, stepIndex: currentStep, suite_commande: false },
+              { ...variant, quantity: 1, stepIndex: currentStep - 1, suite_commande: false },
             ],
           };
         });
       }
     },
-    [currentStep, goToNextStep]
+    [currentStep]
   );
 
   const handleQuantityChange = (
@@ -179,18 +191,21 @@ export function ComboProvider({
     step: Step
   ) => {
     setSelections((prev) => {
-      if (step.is_supplement && !step.is_required) {
+      // Make sure we're consistently using currentStep - 1 for the stepIndex
+      const stepIndex = currentStep - 1;
+      
+      if (step.is_supplement) {
         const supplementVariant = prev.supplements.find(
-          (s) => s._id === variantId && s.stepIndex === currentStep
+          (s) => s._id === variantId && s.stepIndex === stepIndex
         );
 
         if (supplementVariant) {
-          // If decrementing to 0, remove the supplement
+          // If decrementing to 0, remove the supplement (deselect)
           if (!increment && supplementVariant.quantity === 1) {
             return {
               ...prev,
               supplements: prev.supplements.filter(
-                (s) => !(s._id === variantId && s.stepIndex === currentStep)
+                (s) => !(s._id === variantId && s.stepIndex === stepIndex)
               ),
             };
           }
@@ -199,7 +214,7 @@ export function ComboProvider({
           return {
             ...prev,
             supplements: prev.supplements.map((supp) =>
-              supp._id === variantId && supp.stepIndex === currentStep
+              supp._id === variantId && supp.stepIndex === stepIndex
                 ? {
                     ...supp,
                     quantity: increment ? supp.quantity + 1 : supp.quantity - 1,
@@ -212,24 +227,24 @@ export function ComboProvider({
 
       // Handle regular variants with limits
       const variant = prev.variants.find(
-        (v) => v._id === variantId && v.stepIndex === currentStep
+        (v) => v._id === variantId && v.stepIndex === stepIndex
       );
 
       if (!variant) return prev;
 
-      // If decrementing to 0, remove the variant
+      // If decrementing to 0, remove the variant (deselect)
       if (!increment && variant.quantity === 1) {
         return {
           ...prev,
           variants: prev.variants.filter(
-            (v) => !(v._id === variantId && v.stepIndex === currentStep)
+            (v) => !(v._id === variantId && v.stepIndex === stepIndex)
           ),
         };
       }
 
       // Calculate total quantity for current step
       const stepVariants = prev.variants.filter(
-        (v) => v.stepIndex === currentStep
+        (v) => v.stepIndex === stepIndex
       );
       const otherVariantsQuantity = stepVariants
         .filter((v) => v._id !== variantId)
@@ -241,41 +256,39 @@ export function ComboProvider({
 
       const maxProducts = step?.number_of_products || Infinity;
       const newTotal = otherVariantsQuantity + newQuantity;
+      
       if (newTotal > maxProducts) {
+        // Don't allow exceeding max products
+        toast.warning(
+          createToast(
+            "Selection Limit Reached",
+            `You can't select more than ${maxProducts} products for this step`,
+            "warning"
+          )
+        );
         return prev;
       }
 
-      const newState = {
+      // Update the variant quantity
+      return {
         ...prev,
         variants: prev.variants.map((v) =>
-          v._id === variantId && v.stepIndex === currentStep
+          v._id === variantId && v.stepIndex === stepIndex
             ? { ...v, quantity: newQuantity }
             : v
         ),
       };
-
-      // Auto navigate if new total equals the product limit and navigation is not locked
-      if (newTotal === maxProducts && !navigationLock.current) {
-        navigationLock.current = true;
-        requestAnimationFrame(() => {
-          goToNextStep();
-          setTimeout(() => {
-            navigationLock.current = false;
-          }, 50);
-        });
-      }
-
-      return newState;
     });
 
-    // Calculate and log total supplements price after state update
-    const totalSupplementsPrice = Object.values(selections.supplements)
-      .flat()
-      .reduce((total, supplement) => {
-        return total + supplement.price_ttc * supplement.quantity;
-      }, 0);
-
-    setTotalSupplementsPrice(totalSupplementsPrice);
+    // Calculate and update total supplements price after state update
+    setTimeout(() => {
+      const totalSupplementsPrice = selections.supplements
+        .reduce((total, supplement) => {
+          return total + supplement.price_ttc * supplement.quantity;
+        }, 0);
+      
+      setTotalSupplementsPrice(totalSupplementsPrice);
+    }, 0);
   };
 
   const handleNavigation = (direction: "next" | "previous") => {

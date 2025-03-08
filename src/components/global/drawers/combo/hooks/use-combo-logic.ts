@@ -159,16 +159,26 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
 
   useEffect(() => {
     if (selectedStep?.is_required) {
-      setSelections((prev) => ({
-        ...prev,
-        variants: [
-          ...selectedStep.product_variant_ids.map((variant) => ({
-            ...variant,
-            quantity: 1,
-            stepIndex: currentStep,
-          })),
-        ],
-      }));
+      setSelections((prev) => {
+        // Check if we already have selections for this step
+        const hasExistingSelections = prev.variants.some(v => v.stepIndex === currentStep);
+        
+        // If we already have selections, don't override them
+        if (hasExistingSelections) return prev;
+        
+        // Otherwise, add the required variants
+        return {
+          ...prev,
+          variants: [
+            ...prev.variants,
+            ...selectedStep.product_variant_ids.map((variant) => ({
+              ...variant,
+              quantity: 1,
+              stepIndex: currentStep,
+            })),
+          ],
+        };
+      });
     }
   }, [currentStep, selectedStep, setSelections]);
 
