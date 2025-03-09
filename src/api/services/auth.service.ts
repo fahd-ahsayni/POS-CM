@@ -64,7 +64,9 @@ export const checkAdminRfid = async (rfid: string) => {
 
 export const logoutService = async (): Promise<void> => {
   try {
+    const ipAddress = localStorage.getItem("ipAddress");
     localStorage.clear();
+    localStorage.setItem("ipAddress", ipAddress || "");
   } catch (error) {
     toast.error(
       createToast(

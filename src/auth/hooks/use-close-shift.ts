@@ -108,9 +108,9 @@ export const useCloseShift = () => {
 
   const getPaymentAmounts = (): PaymentAmount[] => {
     // Ensure all payment methods have a value, defaulting to 0 if empty
-    return paymentMethods.map(method => ({
+    return paymentMethods.map((method) => ({
       payment_method: method._id,
-      cashier_amount: Number(paymentAmounts[method._id]) || 0
+      cashier_amount: Number(paymentAmounts[method._id]) || 0,
     }));
   };
 
@@ -146,7 +146,9 @@ export const useCloseShift = () => {
       const response = await closeShift(data);
 
       if (response.status === 200) {
+        const ipAddress = localStorage.getItem("ipAddress");
         localStorage.clear();
+        localStorage.setItem("ipAddress", ipAddress || "");
         logoutService();
         navigate("/login");
         toast.success(
