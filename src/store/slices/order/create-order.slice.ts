@@ -155,13 +155,18 @@ const orderSlice = createSlice({
       const { _id, customer_index, product_variant_id, ...updateData } =
         action.payload;
 
-      // Find the index of the existing order line
+      // Find the exact order line - give priority to the exact ID match
       const orderLineIndex = state.data.orderlines.findIndex((ol) => {
-        return (
-          ol.id === _id && // Ensure unique product instance is updated
-          ol.customer_index === customer_index &&
-          JSON.stringify(ol.notes) === JSON.stringify(updateData.notes)
-        );
+        if (_id && (ol._id === _id || ol.id === _id)) {
+          return ol.customer_index === customer_index;
+        }
+        
+        // Fall back to product_variant_id only if no _id was provided
+        if (!_id && product_variant_id && ol.product_variant_id === product_variant_id) {
+          return ol.customer_index === customer_index;
+        }
+        
+        return false;
       });
 
       if (orderLineIndex !== -1) {
@@ -176,6 +181,7 @@ const orderSlice = createSlice({
             ...updateData,
             // Preserve combo-specific IDs and items
             id: currentOrderLine.id,
+            _id: currentOrderLine._id || currentOrderLine.id, // Ensure _id is set
             combo_prod_ids: currentOrderLine.combo_prod_ids,
             combo_supp_ids: currentOrderLine.combo_supp_ids,
           };
@@ -197,6 +203,7 @@ const orderSlice = createSlice({
           return {
             ...line,
             id: uniqueId,
+            _id: line._id || uniqueId, // Ensure _id is set
             combo_prod_ids: line.combo_items.variants.map((v: any) => ({
               ...v,
               combo_id: uniqueId,
@@ -210,8 +217,11 @@ const orderSlice = createSlice({
           };
         }
 
+        // Ensure every product has both id and _id set
         return {
           ...line,
+          _id: line._id || line.id, // Ensure _id is set
+          id: line.id || line._id, // Ensure id is set
           price: line.price || line.variants?.[0]?.price || 0,
           quantity: line.quantity || 1,
         };

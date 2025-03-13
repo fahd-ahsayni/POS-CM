@@ -85,7 +85,8 @@ export const useProductSelection = ({
     (productId: string, notes: string[], customerIndex: number) => {
       setSelectedProducts((prevSelected) =>
         prevSelected.map((p) =>
-          p._id === productId && p.customer_index === customerIndex
+          // Match by exact ID (either id or _id) and customer index
+          (p.id === productId || p._id === productId) && p.customer_index === customerIndex
             ? {
                 ...p,
                 notes,
@@ -94,7 +95,7 @@ export const useProductSelection = ({
         )
       );
     },
-    []
+    [setSelectedProducts]
   );
 
   const updateProductsAndDisplay = useCallback(
@@ -158,12 +159,15 @@ export const useProductSelection = ({
             }
           }
 
-          // If the product is ordered, always create a new entry
+          // If the product is ordered or notes are provided, always create a new entry
           const isOrdered = variant.is_ordred || false;
+          const hasNotes = notes && notes.length > 0;
 
-          // If notes are provided or product is ordered, always add a new product
-          if ((notes || []).length > 0 || isOrdered) {
+          // Always create a new unique product instance in these cases
+          if (hasNotes || isOrdered) {
             const newProduct = createNewProduct(product, variant, price);
+            newProduct.id = uuidv4(); // Ensure a unique ID for each product instance
+            newProduct._id = newProduct.id; // Set _id for consistency
             newProduct.notes = notes || [];
             newProduct.is_ordred = isOrdered;
             const newProducts = [...prevSelected, newProduct];
@@ -173,13 +177,13 @@ export const useProductSelection = ({
             return newProducts;
           }
 
-          // Regular product handling...
+          // Regular product handling for items without notes
           const existingProduct = prevSelected.find(
             (p) =>
               p.product_variant_id === variantId &&
               p.customer_index === customerIndex &&
               (!p.notes || p.notes.length === 0) &&
-              !p.is_ordred // Don't update if it's ordered
+              !p.is_ordred
           );
 
           if (existingProduct) {
@@ -199,8 +203,10 @@ export const useProductSelection = ({
             updateProductsAndDisplay(updatedProducts);
             return updatedProducts;
           } else {
-            // Add new product
+            // Add new product with unique ID
             const newProduct = createNewProduct(product, variant, price);
+            newProduct.id = uuidv4();
+            newProduct._id = newProduct.id;
             const newProducts = [...prevSelected, newProduct];
 
             updateCustomerCount(newProducts);

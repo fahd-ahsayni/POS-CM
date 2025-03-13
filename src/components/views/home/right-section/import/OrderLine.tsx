@@ -273,7 +273,7 @@ export function OrderLine({ item }: OrderLineProps) {
                 : "0.375rem",
             height: "100%",
           }}
-          onClick={letsLaunchSuiteCommand}
+          onClick={item.is_ordred && item.suite_commande && !item.is_combo ? letsLaunchSuiteCommand : undefined}
           className={cn(
             "absolute left-0 top-0",
             launch || item.is_ordred
@@ -384,7 +384,7 @@ export function OrderLine({ item }: OrderLineProps) {
                 )}
               {!item.is_ordred && (
                 <OderLineAddComments
-                  productId={item._id}
+                  productId={item.id || item._id}  // Use item.id if available, otherwise use item._id
                   customerIndex={item.customer_index || customerIndex}
                   initialNotes={item.notes || []}
                 />

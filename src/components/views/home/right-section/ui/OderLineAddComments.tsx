@@ -54,14 +54,23 @@ export default function OrderLineAddComments({
     if (onNotesUpdate) {
       onNotesUpdate(updatedComments);
     } else {
-      updateProductNotes(productId, updatedComments, customerIndex);
-      dispatch(
-        updateOrderLine({
-          _id: productId,
-          customer_index: customerIndex,
-          notes: updatedComments,
-        })
+      // Find the specific product in selectedProducts by its exact ID
+      const productToUpdate = selectedProducts.find(product => 
+        (product.id === productId || product._id === productId) && 
+        product.customer_index === customerIndex
       );
+      
+      if (productToUpdate) {
+        updateProductNotes(productId, updatedComments, customerIndex);
+        
+        dispatch(
+          updateOrderLine({
+            _id: productId,
+            customer_index: customerIndex,
+            notes: updatedComments,
+          })
+        );
+      }
     }
   };
 

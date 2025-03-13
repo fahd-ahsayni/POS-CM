@@ -64,6 +64,7 @@ export default function ProductsVariants() {
         setOpenDrawerCombo(true);
         setOpenDrawerVariants(false);
       } else {
+        // When selecting a variant, always pass empty notes to create a new instance
         handleVariantSelect(variant._id, variant.price_ttc);
       }
     },
