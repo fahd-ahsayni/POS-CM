@@ -2,7 +2,6 @@ import { unknownUser } from "@/assets";
 import { Client } from "@/interfaces/clients";
 import { Check, User } from "lucide-react"; // Import Check icon
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Button } from "../ui/button";
 import { TypographySmall } from "../ui/typography";
 import InputComponent from "./InputComponent";
 
