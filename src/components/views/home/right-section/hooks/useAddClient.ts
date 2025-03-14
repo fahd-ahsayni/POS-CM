@@ -1,17 +1,15 @@
-import { createClient, getClients, updateClient } from "@/api/services";
-import { createToast } from "@/components/global/Toasters";
 import { formatAddress } from "@/lib/utils";
-import {
-  selectOrder,
-  setClientId,
-} from "@/store/slices/order/create-order.slice";
+import { selectOrder, setClientId } from "@/store/slices/order/create-order.slice";
 import { Client } from "@/interfaces/clients";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { z } from "zod";
 import { useRightViewContext } from "../contexts/RightViewContext";
 import { ORDER_SUMMARY_VIEW, TYPE_OF_ORDER_VIEW } from "./../constants/index";
+import { useClientsData } from "@/hooks/useClientsData";
+import { createToast } from "@/components/global/Toasters";
+import { ClientFormData } from "@/api/services/client.service";
 
 const clientSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -24,18 +22,25 @@ const clientSchema = z.object({
   ice: z.string().optional(),
 });
 
-type ClientFormData = z.infer<typeof clientSchema>;
-
 export const useAddClient = (onSuccess?: () => void) => {
-  const [clients, setClients] = useState<Client[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isFetching, setIsFetching] = useState(true);
   const dispatch = useDispatch();
   const { setViews } = useRightViewContext();
 
   const order = useSelector(selectOrder);
   const clientId = order.client_id;
+
+  const { 
+    clients, 
+    isFetching, 
+    createClient: apiCreateClient, 
+    updateClient: apiUpdateClient,
+    findClientByPhone,
+    findClientById,
+    isCreatingClient,
+    isUpdatingClient
+  } = useClientsData();
 
   const [formData, setFormData] = useState<ClientFormData>({
     name: "",
@@ -44,25 +49,12 @@ export const useAddClient = (onSuccess?: () => void) => {
     email: "",
     ice: "",
   });
+  
   const [errors, setErrors] = useState<Partial<ClientFormData>>({});
 
   useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        const res = await getClients();
-        if (res.status === 200) {
-          setClients(res.data);
-        }
-      } finally {
-        setIsFetching(false);
-      }
-    };
-    fetchClients();
-  }, [isOpen]);
-
-  useEffect(() => {
     if (clients.length > 0 && clientId) {
-      const existingClient = clients.find((c) => c._id === clientId);
+      const existingClient = findClientById(clientId);
       if (existingClient) {
         setFormData({
           name: existingClient.name,
@@ -146,7 +138,7 @@ export const useAddClient = (onSuccess?: () => void) => {
 
     setIsLoading(true);
     try {
-      const existingClient = clients.find((c) => c.phone === formData.phone);
+      const existingClient = findClientByPhone(formData.phone);
 
       if (existingClient) {
         const isDataChanged =
@@ -157,26 +149,14 @@ export const useAddClient = (onSuccess?: () => void) => {
           existingClient.ice !== formData.ice;
 
         if (isDataChanged) {
-          await updateClient(existingClient._id, formData);
-          const res = await getClients();
-          if (res.status === 200) {
-            setClients(res.data);
-          }
+          await apiUpdateClient({ id: existingClient._id, data: formData });
         }
 
         dispatch(setClientId(existingClient._id));
         setViews(ORDER_SUMMARY_VIEW);
 
         // Show toast after state updates
-        if (isDataChanged) {
-          toast.info(
-            createToast(
-              "Client updated",
-              "Client information updated successfully",
-              "info"
-            )
-          );
-        } else {
+        if (!isDataChanged) {
           toast.success(
             createToast(
               "Client selected",
@@ -186,22 +166,9 @@ export const useAddClient = (onSuccess?: () => void) => {
           );
         }
       } else {
-        const response = await createClient(formData);
-        if (response.status === 200) {
-          setClients(response.data);
-        }
-
-        dispatch(setClientId(response.data.data.client._id));
+        const newClient = await apiCreateClient(formData);
+        dispatch(setClientId(newClient.data.client._id));
         setViews(ORDER_SUMMARY_VIEW);
-
-        // Show toast after state updates
-        toast.success(
-          createToast(
-            "Client created",
-            "Client created successfully",
-            "success"
-          )
-        );
       }
 
       onSuccess?.();
@@ -224,7 +191,7 @@ export const useAddClient = (onSuccess?: () => void) => {
     clients,
     isOpen,
     setIsOpen,
-    isLoading,
+    isLoading: isLoading || isCreatingClient || isUpdatingClient,
     isFetching,
     formData,
     setFormData,

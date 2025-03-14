@@ -42,7 +42,7 @@ export default function PhoneInputWithSuggestions({
   // Filter clients only when value changes or clients changes
   const filteredClients = useMemo(() => {
     if (!value) {
-      return clients.slice(0, 10);
+      return clients;
     }
     return clients.filter((client) =>
       client.phone.toLowerCase().includes(value.toLowerCase())
@@ -170,11 +170,11 @@ export default function PhoneInputWithSuggestions({
           }}
         >
           <div className="p-3 flex items-center justify-between">
-            <TypographySmall className="text-neutral-300 font-medium">
+            <TypographySmall className="dark:text-neutral-300 text-primary-black font-medium">
               Select existing client or type new number
             </TypographySmall>
 
-            <TypographySmall className="text-neutral-300 font-medium flex items-center gap-x-1">
+            <TypographySmall className="dark:text-neutral-300 text-primary-black font-medium flex items-center gap-x-1">
               <User size={16} strokeWidth={2} />
               <span className="bg-primary-red h-6 w-6 rounded-full flex items-center justify-center text-white text-xs shadow-lg shadow-red-600/30">
                 {filteredClients.length}
@@ -182,11 +182,11 @@ export default function PhoneInputWithSuggestions({
             </TypographySmall>
           </div>
 
-          <div 
+          <div
             className="overflow-y-auto scrollbar-thin scrollbar-thumb-primary-red scrollbar-track-transparent"
-            style={{ 
-              maxHeight: "250px", 
-              minHeight: "100px" 
+            style={{
+              maxHeight: "250px",
+              minHeight: "100px",
             }}
           >
             <div className="p-2">
@@ -210,11 +210,11 @@ export default function PhoneInputWithSuggestions({
                         type="button"
                       >
                         <div className="flex space-x-3">
-                          <div className="size-10 rounded-full relative">
+                          <div className="size-10 rounded-lg relative flex items-center justify-center overflow-hidden">
                             <img
                               src={unknownUser}
                               alt="User"
-                              className="rounded-full w-full h-full object-cover"
+                              className="=absolute w-full h-full object-cover"
                             />
                           </div>
 
