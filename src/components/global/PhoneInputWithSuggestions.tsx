@@ -247,37 +247,6 @@ export default function PhoneInputWithSuggestions({
               )}
             </div>
           </div>
-          
-          <div className="flex justify-end p-3 border-t border-border">
-            <Button
-              onClick={(e) => {
-                e.preventDefault(); // Prevent event bubbling
-                e.stopPropagation(); // Stop propagation
-                setShowSuggestions(false);
-              }}
-              type="button"
-            >
-              Continue with new number
-            </Button>
-            {/* <Button
-              variant="destructive"
-              onClick={(e) => {
-                e.preventDefault(); // Prevent event bubbling
-                e.stopPropagation(); // Stop propagation
-                onChange("");
-                setSelectedClientId(null); // Clear selected client
-                setShowSuggestions(false); // Ensure suggestions close
-                if (inputRef?.current) {
-                  setTimeout(() => {
-                    inputRef.current?.focus();
-                  }, 50);
-                }
-              }}
-              type="button"
-            >
-              Clear input
-            </Button> */}
-          </div>
         </div>
       )}
     </div>
