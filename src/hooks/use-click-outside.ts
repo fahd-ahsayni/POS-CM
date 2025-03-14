@@ -13,6 +13,7 @@ export function useOnClickOutside<T extends HTMLElement = HTMLElement>(
   refs: RefObject<T | null> | RefObject<T | null>[],
   handler: (event: MouseEvent | TouchEvent | FocusEvent) => void,
   eventType: EventType = "mousedown",
+  exceptionalRefs: RefObject<HTMLElement>[] = [],
   eventListenerOptions: AddEventListenerOptions = {}
 ): void {
   // Memoized event handler to avoid unnecessary re-renders
@@ -21,14 +22,10 @@ export function useOnClickOutside<T extends HTMLElement = HTMLElement>(
       const target = event.target as Node;
 
       if (!target?.isConnected) return;
-
-      // Ignore clicks inside an input, textarea, or select
-      if (
-        target instanceof HTMLInputElement ||
-        target instanceof HTMLTextAreaElement ||
-        target instanceof HTMLSelectElement
-      ) {
-        return;
+      
+      // Handle exceptional refs - don't trigger if clicking on these elements
+      for (const exceptionalRef of exceptionalRefs) {
+        if (exceptionalRef.current?.contains(target)) return;
       }
 
       const isOutside = Array.isArray(refs)
@@ -41,7 +38,7 @@ export function useOnClickOutside<T extends HTMLElement = HTMLElement>(
         handler(event);
       }
     },
-    [refs, handler]
+    [refs, handler, exceptionalRefs]
   );
 
   useEffect(() => {

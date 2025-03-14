@@ -5,7 +5,7 @@ import { useAddClient } from "../hooks/useAddClient";
 import ClientForm from "../layouts/ClientForm";
 import { loadingColors } from "@/preferences";
 
-export default function NumberOfTabel() {
+export default function OwnDeliveryForm() {
   const {
     handleSubmit,
     isLoading,
@@ -21,7 +21,7 @@ export default function NumberOfTabel() {
   return (
     <div className="flex flex-col justify-start h-full">
       <TypographyH3 className="font-medium">
-        Enter the table number to start the order:
+        Enter delivery information:
       </TypographyH3>
       <div className="flex flex-col justify-center items-center px-1 relative h-full">
         <div className="w-full">

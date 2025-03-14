@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type React from "react";
-import { useOnClickOutside } from "@/hooks/use-click-outside";
 import { BackSpace, EnterButton, KeyboardClose } from "@/assets/keyboard-icons";
 import { cn } from "@/lib/utils";
 
@@ -38,9 +37,35 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
   // Reference to the entire keyboard container
   const keyboardRef = useRef<HTMLDivElement | null>(null);
 
-  // Close the keyboard when clicking outside
-  useOnClickOutside(keyboardRef, () => onClose(), "mousedown");
-  useOnClickOutside(keyboardRef, () => onClose(), "touchstart");
+  // Only close keyboard when clicking outside, but ignore clicks on input elements
+  // This prevents the keyboard from closing when focusing on inputs
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as HTMLElement;
+      
+      // Don't close keyboard when clicking on input elements
+      if (
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement
+      ) {
+        return;
+      }
+      
+      // Check if click is outside the keyboard
+      if (keyboardRef.current && !keyboardRef.current.contains(target)) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [onClose]);
 
   // Mouse Drag Handlers
   const handleMouseDown = useCallback(
@@ -255,6 +280,7 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
   return (
     <div
       ref={keyboardRef} // Attach the ref to the root element
+      data-virtual-keyboard="true" // Add data attribute to identify the keyboard
       onMouseDown={(e) => e.stopPropagation()} // Prevent propagation
       onClick={(e) => e.stopPropagation()}
       onTouchStart={(e) => e.stopPropagation()}

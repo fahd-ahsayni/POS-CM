@@ -111,6 +111,7 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
           onFocus={onFocus}
           onBlur={onBlur}
           onSelect={onSelect} // Tracks cursor position
+          onClick={(e) => e.stopPropagation()} // Prevent click from closing the suggestions
         />
 
         {suffix && (

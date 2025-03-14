@@ -1,11 +1,14 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode, useMemo } from "react";
+import React, { createContext, useContext, useState, useCallback, ReactNode, useMemo, useEffect } from "react";
 
 interface VirtualKeyboardGlobalContextProps {
   showKeyboard: boolean;
   activeInput: string | null;
-  onKeyPress: ((key: string, cursorAdjustment: number) => void) | null; // Add onKeyPress here
+  onKeyPress: ((key: string, cursorAdjustment: number) => void) | null;
   openKeyboard: (activeInput: string, onKeyPress: (key: string, cursorAdjustment: number) => void) => void;
   closeKeyboard: () => void;
+  lastFocusedInput: string | null;
+  focusIsChanging: boolean;
+  setFocusIsChanging: (value: boolean) => void;
 }
 
 const VirtualKeyboardGlobalContext = createContext<VirtualKeyboardGlobalContextProps | undefined>(undefined);
@@ -13,6 +16,8 @@ const VirtualKeyboardGlobalContext = createContext<VirtualKeyboardGlobalContextP
 export const VirtualKeyboardProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [activeInput, setActiveInput] = useState<string | null>(null);
+  const [lastFocusedInput, setLastFocusedInput] = useState<string | null>(null);
+  const [focusIsChanging, setFocusIsChanging] = useState(false);
   const [keyPressCallback, setKeyPressCallback] = useState<((key: string, cursorAdjustment: number) => void) | null>(
     null
   );
@@ -20,6 +25,7 @@ export const VirtualKeyboardProvider: React.FC<{ children: ReactNode }> = ({ chi
   const openKeyboard = useCallback(
     (activeInput: string, onKeyPress: (key: string, cursorAdjustment: number) => void) => {
       setActiveInput(activeInput);
+      setLastFocusedInput(activeInput);
       setKeyPressCallback(() => onKeyPress);
       setShowKeyboard(true);
     },
@@ -27,22 +33,51 @@ export const VirtualKeyboardProvider: React.FC<{ children: ReactNode }> = ({ chi
   );
 
   const closeKeyboard = useCallback(() => {
+    // Don't close keyboard if focus is changing between inputs
+    if (focusIsChanging) return;
+    
     setShowKeyboard(false);
     setActiveInput(null);
     setKeyPressCallback(null);
+  }, [focusIsChanging]);
+
+  // Ensure keyboard doesn't close unexpectedly
+  useEffect(() => {
+    if (activeInput && !showKeyboard) {
+      setShowKeyboard(true);
+    }
+  }, [activeInput, showKeyboard]);
+
+  // Detect focus events on inputs to keep keyboard open
+  useEffect(() => {
+    const handleFocusIn = (e: FocusEvent) => {
+      const target = e.target as HTMLElement;
+      
+      // Only handle focus on input elements
+      if (
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement
+      ) {
+        // Signal that focus is changing to prevent keyboard closing
+        setFocusIsChanging(true);
+        
+        // Reset after a short delay
+        setTimeout(() => {
+          setFocusIsChanging(false);
+        }, 200);
+      }
+    };
+    
+    document.addEventListener('focusin', handleFocusIn);
+    return () => {
+      document.removeEventListener('focusin', handleFocusIn);
+    };
   }, []);
 
   const handleKeyPress = useCallback(
-    (key: string) => {
+    (key: string, cursorAdjustment: number) => {
       if (keyPressCallback) {
-        let cursorAdjustment = 0;
-
-        if (key === "Backspace") {
-          cursorAdjustment = -1;
-        } else {
-          cursorAdjustment = key.length;
-        }
-
         keyPressCallback(key, cursorAdjustment);
       }
     },
@@ -53,11 +88,15 @@ export const VirtualKeyboardProvider: React.FC<{ children: ReactNode }> = ({ chi
     () => ({
       showKeyboard,
       activeInput,
-      onKeyPress: handleKeyPress, // Include onKeyPress in the context value
+      onKeyPress: keyPressCallback,
       openKeyboard,
       closeKeyboard,
+      lastFocusedInput,
+      focusIsChanging,
+      setFocusIsChanging,
     }),
-    [showKeyboard, activeInput, handleKeyPress, openKeyboard, closeKeyboard]
+    [showKeyboard, activeInput, keyPressCallback, openKeyboard, 
+     closeKeyboard, lastFocusedInput, focusIsChanging, setFocusIsChanging]
   );
 
   return <VirtualKeyboardGlobalContext.Provider value={contextValue}>{children}</VirtualKeyboardGlobalContext.Provider>;

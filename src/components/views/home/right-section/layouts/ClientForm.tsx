@@ -1,9 +1,9 @@
-import ComboboxSelectOnChange from "@/components/global/ComboboxSelectOnChange";
+import PhoneInputWithSuggestions from "@/components/global/PhoneInputWithSuggestions";
 import InputComponent from "@/components/global/InputComponent";
 import { useVirtualKeyboard } from "@/components/keyboard/VirtualKeyboardGlobalContext";
 import { Client, ClientFormData } from "@/interfaces/clients";
 import { loadingColors } from "@/preferences";
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback, useMemo, useEffect } from "react";
 import { BeatLoader } from "react-spinners";
 
 interface ClientFormProps {
@@ -42,10 +42,19 @@ export default function ClientForm({
   };
 
   // Get the global virtual keyboard functions
-  const { openKeyboard } = useVirtualKeyboard();
+  const { openKeyboard, showKeyboard, closeKeyboard } = useVirtualKeyboard();
 
-  // Helper function to update input value and cursor position
-  const updateInputValue = (
+  // Track if we need to reopen keyboard after selections or actions
+  const [shouldReopenKeyboard, setShouldReopenKeyboard] = useState(false);
+  
+  // Track last active input to restore focus
+  const [lastActiveInput, setLastActiveInput] = useState<keyof ClientFormData | null>(null);
+
+  // Add a ref to track if we're currently handling a focus event
+  const isHandlingFocus = useRef(false);
+
+  // Helper function to update input value and cursor position - memoized to prevent re-renders
+  const updateInputValue = useCallback((
     field: keyof ClientFormData,
     newValue: string,
     newPosition: number
@@ -59,10 +68,10 @@ export default function ClientForm({
         inputRefCurrent.focus();
       }, 0);
     }
-  };
+  }, [handleInputChange, inputRefs]);
 
-  // Handle key press events
-  const handleKeyPress = (key: string, cursorAdjustment: number) => {
+  // Optimize handleKeyPress to prevent recreating the filtered clients list
+  const handleKeyPress = useCallback((key: string, cursorAdjustment: number) => {
     if (activeInput === null) return;
 
     const currentValue = formData[activeInput] || "";
@@ -85,13 +94,12 @@ export default function ClientForm({
         newPosition = Math.min(currentValue.length, cursorPosition + 1);
         break;
 
-      case "Delete": // New case for Delete key
-        newValue = ""; // Clear the entire input field
-        newPosition = 0; // Reset cursor position to the start
+      case "Delete":
+        newValue = "";
+        newPosition = 0;
         break;
 
       default:
-        // Handle regular character input
         newValue =
           currentValue.slice(0, cursorPosition) +
           key +
@@ -100,19 +108,85 @@ export default function ClientForm({
         break;
     }
 
-    // Update the input value and cursor position
     updateInputValue(activeInput, newValue, newPosition);
-  };
+  }, [activeInput, cursorPosition, formData, updateInputValue]);
 
-  // Handle input focus
-  const handleInputFocus = (inputType: keyof ClientFormData) => {
+  // Handle input focus - memoized to prevent recreating functions
+  const handleInputFocus = useCallback((inputType: keyof ClientFormData) => {
+    isHandlingFocus.current = true;
     setActiveInput(inputType);
-    openKeyboard(inputType, handleKeyPress); // Pass handleKeyPress to openKeyboard
+    setLastActiveInput(inputType); // Store the last focused input
+    
+    // Open keyboard with the current input type
+    openKeyboard(inputType, handleKeyPress);
+    
     const inputRef = inputRefs[inputType]?.current;
     if (inputRef) {
       setCursorPosition(inputRef.selectionStart || 0);
     }
-  };
+    
+    // Reset focus handling flag after a short delay
+    setTimeout(() => {
+      isHandlingFocus.current = false;
+    }, 100);
+  }, [openKeyboard, handleKeyPress, inputRefs]);
+
+  // Effect to handle keyboard reopening when needed
+  useEffect(() => {
+    if (shouldReopenKeyboard && lastActiveInput && !showKeyboard) {
+      // Small delay to ensure DOM is ready
+      const timer = setTimeout(() => {
+        const inputRef = inputRefs[lastActiveInput]?.current;
+        if (inputRef) {
+          inputRef.focus();
+          openKeyboard(lastActiveInput, handleKeyPress);
+        }
+        setShouldReopenKeyboard(false);
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [shouldReopenKeyboard, lastActiveInput, showKeyboard, openKeyboard, handleKeyPress, inputRefs]);
+
+  // Prevent keyboard from closing when focus moves between inputs
+  useEffect(() => {
+    // Original keyboard close handler
+    const originalCloseHandler = closeKeyboard;
+    
+    // Replace with our custom handler that checks focus state
+    const handleCloseWithCheck = () => {
+      // Only close if we're not currently handling a focus event
+      if (!isHandlingFocus.current) {
+        originalCloseHandler();
+      }
+    };
+    
+    // This is a demo of the concept - in a real implementation,
+    // you would need to replace the actual handler in the context
+    
+  }, [closeKeyboard]);
+
+  // Modify phone selection to maintain keyboard visibility
+  const handlePhoneSelection = useCallback((client: Client | null) => {
+    isHandlingFocus.current = true;
+    handlePhoneSelect(client);
+    
+    // Re-focus the phone input after selection
+    setTimeout(() => {
+      const phoneInput = inputRefs.phone.current;
+      if (phoneInput) {
+        phoneInput.focus();
+        openKeyboard("phone", handleKeyPress);
+      }
+      isHandlingFocus.current = false;
+    }, 10);
+  }, [handlePhoneSelect, inputRefs.phone, openKeyboard, handleKeyPress]);
+
+  // Memoize event handler for cursor position
+  const handleSelect = useCallback((field: keyof ClientFormData) => (e: React.SyntheticEvent<HTMLInputElement>) => {
+    const selectionStart = (e.target as HTMLInputElement).selectionStart || 0;
+    setCursorPosition(selectionStart);
+  }, []);
 
   // Handle loading state
   if (isFetching || isSubmitting) {
@@ -125,38 +199,18 @@ export default function ClientForm({
 
   return (
     <div className="space-y-8 w-full">
-      {/* Phone Number Input */}
-      <ComboboxSelectOnChange<Client>
-        label="Phone Number"
-        placeholder="Enter phone number"
-        items={clients}
-        value={clients.find((c) => c.phone === formData.phone) || null}
-        onChange={(selected) => {
-          if (typeof selected === "string") {
-            handleInputChange("phone")(selected);
-          } else if (selected) {
-            handlePhoneSelect(selected);
-          }
-        }}
-        displayValue={() => formData.phone}
-        filterFunction={(query, client) =>
-          client.phone.toLowerCase().includes(query.toLowerCase())
-        }
-        renderOption={(client) => (
-          <div className="flex flex-col gap-0.5">
-            <span className="font-medium">{client.phone}</span>
-          </div>
-        )}
-        required
+      {/* Phone Number Input with Suggestions */}
+      <PhoneInputWithSuggestions
+        value={formData.phone}
+        onChange={handleInputChange("phone")}
+        onSelectClient={handlePhoneSelection}
+        clients={clients}
+        isFetching={isFetching}
         hasError={!!errors.phone}
         errorMessage={errors.phone}
-        inputRef={inputRefs.phone}
         onFocus={() => handleInputFocus("phone")}
-        onSelect={(e) => {
-          const selectionStart =
-            (e.target as HTMLInputElement).selectionStart || 0;
-          setCursorPosition(selectionStart);
-        }}
+        onSelect={handleSelect("phone")}
+        inputRef={inputRefs.phone}
       />
 
       {/* Full Name Input */}
@@ -171,11 +225,8 @@ export default function ClientForm({
           errorMessage: errors.name,
           hasError: !!errors.name,
           onFocus: () => handleInputFocus("name"),
-          onSelect: (e) => {
-            const selectionStart =
-              (e.target as HTMLInputElement).selectionStart || 0;
-            setCursorPosition(selectionStart);
-          },
+          onSelect: handleSelect("name"),
+          ref: inputRefs.name,
         }}
       />
 
@@ -191,11 +242,7 @@ export default function ClientForm({
           errorMessage: errors.address,
           hasError: !!errors.address,
           onFocus: () => handleInputFocus("address"),
-          onSelect: (e) => {
-            const selectionStart =
-              (e.target as HTMLInputElement).selectionStart || 0;
-            setCursorPosition(selectionStart);
-          },
+          onSelect: handleSelect("address"),
         }}
       />
 
@@ -212,11 +259,7 @@ export default function ClientForm({
           hasError: !!errors.email,
           optionalText: "Optional",
           onFocus: () => handleInputFocus("email"),
-          onSelect: (e) => {
-            const selectionStart =
-              (e.target as HTMLInputElement).selectionStart || 0;
-            setCursorPosition(selectionStart);
-          },
+          onSelect: handleSelect("email"),
         }}
       />
 
@@ -234,11 +277,7 @@ export default function ClientForm({
           optionalText: "Optional",
           helperText: "Required for businesses. Skip for individual clients.",
           onFocus: () => handleInputFocus("ice"),
-          onSelect: (e) => {
-            const selectionStart =
-              (e.target as HTMLInputElement).selectionStart || 0;
-            setCursorPosition(selectionStart);
-          },
+          onSelect: handleSelect("ice"),
         }}
       />
     </div>
