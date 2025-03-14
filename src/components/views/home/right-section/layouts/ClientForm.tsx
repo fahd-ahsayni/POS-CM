@@ -3,7 +3,7 @@ import InputComponent from "@/components/global/InputComponent";
 import { useVirtualKeyboard } from "@/components/keyboard/VirtualKeyboardGlobalContext";
 import { Client, ClientFormData } from "@/interfaces/clients";
 import { loadingColors } from "@/preferences";
-import { useRef, useState, useCallback, useMemo, useEffect } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { BeatLoader } from "react-spinners";
 
 interface ClientFormProps {
@@ -32,7 +32,7 @@ export default function ClientForm({
   );
   const [cursorPosition, setCursorPosition] = useState<number>(0);
 
-  // Define refs for your inputs
+  // Define refs for inputs
   const inputRefs = {
     phone: useRef<HTMLInputElement>(null),
     name: useRef<HTMLInputElement>(null),
@@ -42,7 +42,7 @@ export default function ClientForm({
   };
 
   // Get the global virtual keyboard functions
-  const { openKeyboard, showKeyboard, closeKeyboard } = useVirtualKeyboard();
+  const { openKeyboard, showKeyboard } = useVirtualKeyboard();
 
   // Track if we need to reopen keyboard after selections or actions
   const [shouldReopenKeyboard, setShouldReopenKeyboard] = useState(false);
@@ -50,10 +50,10 @@ export default function ClientForm({
   // Track last active input to restore focus
   const [lastActiveInput, setLastActiveInput] = useState<keyof ClientFormData | null>(null);
 
-  // Add a ref to track if we're currently handling a focus event
+  // Track if we're currently handling a focus event
   const isHandlingFocus = useRef(false);
 
-  // Helper function to update input value and cursor position - memoized to prevent re-renders
+  // Helper function to update input value and cursor position
   const updateInputValue = useCallback((
     field: keyof ClientFormData,
     newValue: string,
@@ -70,7 +70,7 @@ export default function ClientForm({
     }
   }, [handleInputChange, inputRefs]);
 
-  // Optimize handleKeyPress to prevent recreating the filtered clients list
+  // Handle key presses from virtual keyboard
   const handleKeyPress = useCallback((key: string, cursorAdjustment: number) => {
     if (activeInput === null) return;
 
@@ -111,13 +111,12 @@ export default function ClientForm({
     updateInputValue(activeInput, newValue, newPosition);
   }, [activeInput, cursorPosition, formData, updateInputValue]);
 
-  // Handle input focus - memoized to prevent recreating functions
+  // Handle input focus
   const handleInputFocus = useCallback((inputType: keyof ClientFormData) => {
     isHandlingFocus.current = true;
     setActiveInput(inputType);
-    setLastActiveInput(inputType); // Store the last focused input
+    setLastActiveInput(inputType);
     
-    // Open keyboard with the current input type
     openKeyboard(inputType, handleKeyPress);
     
     const inputRef = inputRefs[inputType]?.current;
@@ -125,16 +124,14 @@ export default function ClientForm({
       setCursorPosition(inputRef.selectionStart || 0);
     }
     
-    // Reset focus handling flag after a short delay
     setTimeout(() => {
       isHandlingFocus.current = false;
     }, 100);
   }, [openKeyboard, handleKeyPress, inputRefs]);
 
-  // Effect to handle keyboard reopening when needed
+  // Handle keyboard reopening when needed
   useEffect(() => {
     if (shouldReopenKeyboard && lastActiveInput && !showKeyboard) {
-      // Small delay to ensure DOM is ready
       const timer = setTimeout(() => {
         const inputRef = inputRefs[lastActiveInput]?.current;
         if (inputRef) {
@@ -148,30 +145,11 @@ export default function ClientForm({
     }
   }, [shouldReopenKeyboard, lastActiveInput, showKeyboard, openKeyboard, handleKeyPress, inputRefs]);
 
-  // Prevent keyboard from closing when focus moves between inputs
-  useEffect(() => {
-    // Original keyboard close handler
-    const originalCloseHandler = closeKeyboard;
-    
-    // Replace with our custom handler that checks focus state
-    const handleCloseWithCheck = () => {
-      // Only close if we're not currently handling a focus event
-      if (!isHandlingFocus.current) {
-        originalCloseHandler();
-      }
-    };
-    
-    // This is a demo of the concept - in a real implementation,
-    // you would need to replace the actual handler in the context
-    
-  }, [closeKeyboard]);
-
-  // Modify phone selection to maintain keyboard visibility
+  // Maintain keyboard visibility when selecting a phone
   const handlePhoneSelection = useCallback((client: Client | null) => {
     isHandlingFocus.current = true;
     handlePhoneSelect(client);
     
-    // Re-focus the phone input after selection
     setTimeout(() => {
       const phoneInput = inputRefs.phone.current;
       if (phoneInput) {
@@ -182,8 +160,8 @@ export default function ClientForm({
     }, 10);
   }, [handlePhoneSelect, inputRefs.phone, openKeyboard, handleKeyPress]);
 
-  // Memoize event handler for cursor position
-  const handleSelect = useCallback((field: keyof ClientFormData) => (e: React.SyntheticEvent<HTMLInputElement>) => {
+  // Track cursor position on input selection
+  const handleSelect = useCallback((_field: keyof ClientFormData) => (e: React.SyntheticEvent<HTMLInputElement>) => {
     const selectionStart = (e.target as HTMLInputElement).selectionStart || 0;
     setCursorPosition(selectionStart);
   }, []);

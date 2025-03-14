@@ -107,11 +107,33 @@ const InputComponent: React.FC<{ config: InputConfig; className?: string }> = ({
             const newValue =
               type === "number" ? Number(e.target.value) : e.target.value;
             setValue?.(newValue);
+            
+            // Track cursor position on change
+            if (onSelect) {
+              onSelect(e);
+            }
           }}
           onFocus={onFocus}
           onBlur={onBlur}
-          onSelect={onSelect} // Tracks cursor position
-          onClick={(e) => e.stopPropagation()} // Prevent click from closing the suggestions
+          onSelect={onSelect}
+          onClick={(e) => {
+            e.stopPropagation();
+            // Update cursor position on click
+            if (onSelect) {
+              onSelect(e);
+            }
+          }}
+          onKeyDown={(e) => {
+            // Track cursor position for arrow keys
+            if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) {
+              // Use setTimeout to allow the cursor to move before getting position
+              setTimeout(() => {
+                if (onSelect && e.currentTarget) {
+                  onSelect(e as any);
+                }
+              }, 0);
+            }
+          }}
         />
 
         {suffix && (

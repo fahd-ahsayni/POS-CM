@@ -84,6 +84,7 @@ export default function OrdersPage() {
   // Listen for RFID input
   useEffect(() => {
     let rfidTimeout: NodeJS.Timeout;
+    let scanningTimeout: NodeJS.Timeout;
 
     const handleKeyPress = (e: KeyboardEvent) => {
       // Ignore if focus is on an input element
@@ -92,20 +93,39 @@ export default function OrdersPage() {
         return;
       }
 
-      setIsScanning(true);
-      setRfidInput((prev) => prev + e.key);
+      // Add the pressed key to the input
+      setRfidInput((prev) => {
+        const newInput = prev + e.key;
+        
+        // Only set scanning to true if we have actual input
+        if (newInput.length > 0) {
+          setIsScanning(true);
+          
+          // Clear previous scanning timeout and set new one
+          clearTimeout(scanningTimeout);
+          scanningTimeout = setTimeout(() => {
+            setIsScanning(false);
+          }, 2000); // Show scanning overlay for 2 seconds
+        }
+        
+        return newInput;
+      });
 
-      // Clear previous timeout
+      // Clear previous timeout for input reset
       clearTimeout(rfidTimeout);
 
-      // Set new timeout
+      // Set new timeout for input reset if no more keys are pressed
       rfidTimeout = setTimeout(() => {
-        setIsScanning(false);
+        if (rfidInput && rfidInput.length > 0) {
+          handleRfidSubmit(rfidInput);
+        }
         setRfidInput("");
-      }, 100);
+      }, 500); // Wait for 500ms before processing the complete input
 
+      // Handle Enter key immediately
       if (e.key === "Enter" && rfidInput) {
         clearTimeout(rfidTimeout);
+        clearTimeout(scanningTimeout);
         handleRfidSubmit(rfidInput);
       }
     };
@@ -115,6 +135,7 @@ export default function OrdersPage() {
     return () => {
       window.removeEventListener("keypress", handleKeyPress);
       clearTimeout(rfidTimeout);
+      clearTimeout(scanningTimeout);
     };
   }, [rfidInput, handleRfidSubmit]);
 

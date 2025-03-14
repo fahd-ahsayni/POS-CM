@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type React from "react";
+import React from "react";
 import { BackSpace, EnterButton, KeyboardClose } from "@/assets/keyboard-icons";
 import { cn } from "@/lib/utils";
+import { useVirtualKeyboard } from "./VirtualKeyboardGlobalContext";
 
 interface Position {
   x: number;
@@ -33,12 +34,33 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState<Position>({ x: 0, y: 0 });
   const headerRef = useRef<HTMLDivElement>(null);
-
-  // Reference to the entire keyboard container
   const keyboardRef = useRef<HTMLDivElement | null>(null);
+  
+  // Get the cursor position from context
+  const { cursorPosition } = useVirtualKeyboard();
+  
+  // Queue for handling rapid keypresses
+  const keyPressQueue = useRef<{key: string, adjustment: number}[]>([]);
+  const isProcessingQueue = useRef(false);
+
+  // Function to process keypress queue
+  const processKeyPressQueue = useCallback(() => {
+    if (keyPressQueue.current.length === 0) {
+      isProcessingQueue.current = false;
+      return;
+    }
+    
+    isProcessingQueue.current = true;
+    const { key, adjustment } = keyPressQueue.current.shift()!;
+    
+    // Process the key immediately
+    onKeyPress(key, adjustment);
+    
+    // Schedule next key processing with a small delay
+    setTimeout(processKeyPressQueue, 10);
+  }, [onKeyPress]);
 
   // Only close keyboard when clicking outside, but ignore clicks on input elements
-  // This prevents the keyboard from closing when focusing on inputs
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent | TouchEvent) => {
       const target = e.target as HTMLElement;
@@ -257,6 +279,7 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
     [customLayout, defaultLayout]
   );
 
+  // Optimized key press handler with debounce for fast typing
   const handleKeyPressInternal = useCallback(
     (action: string) => {
       let processedAction = action;
@@ -265,23 +288,29 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
         processedAction = processedAction.toUpperCase();
         setIsShiftActive(false);
       }
-
+      
+      let adjustment = 1;
       if (processedAction === "Backspace") {
-        onKeyPress(processedAction, -1);
-      } else if (processedAction === "\n") {
-        onKeyPress(processedAction, 1);
-      } else {
-        onKeyPress(processedAction, 1);
+        adjustment = -1;
+      }
+      
+      // Add to queue instead of processing immediately
+      keyPressQueue.current.push({ key: processedAction, adjustment });
+      
+      // Start processing if not already doing so
+      if (!isProcessingQueue.current) {
+        processKeyPressQueue();
       }
     },
-    [onKeyPress, isShiftActive]
+    [isShiftActive, processKeyPressQueue]
   );
 
   return (
     <div
-      ref={keyboardRef} // Attach the ref to the root element
-      data-virtual-keyboard="true" // Add data attribute to identify the keyboard
-      onMouseDown={(e) => e.stopPropagation()} // Prevent propagation
+      ref={keyboardRef}
+      data-virtual-keyboard="true"
+      data-cursor-position={cursorPosition}
+      onMouseDown={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
       onTouchStart={(e) => e.stopPropagation()}
       style={{
@@ -345,4 +374,5 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
   );
 };
 
-export default VirtualKeyboard;
+// Use React.memo to prevent unnecessary re-renders
+export default React.memo(VirtualKeyboard);
