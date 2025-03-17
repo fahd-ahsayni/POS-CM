@@ -150,15 +150,22 @@ export default function ClientForm({
     isHandlingFocus.current = true;
     handlePhoneSelect(client);
     
+    // Don't automatically focus on phone input since we'll
+    // either focus on name (for existing client) or stay on phone (for new)
     setTimeout(() => {
-      const phoneInput = inputRefs.phone.current;
-      if (phoneInput) {
-        phoneInput.focus();
-        openKeyboard("phone", handleKeyPress);
-      }
       isHandlingFocus.current = false;
     }, 10);
-  }, [handlePhoneSelect, inputRefs.phone, openKeyboard, handleKeyPress]);
+  }, [handlePhoneSelect]);
+
+  // Handle focus on name input after selecting a client
+  const focusNameInput = useCallback(() => {
+    setTimeout(() => {
+      if (inputRefs.name.current) {
+        inputRefs.name.current.focus();
+        handleInputFocus("name");
+      }
+    }, 100);
+  }, [inputRefs.name, handleInputFocus]);
 
   // Track cursor position on input selection
   const handleSelect = useCallback((_field: keyof ClientFormData) => (e: React.SyntheticEvent<HTMLInputElement>) => {
@@ -182,6 +189,7 @@ export default function ClientForm({
         value={formData.phone}
         onChange={handleInputChange("phone")}
         onSelectClient={handlePhoneSelection}
+        onClientSelect={focusNameInput} // New prop to focus name input after client selection
         clients={clients}
         isFetching={isFetching}
         hasError={!!errors.phone}

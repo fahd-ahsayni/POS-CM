@@ -9,6 +9,7 @@ interface PhoneInputWithSuggestionsProps {
   value: string;
   onChange: (value: string | number | null) => void;
   onSelectClient: (client: Client) => void;
+  onClientSelect?: () => void; // New prop for additional action after client selection
   clients: Client[];
   isFetching: boolean;
   hasError?: boolean;
@@ -22,6 +23,7 @@ export default function PhoneInputWithSuggestions({
   value,
   onChange,
   onSelectClient,
+  onClientSelect, // New prop
   clients,
   hasError = false,
   errorMessage,
@@ -103,8 +105,13 @@ export default function PhoneInputWithSuggestions({
     setTimeout(() => {
       onSelectClient(client);
 
+      // Call onClientSelect callback if provided
+      if (onClientSelect) {
+        onClientSelect();
+      }
+
       // Re-focus input after selection but don't reopen suggestions
-      if (inputRef?.current) {
+      if (inputRef?.current && !onClientSelect) {
         inputRef.current.focus();
       }
     }, 50);

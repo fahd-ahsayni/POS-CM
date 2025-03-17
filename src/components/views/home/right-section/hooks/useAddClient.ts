@@ -150,13 +150,14 @@ export const useAddClient = (onSuccess?: () => void) => {
 
         if (isDataChanged) {
           await apiUpdateClient({ id: existingClient._id, data: formData });
-        }
-
-        dispatch(setClientId(existingClient._id));
-        setViews(ORDER_SUMMARY_VIEW);
-
-        // Show toast after state updates
-        if (!isDataChanged) {
+          toast.success(
+            createToast(
+              "Client updated",
+              "Client information updated successfully",
+              "success"
+            )
+          );
+        } else {
           toast.success(
             createToast(
               "Client selected",
@@ -165,10 +166,22 @@ export const useAddClient = (onSuccess?: () => void) => {
             )
           );
         }
-      } else {
-        const newClient = await apiCreateClient(formData);
-        dispatch(setClientId(newClient.data.client._id));
+
+        dispatch(setClientId(existingClient._id));
         setViews(ORDER_SUMMARY_VIEW);
+      } else {
+        const response = await apiCreateClient(formData);
+        if (response?.data?.client?._id) {
+          dispatch(setClientId(response.data.client._id));
+          setViews(ORDER_SUMMARY_VIEW);
+          toast.success(
+            createToast(
+              "Client created",
+              "New client created successfully",
+              "success"
+            )
+          );
+        }
       }
 
       onSuccess?.();
