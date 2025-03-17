@@ -47,9 +47,8 @@ const OrderSummary = () => {
   } = useOrderSummary();
 
   const [loadedOrder] = useLocalStorage<any>("loadedOrder", {});
-  const discount = JSON.parse(
-    localStorage.getItem("generalData") || "{}"
-  ).discount;
+  const [generalData] = useLocalStorage<any>("generalData", {});
+  const discount = generalData.discount || [];
   const order = useAppSelector((state) => state.createOrder.data);
 
   const hasOrderChanges = useMemo(() => {
@@ -95,10 +94,14 @@ const OrderSummary = () => {
     () => debounce(handleToggleAll, 300),
     [handleToggleAll]
   );
-
-  const currentDiscount = discount?.find(
-    (d: any) => d.id === order.discount?.id
-  );
+  const currentDiscount = useMemo(() => {
+    // if (loadedOrder?.discount_amount && loadedOrder?.total_amount) {
+    //   const discountValue = (loadedOrder.discount_amount / loadedOrder.total_amount) * 100;
+      
+    //   return { type: "percentage", value: discountValue };
+    // }
+    return discount?.find((d: any) => d.id === order.discount?.id);
+  }, [loadedOrder, discount, order.discount]);
 
   return (
     <>

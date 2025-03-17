@@ -4,6 +4,7 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 import { setDiscount } from "@/store/slices/order/create-order.slice";
 import { useCallback, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 interface Discount {
@@ -23,12 +24,14 @@ export function useApplyDiscount(
 ) {
   const dispatch = useDispatch();
   const [loadedOrder] = useLocalStorage<any>("loadedOrder", {});
+  const [generalData] = useLocalStorage<any>("generalData", {});
+  const [applyDiscountToOrders, setApplyDiscountToOrders] = useLocalStorage<
+    string[] | null
+  >("applyDiscountToOrders", null);
   const [selectedDiscount, setSelectedDiscount] = useState<string>("");
   const [selectedReason, setSelectedReason] = useState<string>("");
 
-  const generalData = useMemo(() => {
-    return JSON.parse(localStorage.getItem("generalData") || "{}");
-  }, []);
+  const navigate = useNavigate();
 
   const discounts = useMemo(() => {
     const discountData: Discount[] = generalData.discount || [];
@@ -74,7 +77,7 @@ export function useApplyDiscount(
           ...discountData,
         });
 
-        if (response.status === 200) {
+        if (response.status === 201) {
           toast.success(
             createToast(
               "Discount applied",
@@ -84,8 +87,18 @@ export function useApplyDiscount(
           );
         }
 
+        // Update the order in local storage
+        if (!applyDiscountToOrders?.includes(loadedOrder._id)) {
+          setApplyDiscountToOrders([
+            ...(applyDiscountToOrders ?? []),
+            loadedOrder._id,
+          ]);
+        }
+
         localStorage.removeItem("orderDiscount");
         localStorage.setItem("orderDiscount", JSON.stringify(discountData));
+
+        navigate("/orders");
       } else {
         // For new orders, use the Redux slice
         dispatch(setDiscount(discountData));

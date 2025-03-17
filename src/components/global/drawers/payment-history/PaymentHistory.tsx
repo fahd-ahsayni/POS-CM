@@ -22,7 +22,6 @@ export default function PaymentHistory({
 }: PaymentHistoryProps) {
   const payments = selectedOrder.payments;
 
-  console.log(selectedOrder);
   return (
     <Drawer
       open={open}

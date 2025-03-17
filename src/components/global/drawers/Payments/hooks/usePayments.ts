@@ -45,7 +45,11 @@ interface PaymentMethod {
  * Props for the usePayments hook
  */
 interface UsePaymentsProps {
-  onComplete?: (payments: Array<Pick<PaymentMethod, '_id' | 'name' | 'amount' | 'originalId'>>) => Promise<void>;
+  onComplete?: (
+    payments: Array<
+      Pick<PaymentMethod, "_id" | "name" | "amount" | "originalId">
+    >
+  ) => Promise<void>;
   selectedOrder?: Order;
   totalAmount?: number;
   selectedOrderlines?: any[]; // Add this prop
@@ -331,14 +335,16 @@ export function usePayments({
             allValidOrderlinesSelected &&
             allValidOrderLineIds.length === selectedOrder.orderline_ids.length
           ) {
-            await payNewOrder({
-              order_id: selectedOrder._id,
-              shift_id: shiftId,
-              payments: selectedPayments.map((item) => ({
-                payment_method_id: item.originalId,
-                amount_given: item.amount,
-              })),
-            });
+            if (shiftId) {
+              await payNewOrder({
+                order_id: selectedOrder._id,
+                shift_id: shiftId,
+                payments: selectedPayments.map((item) => ({
+                  payment_method_id: item.originalId,
+                  amount_given: item.amount,
+                })),
+              });
+            }
           } else {
             await paySelectedProducts({
               orderlines: selectedOrderlines,
