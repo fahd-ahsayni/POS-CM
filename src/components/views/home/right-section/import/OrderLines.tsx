@@ -1,6 +1,6 @@
 import { UserIcon } from "@/assets/figma-icons";
 import { TypographySmall } from "@/components/ui/typography";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, memo } from "react";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
 import { useOrderLines } from "../contexts/OrderLinesContext";
 import { useRightViewContext } from "../contexts/RightViewContext";
@@ -10,7 +10,7 @@ import OrderLineIndex from "./OrderLineIndex";
 import { getMaxCustomerIndex } from "@/functions/getMaxCustomerIndex";
 import { AnimatePresence } from "motion/react";
 
-export default function OrderLines() {
+const OrderLines = memo(function OrderLines() {
   const { selectedProducts } = useLeftViewContext();
   const { customerIndex } = useRightViewContext();
   const { expandedCustomers, toggleCustomer, initializeCustomer } =
@@ -112,4 +112,6 @@ export default function OrderLines() {
       </div>
     </AnimatePresence>
   );
-}
+});
+
+export default OrderLines;

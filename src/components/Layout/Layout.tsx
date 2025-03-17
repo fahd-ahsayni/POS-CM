@@ -4,7 +4,7 @@ import { loadingColors } from "@/preferences";
 import { store } from "@/store";
 import { useAppDispatch } from "@/store/hooks";
 import { fetchPosData, selectPosData } from "@/store/slices/data/pos.slice";
-import { FC, memo, useCallback, useEffect, useState } from "react";
+import { FC, memo, useCallback, useEffect, useState, useMemo } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
 import BannerSessionExpired from "./components/BannerSessionExpired";
@@ -18,14 +18,18 @@ const BackgroundDecoration: FC = () => (
   />
 );
 
-const MainContent: FC = () => (
-  <main className="flex flex-1 flex-col relative z-10">
-    <Navbar />
-    <div className="flex flex-1 items-stretch overflow-y-hidden">
-      <Outlet />
-    </div>
-  </main>
-);
+const MainContent: FC = () => {
+  const memoizedNavbar = useMemo(() => <Navbar />, []);
+  
+  return (
+    <main className="flex flex-1 flex-col relative z-10">
+      {memoizedNavbar}
+      <div className="flex flex-1 items-stretch overflow-y-hidden">
+        <Outlet />
+      </div>
+    </main>
+  );
+};
 
 const Layout: FC = () => {
   const dispatch = useAppDispatch();

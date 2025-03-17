@@ -2,6 +2,7 @@ import { moon, sunrise, sunset } from "@/assets";
 import { AlertIcon } from "@/assets/figma-icons";
 import { ModeToggleWithDropdown } from "@/components/global/mode-toggle";
 import Profile from "@/components/global/Profile";
+import { BorderBeam } from "@/components/ui/border-beam";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { TextLoop } from "@/components/ui/text-loop";
@@ -9,14 +10,13 @@ import { TextShimmer } from "@/components/ui/text-shimmer";
 import { TypographyP } from "@/components/ui/typography";
 import { useOnlineStatus } from "@/hooks/use-online-status";
 import { cn, handleFullScreen } from "@/lib/utils";
+import { useTheme } from "@/providers/themeProvider";
 import { LucideMaximize, Wifi, WifiOff } from "lucide-react";
-import { useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Logo from "./Logo";
-import { BorderBeam } from "@/components/ui/border-beam";
-import { useTheme } from "@/providers/themeProvider";
 
-export default function Navbar() {
+export default memo(function Navbar() {
   const [greeting, setGreeting] = useState("Good Morning");
   const [timeIcon, setTimeIcon] = useState(sunrise);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -25,37 +25,50 @@ export default function Navbar() {
   const { theme } = useTheme();
   const location = useLocation();
 
-  useEffect(() => {
-    const updateGreetingAndIcon = () => {
-      const hour = new Date().getHours();
-      if (hour >= 6 && hour < 12) {
-        setGreeting("Good Morning");
-        setTimeIcon(sunrise);
-      } else if (hour >= 12 && hour < 18) {
-        setGreeting("Good Afternoon");
-        setTimeIcon(sunset);
-      } else {
-        setGreeting("Good Evening");
-        setTimeIcon(moon);
-      }
-    };
+  const updateGreetingAndIcon = useCallback(() => {
+    const hour = new Date().getHours();
+    if (hour >= 6 && hour < 12) {
+      setGreeting("Good Morning");
+      setTimeIcon(sunrise);
+    } else if (hour >= 12 && hour < 18) {
+      setGreeting("Good Afternoon");
+      setTimeIcon(sunset);
+    } else {
+      setGreeting("Good Evening");
+      setTimeIcon(moon);
+    }
+  }, [setGreeting, setTimeIcon]);
 
+  useEffect(() => {
     updateGreetingAndIcon();
     const interval = setInterval(updateGreetingAndIcon, 60000); // Update every minute
     return () => clearInterval(interval);
-  }, []);
+  }, [updateGreetingAndIcon]);
 
   useEffect(() => {
-    setCurrentTime(new Date());
+    const timer = setInterval(() => setCurrentTime(new Date()), 60000); // Update every minute
+    return () => clearInterval(timer);
   }, []);
 
-  const motivatedMessages = [
+  const motivatedMessages = useMemo(() => [
     "Let's make today productive!",
     "Stay focused and keep going!",
     "You can do it!",
     "Keep pushing forward!",
     "Believe in yourself!",
-  ];
+  ], []);
+
+  const renderedMotivatedMessages = useMemo(() => (
+    motivatedMessages.map((message) => (
+      <span key={message}>{message}</span>
+    ))
+  ), [motivatedMessages]);
+
+  const transitionProps = useMemo(() => ({ duration: 0.25 }), []);
+
+  const handleFullScreenClick = useCallback(() => {
+    handleFullScreen();
+  }, []);
 
   return (
     <header className="w-full">
@@ -88,10 +101,8 @@ export default function Navbar() {
                 </span>
                 <span>
                   {greeting}!{" "}
-                  <TextLoop transition={{ duration: 0.25 }} interval={3}>
-                    {motivatedMessages.map((message) => (
-                      <span key={message}>{message}</span>
-                    ))}
+                  <TextLoop transition={transitionProps} interval={3}>
+                    {renderedMotivatedMessages}
                   </TextLoop>
                 </span>
               </TypographyP>
@@ -146,7 +157,7 @@ export default function Navbar() {
 
             <ModeToggleWithDropdown />
 
-            <Button size="icon" onClick={handleFullScreen}>
+            <Button size="icon" onClick={handleFullScreenClick}>
               <LucideMaximize size={16} />
               <span className="sr-only">Full screen</span>
             </Button>
@@ -161,4 +172,4 @@ export default function Navbar() {
       </div>
     </header>
   );
-}
+});

@@ -6,9 +6,10 @@ import type React from "react";
 import { Button } from "./button";
 import { Link } from "./link";
 import { memo } from "react";
+import { useMemo } from "react";
 
 export const Dropdown = memo(function Dropdown(props: Headless.MenuProps) {
-  return <Headless.Menu {...props} />;
+  return useMemo(() => <Headless.Menu {...props} />, [props]);
 });
 
 export function DropdownButton<T extends React.ElementType>({

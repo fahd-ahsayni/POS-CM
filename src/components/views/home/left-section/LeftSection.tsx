@@ -4,8 +4,9 @@ import { TypographyP } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { TABLES_PLAN_VIEW, tabsConfig } from "./constants";
 import { useLeftViewContext } from "./contexts/LeftViewContext";
+import { memo } from "react";
 
-export default function LeftSection() {
+const LeftSection = memo(function LeftSection() {
   const { views } = useLeftViewContext();
 
   return (
@@ -34,4 +35,6 @@ export default function LeftSection() {
       </Tabs>
     </div>
   );
-}
+});
+
+export default LeftSection;

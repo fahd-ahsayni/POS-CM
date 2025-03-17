@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence, Transition, Variants } from "motion/react";
-import { useState, useEffect, Children } from "react";
+import { useState, useEffect, useMemo, Children } from "react";
 
 type TextLoopProps = {
   children: React.ReactNode[];
@@ -43,18 +43,20 @@ export function TextLoop({
 
   return (
     <span className={cn("relative inline-block whitespace-nowrap", className)}>
-      <AnimatePresence mode="popLayout" initial={false}>
-        <motion.span
-          key={currentIndex}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          transition={transition}
-          variants={variants || motionVariants}
-        >
-          {items[currentIndex]}
-        </motion.span>
-      </AnimatePresence>
+      {useMemo(() => (
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.span
+            key={currentIndex}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={transition}
+            variants={variants || motionVariants}
+          >
+            {items[currentIndex]}
+          </motion.span>
+        </AnimatePresence>
+      ), [currentIndex, transition, variants, motionVariants, items])}
     </span>
   );
 }

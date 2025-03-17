@@ -19,7 +19,9 @@ interface OrderLineAddCommentsProps {
   onNotesUpdate?: (notes: string[]) => void;
 }
 
-export default function OrderLineAddComments({
+import React from "react";
+
+export default React.memo(function OrderLineAddComments({
   productId,
   customerIndex,
   initialNotes = [],
@@ -218,4 +220,4 @@ export default function OrderLineAddComments({
       </DropdownMenu.Portal>
     </DropdownMenu.Root>
   );
-}
+});

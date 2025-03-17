@@ -27,7 +27,9 @@ import PaymentHistory from "../payment-history/PaymentHistory";
 import Payments from "../Payments/Payments";
 import { useOrderDetails } from "./hooks/useOrderDetails";
 
-export default function OrderDetails() {
+import React from "react";
+
+const MemoizedOrderDetails = React.memo(function OrderDetails() {
   const [editPriceOpen, setEditPriceOpen] = useState(false);
   const { setViews: setRightViews } = useRightViewContext();
   const { setViews: setLeftViews, setSelectedProducts } = useLeftViewContext();
@@ -473,4 +475,6 @@ export default function OrderDetails() {
       />
     </>
   );
-}
+});
+
+export default MemoizedOrderDetails;

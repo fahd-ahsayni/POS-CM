@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import LeftSection from "@/components/views/home/left-section/LeftSection";
 import RightSection from "@/components/views/home/right-section/RightSection";
 import { BeatLoader } from "react-spinners";
 
-export default function HomePage() {
+const HomePage = memo(function HomePage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -35,4 +35,6 @@ export default function HomePage() {
       </div>
     </>
   );
-}
+});
+
+export default HomePage;
