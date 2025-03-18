@@ -222,7 +222,7 @@ export function OrderLine({ item }: OrderLineProps) {
                     )}
                   </span>
                   {price > 0 && (
-                    <TypographySmall className="font-medium text-xs text-white/30">
+                    <TypographySmall className="font-medium text-xs dark:text-white/30 text-primary-black/30">
                       +{price.toFixed(currency.toFixed || 2)}{" "}
                       {currency.currency}
                     </TypographySmall>
