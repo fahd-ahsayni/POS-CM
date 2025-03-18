@@ -104,8 +104,14 @@ export function ComboProvider({
               };
             }
             
+            // Calculate the total number of products already selected in this step
+            const totalQuantitySelected = currentVariants.reduce(
+              (sum, v) => sum + (v.quantity || 1), 
+              0
+            );
+            
             // Check if adding would exceed max products
-            if (maxProducts && currentVariants.length >= maxProducts) {
+            if (maxProducts && totalQuantitySelected >= maxProducts) {
               toast.warning(
                 createToast(
                   "Selection Limit Exceeded",
@@ -251,18 +257,21 @@ export function ComboProvider({
       const stepVariants = prev.variants.filter(
         (v) => v.stepIndex === stepIndex
       );
-      const otherVariantsQuantity = stepVariants
-        .filter((v) => v._id !== variantId)
-        .reduce((sum, v) => sum + (v.quantity || 1), 0);
+      const totalQuantity = stepVariants.reduce(
+        (sum, v) => sum + (v.quantity || 1), 
+        0
+      );
 
       const newQuantity = increment
         ? variant.quantity + 1
         : variant.quantity - 1;
 
       const maxProducts = step?.number_of_products || Infinity;
-      const newTotal = otherVariantsQuantity + newQuantity;
       
-      if (newTotal > maxProducts) {
+      // Calculate what the new total would be
+      const newTotal = totalQuantity + (increment ? 1 : -1);
+      
+      if (increment && newTotal > maxProducts) {
         // Don't allow exceeding max products
         toast.warning(
           createToast(
