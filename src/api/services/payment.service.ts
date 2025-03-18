@@ -4,7 +4,7 @@ export const createPayment = async (data: any) => {
   return api.post("/order/create-with-payment", data);
 };
 
-export const payNewOrder = async (data: {
+export const payOrderWithoutSelectedProduct = async (data: {
   order_id: string;
   payments: any[];
   shift_id: string;

@@ -53,10 +53,9 @@ export const useOrderDetails = (
         validOrderLineIds.includes(id)
       );
       setSelectedOrderlines(validSelectedOrderlines);
-    } else {
-      // Otherwise, select all valid orderlines
-      setSelectedOrderlines(validOrderLineIds);
-    }
+    } 
+    // No need to show warning as we'll pay the full order if no products selected
+    
     setOpenOrderDetails(false);
     setOpenPayments(true);
   };

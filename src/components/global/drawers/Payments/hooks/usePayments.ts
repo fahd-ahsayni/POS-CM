@@ -1,7 +1,7 @@
 import {
   createPayment,
   logoutService,
-  payNewOrder,
+  payOrderWithoutSelectedProduct,
   paySelectedProducts,
 } from "@/api/services";
 import { createToast } from "@/components/global/Toasters";
@@ -282,7 +282,7 @@ export function usePayments({
 
   const handleComplete = useCallback(async () => {
     if (isProcessing) return;
-
+  
     const remainingAmount = getRemainingAmount();
     if (remainingAmount > 0) {
       toast.warning(
@@ -296,12 +296,12 @@ export function usePayments({
       );
       return;
     }
-
+  
     setIsProcessing(true);
-
+  
     try {
       const shiftId = localStorage.getItem("shiftId");
-
+  
       // Calculate actual customer count from order lines
       const uniqueCustomerIndices = new Set(
         order.orderlines.map((line) => line.customer_index)
@@ -311,61 +311,32 @@ export function usePayments({
         customerIndex,
         1
       );
-
+  
       // Update customer count before payment
       dispatch(setCustomerCount(actualCustomerCount));
-
+  
       if (selectedOrder) {
-        // Check if there are selected orderlines
+        // If there are selectedOrderlines, use them for partial payment
         if (selectedOrderlines && selectedOrderlines.length > 0) {
-          // Determine if all valid orderlines are selected
-          const allValidOrderLineIds = selectedOrder.orderline_ids
-            .filter(
-              (line: any) => !line.is_paid && line.cancelled_qty < line.quantity
-            )
-            .map((line: any) => line._id);
-
-          const allValidOrderlinesSelected =
-            selectedOrderlines.length === allValidOrderLineIds.length &&
-            selectedOrderlines.every((id) => allValidOrderLineIds.includes(id));
-
-          // If all valid orderlines are selected and they're all the orderlines in the order,
-          // use payNewOrder, otherwise use paySelectedProducts
-          if (
-            allValidOrderlinesSelected &&
-            allValidOrderLineIds.length === selectedOrder.orderline_ids.length
-          ) {
-            if (shiftId) {
-              await payNewOrder({
-                order_id: selectedOrder._id,
-                shift_id: shiftId,
-                payments: selectedPayments.map((item) => ({
-                  payment_method_id: item.originalId,
-                  amount_given: item.amount,
-                })),
-              });
-            }
-          } else {
-            await paySelectedProducts({
-              orderlines: selectedOrderlines,
-              order_id: selectedOrder._id,
-              payments: selectedPayments.map((item) => ({
-                payment_method_id: item.originalId,
-                amount_given: item.amount,
-              })),
-              shift_id: shiftId || "",
-            });
-          }
+          await paySelectedProducts({
+            orderlines: selectedOrderlines,
+            order_id: selectedOrder._id,
+            payments: selectedPayments.map((item) => ({
+              payment_method_id: item.originalId,
+              amount_given: item.amount,
+            })),
+            shift_id: shiftId || "",
+          });
         } else {
-          toast.error(
-            createToast(
-              "Payment failed",
-              "No products selected for payment",
-              "error"
-            )
-          );
-          setIsProcessing(false);
-          return;
+          // No products selected - pay the full order
+          await payOrderWithoutSelectedProduct({
+            order_id: selectedOrder._id,
+            shift_id: shiftId || "",
+            payments: selectedPayments.map((item) => ({
+              payment_method_id: item.originalId,
+              amount_given: item.amount,
+            })),
+          });
         }
       } else {
         // Handle new order creation
@@ -382,7 +353,7 @@ export function usePayments({
           })),
         });
       }
-
+  
       // Handle success
       await onComplete?.(selectedPayments);
       setSelectedPayments([]);
@@ -393,7 +364,7 @@ export function usePayments({
       dispatch(resetOrder());
       setViewsLeft(ALL_CATEGORIES_VIEW);
       setViewsRight(TYPE_OF_ORDER_VIEW);
-
+  
       toast.success(
         createToast(
           "Payment completed successfully",
@@ -403,7 +374,7 @@ export function usePayments({
           "success"
         )
       );
-
+  
       setTableNumber("");
       setNumber("");
     } catch (error) {
@@ -440,6 +411,7 @@ export function usePayments({
     selectedOrderlines,
     getRemainingAmount,
   ]);
+  
 
   const resetPayments = useCallback(() => {
     setSelectedPayments([]);

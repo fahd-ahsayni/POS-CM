@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/pagination";
 import { AppDispatch } from "@/store";
 import { setCurrentPage } from "@/store/slices/data/orders.slice";
-import { useEffect } from "react";
+import { useEffect} from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 export function TablePagination() {
