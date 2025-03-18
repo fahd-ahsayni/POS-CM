@@ -4,12 +4,12 @@ import { defineConfig } from "vite";
 import { compression } from "vite-plugin-compression2";
 import svgr from "vite-plugin-svgr";
 import dynamicImport from 'vite-plugin-dynamic-import'
-import MillionLint from "@million/lint";
+// import MillionLint from "@million/lint";
 
 
 
 export default defineConfig({
-  plugins: [react(), svgr(), compression(), dynamicImport(), MillionLint.vite()],
+  plugins: [react(), svgr(), compression(), dynamicImport()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
