@@ -39,11 +39,13 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
   // Get the cursor position from context
   const { cursorPosition } = useVirtualKeyboard();
   
-  // Queue for handling rapid keypresses
+  // Debounce and throttle controls
   const keyPressQueue = useRef<{key: string, adjustment: number}[]>([]);
   const isProcessingQueue = useRef(false);
+  const lastKeyPressTime = useRef<number>(0);
+  const keyPressThrottleMs = 25; // Minimum ms between keypresses
 
-  // Function to process keypress queue
+  // Function to process keypress queue with throttling
   const processKeyPressQueue = useCallback(() => {
     if (keyPressQueue.current.length === 0) {
       isProcessingQueue.current = false;
@@ -51,13 +53,22 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
     }
     
     isProcessingQueue.current = true;
-    const { key, adjustment } = keyPressQueue.current.shift()!;
+    const currentTime = Date.now();
     
-    // Process the key immediately
+    // Enforce minimum time between keypresses
+    if (currentTime - lastKeyPressTime.current < keyPressThrottleMs) {
+      setTimeout(processKeyPressQueue, keyPressThrottleMs);
+      return;
+    }
+    
+    const { key, adjustment } = keyPressQueue.current.shift()!;
+    lastKeyPressTime.current = currentTime;
+    
+    // Process the key press
     onKeyPress(key, adjustment);
     
-    // Schedule next key processing with a small delay
-    setTimeout(processKeyPressQueue, 10);
+    // Schedule next key processing
+    setTimeout(processKeyPressQueue, keyPressThrottleMs);
   }, [onKeyPress]);
 
   // Only close keyboard when clicking outside, but ignore clicks on input elements
@@ -279,7 +290,7 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
     [customLayout, defaultLayout]
   );
 
-  // Optimized key press handler with debounce for fast typing
+  // Optimized key press handler with improved queue processing
   const handleKeyPressInternal = useCallback(
     (action: string) => {
       let processedAction = action;
@@ -292,6 +303,10 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
       let adjustment = 1;
       if (processedAction === "Backspace") {
         adjustment = -1;
+      } else if (processedAction === "ArrowLeft" || processedAction === "ArrowRight") {
+        adjustment = 0; // No text insertion for arrow keys
+      } else if (processedAction === "Delete") {
+        adjustment = 0; // For Delete key (clear)
       }
       
       // Add to queue instead of processing immediately

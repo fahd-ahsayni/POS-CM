@@ -16,6 +16,8 @@ interface VirtualKeyboardGlobalContextProps {
   cursorPosition: number;
   setCursorPosition: (position: number) => void;
   syncCursorPosition: (position: number) => void;
+  lockKeyboard: () => void;
+  unlockKeyboard: () => void;
 }
 
 const VirtualKeyboardGlobalContext = createContext<VirtualKeyboardGlobalContextProps | undefined>(undefined);
@@ -26,12 +28,25 @@ export const VirtualKeyboardProvider: React.FC<{ children: ReactNode }> = ({ chi
   const [lastFocusedInput, setLastFocusedInput] = useState<string | null>(null);
   const [focusIsChanging, setFocusIsChanging] = useState(false);
   const [cursorPosition, setCursorPosition] = useState<number>(0);
+  const [keyboardLocked, setKeyboardLocked] = useState(false);
   const pendingOperationsRef = useRef<boolean>(false);
+  const keyPressTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const [keyPressCallback, setKeyPressCallback] = useState<((key: string, cursorAdjustment: number) => void) | null>(
     null
   );
 
+  // Lock keyboard to prevent it from closing during operations
+  const lockKeyboard = useCallback(() => {
+    setKeyboardLocked(true);
+  }, []);
+
+  // Unlock keyboard
+  const unlockKeyboard = useCallback(() => {
+    setKeyboardLocked(false);
+  }, []);
+
+  // Modified openKeyboard with immediate cursor positioning
   const openKeyboard = useCallback(
     (
       activeInput: string, 
@@ -46,13 +61,23 @@ export const VirtualKeyboardProvider: React.FC<{ children: ReactNode }> = ({ chi
       if (initialCursorPosition !== undefined) {
         setCursorPosition(initialCursorPosition);
       }
+      
+      // Cancel any pending keypress timeouts
+      if (keyPressTimeoutRef.current) {
+        clearTimeout(keyPressTimeoutRef.current);
+        keyPressTimeoutRef.current = null;
+      }
     },
     []
   );
 
+  // Improved closeKeyboard that respects locks
   const closeKeyboard = useCallback(() => {
     // Don't close keyboard if focus is changing between inputs
     if (focusIsChanging) return;
+    
+    // Don't close keyboard if locked
+    if (keyboardLocked) return;
     
     // Don't close keyboard if there are pending operations
     if (pendingOperationsRef.current) return;
@@ -60,19 +85,20 @@ export const VirtualKeyboardProvider: React.FC<{ children: ReactNode }> = ({ chi
     setShowKeyboard(false);
     setActiveInput(null);
     setKeyPressCallback(null);
-  }, [focusIsChanging]);
+  }, [focusIsChanging, keyboardLocked]);
 
-  // Sync cursor position method for external components
+  // Sync cursor position with improved error handling
   const syncCursorPosition = useCallback((position: number) => {
+    if (position < 0) position = 0;
     setCursorPosition(position);
   }, []);
 
   // Ensure keyboard doesn't close unexpectedly
   useEffect(() => {
-    if (activeInput && !showKeyboard) {
+    if (activeInput && !showKeyboard && !keyboardLocked) {
       setShowKeyboard(true);
     }
-  }, [activeInput, showKeyboard]);
+  }, [activeInput, showKeyboard, keyboardLocked]);
 
   // Detect focus events on inputs to keep keyboard open
   useEffect(() => {
@@ -112,31 +138,24 @@ export const VirtualKeyboardProvider: React.FC<{ children: ReactNode }> = ({ chi
     };
   }, []);
 
-  // const handleKeyPress = useCallback(
-  //   (key: string, cursorAdjustment: number) => {
-  //     if (keyPressCallback) {
-  //       pendingOperationsRef.current = true;
-  //       keyPressCallback(key, cursorAdjustment);
-        
-  //       // Update cursor position
-  //       if (key !== "Backspace" && key !== "Delete" && key !== "ArrowLeft" && key !== "ArrowRight") {
-  //         setCursorPosition(prev => prev + cursorAdjustment);
-  //       } else if (key === "Backspace") {
-  //         setCursorPosition(prev => Math.max(0, prev - 1));
-  //       } else if (key === "ArrowLeft") {
-  //         setCursorPosition(prev => Math.max(0, prev - 1));
-  //       } else if (key === "ArrowRight") {
-  //         setCursorPosition(prev => prev + 1);
-  //       }
-        
-  //       // Reset pending operations flag after operation completes
-  //       setTimeout(() => {
-  //         pendingOperationsRef.current = false;
-  //       }, 50);
-  //     }
-  //   },
-  //   [keyPressCallback]
-  // );
+  // Detect when active input changes to reset state appropriately
+  useEffect(() => {
+    if (activeInput) {
+      // Clear any queued operations when switching between fields
+      if (keyPressTimeoutRef.current) {
+        clearTimeout(keyPressTimeoutRef.current);
+        keyPressTimeoutRef.current = null;
+      }
+      
+      // Mark that focus is changing to prevent keyboard closing
+      setFocusIsChanging(true);
+      
+      // Reset after a short delay
+      setTimeout(() => {
+        setFocusIsChanging(false);
+      }, 100);
+    }
+  }, [activeInput]);
 
   const contextValue = useMemo(
     () => ({
@@ -151,11 +170,14 @@ export const VirtualKeyboardProvider: React.FC<{ children: ReactNode }> = ({ chi
       cursorPosition,
       setCursorPosition,
       syncCursorPosition,
+      lockKeyboard,
+      unlockKeyboard,
     }),
     [
       showKeyboard, activeInput, keyPressCallback, openKeyboard, 
       closeKeyboard, lastFocusedInput, focusIsChanging, setFocusIsChanging,
-      cursorPosition, setCursorPosition, syncCursorPosition
+      cursorPosition, setCursorPosition, syncCursorPosition,
+      lockKeyboard, unlockKeyboard
     ]
   );
 
