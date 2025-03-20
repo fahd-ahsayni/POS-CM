@@ -16,26 +16,7 @@ export default function Ticket() {
   const [loadedOrder] = useLocalStorage<any>("loadedOrder", {});
 
   const calculations = useMemo(() => {
-    // If loadedOrder has total_amount, use the loaded order values
-    if (loadedOrder && loadedOrder.total_amount) {
-      // Calculate subtotal from orderlines if it's not provided
-      const subtotal = loadedOrder.orderline_ids
-        ? loadedOrder.orderline_ids.reduce((total: number, line: any) => {
-            const lineTotal =
-              (line.quantity - (line.cancelled_qty || 0)) * line.price;
-            return total + lineTotal;
-          }, 0)
-        : loadedOrder.total_amount + (loadedOrder.discount_amount || 0);
-
-      return {
-        subtotal: subtotal || 0,
-        discountAmount: loadedOrder.discount_amount || 0,
-        tax: (subtotal * 10) / 110, // Assuming same 10% tax rate
-        total: loadedOrder.total_amount || 0,
-      };
-    }
-
-    // Otherwise calculate as before
+    // Calculate the total for only newly selected products
     const subtotal = selectedProducts.reduce((total, product) => {
       const price = calculateProductPrice(
         product,
@@ -45,6 +26,7 @@ export default function Ticket() {
       return total + price.totalPrice;
     }, 0);
 
+    // Apply any discount to the selected products
     const discount = order.data.discount?.discount_id
       ? JSON.parse(localStorage.getItem("generalData") || "{}")?.discount?.find(
           (d: any) => d._id === order.data.discount?.discount_id
@@ -57,16 +39,26 @@ export default function Ticket() {
         : Number(discount.value)
       : 0;
 
-    const tax = (subtotal * 10) / 110; // Assuming 10% tax rate
-    const total =
-      orderType.delivery_product_variant_id && order.data.delivery_guy_id
-        ? subtotal -
-          discountAmount +
-          orderType.delivery_product_variant_id.default_price
-        : subtotal - discountAmount;
+    // Calculate tax (10% of the subtotal)
+    const tax = (subtotal * 10) / 110;
+    
+    // Calculate delivery fee if applicable
+    const deliveryFee = orderType.delivery_product_variant_id && order.data.delivery_guy_id
+      ? orderType.delivery_product_variant_id.default_price
+      : 0;
+    
+    // Calculate total - only for newly selected products
+    const total = subtotal - discountAmount + deliveryFee;
 
-    return { subtotal, discountAmount, tax, total };
-  }, [selectedProducts, currentMenu, order.data.discount, loadedOrder]);
+    return { 
+      subtotal, 
+      discountAmount, 
+      tax, 
+      total,
+      // Display "loaded order" as a separate line item if needed
+      hasLoadedOrder: loadedOrder && Object.keys(loadedOrder).length > 0
+    };
+  }, [selectedProducts, currentMenu, order.data.discount, order.data.delivery_guy_id, loadedOrder, orderType]);
 
   const { toFixed, currency: currencySymbol } = currency;
 
@@ -80,6 +72,13 @@ export default function Ticket() {
     >
       <div className="w-full rounded-lg dark:bg-white bg-primary-black pt-2 relative [mask-image:radial-gradient(circle_14px_at_-2px_calc(100%-68px),transparent_100%,black_101%),radial-gradient(circle_14px_at_calc(100%+2px)_calc(100%-68px),transparent_100%,black_101%),linear-gradient(black,black)] [mask-composite:intersect]">
         <div className="p-4 space-y-1">
+          {calculations.hasLoadedOrder && (
+            <div className="flex items-center justify-between w-full">
+              <TypographyP className="text-sm font-semibold dark:text-primary-black text-white">
+                Loaded Order
+              </TypographyP>
+            </div>
+          )}
           <div className="flex items-center justify-between w-full">
             <TypographyP className="text-sm font-semibold dark:text-primary-black text-white">
               Subtotal

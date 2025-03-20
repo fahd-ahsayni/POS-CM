@@ -338,8 +338,8 @@ const MemoizedOrderDetails = React.memo(function OrderDetails() {
                                 </span>
                               )
                             )}
-                            {orderLine.combo_supp_ids?.map((supp: any) => (
-                              <span className="flex items-center gap-x-2">
+                            {orderLine.combo_supp_ids?.map((supp: any, key: number) => (
+                              <span key={key} className="flex items-center gap-x-2">
                                 <TypographySmall
                                   key={supp._id}
                                   className="dark:text-secondary-white text-primary-black flex items-center text-sm"
