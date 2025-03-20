@@ -9,8 +9,15 @@ import { ThemeProvider } from "./providers/themeProvider";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { OrderProvider } from "@/components/global/drawers/order-details/context/OrderContext";
 import OrderDetails from "@/components/global/drawers/order-details/OrderDetails";
+import { useLocalStorage } from "./hooks/use-local-storage";
+import KeyboardToggle from "./components/keyboard/KeyboardToggle";
 
 export default function App() {
+  const [withKeyboard, setWithKeyboard] = useLocalStorage<boolean>(
+    "withKeyboard",
+    false
+  );
+
   return (
     <ErrorBoundary>
       <ContextsProvider>
@@ -30,7 +37,7 @@ export default function App() {
               </div>
             </main>
             <OrderDetails />
-            <GlobalVirtualKeyboard />
+            {withKeyboard && <GlobalVirtualKeyboard />}
           </OrderProvider>
         </VirtualKeyboardProvider>
       </ContextsProvider>
