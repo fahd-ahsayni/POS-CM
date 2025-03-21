@@ -14,6 +14,7 @@ import { ALL_CATEGORIES_VIEW } from "@/components/views/home/left-section/consta
 import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 import { TYPE_OF_ORDER_VIEW } from "@/components/views/home/right-section/constants";
 import { useRightViewContext } from "@/components/views/home/right-section/contexts/RightViewContext";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { PosData } from "@/interfaces/pos";
 import { truncateName } from "@/lib/utils";
 import { AppDispatch, RootState } from "@/store";
@@ -24,7 +25,7 @@ import {
 } from "@/store/slices/order/create-order.slice";
 import * as Headless from "@headlessui/react";
 import { formatDistanceToNowStrict } from "date-fns";
-import { ChevronDown, Keyboard, LogOut, Power, Printer } from "lucide-react";
+import { ChevronDown, LogOut, Power, Printer } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom"; // added import
@@ -36,8 +37,7 @@ import {
   openCustomerDisplay,
 } from "./customer-display/useCustomerDisplay";
 import { createToast } from "./Toasters";
-import { useLocalStorage } from "@/hooks/use-local-storage";
-import { Switch } from "../ui/switch";
+// import { Switch } from "../ui/switch";
 
 interface UserData {
   id: string;
@@ -56,10 +56,10 @@ export default function Profile() {
   const navigate = useNavigate(); // added
   const isWaiter = user?.position === "Waiter";
   const [ipAddress] = useLocalStorage<string>("ipAddress", "");
-  const [withKeyboard, setWithKeyboard] = useLocalStorage<boolean>(
-    "withKeyboard",
-    false
-  );
+  // const [withKeyboard, setWithKeyboard] = useLocalStorage<boolean>(
+  //   "withKeyboard",
+  //   false
+  // );
   const rightViewContext = useRightViewContext();
   const leftViewContext = useLeftViewContext();
 
@@ -137,26 +137,26 @@ export default function Profile() {
     }
   };
 
-  const toggleKeyboard = (value: boolean) => {
-    setWithKeyboard(value);
-    if (!value) {
-      toast.info(
-        createToast(
-          "Keyboard Disabled",
-          "Virtual keyboard has been disabled",
-          "info"
-        )
-      );
-    } else {
-      toast.info(
-        createToast(
-          "Keyboard Enabled",
-          "Virtual keyboard has been enabled",
-          "info"
-        )
-      );
-    }
-  };
+  // const toggleKeyboard = (value: boolean) => {
+  //   setWithKeyboard(value);
+  //   if (!value) {
+  //     toast.info(
+  //       createToast(
+  //         "Keyboard Disabled",
+  //         "Virtual keyboard has been disabled",
+  //         "info"
+  //       )
+  //     );
+  //   } else {
+  //     toast.info(
+  //       createToast(
+  //         "Keyboard Enabled",
+  //         "Virtual keyboard has been enabled",
+  //         "info"
+  //       )
+  //     );
+  //   }
+  // };
 
   return (
     <>
@@ -229,7 +229,7 @@ export default function Profile() {
             <Printer size={18} className="opacity-60" aria-hidden="true" />
             <DropdownLabel className="pl-2">Print RAZ</DropdownLabel>
           </DropdownItem>
-
+          {/* 
           <DropdownDivider />
           <DropdownItem className="flex items-center justify-between w-full">
             <Keyboard size={18} className="opacity-60" aria-hidden="true" />
@@ -242,7 +242,7 @@ export default function Profile() {
                 onChange={(checked) => toggleKeyboard(checked)}
               />
             </DropdownLabel>
-          </DropdownItem>
+          </DropdownItem> */}
 
           <DropdownDivider />
 

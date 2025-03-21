@@ -100,7 +100,11 @@ export default function ModalOrderComments({
           <Textarea
             ref={textareaRef}
             value={comment}
-            onChange={(e) => setComment(e.target.value)}
+            onChange={(e) => {
+              setComment(e.target.value);
+              // Update cursor position after physical keyboard input
+              setCursorPosition(e.target.selectionStart || 0);
+            }}
             placeholder="Type your comment here ..."
             className="w-full"
             onFocus={handleFocus}

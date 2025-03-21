@@ -19,6 +19,7 @@ interface OrderLineAddCommentsProps {
   onNotesUpdate?: (notes: string[]) => void;
 }
 
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import React from "react";
 
 export default React.memo(function OrderLineAddComments({
@@ -28,7 +29,7 @@ export default React.memo(function OrderLineAddComments({
   onNotesUpdate,
 }: OrderLineAddCommentsProps) {
   const dispatch = useDispatch();
-  const { openKeyboard, showKeyboard } = useVirtualKeyboard();
+  const { openKeyboard } = useVirtualKeyboard();
   const { selectedProducts, setSelectedProducts } = useLeftViewContext();
   const { orderType } = useRightViewContext();
   const { updateProductNotes } = useProductSelection({
@@ -38,7 +39,8 @@ export default React.memo(function OrderLineAddComments({
     orderType,
   });
 
-  const generalData = JSON.parse(localStorage.getItem("generalData") || "{}");
+  const [generalData] = useLocalStorage<any>("generalData", {});
+
   const defineComments =
     generalData.defineNote?.filter((item: any) => item.type === "pos") || [];
 
@@ -57,14 +59,15 @@ export default React.memo(function OrderLineAddComments({
       onNotesUpdate(updatedComments);
     } else {
       // Find the specific product in selectedProducts by its exact ID
-      const productToUpdate = selectedProducts.find(product => 
-        (product.id === productId || product._id === productId) && 
-        product.customer_index === customerIndex
+      const productToUpdate = selectedProducts.find(
+        (product) =>
+          (product.id === productId || product._id === productId) &&
+          product.customer_index === customerIndex
       );
-      
+
       if (productToUpdate) {
         updateProductNotes(productId, updatedComments, customerIndex);
-        
+
         dispatch(
           updateOrderLine({
             _id: productId,
@@ -168,11 +171,11 @@ export default React.memo(function OrderLineAddComments({
           sideOffset={5}
           collisionPadding={16}
           avoidCollisions={true}
-          onPointerDownOutside={(event) => {
-            if (showKeyboard) {
-              event.preventDefault(); // Prevent closing if keyboard is open
-            }
-          }}
+          // onPointerDownOutside={(event) => {
+          //   if (showKeyboard) {
+          //     event.preventDefault(); // Prevent closing if keyboard is open
+          //   }
+          // }}
         >
           {comments.map((comment, index) => (
             <div key={index} className="flex items-center mt-2">

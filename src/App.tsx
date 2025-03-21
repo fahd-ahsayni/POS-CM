@@ -5,14 +5,13 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import GlobalVirtualKeyboard from "./components/keyboard/GlobalVirtualKeyboard";
 import { VirtualKeyboardProvider } from "./components/keyboard/VirtualKeyboardGlobalContext";
 import { Toaster } from "./components/ui/toaster";
-import { useLocalStorage } from "./hooks/use-local-storage";
 import NoMobileResponsive from "./page/NoMobileResponsive";
 import ContextsProvider from "./providers/ContextsProvider";
 import Fonts from "./providers/Fonts";
 import { ThemeProvider } from "./providers/themeProvider";
 
 export default function App() {
-  const [withKeyboard] = useLocalStorage<boolean>("withKeyboard", false);
+  // const [withKeyboard] = useLocalStorage<boolean>("withKeyboard", false);
 
   return (
     <ErrorBoundary>
@@ -33,7 +32,7 @@ export default function App() {
               </div>
             </main>
             <OrderDetails />
-            {withKeyboard && <GlobalVirtualKeyboard />}
+            {false && <GlobalVirtualKeyboard />}
           </OrderProvider>
         </VirtualKeyboardProvider>
       </ContextsProvider>
