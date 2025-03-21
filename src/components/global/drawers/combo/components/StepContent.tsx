@@ -7,7 +7,7 @@ interface StepContentProps {
 }
 
 export function StepContent({ step }: StepContentProps) {
-  const { selections, handleSelect, handleQuantityChange, currentStep } = useCombo();
+  const { selections, handleSelect, handleQuantityChange, currentStep, updateVariantSuiteCommande } = useCombo();
 
   // Filter selections to only show those for the current step
   const currentSelections = {
@@ -20,6 +20,10 @@ export function StepContent({ step }: StepContentProps) {
     increment: boolean
   ) => {
     handleQuantityChange(variantId, increment, step);
+  };
+
+  const handleSuiteCommandeChange = (variantId: string, value: boolean) => {
+    updateVariantSuiteCommande(variantId, value, step.is_supplement);
   };
 
   return (
@@ -43,6 +47,7 @@ export function StepContent({ step }: StepContentProps) {
               isSupplement={step.is_supplement}
               isRequired={step.is_required && !step.is_supplement}
               quantity={selectedVariant?.quantity || 0}
+              suiteCommande={selectedVariant?.suite_commande || false}
               onClick={() =>
                 handleSelect(
                   variant,
@@ -53,6 +58,9 @@ export function StepContent({ step }: StepContentProps) {
               }
               onQuantityChange={(increment) =>
                 handleVariantQuantityChange(variant._id, increment)
+              }
+              onSuiteCommandeChange={(value) => 
+                handleSuiteCommandeChange(variant._id, value)
               }
               step={step}
             />

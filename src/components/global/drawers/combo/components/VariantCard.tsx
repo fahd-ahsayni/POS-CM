@@ -14,25 +14,30 @@ import { useCombo } from "../context/ComboContext";
 
 interface VariantCardProps {
   variant: ProductVariant;
+  customerIndex: number;
   isSelected: boolean;
   isSupplement: boolean;
   isRequired: boolean;
   quantity: number;
+  suiteCommande: boolean; // Add this property
   onClick: () => void;
   onQuantityChange: (increment: boolean) => void;
+  onSuiteCommandeChange: (value: boolean) => void; // Add this method
   step: Step;
-  customerIndex: number;
 }
 
 export function VariantCard({
   variant,
+  customerIndex,
   isSelected,
+  isSupplement,
   isRequired,
-  quantity = 0,
+  quantity,
+  suiteCommande,
   onClick,
   onQuantityChange,
+  onSuiteCommandeChange,
   step,
-  customerIndex,
 }: VariantCardProps) {
   const { currentMenu } = useLeftViewContext();
   const { updateVariantNotes, updateVariantSuiteCommande } = useCombo();
@@ -40,8 +45,6 @@ export function VariantCard({
     variant.menus?.find((menu) => menu.menu_id === currentMenu)?.price_ttc ??
     variant.default_price ??
     0;
-
-  const [suiteCommande, setSuiteCommande] = useState<boolean>(false);
 
   const handleQuantityChange = (e: React.MouseEvent, increment: boolean) => {
     e.preventDefault();
@@ -57,7 +60,7 @@ export function VariantCard({
     e.preventDefault();
     e.stopPropagation();
     const newValue = !suiteCommande;
-    setSuiteCommande(newValue);
+    onSuiteCommandeChange(newValue);
     updateVariantSuiteCommande(variant._id, newValue, step.is_supplement);
   };
 

@@ -14,6 +14,9 @@ export function useLocalStorage<T>(
 	};
 
 	const [storedValue, setStoredValue] = React.useState<T>(() => {
+		if (typeof window === "undefined") {
+			return initialValue;
+		}
 		const item = window.localStorage.getItem(key);
 		return item !== null ? (parseJSON(item) ?? initialValue) : initialValue;
 	});
@@ -22,7 +25,9 @@ export function useLocalStorage<T>(
 		(value: T | ((prev: T) => T)) => {
 			setStoredValue((prev) => {
 				const newValue = value instanceof Function ? value(prev) : value;
-				window.localStorage.setItem(key, JSON.stringify(newValue));
+				if (typeof window !== "undefined") {
+					window.localStorage.setItem(key, JSON.stringify(newValue));
+				}
 				return newValue;
 			});
 		},
