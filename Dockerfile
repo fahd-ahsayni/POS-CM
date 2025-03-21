@@ -21,7 +21,7 @@ RUN apk add --no-cache \
 COPY package.json package-lock.json ./
 
 # Install dependencies with legacy peer deps to handle compatibility issues
-RUN npm install --legacy-peer-deps
+RUN rm -f package-lock.json && npm install --legacy-peer-deps
 
 # Copy the rest of the application files
 COPY . .
