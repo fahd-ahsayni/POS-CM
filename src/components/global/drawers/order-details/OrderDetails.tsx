@@ -151,6 +151,8 @@ const MemoizedOrderDetails = React.memo(function OrderDetails() {
     return orderLine.price.toFixed(currency.toFixed || 2);
   };
 
+  console.log(selectedOrder)
+
   if (!selectedOrder) return null;
 
   // Function to determine the order type title

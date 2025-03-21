@@ -17,6 +17,12 @@ export function useOrderLine({
   setCustomerIndex,
 }: UseOrderLineProps) {
   const prices = useMemo(() => {
+    // Calculate prices accounting for canceled quantities
+    if (item.is_ordred && item.cancelled_qty) {
+      // For ordered items with cancellations, use the effective quantity
+      const effectiveQuantity = Math.max(item.quantity - item.cancelled_qty, 0);
+      return calculateProductPrice(item, currentMenu, effectiveQuantity);
+    }
     return calculateProductPrice(item, currentMenu, item.quantity);
   }, [item, currentMenu]);
 

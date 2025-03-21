@@ -2,8 +2,8 @@ import { CashIcon, DishIcon, TrashIcon, UserIcon } from "@/assets/figma-icons";
 import { Button } from "@/components/ui/button";
 import { TypographySmall } from "@/components/ui/typography";
 import { calculateProductPrice } from "@/functions/priceCalculations";
-import { currency } from "@/preferences";
 import { ProductSelected } from "@/interfaces/product";
+import { currency } from "@/preferences";
 import { ChevronDown } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import { useLeftViewContext } from "../../left-section/contexts/LeftViewContext";
@@ -38,14 +38,18 @@ const OrderLineIndex = ({
   // Track product count changes to detect when new products are added
   useEffect(() => {
     const currentProductsCount = products.length;
-    
-    if (currentProductsCount > prevProductsCountRef.current && lastProductRef.current && isExpanded) {
+
+    if (
+      currentProductsCount > prevProductsCountRef.current &&
+      lastProductRef.current &&
+      isExpanded
+    ) {
       lastProductRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest'
+        behavior: "smooth",
+        block: "nearest",
       });
     }
-    
+
     prevProductsCountRef.current = currentProductsCount;
   }, [products.length, isExpanded]);
 
@@ -54,14 +58,31 @@ const OrderLineIndex = ({
     []
   );
 
-  const totalItems = useMemo(
-    () => products.reduce((sum, product) => sum + product.quantity, 0),
+  // Filter out fully canceled products for display calculations
+  const validProducts = useMemo(
+    () =>
+      products.filter(
+        (product) => product.quantity > (product.cancelled_qty || 0)
+      ),
     [products]
   );
 
+  // Calculate total items accounting for canceled quantities
+  const totalItems = useMemo(
+    () =>
+      validProducts.reduce((sum, product) => {
+        const effectiveQty = product.cancelled_qty
+          ? Math.max(product.quantity - product.cancelled_qty, 0)
+          : product.quantity;
+        return sum + effectiveQty;
+      }, 0),
+    [validProducts]
+  );
+
+  // Calculate total price accounting for canceled quantities
   const totalPrice = useMemo(
     () =>
-      products.reduce((sum, product) => {
+      validProducts.reduce((sum, product) => {
         const priceCalc = calculateProductPrice(
           product,
           currentMenu,
@@ -69,7 +90,7 @@ const OrderLineIndex = ({
         );
         return sum + priceCalc.totalPrice;
       }, 0),
-    [products, currentMenu]
+    [validProducts, currentMenu]
   );
 
   const handleDelete = useCallback(
@@ -145,7 +166,7 @@ const OrderLineIndex = ({
         </div>
       </div>
 
-      {!isExpanded && products.length > 0 && (
+      {!isExpanded && validProducts.length > 0 && (
         <div className="flex items-center justify-end text-xs gap-x-4 text-secondary-black dark:text-secondary-white">
           <span className="flex items-center gap-x-0.5">
             <DishIcon className="!w-5 !h-auto !fill-secondary-black dark:!fill-secondary-white" />
@@ -163,7 +184,7 @@ const OrderLineIndex = ({
           {products.map((product, index) => {
             const isLastProduct = index === products.length - 1;
             return (
-              <div 
+              <div
                 key={product.id || index}
                 ref={isLastProduct ? lastProductRef : undefined}
               >

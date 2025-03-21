@@ -1,5 +1,5 @@
 import { TypographyP } from "@/components/ui/typography";
-import { calculateProductPrice } from "@/functions/priceCalculations";
+import { calculateOrderTotal } from "@/functions/priceCalculations";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { currency } from "@/preferences";
 import { RootState } from "@/store";
@@ -16,15 +16,8 @@ export default function Ticket() {
   const [loadedOrder] = useLocalStorage<any>("loadedOrder", {});
 
   const calculations = useMemo(() => {
-    // Calculate the total for only newly selected products
-    const subtotal = selectedProducts.reduce((total, product) => {
-      const price = calculateProductPrice(
-        product,
-        currentMenu,
-        product.quantity
-      );
-      return total + price.totalPrice;
-    }, 0);
+    // Calculate the total for the selected products, accounting for canceled items
+    const { subtotal, totalItems } = calculateOrderTotal(selectedProducts, currentMenu);
 
     // Apply any discount to the selected products
     const discount = order.data.discount?.discount_id
@@ -47,7 +40,7 @@ export default function Ticket() {
       ? orderType.delivery_product_variant_id.default_price
       : 0;
     
-    // Calculate total - only for newly selected products
+    // Calculate total - only for valid products
     const total = subtotal - discountAmount + deliveryFee;
 
     return { 
@@ -55,6 +48,7 @@ export default function Ticket() {
       discountAmount, 
       tax, 
       total,
+      totalItems,
       // Display "loaded order" as a separate line item if needed
       hasLoadedOrder: loadedOrder && Object.keys(loadedOrder).length > 0
     };
@@ -75,7 +69,10 @@ export default function Ticket() {
           {calculations.hasLoadedOrder && (
             <div className="flex items-center justify-between w-full">
               <TypographyP className="text-sm font-semibold dark:text-primary-black text-white">
-                Loaded Order
+                Loaded Order ({calculations.totalItems} items)
+              </TypographyP>
+              <TypographyP className="text-sm font-semibold dark:text-primary-black text-white">
+                {calculations.subtotal.toFixed(toFixed ?? 2)} {currencySymbol}
               </TypographyP>
             </div>
           )}

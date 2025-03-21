@@ -236,6 +236,17 @@ export function OrderLine({ item }: OrderLineProps) {
     );
   }, [item.combo_items, item.id, currentMenu, item.is_combo, comboLaunchedMap]);
 
+  // Display effective quantity (after cancellations) for ordered items
+  const effectiveQuantity = useMemo(() => {
+    if (item.is_ordred && item.cancelled_qty) {
+      return Math.max(item.quantity - item.cancelled_qty, 0);
+    }
+    return item.quantity;
+  }, [item.quantity, item.cancelled_qty, item.is_ordred]);
+
+
+  console.log(item)
+
   return (
     <motion.div
       key={`order-line-${item._id}-${item.customer_index || item.createdAt}`}
@@ -273,7 +284,11 @@ export function OrderLine({ item }: OrderLineProps) {
                 : "0.375rem",
             height: "100%",
           }}
-          onClick={item.is_ordred && item.suite_commande && !item.is_combo ? letsLaunchSuiteCommand : undefined}
+          onClick={
+            item.is_ordred && item.suite_commande && !item.is_combo
+              ? letsLaunchSuiteCommand
+              : undefined
+          }
           className={cn(
             "absolute left-0 top-0",
             launch || item.is_ordred
@@ -317,9 +332,7 @@ export function OrderLine({ item }: OrderLineProps) {
                       ) : (
                         <div className="flex items-center">
                           <TypographyP className="px-1.5 font-medium">
-                            {item.cancelled_qty
-                              ? item.quantity - item.cancelled_qty
-                              : item.quantity}
+                            {effectiveQuantity}
                           </TypographyP>
                           <DishIcon className="w-5 h-auto fill-secondary-black dark:fill-secondary-white" />
                         </div>
@@ -345,7 +358,10 @@ export function OrderLine({ item }: OrderLineProps) {
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-x-2">
               <TypographyP className="text-sm font-medium">
-                {prices.totalPrice.toFixed(2)} {currency.currency}
+                {item.price
+                  ? item.price.toFixed(2)
+                  : prices.totalPrice.toFixed(2)}{" "}
+                {currency.currency}
               </TypographyP>
               {item.discount?.discount_id && localStorage.discount && (
                 <Badge variant="secondary">
@@ -384,7 +400,7 @@ export function OrderLine({ item }: OrderLineProps) {
                 )}
               {!item.is_ordred && (
                 <OderLineAddComments
-                  productId={item.id || item._id}  // Use item.id if available, otherwise use item._id
+                  productId={item.id || item._id} // Use item.id if available, otherwise use item._id
                   customerIndex={item.customer_index || customerIndex}
                   initialNotes={item.notes || []}
                 />
