@@ -159,7 +159,7 @@ export function OrderLine({ item }: OrderLineProps) {
                   className={
                     comboLaunchedMap[badgeKey] || variant.suite_ordred
                       ? "text-white bg-info-color"
-                      : "bg-interactive-dark-red"
+                      : "text-white bg-interactive-dark-red"
                   }
                 >
                   {comboLaunchedMap[badgeKey] || variant.suite_ordred
@@ -212,7 +212,7 @@ export function OrderLine({ item }: OrderLineProps) {
                         className={
                           comboLaunchedMap[badgeKey] || supp.suite_ordred
                             ? "text-white bg-info-color"
-                            : "bg-interactive-dark-red"
+                            : "text-white bg-interactive-dark-red"
                         }
                       >
                         {comboLaunchedMap[badgeKey] || supp.suite_ordred

@@ -9,7 +9,6 @@ import { ProductVariant, Step } from "@/interfaces/product";
 import { cn } from "@/lib/utils";
 import { currency } from "@/preferences";
 import { Minus, Plus } from "lucide-react";
-import { useState } from "react";
 import { useCombo } from "../context/ComboContext";
 
 interface VariantCardProps {
@@ -53,7 +52,7 @@ export function VariantCard({
   };
 
   const handleNotesUpdate = (notes: string[]) => {
-    updateVariantNotes(variant._id, notes, step.is_supplement);
+    updateVariantNotes(variant._id, notes, isSupplement);
   };
 
   const handleSuiteCommandeToggle = (e: React.MouseEvent) => {
@@ -61,7 +60,7 @@ export function VariantCard({
     e.stopPropagation();
     const newValue = !suiteCommande;
     onSuiteCommandeChange(newValue);
-    updateVariantSuiteCommande(variant._id, newValue, step.is_supplement);
+    updateVariantSuiteCommande(variant._id, newValue, isSupplement);
   };
 
   return (
@@ -77,7 +76,7 @@ export function VariantCard({
           <TypographyP className="font-medium text-sm">
             {toTitleCase(variant.name.toLowerCase())}
           </TypographyP>
-          {step.is_supplement && (
+          {isSupplement && (
             <TypographySmall className="text-sm text-neutral-dark-grey">
               {variantPrice.toFixed(currency.toFixed || 2)} {currency.currency}
             </TypographySmall>
@@ -86,8 +85,8 @@ export function VariantCard({
 
         <div className="flex flex-col justify-between items-end h-full">
           <div className="flex items-center justify-end gap-2">
-            {((step.is_supplement && !step.is_required) ||
-              (!step.is_required && !step.is_supplement)) &&
+            {((isSupplement && !step.is_required) ||
+              (!step.is_required && !isSupplement)) &&
               isSelected && (
                 <div className="flex items-center gap-2 h-8">
                   <Button
@@ -125,7 +124,7 @@ export function VariantCard({
                 </div>
               )}
 
-            {!step.is_supplement && step.is_required && (
+            {!isSupplement && step.is_required && (
               <div className="flex items-center justify-end gap-2 h-8">
                 <TypographyP className="font-medium">{quantity}</TypographyP>
                 <DishIcon className="!w-5 !h-auto !fill-secondary-black dark:!fill-secondary-white" />
