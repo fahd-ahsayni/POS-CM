@@ -11,9 +11,11 @@ import {
 } from "@/components/ui/select";
 import { TypographySmall } from "@/components/ui/typography";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { loadingColors } from "@/preferences";
 import { refreshOrders } from "@/store/slices/data/orders.slice";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
+import { BeatLoader } from "react-spinners";
 import { toast } from "react-toastify";
 import { useOrder } from "../../order-details/context/OrderContext";
 
@@ -46,6 +48,7 @@ export default function CancelOrderReason({
   );
   const [quantity, setQuantity] = useState<number>(1);
   const [maxQuantity, setMaxQuantity] = useState<number>(1);
+  const [isLoading, setIsLoading] = useState<boolean>(false); // Add loading state
 
   // Find the selected orderline and get its quantity
   useEffect(() => {
@@ -95,6 +98,7 @@ export default function CancelOrderReason({
   const handleApplyCancel = useCallback(async () => {
     if (!selectedOrder?._id) return;
 
+    setIsLoading(true); // Set loading to true when starting the API call
     try {
       let response;
       if (persistSelectedProducts.length > 0) {
@@ -138,6 +142,8 @@ export default function CancelOrderReason({
     } catch (error) {
       toast.error(createToast("Cancel failed", "Please try again", "error"));
       setAuthorization(false);
+    } finally {
+      setIsLoading(false); // Reset loading state when API call completes
     }
   }, [
     selectedOrder?._id,
@@ -182,9 +188,15 @@ export default function CancelOrderReason({
         <Button
           onClick={handleApplyCancel}
           className="w-full"
-          disabled={!selectedReason}
+          disabled={!selectedReason || isLoading}
         >
-          Cancel Order
+          {isLoading ? (
+            <>
+              <BeatLoader color={loadingColors.primary} size={8} />
+            </>
+          ) : (
+            "Cancel Order"
+          )}
         </Button>
       </div>
     </section>
