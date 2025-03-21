@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { TypographySmall } from "@/components/ui/typography";
-import { RiErrorWarningFill } from "react-icons/ri";
-import { HiOutlineXMark } from "react-icons/hi2";
 import { useState } from "react";
+import { HiOutlineXMark } from "react-icons/hi2";
+import { RiErrorWarningFill } from "react-icons/ri";
 
 export default function BannerSessionExpired() {
-    const [open, setOpen] = useState(true);
-    if (!open) return null; // hide banner when closed
+  const [open, setOpen] = useState(true);
+  if (!open) return null; // hide banner when closed
   return (
     <div className="bg-primary-red absolute w-full z-50 shadow-lg">
       <div className="mx-auto max-w-7xl py-2 px-3 sm:px-6 lg:px-8">
@@ -17,12 +17,17 @@ export default function BannerSessionExpired() {
               aria-hidden="true"
             />
             <TypographySmall className="ml-3 font-medium text-white">
-              Your session is nearing expiration. Please contact support to
+              Your subscription is nearing expiration. Please contact support to
               maintain uninterrupted access.
             </TypographySmall>
           </div>
           <div className="order-2 flex-shrink-0 sm:order-3 sm:ml-3">
-            <Button type="button" variant="link" size="icon" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              variant="link"
+              size="icon"
+              onClick={() => setOpen(false)}
+            >
               <span className="sr-only">Dismiss</span>
               <HiOutlineXMark
                 className="h-6 w-6 text-white"
