@@ -161,11 +161,13 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
     if (selectedStep?.is_required) {
       setSelections((prev) => {
         // Check if we already have selections for this step
-        const hasExistingSelections = prev.variants.some(v => v.stepIndex === currentStep);
-        
+        const hasExistingSelections = prev.variants.some(
+          (v) => v.stepIndex === currentStep
+        );
+
         // If we already have selections, don't override them
         if (hasExistingSelections) return prev;
-        
+
         // Otherwise, add the required variants with quantity 1
         return {
           ...prev,
@@ -188,10 +190,10 @@ export function useComboLogic(currentStep: number, selectedStep?: Step) {
         return "All variants are automatically selected";
       }
       if (!step?.is_required && !step?.is_supplement) {
-        return `You can select up to ${step.number_of_products} items`;
+        return `You must select exactly ${step.number_of_products} items`;
       }
       if (!step?.is_required && step?.is_supplement) {
-        return "Select supplements and adjust quantities as needed";
+        return "Select supplements if desired (optional)";
       }
       return "";
     },
