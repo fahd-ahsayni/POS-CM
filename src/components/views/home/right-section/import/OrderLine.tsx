@@ -28,6 +28,7 @@ import { useOrderLine } from "../hooks/useOrderLine";
 import { useProductQuantity } from "../hooks/useProductQuantity";
 import OderLineAddComments from "../ui/OderLineAddComments";
 import ProductActions from "../ui/ProductActions";
+import CommentsOfProducts from "./CommentsOfProducts";
 
 interface OrderLineProps {
   item: ProductSelected;
@@ -135,12 +136,15 @@ export function OrderLine({ item }: OrderLineProps) {
         {item.combo_items.variants?.map((variant: any, idx: number) => {
           const badgeKey = `${item.id}-${variant._id}-${idx}`;
           return (
-            <span className="flex items-center space-x-2" key={badgeKey}>
+            <span className="flex items-start space-x-2" key={badgeKey}>
               <TypographySmall className="text-sm space-x-2">
                 <span className="font-medium">x{variant.quantity || 1}</span>
                 <span className="first-letter:uppercase dark:text-neutral-bright-grey text-primary-black/90 tracking-wide">
                   {toTitleCase(variant.name || "")}
                 </span>
+                {loadedOrder?.orderline_ids && (
+                  <CommentsOfProducts notes={variant.notes} />
+                )}
               </TypographySmall>
               {variant.suite_commande && !item.is_ordred && (
                 <span className="text-sm font-medium">
@@ -186,14 +190,17 @@ export function OrderLine({ item }: OrderLineProps) {
               return (
                 <div
                   key={badgeKey}
-                  className="flex justify-between items-center"
+                  className="flex justify-between items-start"
                 >
-                  <span className="flex items-center space-x-2">
+                  <span className="flex items-start space-x-2">
                     <TypographySmall className="text-sm space-x-2">
                       <span className="font-medium">x{supp.quantity || 1}</span>
                       <span className="first-letter:uppercase dark:text-neutral-bright-grey text-primary-black/90 tracking-wide">
                         {toTitleCase(supp.name || "")}
                       </span>
+                      {loadedOrder?.orderline_ids && (
+                        <CommentsOfProducts notes={supp.notes} />
+                      )}
                     </TypographySmall>
                     {supp.suite_commande && !item.is_ordred && (
                       <span className="text-sm font-medium">
@@ -312,8 +319,11 @@ export function OrderLine({ item }: OrderLineProps) {
                   ? getDisplayName(item.variants[0])
                   : getDisplayName({ name: item.name })}
               </TypographyP>
+              {loadedOrder?.orderline_ids && (
+                <CommentsOfProducts notes={item.notes} />
+              )}
             </div>
-            <div className="flex items-center gap-x-2">
+            <div className="flex items-start gap-x-2 h-full">
               {item.is_ordred ? (
                 <>
                   {item.is_paid ? (
@@ -396,13 +406,15 @@ export function OrderLine({ item }: OrderLineProps) {
                   </Button>
                 )}
               {!item.is_ordred && (
-                <OderLineAddComments
-                  productId={item.id || item._id} // Use item.id if available, otherwise use item._id
-                  customerIndex={item.customer_index || customerIndex}
-                  initialNotes={item.notes || []}
-                />
+                <>
+                  <OderLineAddComments
+                    productId={item.id || item._id}
+                    customerIndex={item.customer_index || customerIndex}
+                    initialNotes={item.notes || []}
+                  />
+                  <ProductActions item={item} />
+                </>
               )}
-              <ProductActions item={item} />
             </div>
           </div>
         </div>

@@ -28,6 +28,7 @@ import Payments from "../Payments/Payments";
 import { useOrderDetails } from "./hooks/useOrderDetails";
 
 import React from "react";
+import CommentsOfProducts from "@/components/views/home/right-section/import/CommentsOfProducts";
 
 const MemoizedOrderDetails = React.memo(function OrderDetails() {
   const [editPriceOpen, setEditPriceOpen] = useState(false);
@@ -291,11 +292,14 @@ const MemoizedOrderDetails = React.memo(function OrderDetails() {
                       }
                     >
                       <div className="flex justify-between items-center">
-                        <TypographyP className="dark:text-white text-primary-black font-medium capitalize">
-                          {orderLine.product_variant_id
-                            ? orderLine.product_variant_id?.name.toLowerCase()
-                            : ""}
-                        </TypographyP>
+                        <div>
+                          <TypographyP className="dark:text-white text-primary-black font-medium capitalize">
+                            {orderLine.product_variant_id
+                              ? orderLine.product_variant_id?.name.toLowerCase()
+                              : ""}
+                          </TypographyP>
+                          <CommentsOfProducts notes={orderLine.notes} />
+                        </div>
                         {/* {orderLine.cancelled_qty >= orderLine.quantity && (
                           <TypographyP className="text-error-color">
                             Canceled
@@ -310,56 +314,65 @@ const MemoizedOrderDetails = React.memo(function OrderDetails() {
                       <div className="border-l-2 dark:border-neutral-dark-grey/40 border-neutral-dark-grey/50">
                         {(orderLine.combo_prod_ids?.length > 0 ||
                           orderLine.combo_supp_ids?.length > 0) && (
-                          <div className="pl-2.5 space-y-1">
+                          <div className="pl-2.5 space-y-1 pb-2">
                             {orderLine.combo_prod_ids?.map(
                               (combo: any, index: number) => (
+                                <>
+                                  <span
+                                    key={index}
+                                    className="flex items-center gap-x-2"
+                                  >
+                                    <TypographySmall
+                                      key={combo._id}
+                                      className="dark:text-secondary-white text-primary-black text-sm flex"
+                                    >
+                                      <span className="font-semibold w-7">
+                                        x{combo.quantity}
+                                      </span>
+                                      <span className="dark:text-secondary-white/90 text-primary-black capitalize">
+                                        {combo.product_variant_id
+                                          ? toTitleCase(
+                                              combo.product_variant_id?.name
+                                            )
+                                          : ""}
+                                      </span>
+                                    </TypographySmall>
+                                    {combo.suite_commande && (
+                                      <SuiteCommandIcon className="size-4 text-info-color" />
+                                    )}
+                                  </span>
+
+                                  <CommentsOfProducts notes={combo.notes} />
+                                </>
+                              )
+                            )}
+                            {orderLine.combo_supp_ids?.map(
+                              (supp: any, key: number) => (
                                 <span
-                                  key={index}
+                                  key={key}
                                   className="flex items-center gap-x-2"
                                 >
                                   <TypographySmall
-                                    key={combo._id}
-                                    className="dark:text-secondary-white text-primary-black text-sm flex"
+                                    key={supp._id}
+                                    className="dark:text-secondary-white text-primary-black flex items-center text-sm"
                                   >
                                     <span className="font-semibold w-7">
-                                      x{combo.quantity}
+                                      x{supp.quantity}
                                     </span>
                                     <span className="dark:text-secondary-white/90 text-primary-black capitalize">
-                                      {combo.product_variant_id
+                                      {supp.product_variant_id
                                         ? toTitleCase(
-                                            combo.product_variant_id?.name
+                                            supp.product_variant_id?.name
                                           )
                                         : ""}
                                     </span>
                                   </TypographySmall>
-                                  {combo.suite_commande && (
+                                  {supp.suite_commande && (
                                     <SuiteCommandIcon className="size-4 text-info-color" />
                                   )}
                                 </span>
                               )
                             )}
-                            {orderLine.combo_supp_ids?.map((supp: any, key: number) => (
-                              <span key={key} className="flex items-center gap-x-2">
-                                <TypographySmall
-                                  key={supp._id}
-                                  className="dark:text-secondary-white text-primary-black flex items-center text-sm"
-                                >
-                                  <span className="font-semibold w-7">
-                                    x{supp.quantity}
-                                  </span>
-                                  <span className="dark:text-secondary-white/90 text-primary-black capitalize">
-                                    {supp.product_variant_id
-                                      ? toTitleCase(
-                                          supp.product_variant_id?.name
-                                        )
-                                      : ""}
-                                  </span>
-                                </TypographySmall>
-                                {supp.suite_commande && (
-                                  <SuiteCommandIcon className="size-4 text-info-color" />
-                                )}
-                              </span>
-                            ))}
                           </div>
                         )}
                       </div>

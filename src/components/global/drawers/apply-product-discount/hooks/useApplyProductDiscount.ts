@@ -1,10 +1,11 @@
+import { createToast } from "@/components/global/Toasters";
+import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
+import { useLocalStorage } from "@/hooks/use-local-storage";
+import { ProductSelected } from "@/interfaces/product";
+import { updateOrderLine } from "@/store/slices/order/create-order.slice";
 import { useCallback, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import { createToast } from "@/components/global/Toasters";
-import { updateOrderLine } from "@/store/slices/order/create-order.slice";
-import { ProductSelected } from "@/interfaces/product";
-import { useLeftViewContext } from "@/components/views/home/left-section/contexts/LeftViewContext";
 
 interface UseApplyProductDiscountProps {
   admin: any;
@@ -34,11 +35,8 @@ export const useApplyProductDiscount = ({
   const [selectedDiscount, setSelectedDiscount] = useState<string>("");
   const [selectedReason, setSelectedReason] = useState<string>("");
 
-  const generalData = useMemo(() => {
-    return JSON.parse(localStorage.getItem("generalData") || "{}");
-  }, []);
-
-  const loadedOrder = JSON.parse(localStorage.getItem("loadedOrder") || "{}");
+  const [generalData] = useLocalStorage<any>("generalData", null);
+  const [loadedOrder] = useLocalStorage<any>("loadedOrder", null);
 
   const discounts = useMemo(() => {
     const discountData: Discount[] = generalData.discount || [];
@@ -70,9 +68,7 @@ export const useApplyProductDiscount = ({
       };
 
       if (loadedOrder) {
-
         // logic discount for products
-
       } else {
         // Update Redux store with discount info
         dispatch(
