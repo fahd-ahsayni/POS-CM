@@ -41,12 +41,15 @@ function ComboContent() {
     // For required steps, they're auto-selected so allow proceeding
     if (currentStepData.is_required) return true;
     
-    // For non-required, non-supplement steps, check if exact number of products are selected
+    // For non-required, non-supplement steps, check if total quantity equals number_of_products
     const stepSelections = selections.variants.filter(
       variant => variant.stepIndex === currentStep
     );
     
-    return stepSelections.length === currentStepData.number_of_products;
+    // Calculate total quantity of selected items
+    const totalQuantity = stepSelections.reduce((sum, variant) => sum + (variant.quantity || 1), 0);
+    
+    return totalQuantity === currentStepData.number_of_products;
   };
 
   // Special case: For single step combo with supplement, allow finishing without any selection
