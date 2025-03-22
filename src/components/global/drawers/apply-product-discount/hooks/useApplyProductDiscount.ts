@@ -61,6 +61,22 @@ export const useApplyProductDiscount = ({
     try {
       if (!selectedDiscount || !selectedReason) return;
 
+      // Find the selected discount details from the general data
+      const discountDetails = generalData.discount?.find(
+        (discount: Discount) => discount._id === selectedDiscount
+      );
+
+      if (!discountDetails) {
+        toast.error(
+          createToast(
+            "Discount not found",
+            "The selected discount could not be found",
+            "error"
+          )
+        );
+        return;
+      }
+
       const discountInfo = {
         discount_id: selectedDiscount,
         reason: selectedReason,
@@ -68,7 +84,6 @@ export const useApplyProductDiscount = ({
       };
 
       if (loadedOrder) {
-        // logic discount for products
       } else {
         // Update Redux store with discount info
         dispatch(
@@ -120,6 +135,7 @@ export const useApplyProductDiscount = ({
     setOpen,
     setAuthorization,
     setSelectedProducts,
+    generalData.discount,
   ]);
 
   return {

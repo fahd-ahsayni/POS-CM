@@ -242,6 +242,8 @@ export function OrderLine({ item }: OrderLineProps) {
       </div>
     );
   }, [item.combo_items, item.id, currentMenu, item.is_combo, comboLaunchedMap]);
+  
+  console.log(item)
 
   // Display effective quantity (after cancellations) for ordered items
   const effectiveQuantity = useMemo(() => {
@@ -370,7 +372,7 @@ export function OrderLine({ item }: OrderLineProps) {
                   : prices.totalPrice.toFixed(2)}{" "}
                 {currency.currency}
               </TypographyP>
-              {item.discount?.discount_id && localStorage.discount && (
+              {item.discount?.discount_id && (
                 <Badge variant="secondary">
                   -
                   {generalData?.discount.find(

@@ -95,11 +95,6 @@ const OrderSummary = () => {
     [handleToggleAll]
   );
   const currentDiscount = useMemo(() => {
-    // if (loadedOrder?.discount_amount && loadedOrder?.total_amount) {
-    //   const discountValue = (loadedOrder.discount_amount / loadedOrder.total_amount) * 100;
-      
-    //   return { type: "percentage", value: discountValue };
-    // }
     return discount?.find((d: any) => d.id === order.discount?.id);
   }, [loadedOrder, discount, order.discount]);
 

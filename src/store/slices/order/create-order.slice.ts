@@ -188,6 +188,7 @@ const orderSlice = createSlice({
         }
       }
 
+      // Recalculate total with potentially updated discount
       state.data.total_amount = calculateTotalFromOrderlines(
         state.data.orderlines,
         state.data.delivery_guy_id || "",

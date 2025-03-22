@@ -20,8 +20,7 @@ const ProductsGrid = memo(function ProductsGrid({
 }: ProductsGridProps) {
   return (
     <div
-      className="w-full grid grid-cols-2 lg: *: 
-    -cols-3 gap-3 mt-4 pl-1.5 pb-4"
+      className="w-full grid grid-cols-2 lg:grid-cols-3 gap-3 mt-4 pl-1.5 pb-4"
     >
       {products.map((product) => (
         <ProductCard
